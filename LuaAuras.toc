@@ -10,7 +10,7 @@
 ## X-eMail: adirelle@gmail.com
 ## SavedVariables: LuaAurasDB
 
-## OptionalDeps: Ace3, LibAdiEvent-1.0, LibSharedMedia-3.0, SharedMedia, AceGUI-3.0-SharedMediaWidgets, AdiDebug, Dominos, Bartender4
+## OptionalDeps: Ace3, LibAdiEvent-1.0, LibSharedMedia-3.0, LibSpellbook-1.0, SharedMedia, AceGUI-3.0-SharedMediaWidgets, AdiDebug, Dominos, Bartender4
 
 #@no-lib-strip@
 libs\LibStub\LibStub.lua

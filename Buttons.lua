@@ -7,6 +7,7 @@ All rights reserved.
 local addonName, addon = ...
 
 local LibAdiEvent = LibStub('LibAdiEvent-1.0')
+local LibSpellbook = LibStub('LibSpellbook-1.0')
 
 local overlayPrototype = setmetatable({}, { __index = CreateFrame("Frame") })
 local overlayMeta = { __index = overlayPrototype }
@@ -65,9 +66,9 @@ function overlayPrototype:FullUpdate(event)
 end
 
 local function ResolveMacroSpell(macroId)
-	local _, _, macroSpellId = GetMacroSpell(macroId)
-	if macroSpellId then
-		return "spell", macroSpellId
+	local macroSpell, _, macroSpellId = GetMacroSpell(macroId)
+	if macroSpell or macroSpellId then
+		return "spell", macroSpellId or LibSpellbook:Resolve(macroSpell)
 	else
 		local _, itemLink = GetMacroItem(actionId)
 		local itemId = itemLink and tonumber(itemLink:match('item:(%d+):'))
@@ -163,8 +164,7 @@ function overlayPrototype:UpdateAction(event)
 	-- Resolve items and companions
 	if actionType == "item" then
 		local spell = GetItemSpell(actionId)
-		local link = GetSpellLink(spell)
-		spellId = link and tonumber(link:match('spell:(%d+):'))
+		spellId = LibSpellbook:Resolve(spell)
 	elseif actionType == "spell" or actionType == "companion" then
 		spellId = actionId
 	end
