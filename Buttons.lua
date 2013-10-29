@@ -188,9 +188,9 @@ function overlayPrototype:UpdateAction(event)
 			self:UnregisterEvent('PLAYER_FOCUS_CHANGED', 'UpdateTarget')
 		end
 		if spellId and targetCmd and strmatch(targetCmd, '@mouseover') then
-			self:RegisterEvent('PLAYER_FOCUS_CHANGED', 'UpdateTarget')
+			self:RegisterEvent('UPDATE_MOUSEOVER_UNIT', 'UpdateTarget')
 		else
-			self:UnregisterEvent('PLAYER_FOCUS_CHANGED', 'UpdateTarget')
+			self:UnregisterEvent('UPDATE_MOUSEOVER_UNIT', 'UpdateTarget')
 		end
 		if spellId and targetCmd and strmatch(targetCmd, 'mod:') then
 			self:RegisterEvent('MODIFIER_STATE_CHANGED', 'UpdateTarget')
