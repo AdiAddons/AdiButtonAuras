@@ -25,5 +25,6 @@ libs\AceGUI-3.0-SharedMediaWidgets\widget.xml
 #@end-no-lib-strip@
 
 LuaAuras.lua
+Utils.lua
 Buttons.lua
 

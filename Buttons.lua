@@ -111,15 +111,11 @@ do
 		end
 	end
 
-	local macroOptionsMemo = setmetatable({}, {__index = function(self, index)
+	local macroOptionsMemo = addon.Memoize(function(index)
 		local body = GetMacroBody(index)
 		local options = body and FindMacroOptions(strsplit("\n", body)) or false
-		if options then
-			options = strjoin(';', GetConds(strsplit(';', options)))
-		end
-		self[index] = options or false
-		return options
-	end})
+		return options and strjoin(';', GetConds(strsplit(';', options)))
+	end)
 	LibAdiEvent:RegisterEvent('UPDATE_MACROS', function() return wipe(macroOptionsMemo) end)
 
 	function ResolveMacroTargeting(index)
@@ -247,16 +243,16 @@ function overlayPrototype:Scan(event)
 	self:Debug('Scan', event, self.spellId, self.unit)
 end
 
-local overlays = setmetatable({}, { __index = function(t, button)
-	local overlay = false
+local overlays = addon.Memoize(function(button)
 	if button and button.IsObjectType and button:IsObjectType("Button") then
 		local name = button:GetName()
-		overlay = setmetatable(CreateFrame("Frame", name and (name..'Overlay'), button), overlayMeta)
+		local overlay = setmetatable(CreateFrame("Frame", name and (name..'Overlay'), button), overlayMeta)
 		overlay:Initialize(button)
+		return overlay
+	else
+		return false
 	end
-	t[button] = overlay
-	return overlay
-end })
+end)
 
 do
 
