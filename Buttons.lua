@@ -206,25 +206,26 @@ function overlayPrototype:UpdateAction(event)
 		else
 			self:UnregisterEvent('ACTIONBAR_SLOT_CHANGED')
 		end
-		return self:UpdateTarget(event)
+
+		self:UpdateTarget(event)
 	end
 end
 
 function overlayPrototype:UNIT_PET(event, unit)
 	if unit == "player" then
-		return self:UpdateTarget(event)
+		self:UpdateTarget(event)
 	end
 end
 
 function overlayPrototype:ACTIONBAR_SLOT_CHANGED(event, id)
 	if id == self:GetActionId() then
-		return self:UpdateTarget(event)
+		self:UpdateTarget(event)
 	end
 end
 
 function overlayPrototype:UNIT_PET(event, unit)
 	if unit == "player" then
-		return self:UpdateTarget(event)
+		self:UpdateTarget(event)
 	end
 end
 
@@ -238,7 +239,7 @@ function overlayPrototype:UpdateTarget(event)
 	self.unit = unit
 	if self.guid ~= guid then
 		self.guid = guid
-		return self:Scan(event)
+		self:Scan(event)
 	end
 end
 
