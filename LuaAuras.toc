@@ -26,6 +26,6 @@ libs\AceGUI-3.0-SharedMediaWidgets\widget.xml
 
 LuaAuras.lua
 Utils.lua
-Buttons.lua
 Spells.lua
+Overlays.lua
 Display.lua

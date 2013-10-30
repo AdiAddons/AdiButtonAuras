@@ -9,11 +9,14 @@ local addonName, addon = ...
 local LibAdiEvent = LibStub('LibAdiEvent-1.0')
 local LibSpellbook = LibStub('LibSpellbook-1.0')
 
+local EMPTY_TABLE = setmetatable({}, { __newindex = function() error(2, "Read only table") end })
+
+local getkeys = addon.getkeys
+
 local overlayPrototype = setmetatable({}, { __index = CreateFrame("Frame") })
 local overlayMeta = { __index = overlayPrototype }
 
-_G.overlayPrototype = overlayPrototype
-_G.overlayMeta = overlayMeta
+addon.overlayPrototype = overlayPrototype
 
 overlayPrototype.Debug = addon.Debug
 
@@ -50,6 +53,10 @@ function overlayPrototype:Initialize(button)
 
 	self:SetAllPoints(button)
 
+	self:InitializeDisplay()
+
+	self.units, self.events, self.handlers = EMPTY_TABLE, EMPTY_TABLE, EMPTY_TABLE
+
 	self:Show()
 end
 
@@ -59,6 +66,8 @@ end
 
 function overlayPrototype:OnHide()
 	self:UnregisterAllEvents()
+	self.units, self.events, self.handlers = EMPTY_TABLE, EMPTY_TABLE, EMPTY_TABLE
+	self.spellId, self.targetCmd, self.unit, self.guid = nil, nil, nil, nil
 end
 
 function overlayPrototype:FullUpdate(event)
@@ -146,6 +155,7 @@ do
 	UpdateDefaultTargets()
 end
 
+
 function overlayPrototype:UpdateAction(event)
 	local origType, origId = self:GetAction()
 	local actionType, actionId = origType, origId
@@ -165,7 +175,8 @@ function overlayPrototype:UpdateAction(event)
 		spellId = actionId
 	end
 
-	if spellId then
+	local conf = spellId and addon.spells[spellId]
+	if conf then
 		local spellName = GetSpellInfo(spellId)
 		local spellType = IsHelpfulSpell(spellName) and "helpful" or IsHarmfulSpell(spellName) and "harmful" or "unknown"
 		if targetCmd then
@@ -175,59 +186,73 @@ function overlayPrototype:UpdateAction(event)
 		end
 	end
 
-	if self.spellId ~= spellId or self.targetCmd ~= targetCmd then
-		self.spellId, self.targetCmd = spellId, targetCmd
-		if spellId then
+	if self.spellId ~= spellId or self.spellConf ~= conf or self.targetCmd ~= targetCmd then
+		self.spellId, self.spellConf, self.targetCmd = spellId, conf, targetCmd
+
+		self.hasConf = not not conf
+		self.units = conf and conf.units or EMPTY_TABLE
+		self.handlers = conf and conf.handlers or EMPTY_TABLE
+
+		targetCmd = targetCmd or ""
+
+		if self.units.default then
 			self:RegisterEvent('PLAYER_TARGET_CHANGED', 'UpdateTarget')
+			self:SetEventRegistered(strmatch(targetCmd, '@focus'), 'PLAYER_FOCUS_CHANGED', 'UpdateTarget')
+			self:SetEventRegistered(strmatch(targetCmd, '@mouseover'), 'UPDATE_MOUSEOVER_UNIT', 'UpdateTarget')
+			self:SetEventRegistered(strmatch(targetCmd, '@pet'), 'UNIT_PET', 'UpdateTarget')
+			self:SetEventRegistered(strmatch(targetCmd, 'mod:'), 'MODIFIER_STATE_CHANGED', 'UpdateTarget')
 		else
 			self:UnregisterEvent('PLAYER_TARGET_CHANGED', 'UpdateTarget')
-		end
-		if spellId and targetCmd and strmatch(targetCmd, '@focus') then
-			self:RegisterEvent('PLAYER_FOCUS_CHANGED', 'UpdateTarget')
-		else
 			self:UnregisterEvent('PLAYER_FOCUS_CHANGED', 'UpdateTarget')
-		end
-		if spellId and targetCmd and strmatch(targetCmd, '@mouseover') then
-			self:RegisterEvent('UPDATE_MOUSEOVER_UNIT', 'UpdateTarget')
-		else
 			self:UnregisterEvent('UPDATE_MOUSEOVER_UNIT', 'UpdateTarget')
-		end
-		if spellId and targetCmd and strmatch(targetCmd, 'mod:') then
-			self:RegisterEvent('MODIFIER_STATE_CHANGED', 'UpdateTarget')
-		else
+			self:UnregisterEvent('UNIT_PET', 'UpdateTarget')
 			self:UnregisterEvent('MODIFIER_STATE_CHANGED', 'UpdateTarget')
 		end
-		if origType == 'macro' then
-			self:RegisterEvent('ACTIONBAR_SLOT_CHANGED')
+		self:SetEventRegistered(conf and origType == 'macro', 'ACTIONBAR_SLOT_CHANGED', 'UpdateTarget')
+
+		self:SetEventRegistered(self.units.target, 'PLAYER_TARGET_CHANGED', 'ScheduleScan')
+		self:SetEventRegistered(self.units.focus, 'PLAYER_FOCUS_CHANGED', 'ScheduleScan')
+		self:SetEventRegistered(self.units.mouseover, 'UPDATE_MOUSEOVER_UNIT', 'ScheduleScan')
+		self:SetEventRegistered(self.units.pet, 'UNIT_PET', 'ScheduleScan')
+
+		local events = conf and conf.events or EMPTY_TABLE
+		if self.events ~= events then
+			for event in pairs(self.events) do
+				if not events[event] then
+					self:UnregisterEvent(event, 'ScheduleScan')
+				end
+			end
+			for event in pairs(events) do
+				if not self.events[event] then
+					self:RegisterEvent(event, 'ScheduleScan')
+				end
+			end
+			self.events = events
+		end
+
+		if conf then
+			self:Debug('UpdateAction', 'spell=', spellId, 'units=', getkeys(self.units), 'events=', getkeys(self.events), #self.handlers, 'handlers')
 		else
-			self:UnregisterEvent('ACTIONBAR_SLOT_CHANGED')
+			self:Debug('UpdateAction', 'nospell')
 		end
 
 		self:UpdateTarget(event)
 	end
 end
 
-function overlayPrototype:UNIT_PET(event, unit)
-	if unit == "player" then
-		self:UpdateTarget(event)
+function overlayPrototype:SetEventRegistered(enabled, event, handler)
+	if enabled then
+		self:RegisterEvent(event, handler)
+	else
+		self:UnregisterEvent(event, handler)
 	end
 end
 
-function overlayPrototype:ACTIONBAR_SLOT_CHANGED(event, id)
-	if id == self:GetActionId() then
-		self:UpdateTarget(event)
-	end
-end
-
-function overlayPrototype:UNIT_PET(event, unit)
-	if unit == "player" then
-		self:UpdateTarget(event)
-	end
-end
-
-function overlayPrototype:UpdateTarget(event)
+function overlayPrototype:UpdateTarget(event, arg)
+	if event == 'UNIT_PET' and arg ~= 'player' then return end
+	if event == 'ACTIONBAR_SLOT_CHANGED' and arg ~= self:GetActionId() then return end
 	local unit
-	if self.spellId then
+	if self.targetCmd then
 		local _, target = SecureCmdOptionParse(self.targetCmd)
 		unit = (target and target ~= "") and target or "target"
 	end
@@ -239,8 +264,39 @@ function overlayPrototype:UpdateTarget(event)
 	end
 end
 
+function overlayPrototype:ScheduleScan(event, unit)
+	if not unit or (self.units.default and unit == self.unit) or self.units[unit] then
+		self:Debug('Scheduling scan on', event, unit)
+		self:SetScript('OnUpdate', self.ScheduledScan)
+	end
+end
+
+function overlayPrototype:ScheduledScan(event, elapsed)
+	self:SetScript('OnUpdate', nil)
+	return self:Scan('OnUpdate')
+end
+
+local model = {}
 function overlayPrototype:Scan(event)
 	self:Debug('Scan', event, self.spellId, self.unit)
+
+	local unit = self.unit
+
+	model.count = 0
+	model.expiration = 0
+	model.highlight = nil
+
+	for i, handler in ipairs(self.handlers) do
+		local value = handler(unit, model)
+		if value then
+			self:Debug('Scan:', value)
+		end
+	end
+
+	self:Debug("Scan =>", model.highlight, model.count, model.expiration)
+	self:SetCount(model.count)
+	self:SetExpiration(model.expiration)
+	self:SetHighlight(model.highlight)
 end
 
 local overlays = addon.Memoize(function(button)
@@ -253,6 +309,12 @@ local overlays = addon.Memoize(function(button)
 		return false
 	end
 end)
+
+function addon:UpdateAllOverlays(event)
+	for button, overlay in pairs(overlays) do
+		overlay:FullUpdate(event)
+	end
+end
 
 do
 
@@ -308,3 +370,4 @@ do
 	LibAdiEvent:RegisterEvent('ADDON_LOADED', ADDON_LOADED)
 
 end
+
