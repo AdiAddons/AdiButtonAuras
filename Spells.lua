@@ -105,6 +105,14 @@ local function MergeSets(a, b)
 	return a
 end
 
+local function GetSetSize(set)
+	local n = 0
+	for k in pairs(set) do
+		n = n + 1
+	end
+	return n
+end
+
 local function NOOP() end
 
 local function _AddRuleFor(spell, units, events, handlers)
@@ -135,12 +143,22 @@ end
 
 local function Configure(spells, units, events, handlers)
 	spells = AsList(spells, "number")
+	assert(#spells > 0, "No spells given to Configure")
 	units = AsSet(units or "default", "string")
+	assert(GetSetSize(units) > 0, "No units given to Configure")
 	events = AsSet(events, "string")
+	assert(GetSetSize(events) > 0, "No events given to Configure")
 	handlers = AsList(handlers, "function")
-	return function()
-		for i, spell in ipairs(spells) do
-			_AddRuleFor(spell, units, events, handlers)
+	assert(#handlers > 0, "No handlers given to Configure")
+	if #spells == 1 then
+		return function()
+			_AddRuleFor(spells[1], units, events, handlers)
+		end
+	else
+		return function()
+			for i, spell in ipairs(spells) do
+				_AddRuleFor(spell, units, events, handlers)
+			end
 		end
 	end
 end
