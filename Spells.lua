@@ -19,37 +19,64 @@ local type = _G.type
 local UnitClass = _G.UnitClass
 local wipe = _G.wipe
 
+local getkeys = addon.getkeys
+
 local LibSpellbook = LibStub('LibSpellbook-1.0')
 local LibAdiEvent = LibStub('LibAdiEvent-1.0')
 
 local function Do(funcs)
 	for j, func in ipairs(funcs) do
-					func()
+		func()
 	end
 end
 
-local spellConfig = {}
+local spellConfs = {}
 local rules
 local RULES_ENV
 
-addon.spells = spellConfig
+addon.spells = spellConfs
 
-function addon:LibSpellbook_Spells_Changed()
+function addon:LibSpellbook_Spells_Changed(event)
 	addon:Debug('LibSpellbook_Spells_Changed')
 	if not rules then
 		rules = setfenv(addon.CreateRules, RULES_ENV)()
 	end
-	wipe(spellConfig)
+	wipe(spellConfs)
 	Do(rules)
+	addon:UpdateAllOverlays(event)
 end
 
 LibSpellbook.RegisterCallback(addon, 'LibSpellbook_Spells_Changed')
 if LibSpellbook:HasSpells() then
-	addon:LibSpellbook_Spells_Changed()
+	addon:LibSpellbook_Spells_Changed('OnLoad')
+end
+
+local function ConcatLists(a, b)
+	for i, v in ipairs(b) do
+		tinsert(a, v)
+	end
+	return a
+end
+
+local FlattenList
+do
+	local function Flatten0(a, b)
+		for i, v in ipairs(b) do
+			if type(v) == "table" then
+				Flatten0(a, v)
+			else
+				tinsert(a, v)
+			end
+		end
+		return a
+	end
+
+	function FlattenList(l) return Flatten0({}, l) end
 end
 
 local function AsList(value, checkType)
 	if type(value) == "table" then
+		value = FlattenList(value)
 		if checkType then
 			for i, v in ipairs(value) do
 				assert(type(v) == checkType)
@@ -78,13 +105,6 @@ local function MergeSets(a, b)
 	return a
 end
 
-local function ConcatLists(a, b)
-	for i, v in ipairs(b) do
-		tinsert(a, v)
-	end
-	return a
-end
-
 local function NOOP() end
 
 local function Configure(spells, units, events, handlers)
@@ -96,10 +116,13 @@ local function Configure(spells, units, events, handlers)
 		for i, spell in ipairs(spells) do
 			if LibSpellbook:IsKnown(spell) then
 				addon:Debug("Adding rule for", (GetSpellInfo(spell)))
-				local rule = spellConfig[spell]
+				addon:Debug('- units:', getkeys(units))
+				addon:Debug('- events:', getkeys(events))
+				addon:Debug('- handlers:', handlers)
+				local rule = spellConfs[spell]
 				if not rule then
 					rule = { units = {}, events = {}, handlers = {} }
-					spellConfig[spell] = rule
+					spellConfs[spell] = rule
 				end
 				MergeSets(rule.units, units)
 				MergeSets(rule.events, events)
@@ -111,11 +134,12 @@ end
 
 local function IfSpell(args)
 	local spells = AsList(tremove(args, 1), "number")
+	local funcs = AsList(args, "function")
 	return function()
 		for i, spell in ipairs(spells) do
 			if LibSpellbook:IsKnown(spell) then
 				addon:Debug('Merging spells depending on', (GetSpellInfo(spell)))
-				return Do(args)
+				return Do(funcs)
 			end
 		end
 	end
@@ -129,9 +153,10 @@ local function IfClass(args)
 	--@end-debug@--
 	local class = tremove(args, 1)
 	if _debug or playerClass == class then
+		local funcs = AsList(args, "function")
 		return function()
 			addon:Debug('Merging spells for', class)
-			return Do(args)
+			return Do(funcs)
 		end
 	else
 		return function()
@@ -140,54 +165,96 @@ local function IfClass(args)
 	end
 end
 
-local function SimpleAura(filter, spell)
-	local spellName = assert(GetSpellInfo(spell), "Unknown spell "..spell)
-	return Configure(
-		spell,
-		"default",
-		"UNIT_AURA",
-		function(unit)
-			return UnitAura(unit, spellName, filter)
-		end
-	)
+local function SimpleAuras(filter, highlight, spells)
+	local funcs = {}
+	for i, spell in ipairs(AsList(spells, "number")) do
+		local spellName = assert(GetSpellInfo(spell), "Unknown spell "..spell)
+		tinsert(funcs, Configure(
+			spell,
+			"default",
+			"UNIT_AURA",
+			function(unit, model)
+				local name, _, _, count, _, _, expiration = UnitAura(unit, spellName, nil, filter)
+				if name then
+					model.highlight, model.count, model.expiration = highlight, count, expiration
+				end
+			end
+		))
+	end
+	return funcs
 end
 
-local function SimpleDebuff(...)
-	return SimpleAura("HARMFULL PLAYER", ...)
+local function SimpleDebuffs(spells)
+	return SimpleAuras("HARMFUL PLAYER", "bad", spells)
 end
 
-local function SimpleBuff(...)
-	return SimpleAura("HELPFUL PLAYER", ...)
+local function SharedSimpleDebuffs(spells)
+	return SimpleAuras("HARMFUL", "bad", spells)
 end
 
-local function SelfBuff(spell)
-	local spellName = assert(GetSpellInfo(spell), "Unknown spell "..spell)
-	return Configure(
+local function SimpleBuffs(spells)
+	return SimpleAuras("HELPFUL PLAYER", "good", spells)
+end
+
+local function UnitBuffs(unit, filter, spells)
+	local funcs = {}
+	for i, spell in ipairs(AsList(spells, "number")) do
+		local spell, unit, filter = spell, unit, filter
+		local spellName = assert(GetSpellInfo(spell), "Unknown spell "..spell)
+		tinsert(funcs, Configure(
+			spell,
+			unit,
+			"UNIT_AURA",
+			function(_, model)
+				local name, _, _, count, _, _, expiration = UnitAura(unit, spellName, nil, filter)
+				if name then
+					model.highlight, model.count, model.expiration = "good", count, expiration
+				end
+			end
+		))
+	end
+	return funcs
+end
+
+local function SelfBuffs(spells)
+	return UnitBuffs("player", "HEPLFUL PLAYER", spells)
+end
+
+local function PetBuffs(spells)
+	return UnitBuffs("pet", "HEPLFUL PLAYER", spells)
+end
+
+local function TalentProc(args)
+	local passive, spell, buff = unpack(args)
+	local buffName = assert(GetSpellInfo(buff), "Unknown spell "..buff)
+	local conf = Configure(
 		spell,
 		"player",
 		"UNIT_AURA",
-		function()
-			return UnitAura("player", spellName, "HEPLFUL PLAYER")
+		function(_, model)
+			local name, _, _, count, _, _, expiration = UnitAura("player", buffName, nil, "HEPLFUL PLAYER")
+			if name then
+				model.highlight, model.count, model.expiration = "good", count, expiration
+			end
 		end
 	)
+	if passive then
+		return IfSpell{passive, conf}
+	else
+		return conf
+	end
 end
 
 RULES_ENV = setmetatable({
 	Configure = Configure,
 	IfSpell = IfSpell,
 	IfClass = IfClass,
-	SimpleBuff = SimpleBuff,
-	SimpleDebuff = SimpleDebuff,
+	SimpleAuras = SimpleAuras,
+	SimpleBuffs = SimpleBuffs,
+	SimpleDebuffs = SimpleDebuffs,
+	SharedSimpleDebuffs = SharedSimpleDebuffs,
+	UnitBuffs = UnitBuffs,
+	SelfBuffs = SelfBuffs,
+	PetBuffs = PetBuffs,
+	TalentProc = TalentProc,
 }, { __index = _G })
-
-function addon.CreateRules()
-	addon:Debug('Creating Rules')
-	return {
-		IfClass{"HUNTER",
-			SimpleDebuff(1978), -- Serpent String
-			SelfBuff(3045), -- Rapid Fire
-		},
-	}
-end
-
-addon:Debug('Spells loaded')
