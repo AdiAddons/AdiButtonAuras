@@ -132,16 +132,24 @@ function addon.CreateRules()
 			SharedSimpleDebuffs {
 				  1130, -- Hunter's Mark
 			},
-			TalentProc {
+			PassiveModifier {
 				34487, -- Master Marksman
 				19434, -- Aimed Shot
 				82925  -- Ready, Set, Aim...
 			},
-			TalentProc {
+			PassiveModifier {
 				53224, -- Steady Focus
 				56641, -- Steady Shot
 				53220  -- Steady Focus (buff)
 			},
-		},
+			PassiveModifier {
+				false,
+				82692, -- Focus Fire
+				19623, -- Frenzy
+				"pet",
+			},
+		}, -- Hunter spells
+
 	}
+
 end
