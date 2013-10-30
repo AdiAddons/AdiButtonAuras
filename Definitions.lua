@@ -24,7 +24,7 @@ function addon.CreateRules()
 	return {
 
 		-- Interrupts: use a custom configuration
-		Configure(
+		Configure {
 			{ -- Spells
 				-- Deathknight
 				 47476, -- Strangulate
@@ -84,13 +84,13 @@ function addon.CreateRules()
 					end
 				end
 			end
-		), -- Interrupts
+		}, -- Interrupts
 
 		-- Dispels, using LibDispellable
 		function()
 			for spell, dispelType in pairs(LibDispellable.spells) do
 				local spell, offensive = spell, (dispelType ~= 'defensive')
-				AddRuleFor(
+				AddRuleFor {
 					spell,
 					offensive and 'enemy' or 'ally',
 					"UNIT_AURA",
@@ -102,7 +102,7 @@ function addon.CreateRules()
 							end
 						end
 					end
-				)
+				}
 			end
 		end, -- Dispels
 
@@ -112,7 +112,7 @@ function addon.CreateRules()
 		-- Physical Vulnerability is applied passively or automatically, don't bother showing it
 
 		-- Mortal Wounds
-		LongestDebuffOf(
+		LongestDebuffOf {
 			{ -- Spells to alter
 				 82654, -- Widow Venom (hunter)
 			},
@@ -122,11 +122,11 @@ function addon.CreateRules()
 				 54680, -- Monstrous Bite (hunter exotic pet ability)
 				 82654, -- Widow Venom (hunter)
 				115804, -- Mortal Wounds (main effect)
-			}
-		), -- Mortal Wounds
+			},
+		}, -- Mortal Wounds
 
 		-- Weakened Armor
-		LongestDebuffOf(
+		LongestDebuffOf {
 			{ -- Spells to alter
 				   770, -- Faerie Fire (druid)
 				  7386, -- Sunder Armor (warrior)
@@ -137,10 +137,10 @@ function addon.CreateRules()
 			{ -- Debuffs to look for
 				113746, -- Weakened Armor (main effect)
 			}
-		), -- Weakened Armor
+		}, -- Weakened Armor
 
 		-- +5% spell damage taken
-		LongestDebuffOf(
+		LongestDebuffOf {
 			{ -- Spells to alter
 				  1490, -- Curse of the Elements (warlock)
 				116202, -- Aura of the Elements (warlock)
@@ -152,10 +152,10 @@ function addon.CreateRules()
 				 58410, -- Master Poisoner (rogue)
 				116202, -- Aura of the Elements (warlock)
 			}
-		), -- +5% spell damage taken
+		}, -- +5% spell damage taken
 
 		-- Increasing Casting Time
-		LongestDebuffOf(
+		LongestDebuffOf {
 			{ -- Spells to alter
 				 73975, -- Necrotic Strike (death knight)
 				109466, -- Curse of Enfeeblement (warlock)
@@ -170,7 +170,7 @@ function addon.CreateRules()
 				116198, -- Aura of Enfeeblement (warlock)
 				126402, -- Trample (hunter pet ability)
 			}
-		), -- Increasing Casting Time
+		}, -- Increasing Casting Time
 
 		-- Hunter spells
 		IfClass { "HUNTER",
@@ -178,7 +178,7 @@ function addon.CreateRules()
 				 53271, -- Master's Call
 			},
 			SimpleDebuffs {
-				  1499, -- Freezing Trap
+				  --1499, -- Freezing Trap
 				  1513, -- Scare Beast
 				  1978, -- Serpent String
 				  3674, -- Black Arrow
@@ -193,10 +193,14 @@ function addon.CreateRules()
 			},
 			SelfBuffs {
 				  3045, -- Rapid Fire
-				 19263, -- Deterrence
 				 34477, -- Misdirection
 				 51753, -- Camouflage
 				 82726, -- Fervor
+			},
+			-- Deterrence
+			SelfBuffAliases {
+				19263,
+				{ 19263, 148467 }
 			},
 			SharedSimpleDebuffs {
 				  1130, -- Hunter's Mark
@@ -212,7 +216,7 @@ function addon.CreateRules()
 				53220  -- Steady Focus (buff)
 			},
 			PassiveModifier {
-				false,
+				nil,
 				82692, -- Focus Fire
 				19623, -- Frenzy
 				"pet",

@@ -326,21 +326,59 @@ local function AuraAliases_Unit(filter, highlight, unit, spells, buffs)
 	return Configure(spells, unit, "UNIT_AURA", handler)
 end
 
+local function WrapTableArgFunc(func)
+	return function(args)
+		return func(unpack(args))
 	end
 end
 
 RULES_ENV = setmetatable({
-	AddRuleFor = AddRuleFor,
-	Configure = Configure,
-	IfSpell = IfSpell,
-	IfClass = IfClass,
-	SimpleAuras = SimpleAuras,
-	SimpleBuffs = SimpleBuffs,
-	SimpleDebuffs = SimpleDebuffs,
-	SharedSimpleDebuffs = SharedSimpleDebuffs,
-	UnitBuffs = UnitBuffs,
-	SelfBuffs = SelfBuffs,
-	PetBuffs = PetBuffs,
-	PassiveModifier = PassiveModifier,
-	LongestDebuffOf = LongestDebuffOf,
+	AddRuleFor = WrapTableArgFunc(AddRuleFor),
+
+	Configure = WrapTableArgFunc(Configure),
+
+	IfSpell = WrapTableArgFunc(IfSpell),
+
+	IfClass = WrapTableArgFunc(IfClass),
+
+	PassiveModifier = function(args)
+		return PassiveModifier(unpack(args))
+	end,
+
+	SimpleDebuffs = function(spells)
+		return Auras("HARMFUL PLAYER", "bad", spells)
+	end,
+
+	SharedSimpleDebuffs = function(spells)
+		return Auras("HARMFUL", "bad", spells)
+	end,
+
+	SimpleBuffs = function(spells)
+		return Auras("HELPFUL PLAYER", "good", spells)
+	end,
+
+	LongestDebuffOf = function(spells, buffs)
+		return Configure(spells, "default", "UNIT_AURA", BuildAuraHandler_Longest("HARMFUL", "bad", buffs or spells))
+	end,
+
+	SelfBuffs = function(spells)
+		return Auras_Unit("HELPFUL PLAYER", "good", "player", spells)
+	end,
+
+	PetBuffs = function(spells)
+		return Auras_Unit("HELPFUL PLAYER", "good", "pet", spells)
+	end,
+
+	BuffAliases = function(args)
+		return AuraAliases("HELPFUL PLAYER", "good", unpack(args))
+	end,
+
+	DebuffAliases = function(args)
+		return AuraAliases("HARMFUL PLAYER", "bad", unpack(args))
+	end,
+
+	SelfBuffAliases = function(args)
+		return AuraAliases_Unit("HELPFUL PLAYER", "good", "player", unpack(args))
+	end,
+
 }, { __index = _G })
