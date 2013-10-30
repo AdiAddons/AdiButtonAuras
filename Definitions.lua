@@ -102,6 +102,72 @@ function addon.CreateRules()
 			end
 		end, -- Dispels
 
+		-- Some shared debuffs, only show them on spells that requires the player to specifically cast them
+
+		-- Weakened Blows is applied by any tank as a part of his rotation, don't bother showing it
+		-- Physical Vulnerability is applied passively or automatically, don't bother showing it
+
+		-- Mortal Wounds
+		LongestDebuffOf(
+			{ -- Spells to alter
+				 82654, -- Widow Venom (hunter)
+			},
+			{ -- Debuffs to look for
+				  8679, -- Wound Poison (rogue)
+				 30213, -- Legion Strike (warlock pet)
+				 54680, -- Monstrous Bite (hunter exotic pet ability)
+				 82654, -- Widow Venom (hunter)
+				115804, -- Mortal Wounds (main effect)
+			}
+		), -- Mortal Wounds
+
+		-- Weakened Armor
+		LongestDebuffOf(
+			{ -- Spells to alter
+				   770, -- Faerie Fire (druid)
+				  7386, -- Sunder Armor (warrior)
+				  8647, -- Expose Armor (rogue)
+				 20243, -- Devastate (warrior)
+				102355, -- Faerie Swarm (druid)
+			},
+			{ -- Debuffs to look for
+				113746, -- Weakened Armor (main effect)
+			}
+		), -- Weakened Armor
+
+		-- +5% spell damage taken
+		LongestDebuffOf(
+			{ -- Spells to alter
+				  1490, -- Curse of the Elements (warlock)
+				116202, -- Aura of the Elements (warlock)
+			},
+			{ -- Debuffs to look for
+				  1490, -- Curse of the Elements (warlock)
+				 24844, -- Lightning Breath (hunter pet ability)
+				 34889, -- Fire Breath (hunter pet ability)
+				 58410, -- Master Poisoner (rogue)
+				116202, -- Aura of the Elements (warlock)
+			}
+		), -- +5% spell damage taken
+
+		-- Increasing Casting Time
+		LongestDebuffOf(
+			{ -- Spells to alter
+				 73975, -- Necrotic Strike (death knight)
+				109466, -- Curse of Enfeeblement (warlock)
+				116198, -- Aura of Enfeeblement (warlock)
+			},
+			{ -- Debuffs to look for
+				 50274, -- Spore Cloud (hunter pet ability)
+				 58604, -- Lava Breath (hunter pet ability)
+				 73975, -- Necrotic Strike (death knight)
+				 90314, -- Tailspin (hunter pet ability)
+				109466, -- Curse of Enfeeblement (warlock)
+				116198, -- Aura of Enfeeblement (warlock)
+				126402, -- Trample (hunter pet ability)
+			}
+		), -- Increasing Casting Time
+
 		-- Hunter spells
 		IfClass { "HUNTER",
 			SimpleBuffs {
@@ -115,7 +181,6 @@ function addon.CreateRules()
 				  5116, -- Concussive Shot
 				 19386, -- Wyvern Sting
 				 20736, -- Distracting Shot
-				 82654, -- Widow Venom
 				131894, -- A Murder of Crows
 			},
 			PetBuffs {

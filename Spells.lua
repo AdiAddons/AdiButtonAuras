@@ -208,6 +208,29 @@ local function SimpleBuffs(spells)
 	return SimpleAuras("HELPFUL PLAYER", "good", spells)
 end
 
+local function LongestDebuffOf(spells, buffs)
+	buffs = AsSet(buffs or spells, "number")
+	return Configure(
+		spells,
+		"default",
+		"UNIT_AURA",
+		function(unit, model)
+			local longest = -1
+			for i = 1, math.huge do
+				local name, _, _, count, _, _, expiration, _, _, _, spellId = UnitAura(unit, i, "HARMFUL")
+				if name then
+					if buffs[spellId] and expiration > longest then
+						longest = expiration
+						model.highlight, model.count, model.expiration = "bad", count, expiration
+					end
+				else
+					return
+				end
+			end
+		end
+	)
+end
+
 local function UnitBuffs(unit, filter, spells)
 	local funcs = {}
 	for i, spell in ipairs(AsList(spells, "number")) do
@@ -271,4 +294,5 @@ RULES_ENV = setmetatable({
 	SelfBuffs = SelfBuffs,
 	PetBuffs = PetBuffs,
 	PassiveModifier = PassiveModifier,
+	LongestDebuffOf = LongestDebuffOf,
 }, { __index = _G })
