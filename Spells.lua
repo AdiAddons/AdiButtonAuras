@@ -163,14 +163,25 @@ local function Configure(spells, units, events, handlers)
 	end
 end
 
-local function IfSpell(args)
-	local spells = AsList(tremove(args, 1), "number")
-	local funcs = AsList(args, "function")
-	return function()
-		for i, spell in ipairs(spells) do
+local function IfSpell(spells, ...)
+	local spells = AsList(spells, "number")
+	local funcs = AsList({ ... }, "function")
+	if #spells == 1 then
+		local spell = spells[1]
+		local link = GetSpellLink(spell)
+		return function()
 			if LibSpellbook:IsKnown(spell) then
-				addon:Debug('Merging spells depending on', (GetSpellInfo(spell)))
+				addon:Debug('Merging rules depending on', link)
 				return Do(funcs)
+			end
+		end
+	else
+		return function()
+			for i, spell in ipairs(spells) do
+				if LibSpellbook:IsKnown(spell) then
+					addon:Debug('Merging rules depending on', (GetSpellLink(spell)))
+					return Do(funcs)
+				end
 			end
 		end
 	end
