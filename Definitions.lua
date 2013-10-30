@@ -82,7 +82,7 @@ function addon.CreateRules()
 			end
 		), -- Interrupts
 
-		-- Dispells, using LibDispellable
+		-- Dispels, using LibDispellable
 		function()
 			for spell, dispelType in pairs(LibDispellable.spells) do
 				local spell, offensive = spell, (dispelType ~= 'defensive')
@@ -100,7 +100,7 @@ function addon.CreateRules()
 					end
 				)
 			end
-		end, -- Dispells
+		end, -- Dispels
 
 		-- Hunter spells
 		IfClass { "HUNTER",
