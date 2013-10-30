@@ -109,10 +109,11 @@ local function NOOP() end
 
 local function _AddRuleFor(spell, units, events, handlers)
 	if not LibSpellbook:IsKnown(spell) then return end
-	addon:Debug("Adding rule for", (GetSpellInfo(spell)))
-	addon:Debug('- units:', getkeys(units))
-	addon:Debug('- events:', getkeys(events))
-	addon:Debug('- handlers:', handlers)
+	addon:Debug("Adding rule for", GetSpellLink(spell),
+		"units:", strjoin(",", getkeys(units)),
+		"events:", strjoin(",", getkeys(events)),
+		"handlers:", handlers
+	)
 	local rule = spellConfs[spell]
 	if not rule then
 		rule = { units = {}, events = {}, handlers = {} }
