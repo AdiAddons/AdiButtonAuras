@@ -287,7 +287,7 @@ end
 
 local model = {}
 function overlayPrototype:Scan(event)
-	self:Debug('Scan', event, self.spellId, self.unit)
+	--self:Debug('Scan', event, self.spellId, self.unit)
 
 	local unit = self.unit
 	model.count, model.expiration, model.highlight  = 0, 0, nil
@@ -301,7 +301,7 @@ function overlayPrototype:Scan(event)
 		end
 	end
 
-	self:Debug("Scan =>", model.highlight, model.count, model.expiration)
+	--self:Debug("Scan =>", model.highlight, model.count, model.expiration)
 	self:SetCount(model.count)
 	self:SetExpiration(model.expiration)
 	self:SetHighlight(model.highlight)
