@@ -236,15 +236,16 @@ local function PetBuffs(spells)
 	return UnitBuffs("pet", "HEPLFUL PLAYER", spells)
 end
 
-local function TalentProc(args)
-	local passive, spell, buff = unpack(args)
+local function PassiveModifier(args)
+	local passive, spell, buff, unit = unpack(args)
 	local buffName = assert(GetSpellInfo(buff), "Unknown spell "..buff)
+	unit = unit or "player"
 	local conf = Configure(
 		spell,
-		"player",
+		unit,
 		"UNIT_AURA",
 		function(_, model)
-			local name, _, _, count, _, _, expiration = UnitAura("player", buffName, nil, "HEPLFUL PLAYER")
+			local name, _, _, count, _, _, expiration = UnitAura(unit, buffName, nil, "HEPLFUL PLAYER")
 			if name then
 				model.highlight, model.count, model.expiration = "good", count, expiration
 			end
@@ -269,5 +270,5 @@ RULES_ENV = setmetatable({
 	UnitBuffs = UnitBuffs,
 	SelfBuffs = SelfBuffs,
 	PetBuffs = PetBuffs,
-	TalentProc = TalentProc,
+	PassiveModifier = PassiveModifier,
 }, { __index = _G })
