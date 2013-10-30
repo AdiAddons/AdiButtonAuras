@@ -107,6 +107,31 @@ end
 
 local function NOOP() end
 
+local function _AddRuleFor(spell, units, events, handlers)
+	if not LibSpellbook:IsKnown(spell) then return end
+	addon:Debug("Adding rule for", (GetSpellInfo(spell)))
+	addon:Debug('- units:', getkeys(units))
+	addon:Debug('- events:', getkeys(events))
+	addon:Debug('- handlers:', handlers)
+	local rule = spellConfs[spell]
+	if not rule then
+		rule = { units = {}, events = {}, handlers = {} }
+		spellConfs[spell] = rule
+	end
+	MergeSets(rule.units, units)
+	MergeSets(rule.events, events)
+	ConcatLists(rule.handlers, handlers)
+end
+
+local function AddRuleFor(spell, units, events, handlers)
+	return _AddRuleFor(
+		spell,
+		AsSet(units or "default", "string"),
+		AsSet(events, "string"),
+		AsList(handlers, "function")
+	)
+end
+
 local function Configure(spells, units, events, handlers)
 	spells = AsList(spells, "number")
 	units = AsSet(units or "default", "string")
@@ -114,20 +139,7 @@ local function Configure(spells, units, events, handlers)
 	handlers = AsList(handlers, "function")
 	return function()
 		for i, spell in ipairs(spells) do
-			if LibSpellbook:IsKnown(spell) then
-				addon:Debug("Adding rule for", (GetSpellInfo(spell)))
-				addon:Debug('- units:', getkeys(units))
-				addon:Debug('- events:', getkeys(events))
-				addon:Debug('- handlers:', handlers)
-				local rule = spellConfs[spell]
-				if not rule then
-					rule = { units = {}, events = {}, handlers = {} }
-					spellConfs[spell] = rule
-				end
-				MergeSets(rule.units, units)
-				MergeSets(rule.events, events)
-				ConcatLists(rule.handlers, handlers)
-			end
+			AddRuleFor(spell, units, events, handlers)
 		end
 	end
 end
@@ -246,6 +258,7 @@ local function TalentProc(args)
 end
 
 RULES_ENV = setmetatable({
+	AddRuleFor = AddRuleFor,
 	Configure = Configure,
 	IfSpell = IfSpell,
 	IfClass = IfClass,

@@ -7,9 +7,12 @@ All rights reserved.
 local addonName, addon = ...
 
 local _G = _G
+local pairs = _G.pairs
 local UnitCanAttack = _G.UnitCanAttack
 local UnitCastingInfo = _G.UnitCastingInfo
 local UnitChannelInfo = _G.UnitChannelInfo
+
+local LibDispellable = LibStub('LibDispellable-1.0')
 
 function addon.CreateRules()
 
@@ -78,6 +81,26 @@ function addon.CreateRules()
 				end
 			end
 		), -- Interrupts
+
+		-- Dispells, using LibDispellable
+		function()
+			for spell, dispelType in pairs(LibDispellable.spells) do
+				local spell, offensive = spell, (dispelType ~= 'defensive')
+				AddRuleFor(
+					spell,
+					offensive and 'enemy' or 'ally',
+					"UNIT_AURA",
+					function(unit, model)
+						for i, dispel, _, _, _, count, _, _, expiration in LibDispellable:IterateDispellableAuras(unit, offensive) do
+							if dispel == spell then
+								model.highlight, model.count, model.expiration = "bad", count, expiration
+								return
+							end
+						end
+					end
+				)
+			end
+		end, -- Dispells
 
 		-- Hunter spells
 		IfClass { "HUNTER",
