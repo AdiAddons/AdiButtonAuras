@@ -146,6 +146,9 @@ function overlayPrototype:SetHighlight(highlight)
 	elseif highlight == "bad" then
 		self.Border:SetVertexColor(1, 0, 0)
 		self.Border:Show()
+	elseif highlight == "flash" then
+		self.Border:SetVertexColor(1, 1, 0.7)
+		self.Border:Show()
 	else
 		self.Border:Hide()
 	end
