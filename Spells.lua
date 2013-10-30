@@ -79,7 +79,7 @@ local function AsList(value, checkType)
 		value = FlattenList(value)
 		if checkType then
 			for i, v in ipairs(value) do
-				assert(type(v) == checkType)
+				assert(type(v) == checkType, format("%s expected, not %s", checkType, type(v)))
 			end
 		end
 		return value
