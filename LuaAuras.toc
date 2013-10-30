@@ -28,3 +28,4 @@ LuaAuras.lua
 Utils.lua
 Buttons.lua
 Spells.lua
+Display.lua
