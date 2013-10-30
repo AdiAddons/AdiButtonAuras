@@ -188,14 +188,9 @@ local function IfSpell(spells, ...)
 end
 
 local playerClass = select(2, UnitClass("player"))
-local function IfClass(args)
-	local _debug = false
-	--@debug@--
-	_debug = true
-	--@end-debug@--
-	local class = tremove(args, 1)
-	if _debug or playerClass == class then
-		local funcs = AsList(args, "function")
+local function IfClass(class, ...)
+	if playerClass == class then
+		local funcs = AsList({ ... }, "function")
 		return function()
 			addon:Debug('Merging spells for', class)
 			return Do(funcs)
