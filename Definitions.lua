@@ -223,6 +223,75 @@ function addon.CreateRules()
 			},
 		}, -- Hunter spells
 
+		-- Monk spells
+		IfClass { "MONK",
+			SelfBuffs {
+				100784, -- Guard
+				115203, -- Fortifying Brew
+				115213, -- Avert Harm
+				115288, -- Energizing Brew
+				115308, -- Elusive Brew
+				116740, -- Tigereye Brew
+				116844, -- Ring of Peace
+				122278, -- Dampen Harm
+				122470, -- Touch of Karma
+				122783, -- Diffuse Magic
+				137562, -- Nimble Brew
+			},
+			SimpleDebuffs {
+				116095, -- Disable
+			},
+			PassiveModifier {
+				nil,
+				100787, -- Tiger Palm
+				125359, -- Tiger Power
+			},
+			DebuffAliases {
+				115181, -- Breath of Fire
+				123725, -- Breath of Fire (debuff)
+			},
+			DebuffAliases {
+				{
+					115180, -- Dizzying Haze
+					121253, -- Keg Smash
+				},
+				115180, -- Dizzying Haze
+			},
+			PassiveModifier {
+				117967, -- Brewmaster Training
+				115295, -- Guard
+				118636, -- Power Guard
+				-- nil,
+				-- "flash",
+			},
+			PassiveModifier {
+				117967, -- Brewmaster Training
+				100784, -- Blackout Kick
+				115307, -- Shuffle
+			},
+			PassiveModifier {
+				123980, -- Brewing: Tigereye Brew
+				116740, -- Tigereye Brew
+				125195, -- Tigereye Brew (stacking buff)
+			},
+			PassiveModifier {
+				128938, -- Brewing: Elusive Brew
+				115308, -- Elusive Brew
+				128939, -- Elusive Brew (stacking buff)
+			},
+			PassiveModifier {
+				121817, -- Power Strikes (talent)
+				{
+					115693, -- Jab
+					115175, -- Soothing Mist
+					101546, -- Spinning Crane Kick
+					115072, -- Expel Harm
+					117952, -- Crackling Jade Lightning
+				},
+				129914, -- Power Strikes (buff)
+			},
+		}, -- Monk spells
+
 	}
 
 end
