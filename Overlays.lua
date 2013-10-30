@@ -275,7 +275,6 @@ end
 
 function overlayPrototype:ScheduleScan(event, unit)
 	if not unit or (self.smartTargeting and unit == self.unit) or self.units[unit] then
-		self:Debug('Scheduling scan on', event, unit)
 		self:SetScript('OnUpdate', self.ScheduledScan)
 	end
 end
