@@ -14,6 +14,10 @@ local UnitChannelInfo = _G.UnitChannelInfo
 
 local LibDispellable = LibStub('LibDispellable-1.0')
 
+-- Globals: AddRuleFor Configure IfSpell IfClass SimpleAuras UnitBuffs
+-- Globals: PassiveModifier SimpleDebuffs SharedSimpleDebuffs SimpleBuffs
+-- Globals: LongestDebuffOf SelfBuffs PetBuffs BuffAliases DebuffAliases
+
 function addon.CreateRules()
 
 	addon:Debug('Creating Rules')
