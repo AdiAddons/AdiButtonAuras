@@ -155,61 +155,55 @@ do
 	UpdateDefaultTargets()
 end
 
-
-function overlayPrototype:UpdateAction(event)
-	local origType, origId = self:GetAction()
-	local actionType, actionId = origType, origId
-	local spellId, targetCmd
+local function ResolveActionToSpell(actionType, actionId)
+	local isMacro = (actionType == "macro")
+	local targetCmd
 
 	-- Resolve macros
-	if origType == 'macro' then
-		actionType, actionId = ResolveMacroSpell(origId)
-		targetCmd = ResolveMacroTargeting(origId)
+	if isMacro then
+		targetCmd, actionType, actionId = ResolveMacroTargeting(actionId), ResolveMacroSpell(actionId)
 	end
 
 	-- Resolve items and companions
 	if actionType == "item" then
 		local spell = GetItemSpell(actionId)
-		spellId = LibSpellbook:Resolve(spell)
+		return LibSpellbook:Resolve(spell), targetCmd, isMacro
 	elseif actionType == "spell" or actionType == "companion" then
-		spellId = actionId
+		return actionId, targetCmd, isMacro
 	end
+end
 
-	local conf = spellId and addon.spells[spellId]
-	if conf then
-		local spellName = GetSpellInfo(spellId)
-		local spellType = IsHelpfulSpell(spellName) and "helpful" or IsHarmfulSpell(spellName) and "harmful" or "unknown"
-		if targetCmd then
-			targetCmd = gsub(targetCmd , "%[%]", defaultTargets[spellType])
-		else
-			targetCmd = defaultTargets[spellType]
-		end
+local function ResolveTargeting(spellId, units, targetCmd)
+	local spellName = GetSpellInfo(spellId)
+	local spellType
+	if units.ally or (units.default and IsHelpfulSpell(spellName)) then
+		spellType = "helpful"
+	elseif units.enemy or (units.default and IsHarmfulSpell(spellName)) then
+		spellType = "harmful"
+	elseif units.default then
+		spellType = "unknown"
+	else
+		return
 	end
+	return targetCmd and gsub(targetCmd , "%[%]", defaultTargets[spellType]) or defaultTargets[spellType]
+end
+
+function overlayPrototype:UpdateAction(event)
+	local spellId, targetCmd, isMacro = ResolveActionToSpell(self:GetAction())
+	local conf = spellId and addon.spells[spellId]
+	local targetCmd = conf and ResolveTargeting(spellId, conf.units, targetCmd)
 
 	if self.spellId ~= spellId or self.spellConf ~= conf or self.targetCmd ~= targetCmd then
 		self.spellId, self.spellConf, self.targetCmd = spellId, conf, targetCmd
 
-		self.hasConf = not not conf
+		if not conf then
+			isMacro = false
+		end
+
 		self.units = conf and conf.units or EMPTY_TABLE
 		self.handlers = conf and conf.handlers or EMPTY_TABLE
 
-		targetCmd = targetCmd or ""
-
-		if self.units.default then
-			self:RegisterEvent('PLAYER_TARGET_CHANGED', 'UpdateTarget')
-			self:SetEventRegistered(strmatch(targetCmd, '@focus'), 'PLAYER_FOCUS_CHANGED', 'UpdateTarget')
-			self:SetEventRegistered(strmatch(targetCmd, '@mouseover'), 'UPDATE_MOUSEOVER_UNIT', 'UpdateTarget')
-			self:SetEventRegistered(strmatch(targetCmd, '@pet'), 'UNIT_PET', 'UpdateTarget')
-			self:SetEventRegistered(strmatch(targetCmd, 'mod:'), 'MODIFIER_STATE_CHANGED', 'UpdateTarget')
-		else
-			self:UnregisterEvent('PLAYER_TARGET_CHANGED', 'UpdateTarget')
-			self:UnregisterEvent('PLAYER_FOCUS_CHANGED', 'UpdateTarget')
-			self:UnregisterEvent('UPDATE_MOUSEOVER_UNIT', 'UpdateTarget')
-			self:UnregisterEvent('UNIT_PET', 'UpdateTarget')
-			self:UnregisterEvent('MODIFIER_STATE_CHANGED', 'UpdateTarget')
-		end
-		self:SetEventRegistered(conf and origType == 'macro', 'ACTIONBAR_SLOT_CHANGED', 'UpdateTarget')
-
+		self:SetEventRegistered(conf, 'PLAYER_ENTERING_WORLD', 'ScheduleScan')
 		self:SetEventRegistered(self.units.target, 'PLAYER_TARGET_CHANGED', 'ScheduleScan')
 		self:SetEventRegistered(self.units.focus, 'PLAYER_FOCUS_CHANGED', 'ScheduleScan')
 		self:SetEventRegistered(self.units.mouseover, 'UPDATE_MOUSEOVER_UNIT', 'ScheduleScan')
@@ -231,12 +225,30 @@ function overlayPrototype:UpdateAction(event)
 		end
 
 		if conf then
-			self:Debug('UpdateAction', 'spell=', spellId, 'units=', getkeys(self.units), 'events=', getkeys(self.events), #self.handlers, 'handlers')
-		else
-			self:Debug('UpdateAction', 'nospell')
+			self:Debug('UpdateAction', 'spell=', spellId, 'targetCmd=', targetCmd, 'units=', getkeys(self.units), 'events=', getkeys(self.events), #self.handlers, 'handlers')
 		end
 
-		self:UpdateTarget(event)
+		self.smartTargeting = targetCmd and (conf.units.default or conf.units.ally or conf.units.enemy or isMacro)
+		if self.smartTargeting then
+			self:RegisterEvent('PLAYER_TARGET_CHANGED', 'UpdateTarget')
+			self:SetEventRegistered(strmatch(targetCmd, '@focus'), 'PLAYER_FOCUS_CHANGED', 'UpdateTarget')
+			self:SetEventRegistered(strmatch(targetCmd, '@mouseover'), 'UPDATE_MOUSEOVER_UNIT', 'UpdateTarget')
+			self:SetEventRegistered(strmatch(targetCmd, '@pet'), 'UNIT_PET', 'UpdateTarget')
+			self:SetEventRegistered(strmatch(targetCmd, 'mod:'), 'MODIFIER_STATE_CHANGED', 'UpdateTarget')
+			self:SetEventRegistered(isMacro, 'ACTIONBAR_SLOT_CHANGED', 'UpdateTarget')
+
+			self:UpdateTarget(event)
+		else
+			self:UnregisterEvent('PLAYER_TARGET_CHANGED', 'UpdateTarget')
+			self:UnregisterEvent('PLAYER_FOCUS_CHANGED', 'UpdateTarget')
+			self:UnregisterEvent('UPDATE_MOUSEOVER_UNIT', 'UpdateTarget')
+			self:UnregisterEvent('UNIT_PET', 'UpdateTarget')
+			self:UnregisterEvent('MODIFIER_STATE_CHANGED', 'UpdateTarget')
+			self:UnregisterEvent('ACTIONBAR_SLOT_CHANGED', 'UpdateTarget')
+
+			self.unit, self.guid = nil, nil
+			self:Scan(event)
+		end
 	end
 end
 
@@ -251,11 +263,8 @@ end
 function overlayPrototype:UpdateTarget(event, arg)
 	if event == 'UNIT_PET' and arg ~= 'player' then return end
 	if event == 'ACTIONBAR_SLOT_CHANGED' and arg ~= self:GetActionId() then return end
-	local unit
-	if self.targetCmd then
-		local _, target = SecureCmdOptionParse(self.targetCmd)
-		unit = (target and target ~= "") and target or "target"
-	end
+	local _, target = SecureCmdOptionParse(self.targetCmd)
+	local unit = (target and target ~= "") and target or "target"
 	local guid = unit and UnitGUID(unit)
 	self.unit = unit
 	if self.guid ~= guid then
@@ -265,7 +274,7 @@ function overlayPrototype:UpdateTarget(event, arg)
 end
 
 function overlayPrototype:ScheduleScan(event, unit)
-	if not unit or (self.units.default and unit == self.unit) or self.units[unit] then
+	if not unit or (self.smartTargeting and unit == self.unit) or self.units[unit] then
 		self:Debug('Scheduling scan on', event, unit)
 		self:SetScript('OnUpdate', self.ScheduledScan)
 	end
@@ -281,10 +290,7 @@ function overlayPrototype:Scan(event)
 	self:Debug('Scan', event, self.spellId, self.unit)
 
 	local unit = self.unit
-
-	model.count = 0
-	model.expiration = 0
-	model.highlight = nil
+	model.count, model.expiration, model.highlight  = 0, 0, nil
 
 	for i, handler in ipairs(self.handlers) do
 		local value = handler(unit, model)
