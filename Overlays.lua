@@ -225,7 +225,7 @@ function overlayPrototype:UpdateAction(event)
 		end
 
 		if conf then
-			self:Debug('UpdateAction', 'spell=', spellId, 'targetCmd=', targetCmd, 'units=', getkeys(self.units), 'events=', getkeys(self.events), #self.handlers, 'handlers')
+			self:Debug('UpdateAction', 'spell=', GetSpellInfo(spellId), 'targetCmd=', targetCmd, 'units=', getkeys(self.units), 'events=', getkeys(self.events), #self.handlers, 'handlers')
 		end
 
 		self.smartTargeting = targetCmd and (conf.units.default or conf.units.ally or conf.units.enemy or isMacro)
@@ -292,10 +292,12 @@ function overlayPrototype:Scan(event)
 	local unit = self.unit
 	model.count, model.expiration, model.highlight  = 0, 0, nil
 
-	for i, handler in ipairs(self.handlers) do
-		local value = handler(unit, model)
-		if value then
-			self:Debug('Scan:', value)
+	if unit or not self.smartTargeting then
+		for i, handler in ipairs(self.handlers) do
+			local value = handler(unit, model)
+			if value then
+				self:Debug('Scan:', value)
+			end
 		end
 	end
 

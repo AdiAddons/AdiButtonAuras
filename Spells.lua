@@ -139,7 +139,7 @@ local function Configure(spells, units, events, handlers)
 	handlers = AsList(handlers, "function")
 	return function()
 		for i, spell in ipairs(spells) do
-			AddRuleFor(spell, units, events, handlers)
+			_AddRuleFor(spell, units, events, handlers)
 		end
 	end
 end
@@ -229,11 +229,11 @@ local function UnitBuffs(unit, filter, spells)
 end
 
 local function SelfBuffs(spells)
-	return UnitBuffs("player", "HEPLFUL PLAYER", spells)
+	return UnitBuffs("player", "HELPFUL PLAYER", spells)
 end
 
 local function PetBuffs(spells)
-	return UnitBuffs("pet", "HEPLFUL PLAYER", spells)
+	return UnitBuffs("pet", "HELPFUL PLAYER", spells)
 end
 
 local function PassiveModifier(args)
