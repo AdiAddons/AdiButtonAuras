@@ -19,7 +19,7 @@
 
 ## Interface: 50400
 
-## Title: LuaAuras
+## Title: AdiButtonAuras
 ## Notes: Display auras on action buttons.
 ## Author: Adirelle
 ## Version: @project-version@
