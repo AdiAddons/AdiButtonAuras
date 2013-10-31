@@ -239,6 +239,10 @@ end
 
 local function BuildAuraHandler_Longest(filter, highlight, buffs)
 	buffs = AsSet(buffs, "number")
+	if GetSetSize(buffs) == 1 then
+		local buff = next(buffs)
+		return BuildAuraHandler_Single(filter, highlight, buff)
+	end
 	return function(unit, model)
 		local longest = -1
 		for i = 1, math.huge do
@@ -321,24 +325,12 @@ end
 
 local function AuraAliases(filter, highlight, spells, buffs)
 	buffs = AsList(buffs or spells, "number")
-	local handler
-	if #buffs == 1 then
-		handler = BuildAuraHandler_Single(filter, highlight, buffs[1])
-	else
-		handler = BuildAuraHandler_FirstOf(filter, highlight, buffs)
-	end
-	return Configure(spells, "default", "UNIT_AURA", handler)
+	return Configure(spells, "default", "UNIT_AURA",  BuildAuraHandler_FirstOf(filter, highlight, buffs))
 end
 
 local function AuraAliases_Unit(filter, highlight, unit, spells, buffs)
 	buffs = AsList(buffs or spells, "number")
-	local handler
-	if #buffs == 1 then
-		handler = BuildAuraHandler_Single_Unit(filter, highlight, unit, buffs[1])
-	else
-		handler = BuildAuraHandler_FirstOf_Unit(filter, highlight, unit, buffs)
-	end
-	return Configure(spells, unit, "UNIT_AURA", handler)
+	return Configure(spells, unit, "UNIT_AURA", BuildAuraHandler_FirstOf_Unit(filter, highlight, unit, buffs))
 end
 
 local function WrapTableArgFunc(func)
