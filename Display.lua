@@ -101,6 +101,7 @@ function overlayPrototype:LayoutTexts()
 		if self.Timer:IsShown() then
 			self.Timer:SetPoint("BOTTOMLEFT")
 			self.Count:SetPoint("BOTTOMRIGHT")
+			self.Timer:SetPoint("RIGHT", self.Count, "LEFT")
 		else
 			self.Count:SetPoint("BOTTOM")
 		end
