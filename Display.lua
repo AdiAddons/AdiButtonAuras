@@ -135,16 +135,87 @@ function overlayPrototype:SetHighlight(highlight)
 	if self.highlight == highlight then return end
 	self.highlight = highlight
 
+	if highlight == "flash" then
+		self:ShowOverlayGlow()
+	else
+		self:HideOverlayGlow()
+	end
+
 	if highlight == "good" then
 		self.Border:SetVertexColor(0, 1, 0)
 		self.Border:Show()
 	elseif highlight == "bad" then
 		self.Border:SetVertexColor(1, 0, 0)
 		self.Border:Show()
-	elseif highlight == "flash" then
-		self.Border:SetVertexColor(1, 1, 0.7)
-		self.Border:Show()
 	else
 		self.Border:Hide()
+	end
+end
+
+do
+	local serial = 1
+	local heap = {}
+
+	local OnHide, AnimOutFinished
+
+	local function CreateOverlayGlow()
+		serial = serial + 1
+		local overlay = CreateFrame("Frame", addonName.."ButtonOverlay"..serial, UIParent, "ActionBarButtonSpellActivationAlert")
+		overlay.animOut:SetScript("OnFinished", AnimOutFinished)
+		overlay:SetScript("OnHide", OnHide)
+		return overlay
+	end
+
+	function AnimOutFinished(animGroup)
+		local overlay = animGroup:GetParent()
+		overlay:Hide()
+		overlay:ClearAllPoints()
+		overlay:SetParent(nil)
+		overlay.state.overlay = nil
+		overlay.state = nil
+		tinsert(heap, overlay)
+	end
+
+	function OnHide(button)
+		if button.animOut:IsPlaying() then
+			button.animOut:Stop()
+			return AnimOutFinished(button.animOut)
+		end
+	end
+
+	function overlayPrototype:ShowOverlayGlow()
+		local overlay = self.overlay
+		if overlay then
+			if overlay.animOut:IsPlaying() then
+				overlay.animOut:Stop()
+				overlay.animIn:Play()
+			end
+		else
+			overlay = tremove(heap) or CreateOverlayGlow()
+			local button = self.button
+			local width, height = button:GetSize()
+			overlay:SetParent(button)
+			overlay:ClearAllPoints()
+			overlay:SetSize(width * 1.4, height * 1.4)
+			overlay:SetPoint("TOPLEFT", button, "TOPLEFT", -width * 0.2, height * 0.2)
+			overlay:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", width * 0.2, -height * 0.2)
+			overlay:Show()
+			overlay.animIn:Play()
+			overlay.state, self.overlay = self, overlay
+		end
+	end
+
+	function overlayPrototype:HideOverlayGlow()
+		local overlay = self.overlay
+		if overlay then
+			if overlay.animIn:IsPlaying() then
+				overlay.animIn:Stop()
+			end
+			if overlay:IsVisible() then
+				overlay.animOut:Play()
+			else
+				AnimOutFinished(overlay.animOut)
+			end
+		end
 	end
 end
