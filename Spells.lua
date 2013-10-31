@@ -382,7 +382,7 @@ local function ShowPower(spells, powerType, handler, highlight)
 	else
 		error("Invalid handler type: "..type(handler))
 	end
-	return Configure(spells, "player", { "UNIT_POWER_FREQUENT", "UNIT_POWER_MAX" }, actualHandler)
+	return Configure(spells, "player", { "UNIT_POWER", "UNIT_POWER_MAX" }, actualHandler)
 end
 
 local function WrapTableArgFunc(func)
