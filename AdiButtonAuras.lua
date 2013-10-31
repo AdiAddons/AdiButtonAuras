@@ -1,5 +1,5 @@
 --[[
-LuaAuras - Enhance action buttons using Lua handlers.
+AdiButtonAuras - Display auras on action buttons.
 Copyright 2013 Adirelle (adirelle@gmail.com)
 All rights reserved.
 --]]

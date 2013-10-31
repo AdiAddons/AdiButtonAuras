@@ -1,7 +1,7 @@
 ## Interface: 50400
 
 ## Title: LuaAuras
-## Notes: Enhance action buttons using Lua handlers.
+## Notes: Display auras on action buttons.
 ## Author: Adirelle
 ## Version: @project-version@ 
 ## X-Date: @project-date-iso@
