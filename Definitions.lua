@@ -210,7 +210,6 @@ function addon.CreateRules()
 				 53271, -- Master's Call
 			},
 			SimpleDebuffs {
-				  --1499, -- Freezing Trap
 				  1513, -- Scare Beast
 				  1978, -- Serpent String
 				  3674, -- Black Arrow
@@ -229,9 +228,12 @@ function addon.CreateRules()
 				 51753, -- Camouflage
 				 82726, -- Fervor
 			},
-			-- Deterrence
-			SelfBuffAliases {
-				19263,
+			DebuffAliases { -- Freezing Trap
+				{ 1499, 60192 },
+				3355
+			},
+			SelfBuffAliases { -- Deterrence
+				{ 19263, 148467 },
 				{ 19263, 148467 }
 			},
 			SharedSimpleDebuffs {
