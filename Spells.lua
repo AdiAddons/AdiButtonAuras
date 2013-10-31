@@ -220,6 +220,7 @@ end
 local function BuildAuraHandler_Single(filter, highlight, spell)
 	local spellName = assert(GetSpellInfo(spell), "Unknown spell "..spell)
 	return function(unit, model)
+		--addon:Debug('Single Of', unit, spell)
 		local name, _, _, count, _, _, expiration = UnitAura(unit, spellName, nil, filter)
 		if name then
 			model.highlight, model.count, model.expiration = highlight, count, expiration
@@ -230,6 +231,7 @@ end
 local function BuildAuraHandler_Single_Unit(filter, highlight, unit, spell)
 	local spellName = assert(GetSpellInfo(spell), "Unknown spell "..spell)
 	return function(_, model)
+		--addon:Debug('Single Of', unit, spell)
 		local name, _, _, count, _, _, expiration = UnitAura(unit, spellName, nil, filter)
 		if name then
 			model.highlight, model.count, model.expiration = highlight, count, expiration
@@ -244,6 +246,7 @@ local function BuildAuraHandler_Longest(filter, highlight, buffs)
 		return BuildAuraHandler_Single(filter, highlight, buff)
 	end
 	return function(unit, model)
+		--addon:Debug('Longest Of', unit, getkeys(buffs))
 		local longest = -1
 		for i = 1, math.huge do
 			local name, _, _, count, _, _, expiration, _, _, _, spellId = UnitAura(unit, i, filter)
@@ -266,6 +269,7 @@ local function BuildAuraHandler_FirstOf(filter, highlight, buffs)
 		return BuildAuraHandler_Single(filter, highlight, buff)
 	end
 	return function(unit, model)
+		--addon:Debug('First of', unit, getkeys(buffs))
 		for i = 1, math.huge do
 			local name, _, _, count, _, _, expiration, _, _, _, spellId = UnitAura(unit, i, filter)
 			if name then
@@ -287,6 +291,7 @@ local function BuildAuraHandler_FirstOf_Unit(filter, highlight, unit, buffs)
 		return BuildAuraHandler_Single_Unit(filter, highlight, unit, buff)
 	end
 	return function(_, model)
+		--addon:Debug('First of', unit, getkeys(buffs))
 		for i = 1, math.huge do
 			local name, _, _, count, _, _, expiration, _, _, _, spellId = UnitAura(unit, i, filter)
 			if name then
