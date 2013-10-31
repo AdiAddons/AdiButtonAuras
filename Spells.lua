@@ -22,6 +22,8 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 local addonName, addon = ...
 
 local _G = _G
+local UnitPower = _G.UnitPower
+local UnitPowerMax = _G.UnitPowerMax
 local assert = _G.assert
 local error = _G.error
 local ipairs = _G.ipairs
@@ -338,6 +340,44 @@ local function AuraAliases_Unit(filter, highlight, unit, spells, buffs)
 	return Configure(spells, unit, "UNIT_AURA", BuildAuraHandler_FirstOf_Unit(filter, highlight, unit, buffs))
 end
 
+local function ShowPower(spells, powerType, handler, highlight)
+	assert(type(powerType) == "string")
+	local powerIndex = assert(_G["SPELL_POWER_"..powerType], "unknown power: "..powerType)
+	local actualHandler
+	if type(handler) == "function" then
+		-- User-supplied handler
+		actualHandler = function(_, model)
+			return handler(UnitPower("player", powerIndex), UnitPowerMax("player", powerIndex), model, highlight)
+		end
+	elseif type(handler) == "number" then
+		-- A value, handle it as a percentage of total power
+		local threshold = handler / 100
+		if not highlight then
+			highlight = "flash"
+		end
+		actualHandler = function(_, model)
+			local current, maxPower = UnitPower("player", powerIndex), UnitPowerMax("player", powerIndex)
+			if current > 0 and maxPower > 0 and current / maxPower >= threshold then
+				model.highlight = highlight
+			end
+		end
+	elseif not handler then
+		-- Provide a simple handler, that shows the current power value and highlights when it reaches the maximum
+		actualHandler = function(_, model)
+			local current, maxPower = UnitPower("player", powerIndex), UnitPowerMax("player", powerIndex)
+			if current > 0 and maxPower > 0 then
+				model.count = current
+				if highlight and current == maxPower then
+					model.highlight = highlight
+				end
+			end
+		end
+	else
+		error("Invalid handler type: "..type(handler))
+	end
+	return Configure(spells, "player", { "UNIT_POWER_FREQUENT", "UNIT_POWER_MAX" }, actualHandler)
+end
+
 local function WrapTableArgFunc(func)
 	return function(args)
 		return func(unpack(args))
@@ -352,6 +392,8 @@ RULES_ENV = setmetatable({
 	IfSpell = WrapTableArgFunc(IfSpell),
 
 	IfClass = WrapTableArgFunc(IfClass),
+
+	ShowPower = WrapTableArgFunc(ShowPower),
 
 	PassiveModifier = function(args)
 		return PassiveModifier(unpack(args))
