@@ -368,6 +368,101 @@ function addon.CreateRules()
 			},
 		}, -- Monk spells
 
+		-- Warlock spells
+		IfClass { "WARLOCK",
+			SelfBuffs {
+				  6229, -- Twilight Ward
+				  7812, -- Sacrifice (voidwalker buff)
+				 48018, -- Demonic Circle: Summon
+				 91713, -- Nether Ward (talent)
+				104025, -- Immolation Aura (demon form)
+				104773, -- Unending Resolve
+				108416, -- Sacrificial Pact (talent)
+				108503, -- Grimoire of Sacrifice (talent)
+				108508, -- Mannoroth's Fury (talent)
+				108559, -- Demonic Rebirth
+				110913, -- Dark Bargain (talent)
+				111397, -- Blood Horror (talent)
+				113858, -- Dark Soul: Instability
+				113860, -- Dark Soul: Misery
+				113861, -- Dark Soul: Knowledge
+				114635, -- Ember Tap
+				116198, -- Aura of Enfeeblement (demon form)
+				119839, -- Fury Ward (Dark Apotheosis)
+				120451, -- Flames of Xoroth
+				132413, -- Shadow Bulwark (Grimoire of Sacrifice)
+			},
+			SharedBuffs {
+				  5697, -- Unending Breath
+				 20707, -- Soulstone
+			},
+			PetBuffs {
+				   755, -- Health Funnel
+				  1098, -- Enslave Demon
+			},
+			SimpleDebuffs {
+				   172, -- Corruption
+				   348, -- Immolate
+				   980, -- Agony
+				 17962, -- Conflagrate
+				 27243, -- Seed of Corruption
+				 30108, -- Unstable Affliction
+				 48181, -- Haunt
+				 80240, -- Havoc
+				124913, -- Metamorphosis: Doom
+			},
+			PassiveModifier {
+				117896, -- Backdraft
+				 29722, -- Incinerate
+				117828, -- Backdraft (buff)
+			},
+			--[[ Check if it already used or not
+			PassiveModifier {
+				108563, -- Backlash
+				 29722, -- Incinerate
+				108563, -- Backlash
+				"player",
+			},
+			]]
+			PassiveModifier {
+				122351, -- Molten Core
+				  6353, -- Soul Fire
+				122351, -- Molten Core
+			},
+			DebuffAliases {
+				105174, -- Hand of Gul'dan
+				 47960, -- Shadowflame
+			},
+			IfSpells { 123686, -- Pyroclasm
+				Configure {
+					116858, -- Chaos Bolt
+					"player",
+					"UNIT_AURA",
+					(function()
+						local backdraft = GetSpellInfo(117828)
+						return function(_, model)
+							local name, _, _, count, _, _, expiration = UnitAura("player", backdraft, nil, "PLAYER HELPFUL")
+							if name and count >= 3 then
+								model.highlight, model.count, model.expiration = "good", count, expiration
+							end
+						end
+					end)
+				}
+			},
+			ShowPower {
+				{
+					17877,  -- Shadowburn
+					114635, -- Ember Tap
+					108683, -- Fire and Brimstone
+					116858, -- Chaos Bolt
+				},
+				"BURNING_EMBERS",
+			},
+			ShowPower {
+				74434, -- Soulburn
+				"SOUL_SHARDS",
+			},
+		}, -- Warlock spells
 	}
 
 end
