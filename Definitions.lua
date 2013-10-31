@@ -31,10 +31,10 @@ local UnitChannelInfo = _G.UnitChannelInfo
 
 local LibDispellable = LibStub('LibDispellable-1.0')
 
--- Globals: AddRuleFor Configure IfSpells IfClass SimpleAuras UnitBuffs
+-- Globals: AddRuleFor Configure IfSpell IfClass SimpleAuras UnitBuffs
 -- Globals: PassiveModifier SimpleDebuffs SharedSimpleDebuffs SimpleBuffs
 -- Globals: LongestDebuffOf SelfBuffs PetBuffs BuffAliases DebuffAliases
--- Globals: SelfBuffAliases SharedBuffs ShowPower
+-- Globals: SelfBuffAliases SharedBuffs ShowPower SharedSimpleBuffs
 
 function addon.CreateRules()
 
@@ -370,10 +370,24 @@ function addon.CreateRules()
 
 		-- Warlock spells
 		IfClass { "WARLOCK",
+			ShowPower {
+				{
+					17877,  -- Shadowburn
+					114635, -- Ember Tap
+					108683, -- Fire and Brimstone
+					116858, -- Chaos Bolt
+				},
+				"BURNING_EMBERS",
+			},
+			ShowPower {
+				74434, -- Soulburn
+				"SOUL_SHARDS",
+			},
 			SelfBuffs {
 				  6229, -- Twilight Ward
 				  7812, -- Sacrifice (voidwalker buff)
 				 48018, -- Demonic Circle: Summon
+				 80240, -- Havoc
 				 91713, -- Nether Ward (talent)
 				104025, -- Immolation Aura (demon form)
 				104773, -- Unending Resolve
@@ -392,7 +406,7 @@ function addon.CreateRules()
 				120451, -- Flames of Xoroth
 				132413, -- Shadow Bulwark (Grimoire of Sacrifice)
 			},
-			SharedBuffs {
+			SharedSimpleBuffs {
 				  5697, -- Unending Breath
 				 20707, -- Soulstone
 			},
@@ -402,18 +416,32 @@ function addon.CreateRules()
 			},
 			SimpleDebuffs {
 				   172, -- Corruption
-				   348, -- Immolate
 				   980, -- Agony
-				 17962, -- Conflagrate
 				 27243, -- Seed of Corruption
 				 30108, -- Unstable Affliction
 				 48181, -- Haunt
-				 80240, -- Havoc
 				124913, -- Metamorphosis: Doom
+			},
+			DebuffAliases {
+				{
+					   348, -- Immolate
+					108686, -- Immolate (Fire and Brimstone)
+				},
+				348, -- Immolate
+			},
+			DebuffAliases {
+				{
+					 17962, -- Conflagrate
+					108685, -- Conflagrate (Fire and Brimstone)
+				},
+				17962, -- Conflagrate
 			},
 			PassiveModifier {
 				117896, -- Backdraft
-				 29722, -- Incinerate
+				{
+					 29722, -- Incinerate
+					114654, -- Incinerate (Fire and Brimstone)
+				},
 				117828, -- Backdraft (buff)
 			},
 			--[[ Check if it already used or not
@@ -433,7 +461,7 @@ function addon.CreateRules()
 				105174, -- Hand of Gul'dan
 				 47960, -- Shadowflame
 			},
-			IfSpells { 123686, -- Pyroclasm
+			IfSpell { 123686, -- Pyroclasm
 				Configure {
 					116858, -- Chaos Bolt
 					"player",
@@ -441,26 +469,13 @@ function addon.CreateRules()
 					(function()
 						local backdraft = GetSpellInfo(117828)
 						return function(_, model)
-							local name, _, _, count, _, _, expiration = UnitAura("player", backdraft, nil, "PLAYER HELPFUL")
+							local name, _, _, count = UnitAura("player", backdraft, nil, "PLAYER HELPFUL")
 							if name and count >= 3 then
-								model.highlight, model.count, model.expiration = "good", count, expiration
+								model.highlight = "good"
 							end
 						end
-					end)
+					end)()
 				}
-			},
-			ShowPower {
-				{
-					17877,  -- Shadowburn
-					114635, -- Ember Tap
-					108683, -- Fire and Brimstone
-					116858, -- Chaos Bolt
-				},
-				"BURNING_EMBERS",
-			},
-			ShowPower {
-				74434, -- Soulburn
-				"SOUL_SHARDS",
 			},
 		}, -- Warlock spells
 	}
