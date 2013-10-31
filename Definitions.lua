@@ -295,8 +295,8 @@ function addon.CreateRules()
 				117967, -- Brewmaster Training
 				115295, -- Guard
 				118636, -- Power Guard
-				-- nil,
-				-- "flash",
+				"player",
+				"none", -- Already flashing
 			},
 			PassiveModifier {
 				117967, -- Brewmaster Training
