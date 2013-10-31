@@ -22,18 +22,25 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 local addonName, addon = ...
 
 local _G = _G
+local GetSpellInfo = _G.GetSpellInfo
+local GetSpellLink = _G.GetSpellLink
+local UnitAura = _G.UnitAura
+local UnitClass = _G.UnitClass
 local UnitPower = _G.UnitPower
 local UnitPowerMax = _G.UnitPowerMax
 local assert = _G.assert
 local error = _G.error
+local format = _G.format
 local ipairs = _G.ipairs
+local next = _G.next
 local pairs = _G.pairs
 local select = _G.select
 local setfenv = _G.setfenv
 local setmetatable = _G.setmetatable
+local strjoin = _G.strjoin
 local tinsert = _G.tinsert
 local type = _G.type
-local UnitClass = _G.UnitClass
+local unpack = _G.unpack
 local wipe = _G.wipe
 
 local getkeys = addon.getkeys

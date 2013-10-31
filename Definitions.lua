@@ -23,15 +23,18 @@ local addonName, addon = ...
 
 local _G = _G
 local pairs = _G.pairs
+local GetSpellInfo = _G.GetSpellInfo
+local UnitAura = _G.UnitAura
 local UnitCanAttack = _G.UnitCanAttack
 local UnitCastingInfo = _G.UnitCastingInfo
 local UnitChannelInfo = _G.UnitChannelInfo
 
 local LibDispellable = LibStub('LibDispellable-1.0')
 
--- Globals: AddRuleFor Configure IfSpell IfClass SimpleAuras UnitBuffs
+-- Globals: AddRuleFor Configure IfSpells IfClass SimpleAuras UnitBuffs
 -- Globals: PassiveModifier SimpleDebuffs SharedSimpleDebuffs SimpleBuffs
 -- Globals: LongestDebuffOf SelfBuffs PetBuffs BuffAliases DebuffAliases
+-- Globals: SelfBuffAliases SharedBuffs ShowPower
 
 function addon.CreateRules()
 
