@@ -31,11 +31,13 @@ local next = _G.next
 local pairs = _G.pairs
 local tonumber = _G.tonumber
 
+local fontFile, fontSize, fontFlag = [[Fonts\ARIALN.TTF]], 13, "OUTLINE"
+
 local overlayPrototype = addon.overlayPrototype
 
 local function Timer_Update(self)
 	local timeLeft = (self.expiration or 0) - GetTime()
-	local delay
+	local r, g, b, delay = 1, 1, 1
 
 	if timeLeft >= 3600 then
 		self:SetFormattedText("%dh", floor(timeLeft/3600))
@@ -49,9 +51,13 @@ local function Timer_Update(self)
 	elseif timeLeft >= 3 then
 		self:SetFormattedText("%d", floor(timeLeft))
 		delay = timeLeft % 1
+		if timeLeft <= 10 then
+			r, g, b = 1, 1, (timeLeft - 3) / 7
+		end
 	elseif timeLeft > 0 then
 		self:SetFormattedText("%.1f", floor(timeLeft*10)/10)
 		delay = timeLeft % 0.1
+		r, g, b = 1, 0.5 + timeLeft / 6, 0
 	else
 		if self.timerId then
 			AceTimer:CancelTimer(self.timerId)
@@ -60,9 +66,14 @@ local function Timer_Update(self)
 		self:Hide()
 		return
 	end
+	self:SetTextColor(r, g, b, 1)
 
 	self.timerId = AceTimer.ScheduleTimer(self, "Update", delay)
 	self:Show()
+end
+
+local function Text_OnShowHide(text)
+	text:GetParent():LayoutTexts()
 end
 
 function overlayPrototype:InitializeDisplay()
@@ -77,37 +88,31 @@ function overlayPrototype:InitializeDisplay()
 	self.Border = border
 
 	local timer = self:CreateFontString(self:GetName().."Timer", "OVERLAY")
-	timer:SetFont([[Fonts\ARIALN.TTF]], 13, "OUTLINE")
-	timer:SetPoint("BOTTOMLEFT")
+	timer:SetFont(fontFile, fontSize, fontFlag)
+	--timer:SetPoint("BOTTOMLEFT")
+	timer:SetAllPoints(self)
+	timer:SetJustifyV("BOTTOM")
 	timer.Update = Timer_Update
 	timer:Hide()
-	hooksecurefunc(timer, "Show", function() self:LayoutTexts() end)
-	hooksecurefunc(timer, "Hide", function() self:LayoutTexts() end)
+	hooksecurefunc(timer, "Show", Text_OnShowHide)
+	hooksecurefunc(timer, "Hide", Text_OnShowHide)
 	self.Timer = timer
 
 	local count = self:CreateFontString(self:GetName().."Count", "OVERLAY")
-	count:SetFont([[Fonts\ARIALN.TTF]], 13, "OUTLINE")
-	count:SetPoint("BOTTOMRIGHT")
+	count:SetFont(fontFile, fontSize, fontFlag)
+	--count:SetPoint("BOTTOMRIGHT")
+	count:SetAllPoints(self)
+	count:SetJustifyV("BOTTOM")
 	count:Hide()
-	hooksecurefunc(count, "Show", function() self:LayoutTexts() end)
-	hooksecurefunc(count, "Hide", function() self:LayoutTexts() end)
+	hooksecurefunc(count, "Show", Text_OnShowHide)
+	hooksecurefunc(count, "Hide", Text_OnShowHide)
 	self.Count = count
 end
 
 function overlayPrototype:LayoutTexts()
-	self.Count:ClearAllPoints()
-	self.Timer:ClearAllPoints()
-	if self.Count:IsShown() then
-		if self.Timer:IsShown() then
-			self.Timer:SetPoint("BOTTOMLEFT")
-			self.Count:SetPoint("BOTTOMRIGHT")
-			self.Timer:SetPoint("RIGHT", self.Count, "LEFT")
-		else
-			self.Count:SetPoint("BOTTOM")
-		end
-	elseif self.Timer:IsShown() then
-		self.Timer:SetPoint("BOTTOM")
-	end
+	local count, timer = self.Count, self.Timer
+	timer:SetJustifyH(count:IsShown() and "LEFT" or "CENTER")
+	count:SetJustifyH(timer:IsShown() and "RIGHT" or "CENTER")
 end
 
 function overlayPrototype:SetExpiration(expiration)
