@@ -21,6 +21,8 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 
 local addonName, addon = ...
 
+local AceTimer = LibStub('AceTimer-3.0')
+
 local _G = _G
 local CreateFrame = _G.CreateFrame
 local floor = _G.floor
@@ -31,57 +33,36 @@ local tonumber = _G.tonumber
 
 local overlayPrototype = addon.overlayPrototype
 
-local PlanForUpdate, CancelUpdate
-do
-	local timerFrame = CreateFrame("Frame")
-	local widgets = {}
-	local elapsed = 0
+local function Timer_Update(self)
+	local timeLeft = (self.expiration or 0) - GetTime()
+	local delay
 
-	timerFrame:Hide()
-	timerFrame:SetScript('OnUpdate', function(_, t)
-		elapsed = elapsed + t
-		if elapsed < 0.1 then return end
-		for widget, delay in pairs(widgets) do
-			delay = delay - elapsed
-			if delay <= 0 then
-				CancelUpdate(widget)
-			else
-				widgets[widget] = delay
-				widget:Update(delay)
-			end
-		end
-		elapsed = 0
-	end)
-
-	function PlanForUpdate(widget, delay)
-		widgets[widget] = delay
-		widget:Update(delay)
-		widget:Show()
-		timerFrame:Show()
-	end
-
-	function CancelUpdate(widget)
-		widget:Hide()
-		widgets[widget] = nil
-		if not next(widgets) then
-			timerFrame:Hide()
-		end
-	end
-
-end
-
-local function Timer_Update(timer, timeLeft)
 	if timeLeft >= 3600 then
-		timer:SetFormattedText("%dh", floor(timeLeft/3600))
+		self:SetFormattedText("%dh", floor(timeLeft/3600))
+		delay = timeLeft % 3600
 	elseif timeLeft >= 600 then
-		timer:SetFormattedText("%dm", floor(timeLeft/60))
+		self:SetFormattedText("%dm", floor(timeLeft/60))
+		delay = timeLeft % 60
 	elseif timeLeft >= 60 then
-		timer:SetFormattedText("%d:%02d", floor(timeLeft/60), floor(timeLeft%60))
+		self:SetFormattedText("%d:%02d", floor(timeLeft/60), floor(timeLeft%60))
+		delay = timeLeft % 1
 	elseif timeLeft >= 3 then
-		timer:SetFormattedText("%d", floor(timeLeft))
+		self:SetFormattedText("%d", floor(timeLeft))
+		delay = timeLeft % 1
+	elseif timeLeft > 0 then
+		self:SetFormattedText("%.1f", floor(timeLeft*10)/10)
+		delay = timeLeft % 0.1
 	else
-		timer:SetFormattedText("%.1f", floor(timeLeft*10)/10)
+		if self.timerId then
+			AceTimer:CancelTimer(self.timerId)
+			self.timerId = nil
+		end
+		self:Hide()
+		return
 	end
+
+	self.timerId = AceTimer.ScheduleTimer(self, "Update", delay)
+	self:Show()
 end
 
 function overlayPrototype:InitializeDisplay()
@@ -129,14 +110,13 @@ function overlayPrototype:LayoutTexts()
 end
 
 function overlayPrototype:SetExpiration(expiration)
-	expiration = tonumber(expiration) or 0
-	if expiration == 0 or expiration <= GetTime() then expiration = nil end
-	if self.expiration == expiration then return end
-	self.expiration = expiration
-	if expiration then
-		PlanForUpdate(self.Timer, expiration - GetTime())
-	else
-		CancelUpdate(self.Timer)
+	if type(expiration) ~= "number" or expiration <= GetTime() then
+		expiration = nil
+	end
+	if self.expiration ~= expiration then
+		self.expiration = expiration
+		self.Timer.expiration = expiration
+		self.Timer:Update()
 	end
 end
 
