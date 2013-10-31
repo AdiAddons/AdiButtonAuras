@@ -29,19 +29,16 @@
 ## X-eMail: adirelle@gmail.com
 ## SavedVariables: LuaAurasDB
 
-## OptionalDeps: Ace3, LibAdiEvent-1.0, LibSharedMedia-3.0, LibSpellbook-1.0, SharedMedia, AceGUI-3.0-SharedMediaWidgets, AdiDebug, Dominos, Bartender4, LibDispellable-1.0
+## OptionalDeps: Ace3, LibAdiEvent-1.0, LibSpellbook-1.0, LibDispellable-1.0, AdiDebug, Dominos, Bartender4
 
 #@no-lib-strip@
 libs\LibStub\LibStub.lua
 libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
-libs\LibAdiEvent-1.0\LibAdiEvent-1.0.lua
-libs\LibSharedMedia-3.0\lib.xml
-libs\AceDB-3.0\AceDB-3.0.xml
-libs\AceGUI-3.0\AceGUI-3.0.xml
-libs\AceConfig-3.0\AceConfig-3.0.xml
-libs\AceDBOptions-3.0\AceDBOptions-3.0.xml
-libs\AceGUI-3.0-SharedMediaWidgets\widget.xml
+libs\AceTimer-3.0\AceTimer-3.0.xml
+libs\LibDispellable-1.0\LibDispellable-1.0.xml
 #@end-no-lib-strip@
+libs\LibAdiEvent-1.0\LibAdiEvent-1.0.lua
+libs\LibSpellbook-1.0\LibSpellbook-1.0.lua
 
 AdiButtonAuras.lua
 Utils.lua

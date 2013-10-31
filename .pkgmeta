@@ -1,0 +1,21 @@
+package-as: AdiButtonAuras
+
+externals:
+  libs/LibStub:
+    url: svn://svn.wowace.com/wow/libstub/mainline/trunk
+    tag: latest
+  libs/CallbackHandler-1.0:
+    url: svn://svn.wowace.com/wow/callbackhandler/mainline/trunk/CallbackHandler-1.0
+    tag: latest
+  libs/AceTimer-3.0:
+    url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceTimer-3.0
+    tag: latest
+  libs/LibAdiEvent-1.0:
+    url: https://github.com/Adirelle/LibAdiEvent-1.0.git
+    tag: latest
+  libs/LibSpellbook-1.0:
+    url: https://github.com/Adirelle/LibSpellbook-1.0.git
+    tag: latest
+  libs/LibDispellable-1.0:
+    url: git://git.wowace.com/wow/libdispellable-1-0/mainline.git
+    tag: latest
