@@ -123,7 +123,6 @@ function addon.CreateRules()
 
 		-- Some shared debuffs, only show them on spells that requires the player to specifically cast them
 
-		-- Weakened Blows is applied by any tank as a part of his rotation, don't bother showing it
 		-- Physical Vulnerability is applied passively or automatically, don't bother showing it
 
 		-- Mortal Wounds
@@ -186,6 +185,24 @@ function addon.CreateRules()
 				126402, -- Trample (hunter pet ability)
 			}
 		}, -- Increasing Casting Time
+
+		-- Weakened Blows
+		LongestDebuffOf {
+			{ -- Spells to alter
+				106830, -- Thrash (feral druid)
+				 77758, -- Thrash (guardian druid)
+				121253, -- Keg Smash (monk)
+				  6343, -- Thunder Clap (warrior)
+				-- 81132, -- Scarlet Fever (deathknight), this is a passive that modifies Blood Boil
+				  8042, -- Earth Shock (shaman)
+				 53595, -- Hammer of the Righteous (paladin)
+			},
+			{ -- Debuffs to look for
+				115798, -- Weakened Blows (main effect)
+				 50256, -- Demoralizing Roar (hunter pet ability)
+				 24423, -- Demoralizing Screech (hunter pet ability)
+			}
+		}, -- Weakened Blows
 
 		-- Hunter spells
 		IfClass { "HUNTER",
