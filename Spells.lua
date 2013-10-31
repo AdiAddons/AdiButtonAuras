@@ -418,6 +418,10 @@ RULES_ENV = setmetatable({
 		return Auras("HELPFUL PLAYER", "good", spells)
 	end,
 
+	SharedSimpleBuffs = function(spells)
+		return Auras("HELPFUL", "good", spells)
+	end,
+
 	LongestDebuffOf = function(spells, buffs)
 		return Configure(spells, "default", "UNIT_AURA", BuildAuraHandler_Longest("HARMFUL", "bad", buffs or spells))
 	end,
