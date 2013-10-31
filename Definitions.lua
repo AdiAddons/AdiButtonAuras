@@ -207,6 +207,45 @@ function addon.CreateRules()
 			}
 		}, -- Weakened Blows
 
+		-- Snares and anti-snares
+		-- Note that some of these are talent procs or passive effects.
+		-- This is intended as they will show up on active spells anyway.
+		LongestDebuffOf {
+			{
+				  1604, -- Dazed (common),
+				 45524, -- Chains of Ice (death knight)
+				 50259, -- Dazed (feral charge effect)
+				 58180, -- Infected Wounds (druid)
+				 61391, -- Typhoon (druid)
+				  5116, -- Concussive Shot (hunter)
+				 13810, -- Ice Trap (hunter)
+				 35101, -- Concussive Barrage (hunter, passive)
+				 35346, -- Time Warp (hunter, warp Stalker)
+				 50433, -- Ankle Crack (hunter, crocolisk)
+				 54644, -- Frost Breath (hunter, chimaera)
+				 61394, -- Frozen Wake (hunter, glyph)
+				 31589, -- Slow (mage)
+				 44614, -- Frostfire Bolt (mage)
+				   116, -- Frostbolt (mage)
+				   120, -- Cone of Cold (mage)
+				  6136, -- Chilled (mage)
+				  7321, -- Chilled (mage, bis)
+				 11113, -- Blast Wave (mage)
+				116095, -- Disable (monk, 1 stack)
+				  1044, -- Hand of Freedom (paladin)
+				  3409, -- Crippling Poison (rogue)
+				 26679, -- Deadly Throw (rogue)
+				  3600, -- Earthbind (shaman)
+				  8034, -- Frostbrand Attack (shaman)
+				  8056, -- Frost Shock (shaman)
+				  8178, -- Grounding Totem Effect (shaman)
+				 18223, -- Curse of Exhaustion (warlock)
+				 17962, -- Conflagrate (warlock)
+				  1715, -- Piercing Howl (warrior)
+				 12323  -- Hamstring (warrior)
+			}
+		}, -- Snares and anti-snares
+
 		-- Hunter spells
 		IfClass { "HUNTER",
 			SimpleBuffs {
