@@ -30,15 +30,27 @@ local UnitCastingInfo = _G.UnitCastingInfo
 local UnitChannelInfo = _G.UnitChannelInfo
 
 local LibDispellable = LibStub('LibDispellable-1.0')
+local LibSpellbook = LibStub('LibSpellbook-1.0')
+local DRData = LibStub("DRData-1.0")
 
 -- Globals: AddRuleFor Configure IfSpell IfClass SimpleAuras UnitBuffs
 -- Globals: PassiveModifier SimpleDebuffs SharedSimpleDebuffs SimpleBuffs
 -- Globals: LongestDebuffOf SelfBuffs PetBuffs BuffAliases DebuffAliases
 -- Globals: SelfBuffAliases SharedBuffs ShowPower SharedSimpleBuffs
+-- Globals: BuildAuraHandler_Longest
 
 function addon.CreateRules()
-
 	addon:Debug('Creating Rules')
+
+	-- Build a list of spell ids per DR categories.
+	local drspells = {}
+	for id, category in pairs(DRData:GetSpells()) do
+		if not drspells[category] then
+			drspells[category] = {}
+		end
+		tinsert(drspells[category], id)
+	end
+
 	return {
 
 		-- Interrupts: use a custom configuration
@@ -210,6 +222,24 @@ function addon.CreateRules()
 			}
 		}, -- Weakened Blows
 
+		-- Crowd-control spells, grouped by DR categories
+		function()
+			for category, spells in pairs(drspells) do
+				local handler = nil
+				for i, spell in ipairs(spells) do
+					local ids = LibSpellbook:GetAllIds(spell)
+					if ids then
+						if not handler then
+							handler = BuildAuraHandler_Longest("HARMFUL", "bad", spells)
+						end
+						for id in pairs(ids) do
+							AddRuleFor(id, "enemy", "UNIT_AURA", handler)
+						end
+					end
+				end
+			end
+		end,
+
 		-- Snares and anti-snares
 		-- Note that some of these are talent procs or passive effects.
 		-- This is intended as they will show up on active spells anyway.
@@ -258,8 +288,6 @@ function addon.CreateRules()
 				  1513, -- Scare Beast
 				  1978, -- Serpent String
 				  3674, -- Black Arrow
-				  5116, -- Concussive Shot
-				 19386, -- Wyvern Sting
 				 20736, -- Distracting Shot
 				131894, -- A Murder of Crows
 			},
@@ -273,13 +301,9 @@ function addon.CreateRules()
 				 51753, -- Camouflage
 				 82726, -- Fervor
 			},
-			DebuffAliases { -- Freezing Trap
-				{ 1499, 60192 },
-				3355
-			},
-			SelfBuffAliases { -- Deterrence
+			SelfBuffAliases {
+				-- Deterrence
 				{ 19263, 148467 },
-				{ 19263, 148467 }
 			},
 			SharedSimpleDebuffs {
 				  1130, -- Hunter's Mark
