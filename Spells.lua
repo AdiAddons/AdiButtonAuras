@@ -95,11 +95,15 @@ local function AsList(value, checkType)
 end
 
 local function AsSet(value, checkType)
-	local s = {}
-	for i, v in ipairs(AsList(value, checkType)) do
-		s[v] = true
+	local set = {}
+	local size = 0
+	for i, value in ipairs(AsList(value, checkType)) do
+		if not set[value] then
+			set[value] = true
+			size = size + 1
+		end
 	end
-	return s
+	return set, size
 end
 
 local function MergeSets(a, b)
@@ -144,10 +148,11 @@ local function _AddRuleFor(spell, units, events, handlers)
 end
 
 local function CheckRuleArgs(units, events, handlers)
-	units = AsSet(units or "default", "string")
-	assert(GetSetSize(units) > 0, "No units given to Configure")
-	events = AsSet(events, "string")
-	assert(GetSetSize(events) > 0, "No events given to Configure")
+	local numUnits, numEvents
+	units, numUnits = AsSet(units or "default", "string")
+	assert(numUnits > 0, "No units given to Configure")
+	events, numEvents = AsSet(events, "string")
+	assert(numEvents > 0, "No events given to Configure")
 	handlers = AsList(handlers, "function")
 	assert(#handlers > 0, "No handlers given to Configure")
 	return units, events, handlers
@@ -217,33 +222,31 @@ end
 -- Handler builders
 --------------------------------------------------------------------------------
 
-local function BuildAuraHandler_Single(filter, highlight, spell)
+local function ApplyFixedUnit(unit, handler)
+	if unit == "default" or unit == "ally" or unit == "enemy" then
+		return handler
+	else
+		return function(_, model) return handler(unit, model) end
+	end
+end
+
+local function BuildAuraHandler_Single(filter, highlight, unit, spell)
 	local spellName = assert(GetSpellInfo(spell), "Unknown spell "..spell)
-	return function(unit, model)
+	return ApplyFixedUnit(unit, function(unit, model)
 		local name, _, _, count, _, _, expiration = UnitAura(unit, spellName, nil, filter)
 		if name then
 			model.highlight, model.count, model.expiration = highlight, count, expiration
 		end
-	end
+	end)
 end
 
-local function BuildAuraHandler_Single_Unit(filter, highlight, unit, spell)
-	local spellName = assert(GetSpellInfo(spell), "Unknown spell "..spell)
-	return function(_, model)
-		local name, _, _, count, _, _, expiration = UnitAura(unit, spellName, nil, filter)
-		if name then
-			model.highlight, model.count, model.expiration = highlight, count, expiration
-		end
+local function BuildAuraHandler_Longest(filter, highlight, unit, buffs)
+	local numBuffs
+	buffs, numBuffs = AsSet(buffs, "number")
+	if numBuffs == 1 then
+		return BuildAuraHandler_Single(filter, highlight, unit, next(buffs))
 	end
-end
-
-local function BuildAuraHandler_Longest(filter, highlight, buffs)
-	buffs = AsSet(buffs, "number")
-	if GetSetSize(buffs) == 1 then
-		local buff = next(buffs)
-		return BuildAuraHandler_Single(filter, highlight, buff)
-	end
-	return function(unit, model)
+	return ApplyFixedUnit(unit, function(unit, model)
 		local longest = -1
 		for i = 1, math.huge do
 			local name, _, _, count, _, _, expiration, _, _, _, spellId = UnitAura(unit, i, filter)
@@ -256,16 +259,16 @@ local function BuildAuraHandler_Longest(filter, highlight, buffs)
 				return
 			end
 		end
-	end
+	end)
 end
 
-local function BuildAuraHandler_FirstOf(filter, highlight, buffs)
-	buffs = AsSet(buffs, "number")
-	if GetSetSize(buffs) == 1 then
-		local buff = next(buffs)
-		return BuildAuraHandler_Single(filter, highlight, buff)
+local function BuildAuraHandler_FirstOf(filter, highlight, unit, buffs)
+	local numBuffs
+	buffs, numBuffs = AsSet(buffs, "number")
+	if numBuffs == 1 then
+		return BuildAuraHandler_Single(filter, highlight, unit, next(buffs))
 	end
-	return function(unit, model)
+	return ApplyFixedUnit(unit, function(unit, model)
 		for i = 1, math.huge do
 			local name, _, _, count, _, _, expiration, _, _, _, spellId = UnitAura(unit, i, filter)
 			if name then
@@ -277,28 +280,7 @@ local function BuildAuraHandler_FirstOf(filter, highlight, buffs)
 				return
 			end
 		end
-	end
-end
-
-local function BuildAuraHandler_FirstOf_Unit(filter, highlight, unit, buffs)
-	buffs = AsSet(buffs, "number")
-	if GetSetSize(buffs) == 1 then
-		local buff = next(buffs)
-		return BuildAuraHandler_Single_Unit(filter, highlight, unit, buff)
-	end
-	return function(_, model)
-		for i = 1, math.huge do
-			local name, _, _, count, _, _, expiration, _, _, _, spellId = UnitAura(unit, i, filter)
-			if name then
-				if buffs[spellId] then
-					model.highlight, model.count, model.expiration = highlight, count, expiration
-					return
-				end
-			else
-				return
-			end
-		end
-	end
+	end)
 end
 
 --------------------------------------------------------------------------------
@@ -308,33 +290,20 @@ end
 local function Auras(filter, highlight, unit, spells)
 	local funcs = {}
 	for i, spell in ipairs(AsList(spells, "number")) do
-		tinsert(funcs, Configure(spell, unit, "UNIT_AURA", BuildAuraHandler_Single(filter, highlight, spell)))
-	end
-	return (#funcs > 1) and funcs or funcs[1]
-end
-
-local function Auras_Unit(filter, highlight, unit, spells)
-	local funcs = {}
-	for i, spell in ipairs(AsList(spells, "number")) do
-		tinsert(funcs, Configure(spell, unit, "UNIT_AURA", BuildAuraHandler_Single_Unit(filter, highlight, unit, spell)))
+		tinsert(funcs, Configure(spell, unit, "UNIT_AURA", BuildAuraHandler_Single(filter, highlight, unit, spell)))
 	end
 	return (#funcs > 1) and funcs or funcs[1]
 end
 
 local function PassiveModifier(passive, spell, buff, unit, highlight)
 	unit = unit or "player"
-	local conf = Configure(spell, unit, "UNIT_AURA", BuildAuraHandler_Single_Unit("HEPLFUL PLAYER", highlight or "good", unit, buff))
+	local conf = Configure(spell, unit, "UNIT_AURA", BuildAuraHandler_Single("HEPLFUL PLAYER", highlight or "good", unit, buff))
 	return passive and IfSpell(passive, conf) or conf
 end
 
 local function AuraAliases(filter, highlight, unit, spells, buffs)
 	buffs = AsList(buffs or spells, "number")
-	return Configure(spells, unit, "UNIT_AURA",  BuildAuraHandler_FirstOf(filter, highlight, buffs))
-end
-
-local function AuraAliases_Unit(filter, highlight, unit, spells, buffs)
-	buffs = AsList(buffs or spells, "number")
-	return Configure(spells, unit, "UNIT_AURA", BuildAuraHandler_FirstOf_Unit(filter, highlight, unit, buffs))
+	return Configure(spells, unit, "UNIT_AURA", BuildAuraHandler_FirstOf(filter, highlight, unit, buffs))
 end
 
 local function ShowPower(spells, powerType, handler, highlight)
@@ -418,15 +387,15 @@ local RULES_ENV = setmetatable({
 	end,
 
 	LongestDebuffOf = function(spells, buffs)
-		return Configure(spells, "enemy", "UNIT_AURA", BuildAuraHandler_Longest("HARMFUL", "bad", buffs or spells))
+		return Configure(spells, "enemy", "UNIT_AURA", BuildAuraHandler_Longest("HARMFUL", "bad", "enemy", buffs or spells))
 	end,
 
 	SelfBuffs = function(spells)
-		return Auras_Unit("HELPFUL PLAYER", "good", "player", spells)
+		return Auras("HELPFUL PLAYER", "good", "player", spells)
 	end,
 
 	PetBuffs = function(spells)
-		return Auras_Unit("HELPFUL PLAYER", "good", "pet", spells)
+		return Auras("HELPFUL PLAYER", "good", "pet", spells)
 	end,
 
 	BuffAliases = function(args)
@@ -438,7 +407,7 @@ local RULES_ENV = setmetatable({
 	end,
 
 	SelfBuffAliases = function(args)
-		return AuraAliases_Unit("HELPFUL PLAYER", "good", "player", unpack(args))
+		return AuraAliases("HELPFUL PLAYER", "good", "player", unpack(args))
 	end,
 
 }, { __index = _G })
