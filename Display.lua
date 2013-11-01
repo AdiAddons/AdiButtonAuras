@@ -78,6 +78,7 @@ end
 
 function overlayPrototype:InitializeDisplay()
 	self:SetFrameLevel(self.button.cooldown:GetFrameLevel()+1)
+	self.parentCount = _G[self.button:GetName().."Count"]
 
 	local border = self:CreateTexture(self:GetName().."Border", "BACKGROUND", NumberFontNormalSmall)
 	border:SetPoint("CENTER", self)
@@ -89,8 +90,8 @@ function overlayPrototype:InitializeDisplay()
 
 	local timer = self:CreateFontString(self:GetName().."Timer", "OVERLAY")
 	timer:SetFont(fontFile, fontSize, fontFlag)
-	--timer:SetPoint("BOTTOMLEFT")
-	timer:SetAllPoints(self)
+	timer:SetPoint("BOTTOMLEFT", 2, 2)
+	timer:SetPoint("BOTTOMRIGHT", -2, 2)
 	timer:SetJustifyV("BOTTOM")
 	timer.Update = Timer_Update
 	timer:Hide()
@@ -100,8 +101,8 @@ function overlayPrototype:InitializeDisplay()
 
 	local count = self:CreateFontString(self:GetName().."Count", "OVERLAY")
 	count:SetFont(fontFile, fontSize, fontFlag)
-	--count:SetPoint("BOTTOMRIGHT")
-	count:SetAllPoints(self)
+	count:SetPoint("BOTTOMLEFT", 2, 2)
+	count:SetPoint("BOTTOMRIGHT", -2, 2)
 	count:SetJustifyV("BOTTOM")
 	count:Hide()
 	hooksecurefunc(count, "Show", Text_OnShowHide)
@@ -111,7 +112,9 @@ end
 
 function overlayPrototype:LayoutTexts()
 	local count, timer = self.Count, self.Timer
-	timer:SetJustifyH(count:IsShown() and "LEFT" or "CENTER")
+	local parentCount = self.parentCount
+	local parentCountIsShown = parentCount:IsShown() and strtrim(parentCount:GetText() or "") ~= ""
+	timer:SetJustifyH((count:IsShown() or parentCountIsShown) and "LEFT" or "CENTER")
 	count:SetJustifyH(timer:IsShown() and "RIGHT" or "CENTER")
 end
 
