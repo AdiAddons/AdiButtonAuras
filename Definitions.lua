@@ -74,6 +74,7 @@ function addon.CreateRules()
 				 19647, -- Spell Lock (Felhunter)
 				103967, -- Carrion Swarm (demon form)
 				119911, -- Optical Blast (Observer special ability)
+				132409, -- Spell Lock (sacrified Felhunter)
 				-- Warrior
 				  6552, -- Pummel
 			},
@@ -160,6 +161,7 @@ function addon.CreateRules()
 		LongestDebuffOf {
 			{ -- Spells to alter
 				  1490, -- Curse of the Elements (warlock)
+				104225, -- Curse of the Elements (warlock, Fire and Brimstone)
 				116202, -- Aura of the Elements (warlock)
 			},
 			{ -- Debuffs to look for
@@ -167,6 +169,7 @@ function addon.CreateRules()
 				 24844, -- Lightning Breath (hunter pet ability)
 				 34889, -- Fire Breath (hunter pet ability)
 				 58410, -- Master Poisoner (rogue)
+				104225, -- Curse of the Elements (warlock, Fire and Brimstone)
 				116202, -- Aura of the Elements (warlock)
 			}
 		}, -- +5% spell damage taken
@@ -416,11 +419,11 @@ function addon.CreateRules()
 			},
 			SimpleDebuffs {
 				   172, -- Corruption
+				   603, -- Metamorphosis: Doom
 				   980, -- Agony
 				 27243, -- Seed of Corruption
 				 30108, -- Unstable Affliction
 				 48181, -- Haunt
-				124913, -- Metamorphosis: Doom
 			},
 			DebuffAliases {
 				{
