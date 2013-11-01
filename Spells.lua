@@ -43,36 +43,16 @@ local type = _G.type
 local unpack = _G.unpack
 local wipe = _G.wipe
 
-local getkeys = addon.getkeys
+--------------------------------------------------------------------------------
+-- Generic list and set tools
+--------------------------------------------------------------------------------
 
-local LibSpellbook = LibStub('LibSpellbook-1.0')
-local LibAdiEvent = LibStub('LibAdiEvent-1.0')
+local getkeys = addon.getkeys
 
 local function Do(funcs)
 	for j, func in ipairs(funcs) do
 		func()
 	end
-end
-
-local spellConfs = {}
-local rules
-local RULES_ENV
-
-addon.spells = spellConfs
-
-function addon:LibSpellbook_Spells_Changed(event)
-	addon:Debug('LibSpellbook_Spells_Changed')
-	if not rules then
-		rules = setfenv(addon.CreateRules, RULES_ENV)()
-	end
-	wipe(spellConfs)
-	Do(rules)
-	addon:UpdateAllOverlays(event)
-end
-
-LibSpellbook.RegisterCallback(addon, 'LibSpellbook_Spells_Changed')
-if LibSpellbook:HasSpells() then
-	addon:LibSpellbook_Spells_Changed('OnLoad')
 end
 
 local function ConcatLists(a, b)
@@ -110,7 +90,7 @@ local function AsList(value, checkType)
 	elseif not checkType or type(value) == checkType then
 		return { value }
 	else
-		error(2, "Invalid value type for AsList, expected "..checkType..", got "..type(value))
+		error("Invalid value type for AsList, expected "..checkType..", got "..type(value), 2)
 	end
 end
 
@@ -137,7 +117,14 @@ local function GetSetSize(set)
 	return n
 end
 
-local function NOOP() end
+--------------------------------------------------------------------------------
+-- Rule creation
+--------------------------------------------------------------------------------
+
+local LibSpellbook = LibStub('LibSpellbook-1.0')
+
+local spellConfs = {}
+addon.spells = spellConfs
 
 local function _AddRuleFor(spell, units, events, handlers)
 	if not LibSpellbook:IsKnown(spell) then return end
@@ -156,24 +143,24 @@ local function _AddRuleFor(spell, units, events, handlers)
 	ConcatLists(rule.handlers, handlers)
 end
 
-local function AddRuleFor(spell, units, events, handlers)
-	return _AddRuleFor(
-		spell,
-		AsSet(units or "default", "string"),
-		AsSet(events, "string"),
-		AsList(handlers, "function")
-	)
-end
-
-local function Configure(spells, units, events, handlers)
-	spells = AsList(spells, "number")
-	assert(#spells > 0, "No spells given to Configure")
+local function CheckRuleArgs(units, events, handlers)
 	units = AsSet(units or "default", "string")
 	assert(GetSetSize(units) > 0, "No units given to Configure")
 	events = AsSet(events, "string")
 	assert(GetSetSize(events) > 0, "No events given to Configure")
 	handlers = AsList(handlers, "function")
 	assert(#handlers > 0, "No handlers given to Configure")
+	return units, events, handlers
+end
+
+local function AddRuleFor(spell, units, events, handlers)
+	return _AddRuleFor(spell, CheckRuleArgs(units, events, handlers))
+end
+
+local function Configure(spells, units, events, handlers)
+	spells = AsList(spells, "number")
+	assert(#spells > 0, "No spells given to Configure")
+	units, events, handlers = CheckRuleArgs(units, events, handlers)
 	if #spells == 1 then
 		return function()
 			_AddRuleFor(spells[1], units, events, handlers)
@@ -226,10 +213,13 @@ local function IfClass(class, ...)
 	end
 end
 
+--------------------------------------------------------------------------------
+-- Handler builders
+--------------------------------------------------------------------------------
+
 local function BuildAuraHandler_Single(filter, highlight, spell)
 	local spellName = assert(GetSpellInfo(spell), "Unknown spell "..spell)
 	return function(unit, model)
-		--addon:Debug('Single Of', unit, spell)
 		local name, _, _, count, _, _, expiration = UnitAura(unit, spellName, nil, filter)
 		if name then
 			model.highlight, model.count, model.expiration = highlight, count, expiration
@@ -240,7 +230,6 @@ end
 local function BuildAuraHandler_Single_Unit(filter, highlight, unit, spell)
 	local spellName = assert(GetSpellInfo(spell), "Unknown spell "..spell)
 	return function(_, model)
-		--addon:Debug('Single Of', unit, spell)
 		local name, _, _, count, _, _, expiration = UnitAura(unit, spellName, nil, filter)
 		if name then
 			model.highlight, model.count, model.expiration = highlight, count, expiration
@@ -255,7 +244,6 @@ local function BuildAuraHandler_Longest(filter, highlight, buffs)
 		return BuildAuraHandler_Single(filter, highlight, buff)
 	end
 	return function(unit, model)
-		--addon:Debug('Longest Of', unit, getkeys(buffs))
 		local longest = -1
 		for i = 1, math.huge do
 			local name, _, _, count, _, _, expiration, _, _, _, spellId = UnitAura(unit, i, filter)
@@ -278,7 +266,6 @@ local function BuildAuraHandler_FirstOf(filter, highlight, buffs)
 		return BuildAuraHandler_Single(filter, highlight, buff)
 	end
 	return function(unit, model)
-		--addon:Debug('First of', unit, getkeys(buffs))
 		for i = 1, math.huge do
 			local name, _, _, count, _, _, expiration, _, _, _, spellId = UnitAura(unit, i, filter)
 			if name then
@@ -300,7 +287,6 @@ local function BuildAuraHandler_FirstOf_Unit(filter, highlight, unit, buffs)
 		return BuildAuraHandler_Single_Unit(filter, highlight, unit, buff)
 	end
 	return function(_, model)
-		--addon:Debug('First of', unit, getkeys(buffs))
 		for i = 1, math.huge do
 			local name, _, _, count, _, _, expiration, _, _, _, spellId = UnitAura(unit, i, filter)
 			if name then
@@ -314,6 +300,10 @@ local function BuildAuraHandler_FirstOf_Unit(filter, highlight, unit, buffs)
 		end
 	end
 end
+
+--------------------------------------------------------------------------------
+-- High-level helpers
+--------------------------------------------------------------------------------
 
 local function Auras(filter, highlight, spells)
 	local funcs = {}
@@ -385,26 +375,31 @@ local function ShowPower(spells, powerType, handler, highlight)
 	return Configure(spells, "player", { "UNIT_POWER", "UNIT_POWER_MAX" }, actualHandler)
 end
 
+--------------------------------------------------------------------------------
+-- Environment setup
+--------------------------------------------------------------------------------
+
+-- Wrap an existing function to accept all its arguments in a table
 local function WrapTableArgFunc(func)
 	return function(args)
 		return func(unpack(args))
 	end
 end
 
-RULES_ENV = setmetatable({
-	AddRuleFor = WrapTableArgFunc(AddRuleFor),
+local RULES_ENV = setmetatable({
 
+	-- Intended to be used un Lua
+	AddRuleFor = AddRuleFor,
+	BuildAuraHandler_Longest = BuildAuraHandler_Longest,
+
+	-- Basic functions
 	Configure = WrapTableArgFunc(Configure),
-
 	IfSpell = WrapTableArgFunc(IfSpell),
-
 	IfClass = WrapTableArgFunc(IfClass),
-
 	ShowPower = WrapTableArgFunc(ShowPower),
+	PassiveModifier = WrapTableArgFunc(PassiveModifier),
 
-	PassiveModifier = function(args)
-		return PassiveModifier(unpack(args))
-	end,
+	-- High-level functions
 
 	SimpleDebuffs = function(spells)
 		return Auras("HARMFUL PLAYER", "bad", spells)
@@ -447,3 +442,23 @@ RULES_ENV = setmetatable({
 	end,
 
 }, { __index = _G })
+
+--------------------------------------------------------------------------------
+-- Rule loading and updating
+--------------------------------------------------------------------------------
+
+local rules
+function addon:LibSpellbook_Spells_Changed(event)
+	addon:Debug('LibSpellbook_Spells_Changed')
+	if not rules then
+		rules = setfenv(addon.CreateRules, RULES_ENV)()
+	end
+	wipe(spellConfs)
+	Do(rules)
+	addon:UpdateAllOverlays(event)
+end
+
+LibSpellbook.RegisterCallback(addon, 'LibSpellbook_Spells_Changed')
+if LibSpellbook:HasSpells() then
+	addon:LibSpellbook_Spells_Changed('OnLoad')
+end
