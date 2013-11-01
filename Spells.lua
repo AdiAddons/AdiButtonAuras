@@ -305,10 +305,10 @@ end
 -- High-level helpers
 --------------------------------------------------------------------------------
 
-local function Auras(filter, highlight, spells)
+local function Auras(filter, highlight, unit, spells)
 	local funcs = {}
 	for i, spell in ipairs(AsList(spells, "number")) do
-		tinsert(funcs, Configure(spell, "default", "UNIT_AURA", BuildAuraHandler_Single(filter, highlight, spell)))
+		tinsert(funcs, Configure(spell, unit, "UNIT_AURA", BuildAuraHandler_Single(filter, highlight, spell)))
 	end
 	return (#funcs > 1) and funcs or funcs[1]
 end
@@ -327,9 +327,9 @@ local function PassiveModifier(passive, spell, buff, unit, highlight)
 	return passive and IfSpell(passive, conf) or conf
 end
 
-local function AuraAliases(filter, highlight, spells, buffs)
+local function AuraAliases(filter, highlight, unit, spells, buffs)
 	buffs = AsList(buffs or spells, "number")
-	return Configure(spells, "default", "UNIT_AURA",  BuildAuraHandler_FirstOf(filter, highlight, buffs))
+	return Configure(spells, unit, "UNIT_AURA",  BuildAuraHandler_FirstOf(filter, highlight, buffs))
 end
 
 local function AuraAliases_Unit(filter, highlight, unit, spells, buffs)
@@ -402,23 +402,23 @@ local RULES_ENV = setmetatable({
 	-- High-level functions
 
 	SimpleDebuffs = function(spells)
-		return Auras("HARMFUL PLAYER", "bad", spells)
+		return Auras("HARMFUL PLAYER", "bad", "enemy", spells)
 	end,
 
 	SharedSimpleDebuffs = function(spells)
-		return Auras("HARMFUL", "bad", spells)
+		return Auras("HARMFUL", "bad", "enmey", spells)
 	end,
 
 	SimpleBuffs = function(spells)
-		return Auras("HELPFUL PLAYER", "good", spells)
+		return Auras("HELPFUL PLAYER", "good", "ally", spells)
 	end,
 
 	SharedSimpleBuffs = function(spells)
-		return Auras("HELPFUL", "good", spells)
+		return Auras("HELPFUL", "good", "ally", spells)
 	end,
 
 	LongestDebuffOf = function(spells, buffs)
-		return Configure(spells, "default", "UNIT_AURA", BuildAuraHandler_Longest("HARMFUL", "bad", buffs or spells))
+		return Configure(spells, "enemy", "UNIT_AURA", BuildAuraHandler_Longest("HARMFUL", "bad", buffs or spells))
 	end,
 
 	SelfBuffs = function(spells)
@@ -430,11 +430,11 @@ local RULES_ENV = setmetatable({
 	end,
 
 	BuffAliases = function(args)
-		return AuraAliases("HELPFUL PLAYER", "good", unpack(args))
+		return AuraAliases("HELPFUL PLAYER", "good", "ally", unpack(args))
 	end,
 
 	DebuffAliases = function(args)
-		return AuraAliases("HARMFUL PLAYER", "bad", unpack(args))
+		return AuraAliases("HARMFUL PLAYER", "bad", "enemy", unpack(args))
 	end,
 
 	SelfBuffAliases = function(args)
