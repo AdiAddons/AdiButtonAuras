@@ -121,7 +121,7 @@ function addon.CreateRules()
 		function()
 			for spell, dispelType in pairs(LibDispellable.spells) do
 				local spell, offensive = spell, (dispelType ~= 'defensive')
-				AddRuleFor {
+				AddRuleFor(
 					spell,
 					offensive and 'enemy' or 'ally',
 					"UNIT_AURA",
@@ -133,7 +133,7 @@ function addon.CreateRules()
 							end
 						end
 					end
-				}
+				)
 			end
 		end, -- Dispels
 
@@ -230,7 +230,7 @@ function addon.CreateRules()
 					local ids = LibSpellbook:GetAllIds(spell)
 					if ids then
 						if not handler then
-							handler = BuildAuraHandler_Longest("HARMFUL", "bad", spells)
+							handler = BuildAuraHandler_Longest("HARMFUL", "bad", "enemy", spells)
 						end
 						for id in pairs(ids) do
 							AddRuleFor(id, "enemy", "UNIT_AURA", handler)
