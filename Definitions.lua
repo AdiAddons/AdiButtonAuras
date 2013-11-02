@@ -279,13 +279,84 @@ function addon.CreateRules()
 			}
 		}, -- Snares and anti-snares
 
+		-- Druid spells
+		IfClass { "DRUID",
+			SimpleBuffs {
+				   774, -- Rejuvenation
+				  8936, -- Regrowth
+				 29166, -- Innervate
+				 33763, -- Lifebloom
+				 48438, -- Wild Growth
+				102342, -- Ironbark
+			},
+			SimpleDebuffs {
+				  1079, -- Rip
+				  1822, -- Rake
+				  8921, -- Moonfire
+				 33745, -- Lacerate
+				 93402, -- Sunfire
+			},
+			SelfBuffs {
+				  1850, -- Dash
+				  5217, -- Tiger's Fury
+				  5229, -- Enrage
+				 16689, -- Nature's Grasp
+				 22812, -- Barkskin
+				 22842, -- Frenzied Regeneration
+				 48505, -- Starfall
+				 52610, -- Savage Roar
+				 61336, -- Survival Instincts
+				 62606, -- Savage Defense
+				106922, -- Might of Ursoc
+				106952, -- Berserk
+				108288, -- Heart of the Wild
+				110309, -- Symbiosis
+				112071, -- Celestial Alignment
+				114107, -- Soul of the Forest
+				124974, -- Nature's Vigil
+			},
+			Configure {
+				18562, -- SwiftMend
+				"ally",
+				"UNIT_AURA",
+				BuildAuraHandler_Longest("HELPFUL", "good", "ally", {
+					   774, -- Rejuvenation
+					  8936, -- Regrowth
+				})
+			},
+			BuffAliases {
+				50464, -- Nourish
+				96206, -- Glyph of Rejuvenation
+			},
+			BuffAliases {
+				145518, -- Genesis
+				   774, -- Rejuvenation
+			},
+			SelfBuffAliases {
+				{ 77761, 77764, 106898 }, -- Stampeding Roar
+			},
+			Configure {
+				{
+					  1079, -- Rip
+					 22568, -- Ferocious Bite
+					 22570, -- Maim
+					 52610, -- Savage Roar
+				},
+				{ "enemy", "player" },
+				"UNIT_COMBO_POINTS",
+				function(unit, model)
+					local points = GetComboPoints(UnitHasVehicleUI("player") and "vehicle" or "player", unit)
+					model.count = points or 0
+				end,
+			},
+		}, -- Druid spells
+
 		-- Hunter spells
 		IfClass { "HUNTER",
 			SimpleBuffs {
 				 53271, -- Master's Call
 			},
 			SimpleDebuffs {
-				  1513, -- Scare Beast
 				  1978, -- Serpent String
 				  3674, -- Black Arrow
 				 20736, -- Distracting Shot
