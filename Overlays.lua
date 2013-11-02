@@ -23,6 +23,7 @@ local addonName, addon = ...
 
 local LibAdiEvent = LibStub('LibAdiEvent-1.0')
 local LibSpellbook = LibStub('LibSpellbook-1.0')
+local AceTimer = LibStub('AceTimer-3.0')
 
 local EMPTY_TABLE = setmetatable({}, { __newindex = function() error(2, "Read only table") end })
 
@@ -81,6 +82,10 @@ end
 
 function overlayPrototype:OnHide()
 	self:UnregisterAllEvents()
+	if self.mouseoverTimerId then
+		AceTimer.CancelTimer(self, self.mouseoverTimerId)
+		self.mouseoverTimerId = nil
+	end
 	self.units, self.events, self.handlers = EMPTY_TABLE, EMPTY_TABLE, EMPTY_TABLE
 	self.spellId, self.targetCmd, self.unit, self.guid = nil, nil, nil, nil
 end
@@ -275,13 +280,49 @@ function overlayPrototype:SetEventRegistered(enabled, event, handler)
 	end
 end
 
+local mouseoverUnit
+do
+	local units = { "player", "pet", "target", "focus" }
+	for i = 1,4 do tinsert(units, "party"..i) end
+	for i = 1,40 do tinsert(units, "raid"..i) end
+	LibAdiEvent:RegisterEvent('UPDATE_MOUSEOVER_UNIT', function()
+		if UnitExists('mouseover') then
+			for i, unit in pairs(units) do
+				if UnitIsUnit(unit, "mouseover") then
+					addon:Debug('Using', unit, 'for mouseover')
+					mouseoverUnit = unit
+					return
+				end
+			end
+		end
+		addon:Debug('Using mouseover as is')
+		mouseoverUnit = nil
+	end)
+end
+
 function overlayPrototype:UpdateTarget(event, arg)
 	if event == 'UNIT_PET' and arg ~= 'player' then return end
 	if event == 'ACTIONBAR_SLOT_CHANGED' and arg ~= self:GetActionId() then return end
 	local _, target = SecureCmdOptionParse(self.targetCmd)
 	local unit = (target and target ~= "") and target or "target"
+	if unit == "mouseover" and mouseoverUnit and UnitIsUnit(mouseoverUnit, unit) then
+		unit = mouseoverUnit
+	end
+	if self.unit ~= unit then
+		self.unit = unit
+		if unit == "mouseover" and UnitExists("mouseover") then
+			if not self.mouseoverTimerId then
+				-- Rescan evey 0.5 seconds since we won't get any event
+				self.mouseoverTimerId = AceTimer.ScheduleRepeatingTimer(self, "Scan", 0.5)
+				self:Debug('Scheduled repeating scans')
+			end
+		elseif self.mouseoverTimerId then
+			self:Debug('Cancelled repeating scans')
+			AceTimer.CancelTimer(self, self.mouseoverTimerId)
+			self.mouseoverTimerId = nil
+		end
+	end
 	local guid = unit and UnitGUID(unit)
-	self.unit = unit
 	if self.guid ~= guid then
 		self.guid = guid
 		self:Scan(event)
@@ -289,7 +330,7 @@ function overlayPrototype:UpdateTarget(event, arg)
 end
 
 function overlayPrototype:ScheduleScan(event, unit)
-	if not unit or (self.smartTargeting and unit == self.unit) or self.units[unit] then
+	if not unit or (self.smartTargeting and unit == self.unit) or self.units[unit] and not self.mouseoverTimerId then
 		self:SetScript('OnUpdate', self.ScheduledScan)
 	end
 end
