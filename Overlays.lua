@@ -251,9 +251,10 @@ function overlayPrototype:UpdateAction(event)
 		self.smartTargeting = targetCmd and (conf.units.default or conf.units.ally or conf.units.enemy or isMacro)
 		if self.smartTargeting then
 			self:RegisterEvent('PLAYER_TARGET_CHANGED', 'UpdateTarget')
-			self:SetEventRegistered(strmatch(targetCmd, '@focus'), 'PLAYER_FOCUS_CHANGED', 'UpdateTarget')
-			self:SetEventRegistered(strmatch(targetCmd, '@mouseover'), 'UPDATE_MOUSEOVER_UNIT', 'UpdateTarget')
-			self:SetEventRegistered(strmatch(targetCmd, '@pet'), 'UNIT_PET', 'UpdateTarget')
+			local atTargets = gsub(gsub(targetCmd, 'target=', '@'), "modifier:", "mod:")
+			self:SetEventRegistered(strmatch(atTargets, '@focus'), 'PLAYER_FOCUS_CHANGED', 'UpdateTarget')
+			self:SetEventRegistered(strmatch(atTargets, '@mouseover'), 'UPDATE_MOUSEOVER_UNIT', 'UpdateTarget')
+			self:SetEventRegistered(strmatch(atTargets, '@pet'), 'UNIT_PET', 'UpdateTarget')
 			self:SetEventRegistered(strmatch(targetCmd, 'mod:'), 'MODIFIER_STATE_CHANGED', 'UpdateTarget')
 			self:SetEventRegistered(isMacro, 'ACTIONBAR_SLOT_CHANGED', 'UpdateTarget')
 

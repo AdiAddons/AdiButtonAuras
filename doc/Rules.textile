@@ -32,7 +32,7 @@ h3. Units
 
 A list of "UnitIds":http://wowpedia.org/UnitId to watch. This is not always the target of the spell itself. Depending on the rule, you may want to watch another unit (quite often @player@) to look for a buff that could modify the spell. For example, warlocks' Backdraft is a player buff that reduces the casting time and cost of Incinerate, so a rule showing the number of Backdraft stacks on Incinerate should watch "player" and not the target of "Incinerate".
 
-In addition to the "standard UnitIds":http://wowpedia.org/UnitId#Base_Values, @"target"@, @"player"@, @"pet"@, @"focus"@, @"mouseover"@, AdiButtonAuras accepts three special UnitIds. They are resolved dynamically using the current target and the UI settings that affect targeting (self and focus keybindings, target self by default). Macro conditionals with @target:xxx@ should be detected and used.
+In addition to the "standard UnitIds":http://wowpedia.org/UnitId#Base_Values, @"target"@, @"player"@, @"pet"@, @"focus"@, @"mouseover"@, AdiButtonAuras accepts three special UnitIds. They are resolved dynamically using the current target and the UI settings that affect targeting (self and focus keybindings, target self by default). Macro conditionals including, @target=unitId@, should be detected and used.
 
 Here are the three special UnitIds:
 
