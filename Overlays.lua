@@ -103,12 +103,11 @@ function addon:UPDATE_MOUSEOVER_UNIT()
 				mouseoverUnitTimer = AceTimer.ScheduleRepeatingTimer(self, 'UPDATE_MOUSEOVER_UNIT', 0.5)
 			end
 		elseif mouseoverUnitTimer then
-			AceTimer.CancelTimer(mouseoverUnitTimer)
+			AceTimer:CancelTimer(mouseoverUnitTimer)
 			mouseoverUnitTimer = nil
 		end
 		return self:SendMessage(MOUSEOVER_CHANGED, unit)
 	elseif unit == 'mouseover' then
-		self:Debug('mouseover tick')
 		return self:SendMessage(MOUSEOVER_TICK, unit)
 	end
 end
