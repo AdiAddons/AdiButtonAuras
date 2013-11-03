@@ -69,19 +69,23 @@ function addon:CVAR_UPDATE(_, name)
 	end
 end
 
-local mouseoverUnit
-function addon:UPDATE_MOUSEOVER_UNIT()
-	if UnitExists('mouseover') then
-		for i, unit in pairs(unitList) do
-			if UnitIsUnit(unit, "mouseover") then
-				self:Debug('Using', unit, 'for mouseover')
-				mouseoverUnit = unit
-				return
-			end
+local function ResolveMouseover()
+	for i, unit in pairs(unitList) do
+		if UnitIsUnit(unit, "mouseover") then
+			return unit
 		end
 	end
-	self:Debug('Using mouseover as is')
-	mouseoverUnit = nil
+	return 'mouseover'
+end
+
+local mouseoverUnit
+function addon:UPDATE_MOUSEOVER_UNIT()
+	local unit = ResolveMouseover()
+	if mouseoverUnit ~= unit then
+		self:Debug('mouseover =', unit)
+		mouseoverUnit = unit
+		addon:SendMessage(addonName..'_Mouseover_Changed', unit)
+	end
 end
 
 --------------------------------------------------------------------------------
