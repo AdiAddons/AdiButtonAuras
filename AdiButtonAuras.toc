@@ -41,7 +41,8 @@ libs\LibSpellbook-1.0\LibSpellbook-1.0.lua
 
 AdiButtonAuras.lua
 Utils.lua
-Spells.lua
+RuleDSL.lua
 Overlays.lua
 Display.lua
-Definitions.lua
+
+Rules.lua
