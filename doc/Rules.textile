@@ -1,8 +1,8 @@
-h1. AdiButtonAuras rules API
+h1. Rule API
 
 The rules are hard-coded in Rules.lua using a pretty simple "Domain Specific Language":https://en.wikipedia.org/wiki/Domain_specific_language built on top of Lua.
 
-Each rules specifies the spells to modify, the units and events to watch and one or more handlers. Several rules about the same spell are merged together, or thrown if the character doesn't know the spell.
+Each rules specifies the spells to modify, the units and events to watch and one or more handlers. Several rules about the same spell are merged together, or thrown away if the character does not know the spell.
 
 Each time one of the event is triggered for one of the unit, the handlers are called to update the state of the associated button.
 
@@ -51,10 +51,12 @@ h3. Handlers
 The handlers are functions called to refresh the data. Their signature is @function(dynamicUnit, model)@, where:
 
 * @dynamicUnit@ contains the UnitId resolved using @"default"@, @"ally"@ or @"enemy"@. If none of these were listed, or if the rule watches for a fixed unit, e.g. @"player"@, this argument must be ignored.
-* @model@ is a table containing the data to display on the spell. The handler should update its attributes (see below). It may contains values from previous handlers.
+* @model@ is a table containing the data to display on the spell. The handler should update its attributes (see below).
 
 @model@ have three attributes:
 
 * @.expiration@: the expiration time of the (de)buff, like the return value of "GetTime()":http://wowpedia.org/API_GetTime, or the 7th return value of "UnitAura":http://wowpedia.org/API_UnitAura. This is used to display a countdown on the button. The default, 0, means "never expires".
 * @.count@: the number of stacks of the (de)buff, like the 3rd return value of "UnitAura":http://wowpedia.org/API_UnitAura. The default, 0, means "no stack".
 * @.highlight@: an effect to apply to the button, amongst @"good"@ (green border), @"bad"@ (red border), @"flash"@ (glowing animation). Any other value means "no highlight".
+
+In several handlers, possibly from from differents rules, apply to the same spell, they are called in order of definition. Latter handlers could see the results of previous ones in @model@. No assumptions is made about how they handle existing values. Most of the time they just overwrite them.

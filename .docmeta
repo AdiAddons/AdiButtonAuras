@@ -6,4 +6,4 @@
 -
     type: textile
     input-file: doc/Rules.textile
-    output-page: "Rules API"
+    output-page: "Rule API"
