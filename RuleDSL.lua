@@ -149,7 +149,7 @@ end
 
 local function CheckRuleArgs(units, events, handlers)
 	local numUnits, numEvents
-	units, numUnits = AsSet(units or "default", "string")
+	units, numUnits = AsSet(units, "string")
 	assert(numUnits > 0, "No units given to Configure")
 	events, numEvents = AsSet(events, "string")
 	assert(numEvents > 0, "No events given to Configure")

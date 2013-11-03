@@ -39,7 +39,7 @@ for i = 1,4 do tinsert(unitList, "party"..i) end
 for i = 1,40 do tinsert(unitList, "raid"..i) end
 for i, unit in ipairs(unitList) do unitIdentity[unit] = unit end
 
-local dynamicUnitConditionals = { default = "[]" }
+local dynamicUnitConditionals = {}
 
 local function ApplyModifiedClick(base)
 	local selfCast, focusCast = GetModifiedClick("SELFCAST"), GetModifiedClick("FOCUSCAST")
