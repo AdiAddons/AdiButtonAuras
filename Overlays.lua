@@ -382,7 +382,9 @@ local blizzardSupportPrototype = setmetatable({}, overlayMeta)
 local blizzardSupportMeta = { __index = blizzardSupportPrototype }
 
 function blizzardSupportPrototype:GetAction()
-	return self.button.action and GetActionInfo(self.button.action)
+	if self.button.action then
+		return GetActionInfo(self.button.action)
+	end
 end
 
 function blizzardSupportPrototype:GetActionId()
