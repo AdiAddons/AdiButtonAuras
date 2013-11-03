@@ -39,6 +39,15 @@ for i = 1,4 do tinsert(unitList, "party"..i) end
 for i = 1,40 do tinsert(unitList, "raid"..i) end
 for i, unit in ipairs(unitList) do unitIdentity[unit] = unit end
 
+local unitEvents = {
+	target = 'PLAYER_TARGET_CHANGED',
+	focus = 'PLAYER_FOCUS_CHANGED',
+	mouseover = 'UPDATE_MOUSEOVER_UNIT',
+	pet = 'UNIT_PET',
+}
+
+local unitIdentityMeta = { __index = unitIdentity }
+
 local dynamicUnitConditionals = {}
 
 function addon:UpdateDynamicUnitConditionals()
@@ -204,7 +213,12 @@ function overlayPrototype:Initialize(button)
 
 	self:InitializeDisplay()
 
-	self.units, self.events, self.handlers = EMPTY_TABLE, EMPTY_TABLE, EMPTY_TABLE
+	self.unitMap = setmetatable({}, unitIdentityMeta)
+	self.guids = {}
+	self.unitConditionals = {}
+	self.units = {}
+	self.events = {}
+	self.handlers = EMPTY_TABLE
 
 	AceEvent.RegisterMessage(self, addonName..'_RulesUpdated', 'ForceUpdate')
 	AceEvent.RegisterMessage(self, addonName..'_DynamicUnitConditionals_Changed', 'ForceUpdate')
@@ -242,136 +256,155 @@ end
 
 function overlayPrototype:SetAction(event, spellId, macroConditionals)
 	local conf = spellId and addon.spells[spellId]
-	local macroConditionals = conf and ResolveTargeting(spellId, conf.units, macroConditionals)
+	if self.spellId == spellId and self.conf == conf and self.macroConditionals == macroConditionals then return end
+	self.spellId, self.conf, self.macroConditionals = spellId, conf, macroConditionals
 
-	if self.spellId ~= spellId or self.spellConf ~= conf or self.macroConditionals ~= macroConditionals then
-		self.spellId, self.spellConf, self.macroConditionals = spellId, conf, macroConditionals
+	local hasDynamicUnits = false
+	local units = wipe(self.units)
+	local events = wipe(self.events)
+	wipe(self.unitConditionals)
+	self:UnregisterAllEvents()
 
-		if not conf then
-			isMacro = false
+	if conf then
+		self:Debug('SetAction', event, GetSpellLink(spellId), macroConditionals)
+		for event in pairs(conf.events) do
+			events[event] = 'ScheduleUpdate'
+		end
+		for unit in pairs(conf.units) do
+			units[unit] = 'UpdateGUID'
 		end
 
-		self.units = conf and conf.units or EMPTY_TABLE
-		self.handlers = conf and conf.handlers or EMPTY_TABLE
-
-		self:SetEventRegistered(conf, 'PLAYER_ENTERING_WORLD', 'ScheduleScan')
-		self:SetEventRegistered(self.units.target, 'PLAYER_TARGET_CHANGED', 'ScheduleScan')
-		self:SetEventRegistered(self.units.focus, 'PLAYER_FOCUS_CHANGED', 'ScheduleScan')
-		self:SetEventRegistered(self.units.mouseover, 'UPDATE_MOUSEOVER_UNIT', 'ScheduleScan')
-		self:SetEventRegistered(self.units.pet, 'UNIT_PET', 'ScheduleScan')
-
-		local events = conf and conf.events or EMPTY_TABLE
-		if self.events ~= events then
-			for event in pairs(self.events) do
-				if not events[event] then
-					self:UnregisterEvent(event, 'ScheduleScan')
+		for token, default in pairs(dynamicUnitConditionals) do
+			if units[token] then
+				local cond = macroConditionals and gsub(macroConditionals , "%[%]", default) or default
+				self.unitConditionals[token] = cond
+				-- Dynamic always includes target
+				units.target = 'UpdateDynamicUnits'
+				for unit in cond:gmatch('@(%a+%d*)') do
+					units[unit] = 'UpdateDynamicUnits'
 				end
-			end
-			for event in pairs(events) do
-				if not self.events[event] then
-					self:RegisterEvent(event, 'ScheduleScan')
+				if strmatch(cond, 'mod:') then
+					events.MODIFIER_STATE_CHANGED = 'UpdateDynamicUnits'
 				end
+				hasDynamicUnits = true
 			end
-			self.events = events
 		end
 
-		if conf then
-			self:Debug('UpdateAction', 'spell=', GetSpellInfo(spellId), 'macroConditionals=', macroConditionals, 'units=', getkeys(self.units), 'events=', getkeys(self.events), #self.handlers, 'handlers')
+		for unit, handler in pairs(units) do
+			local event = unitEvents[unit]
+			if event and events[event] ~= handler then
+				events[event] = handler
+			end
 		end
 
-		self.smartTargeting = macroConditionals and (conf.units.default or conf.units.ally or conf.units.enemy or isMacro)
-		if self.smartTargeting then
-			self:RegisterEvent('PLAYER_TARGET_CHANGED', 'UpdateTarget')
-			local atTargets = gsub(gsub(macroConditionals, 'target=', '@'), "modifier:", "mod:")
-			self:SetEventRegistered(strmatch(atTargets, '@focus'), 'PLAYER_FOCUS_CHANGED', 'UpdateTarget')
-			self:SetEventRegistered(strmatch(atTargets, '@mouseover'), 'UPDATE_MOUSEOVER_UNIT', 'UpdateTarget')
-			self:SetEventRegistered(strmatch(atTargets, '@pet'), 'UNIT_PET', 'UpdateTarget')
-			self:SetEventRegistered(strmatch(macroConditionals, 'mod:'), 'MODIFIER_STATE_CHANGED', 'UpdateTarget')
-			self:SetEventRegistered(isMacro, 'ACTIONBAR_SLOT_CHANGED', 'UpdateTarget')
-
-			self:UpdateTarget(event)
-		else
-			self:UnregisterEvent('PLAYER_TARGET_CHANGED', 'UpdateTarget')
-			self:UnregisterEvent('PLAYER_FOCUS_CHANGED', 'UpdateTarget')
-			self:UnregisterEvent('UPDATE_MOUSEOVER_UNIT', 'UpdateTarget')
-			self:UnregisterEvent('UNIT_PET', 'UpdateTarget')
-			self:UnregisterEvent('MODIFIER_STATE_CHANGED', 'UpdateTarget')
-			self:UnregisterEvent('ACTIONBAR_SLOT_CHANGED', 'UpdateTarget')
-
-			self.unit, self.guid = nil, nil
-			self:Scan(event)
+		for event, handler in pairs(events) do
+			if not self[event] then
+				self[event] = event:match('^UNIT_') and self.GenericUnitEvent or self.GenericEvent
+			end
+			self:RegisterEvent(event)
 		end
-	end
-end
 
-function overlayPrototype:SetEventRegistered(enabled, event, handler)
-	if enabled then
-		self:RegisterEvent(event, handler)
+		self:RegisterEvent('PLAYER_ENTERING_WORLD', 'ForceUpdate')
+		if macroConditionals then
+			self:RegisterEvent('ACTIONBAR_SLOT_CHANGED')
+		end
+
+		self.handlers = conf.handlers
 	else
-		self:UnregisterEvent(event, handler)
+		self.handlers = EMPTY_TABLE
+	end
+
+	return hasDynamicUnits and self:UpdateDynamicUnits(event) or self:ScheduleUpdate(event)
+end
+
+function overlayPrototype:GenericUnitEvent(event, unit)
+	if self.units[unit] or unit == self.unitMap.ally or unit == self.unitMap.enemy then
+		return self:ScheduleUpdate(event)
 	end
 end
 
-function overlayPrototype:UpdateTarget(event, arg)
-	if event == 'UNIT_PET' and arg ~= 'player' then return end
-	if event == 'ACTIONBAR_SLOT_CHANGED' and arg ~= self:GetActionId() then return end
-	local _, target = SecureCmdOptionParse(self.macroConditionals)
-	local unit = (target and target ~= "") and target or "target"
-	if unit == "mouseover" and mouseoverUnit and UnitIsUnit(mouseoverUnit, unit) then
-		unit = mouseoverUnit
+function overlayPrototype:GenericEvent(event)
+	if self.events[event] then
+		return self[self.events[event]](self, event)
 	end
-	if self.unit ~= unit then
-		self.unit = unit
-		if unit == "mouseover" and UnitExists("mouseover") then
-			if not self.mouseoverTimerId then
-				-- Rescan evey 0.5 seconds since we won't get any event
-				self.mouseoverTimerId = AceTimer.ScheduleRepeatingTimer(self, "Scan", 0.5)
-				self:Debug('Scheduled repeating scans')
+end
+
+function overlayPrototype:ACTIONBAR_SLOT_CHANGED(event, actionId)
+	if actionId == 0 or actionId == self:GetActionId() then
+		self:UpdateDynamicUnits(event)
+	end
+end
+
+function overlayPrototype:UNIT_PET(event, unit)
+	if unit == "player" then
+		return self:GenericEvent(event)
+	end
+end
+
+function overlayPrototype:UpdateDynamicUnits(event)
+	local updated, watchMouseover = false, false
+
+	for token, conditional in pairs(self.unitConditionals) do
+		local _, unit = SecureCmdOptionParse(conditional)
+		if not unit or unit == "" then
+			unit = "target"
+		elseif unit == "mouseover" then
+			if mouseoverUnit and UnitIsUnit(mouseoverUnit, unit) then
+				unit = mouseoverUnit
+			else
+				watchMouseover = true
 			end
-		elseif self.mouseoverTimerId then
-			self:Debug('Cancelled repeating scans')
-			AceTimer.CancelTimer(self, self.mouseoverTimerId)
-			self.mouseoverTimerId = nil
+		end
+		if self.unitMap[token] ~= unit then
+			self.unitMap[token] = unit
+			updated = self:UpdateGUID(event, unit) or updated
 		end
 	end
-	local guid = unit and UnitGUID(unit)
-	if self.guid ~= guid then
-		self.guid = guid
-		self:Scan(event)
+
+	if watchMouseover then
+		if not self.mouseoverTimerId then
+			-- Rescan evey 0.5 seconds since we won't get any event
+			self.mouseoverTimerId = AceTimer.ScheduleRepeatingTimer(self, "Scan", 0.5)
+		end
+	elseif self.mouseoverTimerId then
+		AceTimer.CancelTimer(self, self.mouseoverTimerId)
+		self.mouseoverTimerId = nil
+	end
+
+	return updated
+end
+
+function overlayPrototype:UpdateGUID(event, unit)
+	if not unit then return end
+	local guid = UnitGUID(unit)
+	if self.guids[unit] ~= guid then
+		self.guids[unit] = guid
+		return self:ScheduleUpdate(event)
 	end
 end
 
-function overlayPrototype:ScheduleScan(event, unit)
-	if not unit or (self.smartTargeting and unit == self.unit) or self.units[unit] and not self.mouseoverTimerId then
-		self:SetScript('OnUpdate', self.ScheduledScan)
-	end
-end
-
-function overlayPrototype:ScheduledScan(event, elapsed)
-	self:SetScript('OnUpdate', nil)
-	return self:Scan('OnUpdate')
+function overlayPrototype:ScheduleUpdate(event)
+	self:SetScript('OnUpdate', self.UpdateState)
+	return true
 end
 
 local model = {}
-function overlayPrototype:Scan(event)
-	--self:Debug('Scan', event, self.spellId, self.unit)
+function overlayPrototype:UpdateState(event)
+	self:SetScript('OnUpdate', nil)
 
-	local unit = self.unit
+	local unitMap = self.unitMap
 	model.count, model.expiration, model.highlight  = 0, 0, nil
 
-	if unit or not self.smartTargeting then
-		for i, handler in ipairs(self.handlers) do
-			local value = handler(unit, model)
-			if value then
-				self:Debug('Scan:', value)
-			end
-		end
+	for i, handler in ipairs(self.handlers) do
+		handler(unitMap, model)
 	end
 
 	--self:Debug("Scan =>", model.highlight, model.count, model.expiration)
 	self:SetCount(model.count)
 	self:SetExpiration(model.expiration)
 	self:SetHighlight(model.highlight)
+
+	return true
 end
 
 --------------------------------------------------------------------------------
