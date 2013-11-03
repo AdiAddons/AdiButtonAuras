@@ -87,14 +87,18 @@ function overlayPrototype:OnHide()
 		self.mouseoverTimerId = nil
 	end
 	self.units, self.events, self.handlers = EMPTY_TABLE, EMPTY_TABLE, EMPTY_TABLE
-	self.spellId, self.targetCmd, self.unit, self.guid = nil, nil, nil, nil
+	self.spellId, self.macroConditionals, self.unit, self.guid = nil, nil, nil, nil
 end
 
 function overlayPrototype:FullUpdate(event)
 	self:UpdateAction(event)
 end
 
-local function ResolveMacroSpell(macroId)
+--------------------------------------------------------------------------------
+-- Macro handling
+--------------------------------------------------------------------------------
+
+local function GetMacroAction(macroId)
 	local macroSpell, _, macroSpellId = GetMacroSpell(macroId)
 	if macroSpell or macroSpellId then
 		return "spell", macroSpellId or LibSpellbook:Resolve(macroSpell)
@@ -107,93 +111,120 @@ local function ResolveMacroSpell(macroId)
 	end
 end
 
-local ResolveMacroTargeting
-do
-	local optionPrefixes = {
-		['#showtooltip'] = true,
-		['#show'] = true,
-	}
-	for _, cmd in pairs({"CAST", "CASTRANDOM", "CASTSEQUENCE", "USE", "USERANDOM"}) do
-		for i = 1, 16 do
-			local alias = _G["SLASH_"..cmd..i]
-			if alias then
-				optionPrefixes[strlower(alias)] = true
-			else
-				break
+local conditionalPrefixes = {
+	['#showtooltip'] = true,
+	['#show'] = true,
+}
+for _, cmd in pairs({"CAST", "CASTRANDOM", "CASTSEQUENCE", "USE", "USERANDOM"}) do
+	for i = 1, 16 do
+		local alias = _G["SLASH_"..cmd..i]
+		if alias then
+			conditionalPrefixes[strlower(alias)] = true
+		else
+			break
+		end
+	end
+end
+
+local function GetFirstConditionals0(line, ...)
+	if not line then return end
+	local prefix, suffix = strsplit(" ", strtrim(line), 2)
+	if prefix and suffix and conditionalPrefixes[strtrim(strlower(prefix))] then
+		return suffix
+	else
+		return GetFirstConditionals0(...)
+	end
+end
+
+local function StripSpells(term, ...)
+	if term then
+		return strmatch(strtrim(term), "^(%[.+%])") or "[]", StripSpells(...)
+	end
+end
+
+local conditionalsCache = addon.Memoize(function(index)
+	local body = GetMacroBody(index)
+	local conditionals = body and GetFirstConditionals(strsplit("\n", body)) or false
+	return conditionals and strjoin(';', StripSpells(strsplit(';', options)))
+end)
+LibAdiEvent:RegisterEvent('UPDATE_MACROS', function() return wipe(conditionalsCache) end)
+
+local function GetMacroConditionals(index)
+	return conditionalsCache[tonumber(index)]
+end
+
+--------------------------------------------------------------------------------
+-- Unit handling
+--------------------------------------------------------------------------------
+
+local unitList = { "player", "pet", "target", "focus" }
+for i = 1,4 do tinsert(unitList, "party"..i) end
+for i = 1,40 do tinsert(unitList, "raid"..i) end
+
+local dynamicUnitConditionals = { default = "[]" }
+
+local function ApplyModifiedClick(base)
+	local selfCast, focusCast = GetModifiedClick("SELFCAST"), GetModifiedClick("FOCUSCAST")
+	if focusCast ~= "NONE" then
+		base = "[@focus,mod:"..focusCast.."]"..base
+	end
+	if selfCast ~= "NONE" then
+		base = "[@player,mod:"..selfCast.."]"..base
+	end
+	return base
+end
+
+local function UpdateDynamicUnitConditionals()
+	local enemy = ApplyModifiedClick("[harm]")
+	local ally = ApplyModifiedClick(GetCVarBool("autoSelfCast") and "[help,nodead][@player]" or "[help]")
+	if dynamicUnitConditionals.enemy ~= enemy or dynamicUnitConditionals.ally ~= ally then
+		dynamicUnitConditionals.enemy, dynamicUnitConditionals.ally = enemy, ally
+	end
+end
+
+LibAdiEvent:RegisterEvent('VARIABLES_LOADED', UpdateDynamicUnitConditionals)
+LibAdiEvent:RegisterEvent('CVAR_UPDATE', function(_, _, name)
+	if name == "autoSelfCast" then
+		return UpdateDynamicUnitConditionals()
+	end
+end)
+LibAdiEvent:RegisterEvent('UPDATE_BINDINGS', UpdateDynamicUnitConditionals)
+UpdateDynamicUnitConditionals()
+
+local mouseoverUnit
+LibAdiEvent:RegisterEvent('UPDATE_MOUSEOVER_UNIT', function()
+	if UnitExists('mouseover') then
+		for i, unit in pairs(unitList) do
+			if UnitIsUnit(unit, "mouseover") then
+				addon:Debug('Using', unit, 'for mouseover')
+				mouseoverUnit = unit
+				return
 			end
 		end
 	end
+	addon:Debug('Using mouseover as is')
+	mouseoverUnit = nil
+end)
 
-	local function FindMacroOptions(line, ...)
-		if not line then return end
-		local prefix, suffix = strsplit(" ", strtrim(line), 2)
-		if prefix and suffix and optionPrefixes[strtrim(strlower(prefix))] then
-			return suffix
-		else
-			return FindMacroOptions(...)
-		end
-	end
-
-	local function GetConds(term, ...)
-		if term then
-			return strmatch(strtrim(term), "^(%[.+%])") or "[]", GetConds(...)
-		end
-	end
-
-	local macroOptionsMemo = addon.Memoize(function(index)
-		local body = GetMacroBody(index)
-		local options = body and FindMacroOptions(strsplit("\n", body)) or false
-		return options and strjoin(';', GetConds(strsplit(';', options)))
-	end)
-	LibAdiEvent:RegisterEvent('UPDATE_MACROS', function() return wipe(macroOptionsMemo) end)
-
-	function ResolveMacroTargeting(index)
-		return macroOptionsMemo[tonumber(index)]
-	end
-end
-
-local defaultTargets = { unknown = "[]" }
-do
-	local function ApplyModifiedClick(base)
-		local selfCast, focusCast = GetModifiedClick("SELFCAST"), GetModifiedClick("FOCUSCAST")
-		if focusCast ~= "NONE" then
-			base = "[@focus,mod:"..focusCast.."]"..base
-		end
-		if selfCast ~= "NONE" then
-			base = "[@player,mod:"..selfCast.."]"..base
-		end
-		return base
-	end
-
-	local function UpdateDefaultTargets()
-		defaultTargets.harmful = ApplyModifiedClick("[harm]")
-		defaultTargets.helpful = ApplyModifiedClick(GetCVarBool("autoSelfCast") and "[help,nodead][@player]" or "[help]")
-	end
-
-	LibAdiEvent:RegisterEvent('VARIABLES_LOADED', UpdateDefaultTargets)
-	LibAdiEvent:RegisterEvent('CVAR_UPDATE', UpdateDefaultTargets)
-	UpdateDefaultTargets()
-end
-
-local function ResolveActionToSpell(actionType, actionId)
+local function GetActionSpell(actionType, actionId)
 	local isMacro = (actionType == "macro")
-	local targetCmd
+	local macroConditionals
 
 	-- Resolve macros
 	if isMacro then
-		targetCmd, actionType, actionId = ResolveMacroTargeting(actionId), ResolveMacroSpell(actionId)
+		macroConditionals, actionType, actionId = GetMacroConditionals(actionId), GetMacroAction(actionId)
 	end
 
 	-- Resolve items and companions
 	if actionType == "item" then
 		local spell = GetItemSpell(actionId)
-		return LibSpellbook:Resolve(spell), targetCmd, isMacro
+		return LibSpellbook:Resolve(spell), macroConditionals, isMacro
 	elseif actionType == "spell" or actionType == "companion" then
-		return actionId, targetCmd, isMacro
+		return actionId, macroConditionals, isMacro
 	end
 end
 
-local function ResolveTargeting(spellId, units, targetCmd)
+local function ResolveTargeting(spellId, units, macroConditionals)
 	local spellName = GetSpellInfo(spellId)
 	local spellType
 	if units.ally or (units.default and IsHelpfulSpell(spellName)) then
@@ -205,16 +236,16 @@ local function ResolveTargeting(spellId, units, targetCmd)
 	else
 		return
 	end
-	return targetCmd and gsub(targetCmd , "%[%]", defaultTargets[spellType]) or defaultTargets[spellType]
+	return macroConditionals and gsub(macroConditionals , "%[%]", dynamicUnitConditionals[spellType]) or dynamicUnitConditionals[spellType]
 end
 
 function overlayPrototype:UpdateAction(event)
-	local spellId, targetCmd, isMacro = ResolveActionToSpell(self:GetAction())
+	local spellId, macroConditionals, isMacro = GetActionSpell(self:GetAction())
 	local conf = spellId and addon.spells[spellId]
-	local targetCmd = conf and ResolveTargeting(spellId, conf.units, targetCmd)
+	local macroConditionals = conf and ResolveTargeting(spellId, conf.units, macroConditionals)
 
-	if self.spellId ~= spellId or self.spellConf ~= conf or self.targetCmd ~= targetCmd then
-		self.spellId, self.spellConf, self.targetCmd = spellId, conf, targetCmd
+	if self.spellId ~= spellId or self.spellConf ~= conf or self.macroConditionals ~= macroConditionals then
+		self.spellId, self.spellConf, self.macroConditionals = spellId, conf, macroConditionals
 
 		if not conf then
 			isMacro = false
@@ -245,17 +276,17 @@ function overlayPrototype:UpdateAction(event)
 		end
 
 		if conf then
-			self:Debug('UpdateAction', 'spell=', GetSpellInfo(spellId), 'targetCmd=', targetCmd, 'units=', getkeys(self.units), 'events=', getkeys(self.events), #self.handlers, 'handlers')
+			self:Debug('UpdateAction', 'spell=', GetSpellInfo(spellId), 'macroConditionals=', macroConditionals, 'units=', getkeys(self.units), 'events=', getkeys(self.events), #self.handlers, 'handlers')
 		end
 
-		self.smartTargeting = targetCmd and (conf.units.default or conf.units.ally or conf.units.enemy or isMacro)
+		self.smartTargeting = macroConditionals and (conf.units.default or conf.units.ally or conf.units.enemy or isMacro)
 		if self.smartTargeting then
 			self:RegisterEvent('PLAYER_TARGET_CHANGED', 'UpdateTarget')
-			local atTargets = gsub(gsub(targetCmd, 'target=', '@'), "modifier:", "mod:")
+			local atTargets = gsub(gsub(macroConditionals, 'target=', '@'), "modifier:", "mod:")
 			self:SetEventRegistered(strmatch(atTargets, '@focus'), 'PLAYER_FOCUS_CHANGED', 'UpdateTarget')
 			self:SetEventRegistered(strmatch(atTargets, '@mouseover'), 'UPDATE_MOUSEOVER_UNIT', 'UpdateTarget')
 			self:SetEventRegistered(strmatch(atTargets, '@pet'), 'UNIT_PET', 'UpdateTarget')
-			self:SetEventRegistered(strmatch(targetCmd, 'mod:'), 'MODIFIER_STATE_CHANGED', 'UpdateTarget')
+			self:SetEventRegistered(strmatch(macroConditionals, 'mod:'), 'MODIFIER_STATE_CHANGED', 'UpdateTarget')
 			self:SetEventRegistered(isMacro, 'ACTIONBAR_SLOT_CHANGED', 'UpdateTarget')
 
 			self:UpdateTarget(event)
@@ -281,30 +312,10 @@ function overlayPrototype:SetEventRegistered(enabled, event, handler)
 	end
 end
 
-local mouseoverUnit
-do
-	local units = { "player", "pet", "target", "focus" }
-	for i = 1,4 do tinsert(units, "party"..i) end
-	for i = 1,40 do tinsert(units, "raid"..i) end
-	LibAdiEvent:RegisterEvent('UPDATE_MOUSEOVER_UNIT', function()
-		if UnitExists('mouseover') then
-			for i, unit in pairs(units) do
-				if UnitIsUnit(unit, "mouseover") then
-					addon:Debug('Using', unit, 'for mouseover')
-					mouseoverUnit = unit
-					return
-				end
-			end
-		end
-		addon:Debug('Using mouseover as is')
-		mouseoverUnit = nil
-	end)
-end
-
 function overlayPrototype:UpdateTarget(event, arg)
 	if event == 'UNIT_PET' and arg ~= 'player' then return end
 	if event == 'ACTIONBAR_SLOT_CHANGED' and arg ~= self:GetActionId() then return end
-	local _, target = SecureCmdOptionParse(self.targetCmd)
+	local _, target = SecureCmdOptionParse(self.macroConditionals)
 	local unit = (target and target ~= "") and target or "target"
 	if unit == "mouseover" and mouseoverUnit and UnitIsUnit(mouseoverUnit, unit) then
 		unit = mouseoverUnit
