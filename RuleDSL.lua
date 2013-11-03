@@ -222,32 +222,24 @@ end
 -- Handler builders
 --------------------------------------------------------------------------------
 
-local function ApplyFixedUnit(unit, handler)
-	if unit == "default" or unit == "ally" or unit == "enemy" then
-		return handler
-	else
-		return function(_, model) return handler(unit, model) end
-	end
-end
-
-local function BuildAuraHandler_Single(filter, highlight, unit, spell)
+local function BuildAuraHandler_Single(filter, highlight, token, spell)
 	local spellName = assert(GetSpellInfo(spell), "Unknown spell "..spell)
-	return ApplyFixedUnit(unit, function(unit, model)
-		local name, _, _, count, _, _, expiration = UnitAura(unit, spellName, nil, filter)
+	return function(units, model)
+		local name, _, _, count, _, _, expiration = UnitAura(units[token], spellName, nil, filter)
 		if name then
 			model.highlight, model.count, model.expiration = highlight, count, expiration
 		end
-	end)
+	end
 end
 
-local function BuildAuraHandler_Longest(filter, highlight, unit, buffs)
+local function BuildAuraHandler_Longest(filter, highlight, token, buffs)
 	local numBuffs
 	buffs, numBuffs = AsSet(buffs, "number")
 	if numBuffs == 1 then
-		return BuildAuraHandler_Single(filter, highlight, unit, next(buffs))
+		return BuildAuraHandler_Single(filter, highlight, token, next(buffs))
 	end
-	return ApplyFixedUnit(unit, function(unit, model)
-		local longest = -1
+	return function(units, model)
+		local unit, longest = units[token], -1
 		for i = 1, math.huge do
 			local name, _, _, count, _, _, expiration, _, _, _, spellId = UnitAura(unit, i, filter)
 			if name then
@@ -259,16 +251,17 @@ local function BuildAuraHandler_Longest(filter, highlight, unit, buffs)
 				return
 			end
 		end
-	end)
+	end
 end
 
-local function BuildAuraHandler_FirstOf(filter, highlight, unit, buffs)
+local function BuildAuraHandler_FirstOf(filter, highlight, token, buffs)
 	local numBuffs
 	buffs, numBuffs = AsSet(buffs, "number")
 	if numBuffs == 1 then
-		return BuildAuraHandler_Single(filter, highlight, unit, next(buffs))
+		return BuildAuraHandler_Single(filter, highlight, token, next(buffs))
 	end
-	return ApplyFixedUnit(unit, function(unit, model)
+	return function(units, model)
+		local unit = units[token]
 		for i = 1, math.huge do
 			local name, _, _, count, _, _, expiration, _, _, _, spellId = UnitAura(unit, i, filter)
 			if name then
@@ -280,7 +273,7 @@ local function BuildAuraHandler_FirstOf(filter, highlight, unit, buffs)
 				return
 			end
 		end
-	end)
+	end
 end
 
 --------------------------------------------------------------------------------

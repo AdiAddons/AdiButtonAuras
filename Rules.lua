@@ -103,7 +103,8 @@ function addon.CreateRules()
 				"UNIT_SPELLCAST_STOP",
 			},
 			-- Handler
-			function(unit, model)
+			function(units, model)
+				local unit = units.enemy
 				if UnitCanAttack("player", unit) then
 					local name, _, _, _, _, endTime, _, _, notInterruptible = UnitCastingInfo(unit)
 					if name and not notInterruptible then
@@ -121,12 +122,13 @@ function addon.CreateRules()
 		function()
 			for spell, dispelType in pairs(LibDispellable.spells) do
 				local spell, offensive = spell, (dispelType ~= 'defensive')
+				local unit = offensive and 'enemy' or 'ally'
 				AddRuleFor(
 					spell,
-					offensive and 'enemy' or 'ally',
+					unit,
 					"UNIT_AURA",
-					function(unit, model)
-						for i, dispel, _, _, _, count, _, _, expiration in LibDispellable:IterateDispellableAuras(unit, offensive) do
+					function(units, model)
+						for i, dispel, _, _, _, count, _, _, expiration in LibDispellable:IterateDispellableAuras(units[unit], offensive) do
 							if dispel == spell then
 								model.highlight, model.count, model.expiration = "bad", count, expiration
 								return
@@ -344,8 +346,8 @@ function addon.CreateRules()
 				},
 				{ "enemy", "player" },
 				"UNIT_COMBO_POINTS",
-				function(unit, model)
-					local points = GetComboPoints(UnitHasVehicleUI("player") and "vehicle" or "player", unit)
+				function(units, model)
+					local points = GetComboPoints(UnitHasVehicleUI("player") and "vehicle" or "player", units.enemy)
 					model.count = points or 0
 				end,
 			},
