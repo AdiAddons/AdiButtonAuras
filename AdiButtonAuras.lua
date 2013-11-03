@@ -32,10 +32,10 @@ else
 	addon.Debug = function() end
 end
 
-LibStub('AceEvent-3.0').Embed(addon)
+LibStub('AceEvent-3.0'):Embed(addon)
 
---------------------------------------------------------------------------------
--- Overlay spawning
+------------------------------------------------------------------------------
+-- Initialization
 --------------------------------------------------------------------------------
 
 local function IsLoadable(addon)
