@@ -79,21 +79,37 @@ function addon:CVAR_UPDATE(_, name)
 end
 
 local function ResolveMouseover()
-	for i, unit in pairs(unitList) do
-		if UnitIsUnit(unit, "mouseover") then
-			return unit
+	if UnitExists('mouseover') then
+		for i, unit in pairs(unitList) do
+			if UnitIsUnit(unit, "mouseover") then
+				return unit
+			end
 		end
+		return 'mouseover'
 	end
-	return 'mouseover'
 end
 
-local mouseoverUnit
+local MOUSEOVER_CHANGED = addonName..'_Mouseover_Changed'
+local MOUSEOVER_TICK = addonName..'_Mouseover_Tick'
+
+local mouseoverUnit, mouseoverUnitTimer
 function addon:UPDATE_MOUSEOVER_UNIT()
 	local unit = ResolveMouseover()
 	if mouseoverUnit ~= unit then
-		self:Debug('mouseover =', unit)
+		self:Debug('mouseover changed:', unit)
 		mouseoverUnit = unit
-		addon:SendMessage(addonName..'_Mouseover_Changed', unit)
+		if unit == 'mouseover' then
+			if not mouseoverUnitTimer then
+				mouseoverUnitTimer = AceTimer.ScheduleRepeatingTimer(self, 'UPDATE_MOUSEOVER_UNIT', 0.5)
+			end
+		elseif mouseoverUnitTimer then
+			AceTimer.CancelTimer(mouseoverUnitTimer)
+			mouseoverUnitTimer = nil
+		end
+		return self:SendMessage(MOUSEOVER_CHANGED, unit)
+	elseif unit == 'mouseover' then
+		self:Debug('mouseover tick')
+		return self:SendMessage(MOUSEOVER_TICK, unit)
 	end
 end
 
@@ -264,6 +280,8 @@ function overlayPrototype:SetAction(event, spellId, macroConditionals)
 	local events = wipe(self.events)
 	wipe(self.unitConditionals)
 	self:UnregisterAllEvents()
+	AceEvent.UnregisterMessage(self, MOUSEOVER_CHANGED)
+	AceEvent.UnregisterMessage(self, MOUSEOVER_TICK)
 
 	if conf then
 		self:Debug('SetAction', event, GetSpellLink(spellId), macroConditionals)
@@ -362,13 +380,11 @@ function overlayPrototype:UpdateDynamicUnits(event)
 	end
 
 	if watchMouseover then
-		if not self.mouseoverTimerId then
-			-- Rescan evey 0.5 seconds since we won't get any event
-			self.mouseoverTimerId = AceTimer.ScheduleRepeatingTimer(self, "Scan", 0.5)
-		end
-	elseif self.mouseoverTimerId then
-		AceTimer.CancelTimer(self, self.mouseoverTimerId)
-		self.mouseoverTimerId = nil
+		AceEvent.RegisterMessage(self, MOUSEOVER_CHANGED, 'UpdateGUID', 'mouseover')
+		AceEvent.RegisterMessage(self, MOUSEOVER_TICK, 'ScheduleUpdate')
+	else
+		AceEvent.UnregisterMessage(self, MOUSEOVER_CHANGED)
+		AceEvent.UnregisterMessage(self, MOUSEOVER_TICK)
 	end
 
 	return updated
