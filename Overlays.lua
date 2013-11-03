@@ -196,8 +196,7 @@ function overlayPrototype:Initialize(button)
 	self:Hide()
 	self.button = button
 
-	LibAdiEvent.Embed(self)
-
+	self:SetScript('OnEvent', self.OnEvent)
 	self:SetScript('OnShow', self.OnShow)
 	self:SetScript('OnHide', self.OnHide)
 
@@ -213,41 +212,35 @@ function overlayPrototype:Initialize(button)
 	self:Show()
 end
 
+function overlayPrototype:OnEvent(event, ...)
+	if self:IsVisible() then
+		return self[event](self, event, ...)
+	end
+end
+
 function overlayPrototype:OnShow()
-	self:FullUpdate('OnShow')
+	self:ForceUpdate('OnShow')
 end
 
 function overlayPrototype:OnHide()
-	self:UnregisterAllEvents()
-	if self.mouseoverTimerId then
-		AceTimer.CancelTimer(self, self.mouseoverTimerId)
-		self.mouseoverTimerId = nil
-	end
-	self.units, self.events, self.handlers = EMPTY_TABLE, EMPTY_TABLE, EMPTY_TABLE
-	self.spellId, self.macroConditionals, self.unit, self.guid = nil, nil, nil, nil
+	self:SetAction('OnHide', nil, nil)
 end
 
-function overlayPrototype:FullUpdate(event)
-	self:UpdateAction(event)
-end
-
-local function ResolveTargeting(spellId, units, macroConditionals)
-	local spellName = GetSpellInfo(spellId)
-	local spellType
-	if units.ally or (units.default and IsHelpfulSpell(spellName)) then
-		spellType = "helpful"
-	elseif units.enemy or (units.default and IsHarmfulSpell(spellName)) then
-		spellType = "harmful"
-	elseif units.default then
-		spellType = "unknown"
-	else
-		return
+function overlayPrototype:ForceUpdate(event)
+	self:Debug('ForceUpdate', event)
+	if not self:UpdateAction(event) and not self:UpdateDynamicUnits(event) then
+		return self:UpdateState(event)
 	end
-	return macroConditionals and gsub(macroConditionals , "%[%]", dynamicUnitConditionals[spellType]) or dynamicUnitConditionals[spellType]
 end
 
 function overlayPrototype:UpdateAction(event)
-	local spellId, macroConditionals, isMacro = GetActionSpell(self:GetAction())
+	local actionId, actionType = self:GetAction()
+	local spellId, macroConditionals = GetActionSpell(actionId, actionType)
+	self:Debug('UpdateAction', event, '|', actionId, actionType, '=>', spellId, macroConditionals)
+	return self:SetAction(event, spellId, macroConditionals)
+end
+
+function overlayPrototype:SetAction(event, spellId, macroConditionals)
 	local conf = spellId and addon.spells[spellId]
 	local macroConditionals = conf and ResolveTargeting(spellId, conf.units, macroConditionals)
 
