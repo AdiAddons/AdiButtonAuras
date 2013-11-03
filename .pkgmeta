@@ -19,3 +19,6 @@ externals:
   libs/LibDispellable-1.0:
     url: git://git.wowace.com/wow/libdispellable-1-0/mainline.git
     tag: latest
+  libs/DRData-1.0:
+    url: git://git.wowace.com/wow/drdata-1-0/mainline.git
+    tag: latest

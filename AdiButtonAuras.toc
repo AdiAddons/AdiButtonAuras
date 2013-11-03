@@ -36,6 +36,7 @@ libs\LibStub\LibStub.lua
 libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
 libs\AceTimer-3.0\AceTimer-3.0.xml
 libs\LibDispellable-1.0\LibDispellable-1.0.xml
+libs\DRData-1.0\DRData-1.0.xml
 #@end-no-lib-strip@
 libs\LibAdiEvent-1.0\LibAdiEvent-1.0.lua
 libs\LibSpellbook-1.0\LibSpellbook-1.0.lua
