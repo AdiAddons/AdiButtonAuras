@@ -21,7 +21,7 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 
 local addonName, addon = ...
 
-local LibAdiEvent = LibStub('LibAdiEvent-1.0')
+local AceEvent = LibStub('AceEvent-3.0')
 local LibSpellbook = LibStub('LibSpellbook-1.0')
 local AceTimer = LibStub('AceTimer-3.0')
 
@@ -52,7 +52,7 @@ local function ApplyModifiedClick(base)
 	return base
 end
 
-local function UpdateDynamicUnitConditionals()
+function addon:UpdateDynamicUnitConditionals()
 	local enemy = ApplyModifiedClick("[harm]")
 	local ally = ApplyModifiedClick(GetCVarBool("autoSelfCast") and "[help,nodead][@player]" or "[help]")
 	if dynamicUnitConditionals.enemy ~= enemy or dynamicUnitConditionals.ally ~= ally then
@@ -60,29 +60,26 @@ local function UpdateDynamicUnitConditionals()
 	end
 end
 
-LibAdiEvent:RegisterEvent('VARIABLES_LOADED', UpdateDynamicUnitConditionals)
-LibAdiEvent:RegisterEvent('CVAR_UPDATE', function(_, _, name)
+function addon:CVAR_UPDATE(_, name)
 	if name == "autoSelfCast" then
-		return UpdateDynamicUnitConditionals()
+		return self:UpdateDynamicUnitConditionals()
 	end
-end)
-LibAdiEvent:RegisterEvent('UPDATE_BINDINGS', UpdateDynamicUnitConditionals)
-UpdateDynamicUnitConditionals()
+end
 
 local mouseoverUnit
-LibAdiEvent:RegisterEvent('UPDATE_MOUSEOVER_UNIT', function()
+function addon:UPDATE_MOUSEOVER_UNIT()
 	if UnitExists('mouseover') then
 		for i, unit in pairs(unitList) do
 			if UnitIsUnit(unit, "mouseover") then
-				addon:Debug('Using', unit, 'for mouseover')
+				self:Debug('Using', unit, 'for mouseover')
 				mouseoverUnit = unit
 				return
 			end
 		end
 	end
-	addon:Debug('Using mouseover as is')
+	self:Debug('Using mouseover as is')
 	mouseoverUnit = nil
-end)
+end
 
 --------------------------------------------------------------------------------
 -- Macro handling
@@ -147,7 +144,10 @@ local conditionalsCache = addon.Memoize(function(index)
 		"modifier:"
 	)
 end)
-LibAdiEvent:RegisterEvent('UPDATE_MACROS', function() return wipe(conditionalsCache) end)
+
+function addon:UPDATE_MACROS()
+	wipe(conditionalsCache)
+end
 
 local function GetMacroConditionals(index)
 	return conditionalsCache[tonumber(index)]
@@ -403,7 +403,7 @@ function labSupportPrototype:GetActionId()
 end
 
 --------------------------------------------------------------------------------
--- Button detection and support
+-- Overlay spawning
 --------------------------------------------------------------------------------
 
 local overlays = addon.Memoize(function(button)
@@ -426,7 +426,11 @@ function addon:UpdateAllOverlays(event)
 	end
 end
 
-local function ScanGlobalButtons(prefix, count)
+function addon:GetOverlay(button)
+	return button and overlays[button]
+end
+
+function addon:ScanButtons(prefix, count)
 	for i = 1, count or 12 do
 		local button = _G[prefix..i]
 		if button then
@@ -434,46 +438,3 @@ local function ScanGlobalButtons(prefix, count)
 		end
 	end
 end
-
-local function IsLoadable(addon)
-	local enabled, loadable = select(4, GetAddOnInfo(addon))
-	return enabled and loadable and true or nil
-end
-
-local toWatch = {
-	[addonName] = true,
-	Dominos = IsLoadable('Dominos'),
-	Bartender4 = IsLoadable('Bartender4'),
-}
-
-local function ADDON_LOADED(_, event, name)
-	if name == addonName then
-		toWatch[addonName] = nil
-		addon:Debug(name, 'loaded')
-		ScanGlobalButtons("ActionButton", 12)
-		ScanGlobalButtons("BonusActionButton", 12)
-		ScanGlobalButtons("MultiBarRightButton", 12)
-		ScanGlobalButtons("MultiBarLeftButton", 12)
-		ScanGlobalButtons("MultiBarBottomRightButton", 12)
-		ScanGlobalButtons("MultiBarBottomLeftButton", 12)
-		hooksecurefunc('ActionButton_Update', function(button) return overlays[button]:FullUpdate('ActionButton_Update') end)
-	end
-	if toWatch.Dominos and (name == 'Dominos' or IsAddOnLoaded('Dominos')) then
-		addon:Debug('Dominos loaded')
-		toWatch.Dominos = nil
-		ScanGlobalButtons("DominosActionButton", 120)
-	end
-	if toWatch.Bartender4 and (name == 'Bartender4' or IsAddOnLoaded('Bartender4')) then
-		addon:Debug('Bartender4 loaded')
-		toWatch.Bartender4 = nil
-		ScanGlobalButtons("BT4Button", 120)
-	end
-	if not next(toWatch) then
-		addon:Debug('Button loading done')
-		LibAdiEvent:UnregisterEvent('ADDON_LOADED', ADDON_LOADED)
-		toWatch, ADDON_LOADED, IsLoadable, ScanGlobalButtons = nil, nil, nil, nil
-	end
-end
-
-LibAdiEvent:RegisterEvent('ADDON_LOADED', ADDON_LOADED)
-
