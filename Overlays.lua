@@ -41,22 +41,25 @@ for i, unit in ipairs(unitList) do unitIdentity[unit] = unit end
 
 local dynamicUnitConditionals = {}
 
-local function ApplyModifiedClick(base)
+function addon:UpdateDynamicUnitConditionals()
 	local selfCast, focusCast = GetModifiedClick("SELFCAST"), GetModifiedClick("FOCUSCAST")
+	local enemy = "[harm]"
+	local ally
+	if GetCVarBool("autoSelfCast") then
+		ally = "[help,nodead][@player]"
+	else
+		ally = "[help]"
+	end
 	if focusCast ~= "NONE" then
-		base = "[@focus,mod:"..focusCast.."]"..base
+		enemy = "[@focus,mod:"..focusCast.."]"..enemy
+		ally = "[@focus,mod:"..focusCast.."]"..ally
 	end
 	if selfCast ~= "NONE" then
-		base = "[@player,mod:"..selfCast.."]"..base
+		ally = "[@player,mod:"..selfCast.."]"..ally
 	end
-	return base
-end
-
-function addon:UpdateDynamicUnitConditionals()
-	local enemy = ApplyModifiedClick("[harm]")
-	local ally = ApplyModifiedClick(GetCVarBool("autoSelfCast") and "[help,nodead][@player]" or "[help]")
 	if dynamicUnitConditionals.enemy ~= enemy or dynamicUnitConditionals.ally ~= ally then
 		dynamicUnitConditionals.enemy, dynamicUnitConditionals.ally = enemy, ally
+		addon:SendMessage(addonName..'_DynamicUnitConditionals_Changed')
 	end
 end
 
@@ -202,6 +205,7 @@ function overlayPrototype:Initialize(button)
 	self.units, self.events, self.handlers = EMPTY_TABLE, EMPTY_TABLE, EMPTY_TABLE
 
 	AceEvent.RegisterMessage(self, addonName..'_RulesUpdated', 'ForceUpdate')
+	AceEvent.RegisterMessage(self, addonName..'_DynamicUnitConditionals_Changed', 'ForceUpdate')
 
 	self:Show()
 end
