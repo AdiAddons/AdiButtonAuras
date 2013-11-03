@@ -126,13 +126,13 @@ for _, cmd in pairs({"CAST", "CASTRANDOM", "CASTSEQUENCE", "USE", "USERANDOM"}) 
 	end
 end
 
-local function GetFirstConditionals0(line, ...)
+local function GetFirstConditionals(line, ...)
 	if not line then return end
 	local prefix, suffix = strsplit(" ", strtrim(line), 2)
 	if prefix and suffix and conditionalPrefixes[strtrim(strlower(prefix))] then
 		return suffix
 	else
-		return GetFirstConditionals0(...)
+		return GetFirstConditionals(...)
 	end
 end
 
@@ -144,8 +144,18 @@ end
 
 local conditionalsCache = addon.Memoize(function(index)
 	local body = GetMacroBody(index)
-	local conditionals = body and GetFirstConditionals(strsplit("\n", body)) or false
-	return conditionals and strjoin(';', StripSpells(strsplit(';', options)))
+	if not body then return false end
+	local conditionals = GetFirstConditionals(strsplit("\n", body))
+	if not conditionals then return false end
+	return gsub(
+		gsub(
+			strjoin(';', StripSpells(strsplit(';', conditionals))),
+			"target=",
+			"@"
+		),
+		"mod:",
+		"modifier:"
+	)
 end)
 LibAdiEvent:RegisterEvent('UPDATE_MACROS', function() return wipe(conditionalsCache) end)
 
