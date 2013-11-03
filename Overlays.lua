@@ -29,70 +29,60 @@ local EMPTY_TABLE = setmetatable({}, { __newindex = function() error(2, "Read on
 
 local getkeys = addon.getkeys
 
-local overlayPrototype = setmetatable({}, { __index = CreateFrame("Frame") })
-local overlayMeta = { __index = overlayPrototype }
+--------------------------------------------------------------------------------
+-- Unit handling
+--------------------------------------------------------------------------------
 
-addon.overlayPrototype = overlayPrototype
+local unitList = { "player", "pet", "target", "focus" }
+local unitIdentity = {}
+for i = 1,4 do tinsert(unitList, "party"..i) end
+for i = 1,40 do tinsert(unitList, "raid"..i) end
+for i, unit in ipairs(unitList) do unitIdentity[unit] = unit end
 
-overlayPrototype.Debug = addon.Debug
+local dynamicUnitConditionals = { default = "[]" }
 
-local function GetBlizzardButtonAction(overlay)
-	if overlay.button.action then
-		return GetActionInfo(overlay.button.action)
+local function ApplyModifiedClick(base)
+	local selfCast, focusCast = GetModifiedClick("SELFCAST"), GetModifiedClick("FOCUSCAST")
+	if focusCast ~= "NONE" then
+		base = "[@focus,mod:"..focusCast.."]"..base
+	end
+	if selfCast ~= "NONE" then
+		base = "[@player,mod:"..selfCast.."]"..base
+	end
+	return base
+end
+
+local function UpdateDynamicUnitConditionals()
+	local enemy = ApplyModifiedClick("[harm]")
+	local ally = ApplyModifiedClick(GetCVarBool("autoSelfCast") and "[help,nodead][@player]" or "[help]")
+	if dynamicUnitConditionals.enemy ~= enemy or dynamicUnitConditionals.ally ~= ally then
+		dynamicUnitConditionals.enemy, dynamicUnitConditionals.ally = enemy, ally
 	end
 end
 
-local function GetBlizzardButtonActionId(overlay)
-	return overlay.button.action
-end
-
-local function GetLABAction(overlay)
-	return overlay.button:GetAction()
-end
-
-function overlayPrototype:Initialize(button)
-	self:Hide()
-	self.button = button
-
-	LibAdiEvent.Embed(self)
-
-	if button.__LAB_Version then
-		self.GetAction = GetLABAction
-		self.GetActionId = function() end
-	else
-		self.GetAction = GetBlizzardButtonAction
-		self.GetActionId = GetBlizzardButtonActionId
+LibAdiEvent:RegisterEvent('VARIABLES_LOADED', UpdateDynamicUnitConditionals)
+LibAdiEvent:RegisterEvent('CVAR_UPDATE', function(_, _, name)
+	if name == "autoSelfCast" then
+		return UpdateDynamicUnitConditionals()
 	end
+end)
+LibAdiEvent:RegisterEvent('UPDATE_BINDINGS', UpdateDynamicUnitConditionals)
+UpdateDynamicUnitConditionals()
 
-	self:SetScript('OnShow', self.OnShow)
-	self:SetScript('OnHide', self.OnHide)
-
-	self:SetAllPoints(button)
-
-	self:InitializeDisplay()
-
-	self.units, self.events, self.handlers = EMPTY_TABLE, EMPTY_TABLE, EMPTY_TABLE
-
-	self:Show()
-end
-
-function overlayPrototype:OnShow()
-	self:FullUpdate('OnShow')
-end
-
-function overlayPrototype:OnHide()
-	self:UnregisterAllEvents()
-	if self.mouseoverTimerId then
-		AceTimer.CancelTimer(self, self.mouseoverTimerId)
-		self.mouseoverTimerId = nil
+local mouseoverUnit
+LibAdiEvent:RegisterEvent('UPDATE_MOUSEOVER_UNIT', function()
+	if UnitExists('mouseover') then
+		for i, unit in pairs(unitList) do
+			if UnitIsUnit(unit, "mouseover") then
+				addon:Debug('Using', unit, 'for mouseover')
+				mouseoverUnit = unit
+				return
+			end
+		end
 	end
-	self.units, self.events, self.handlers = EMPTY_TABLE, EMPTY_TABLE, EMPTY_TABLE
-	self.spellId, self.macroConditionals, self.unit, self.guid = nil, nil, nil, nil
-end
-
-function overlayPrototype:FullUpdate(event)
-	self:UpdateAction(event)
-end
+	addon:Debug('Using mouseover as is')
+	mouseoverUnit = nil
+end)
 
 --------------------------------------------------------------------------------
 -- Macro handling
@@ -164,57 +154,8 @@ local function GetMacroConditionals(index)
 end
 
 --------------------------------------------------------------------------------
--- Unit handling
+-- Action handling
 --------------------------------------------------------------------------------
-
-local unitList = { "player", "pet", "target", "focus" }
-for i = 1,4 do tinsert(unitList, "party"..i) end
-for i = 1,40 do tinsert(unitList, "raid"..i) end
-
-local dynamicUnitConditionals = { default = "[]" }
-
-local function ApplyModifiedClick(base)
-	local selfCast, focusCast = GetModifiedClick("SELFCAST"), GetModifiedClick("FOCUSCAST")
-	if focusCast ~= "NONE" then
-		base = "[@focus,mod:"..focusCast.."]"..base
-	end
-	if selfCast ~= "NONE" then
-		base = "[@player,mod:"..selfCast.."]"..base
-	end
-	return base
-end
-
-local function UpdateDynamicUnitConditionals()
-	local enemy = ApplyModifiedClick("[harm]")
-	local ally = ApplyModifiedClick(GetCVarBool("autoSelfCast") and "[help,nodead][@player]" or "[help]")
-	if dynamicUnitConditionals.enemy ~= enemy or dynamicUnitConditionals.ally ~= ally then
-		dynamicUnitConditionals.enemy, dynamicUnitConditionals.ally = enemy, ally
-	end
-end
-
-LibAdiEvent:RegisterEvent('VARIABLES_LOADED', UpdateDynamicUnitConditionals)
-LibAdiEvent:RegisterEvent('CVAR_UPDATE', function(_, _, name)
-	if name == "autoSelfCast" then
-		return UpdateDynamicUnitConditionals()
-	end
-end)
-LibAdiEvent:RegisterEvent('UPDATE_BINDINGS', UpdateDynamicUnitConditionals)
-UpdateDynamicUnitConditionals()
-
-local mouseoverUnit
-LibAdiEvent:RegisterEvent('UPDATE_MOUSEOVER_UNIT', function()
-	if UnitExists('mouseover') then
-		for i, unit in pairs(unitList) do
-			if UnitIsUnit(unit, "mouseover") then
-				addon:Debug('Using', unit, 'for mouseover')
-				mouseoverUnit = unit
-				return
-			end
-		end
-	end
-	addon:Debug('Using mouseover as is')
-	mouseoverUnit = nil
-end)
 
 local function GetActionSpell(actionType, actionId)
 	local isMacro = (actionType == "macro")
@@ -232,6 +173,53 @@ local function GetActionSpell(actionType, actionId)
 	elseif actionType == "spell" or actionType == "companion" then
 		return actionId, macroConditionals, isMacro
 	end
+end
+
+--------------------------------------------------------------------------------
+-- Button overlay prototype
+--------------------------------------------------------------------------------
+
+local overlayPrototype = setmetatable({}, { __index = CreateFrame("Frame") })
+local overlayMeta = { __index = overlayPrototype }
+
+addon.overlayPrototype = overlayPrototype
+
+overlayPrototype.Debug = addon.Debug
+
+function overlayPrototype:Initialize(button)
+	self:Hide()
+	self.button = button
+
+	LibAdiEvent.Embed(self)
+
+	self:SetScript('OnShow', self.OnShow)
+	self:SetScript('OnHide', self.OnHide)
+
+	self:SetAllPoints(button)
+
+	self:InitializeDisplay()
+
+	self.units, self.events, self.handlers = EMPTY_TABLE, EMPTY_TABLE, EMPTY_TABLE
+
+	self:Show()
+end
+
+function overlayPrototype:OnShow()
+	self:FullUpdate('OnShow')
+end
+
+function overlayPrototype:OnHide()
+	self:UnregisterAllEvents()
+	if self.mouseoverTimerId then
+		AceTimer.CancelTimer(self, self.mouseoverTimerId)
+		self.mouseoverTimerId = nil
+	end
+	self.units, self.events, self.handlers = EMPTY_TABLE, EMPTY_TABLE, EMPTY_TABLE
+	self.spellId, self.macroConditionals, self.unit, self.guid = nil, nil, nil, nil
+end
+
+function overlayPrototype:FullUpdate(event)
+	self:UpdateAction(event)
 end
 
 local function ResolveTargeting(spellId, units, macroConditionals)
@@ -384,10 +372,47 @@ function overlayPrototype:Scan(event)
 	self:SetHighlight(model.highlight)
 end
 
+--------------------------------------------------------------------------------
+-- Blizzard button support
+--------------------------------------------------------------------------------
+
+local blizzardSupportPrototype = setmetatable({}, overlayMeta)
+local blizzardSupportMeta = { __index = blizzardSupportPrototype }
+
+function blizzardSupportPrototype:GetAction()
+	return self.button.action and GetActionInfo(self.button.action)
+end
+
+function blizzardSupportPrototype:GetActionId()
+	return self.button.action
+end
+
+--------------------------------------------------------------------------------
+-- LibActionButton support
+--------------------------------------------------------------------------------
+
+local labSupportPrototype = setmetatable({}, overlayMeta)
+local labSupportMeta = { __index = labSupportPrototype }
+
+function labSupportPrototype:GetAction()
+	return self.button:GetAction()
+end
+
+function labSupportPrototype:GetActionId()
+	-- NOOP
+end
+
+--------------------------------------------------------------------------------
+-- Button detection and support
+--------------------------------------------------------------------------------
+
 local overlays = addon.Memoize(function(button)
 	if button and button.IsObjectType and button:IsObjectType("Button") then
 		local name = button:GetName()
-		local overlay = setmetatable(CreateFrame("Frame", name and (name..'Overlay'), button), overlayMeta)
+		local overlay = setmetatable(
+			CreateFrame("Frame", name and (name..'Overlay'), button),
+			button.__LAB_Version and labSupportMeta or blizzardSupportMeta
+		)
 		overlay:Initialize(button)
 		return overlay
 	else
@@ -401,58 +426,54 @@ function addon:UpdateAllOverlays(event)
 	end
 end
 
-do
-
-	local function ScanGlobalButtons(prefix, count)
-		for i = 1, count or 12 do
-			local button = _G[prefix..i]
-			if button then
-				local dummy = overlays[button]
-			end
+local function ScanGlobalButtons(prefix, count)
+	for i = 1, count or 12 do
+		local button = _G[prefix..i]
+		if button then
+			local dummy = overlays[button]
 		end
 	end
-
-	local function IsLoadable(addon)
-		local enabled, loadable = select(4, GetAddOnInfo(addon))
-		return enabled and loadable and true or nil
-	end
-
-	local toWatch = {
-		[addonName] = true,
-		Dominos = IsLoadable('Dominos'),
-		Bartender4 = IsLoadable('Bartender4'),
-	}
-
-	local function ADDON_LOADED(_, event, name)
-		if name == addonName then
-			toWatch[addonName] = nil
-			addon:Debug(name, 'loaded')
-			ScanGlobalButtons("ActionButton", 12)
-			ScanGlobalButtons("BonusActionButton", 12)
-			ScanGlobalButtons("MultiBarRightButton", 12)
-			ScanGlobalButtons("MultiBarLeftButton", 12)
-			ScanGlobalButtons("MultiBarBottomRightButton", 12)
-			ScanGlobalButtons("MultiBarBottomLeftButton", 12)
-			hooksecurefunc('ActionButton_Update', function(button) return overlays[button]:FullUpdate('ActionButton_Update') end)
-		end
-		if toWatch.Dominos and (name == 'Dominos' or IsAddOnLoaded('Dominos')) then
-			addon:Debug('Dominos loaded')
-			toWatch.Dominos = nil
-			ScanGlobalButtons("DominosActionButton", 120)
-		end
-		if toWatch.Bartender4 and (name == 'Bartender4' or IsAddOnLoaded('Bartender4')) then
-			addon:Debug('Bartender4 loaded')
-			toWatch.Bartender4 = nil
-			ScanGlobalButtons("BT4Button", 120)
-		end
-		if not next(toWatch) then
-			addon:Debug('Button loading done')
-			LibAdiEvent:UnregisterEvent('ADDON_LOADED', ADDON_LOADED)
-			toWatch, ADDON_LOADED, IsLoadable, ScanGlobalButtons = nil, nil, nil, nil
-		end
-	end
-
-	LibAdiEvent:RegisterEvent('ADDON_LOADED', ADDON_LOADED)
-
 end
+
+local function IsLoadable(addon)
+	local enabled, loadable = select(4, GetAddOnInfo(addon))
+	return enabled and loadable and true or nil
+end
+
+local toWatch = {
+	[addonName] = true,
+	Dominos = IsLoadable('Dominos'),
+	Bartender4 = IsLoadable('Bartender4'),
+}
+
+local function ADDON_LOADED(_, event, name)
+	if name == addonName then
+		toWatch[addonName] = nil
+		addon:Debug(name, 'loaded')
+		ScanGlobalButtons("ActionButton", 12)
+		ScanGlobalButtons("BonusActionButton", 12)
+		ScanGlobalButtons("MultiBarRightButton", 12)
+		ScanGlobalButtons("MultiBarLeftButton", 12)
+		ScanGlobalButtons("MultiBarBottomRightButton", 12)
+		ScanGlobalButtons("MultiBarBottomLeftButton", 12)
+		hooksecurefunc('ActionButton_Update', function(button) return overlays[button]:FullUpdate('ActionButton_Update') end)
+	end
+	if toWatch.Dominos and (name == 'Dominos' or IsAddOnLoaded('Dominos')) then
+		addon:Debug('Dominos loaded')
+		toWatch.Dominos = nil
+		ScanGlobalButtons("DominosActionButton", 120)
+	end
+	if toWatch.Bartender4 and (name == 'Bartender4' or IsAddOnLoaded('Bartender4')) then
+		addon:Debug('Bartender4 loaded')
+		toWatch.Bartender4 = nil
+		ScanGlobalButtons("BT4Button", 120)
+	end
+	if not next(toWatch) then
+		addon:Debug('Button loading done')
+		LibAdiEvent:UnregisterEvent('ADDON_LOADED', ADDON_LOADED)
+		toWatch, ADDON_LOADED, IsLoadable, ScanGlobalButtons = nil, nil, nil, nil
+	end
+end
+
+LibAdiEvent:RegisterEvent('ADDON_LOADED', ADDON_LOADED)
 
