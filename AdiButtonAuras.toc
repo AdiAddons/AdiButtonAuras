@@ -24,10 +24,8 @@
 ## Author: Adirelle
 ## Version: @project-version@
 ## X-Date: @project-date-iso@
-## X-Category: Hunter
-## X-License: All rights reserved
+## X-License: GPL v3
 ## X-eMail: adirelle@gmail.com
-## SavedVariables: LuaAurasDB
 
 ## OptionalDeps: Ace3, LibAdiEvent-1.0, LibSpellbook-1.0, LibDispellable-1.0, DRData-1.0, AdiDebug, Dominos, Bartender4
 
