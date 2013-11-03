@@ -2,3 +2,8 @@
     type: textile
     input-file: README.textile
     output-page: Main
+
+-
+    type: textile
+    input-file: doc/Rules.textile
+    output-page: "Rules API"
