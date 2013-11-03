@@ -165,20 +165,19 @@ end
 --------------------------------------------------------------------------------
 
 local function GetActionSpell(actionType, actionId)
-	local isMacro = (actionType == "macro")
-	local macroConditionals
-
 	-- Resolve macros
-	if isMacro then
-		macroConditionals, actionType, actionId = GetMacroConditionals(actionId), GetMacroAction(actionId)
+	local macroConditionals
+	if actionType == "macro" then
+		macroConditionals = GetMacroConditionals(actionId)
+		actionType, actionId = GetMacroAction(actionId)
 	end
 
 	-- Resolve items and companions
 	if actionType == "item" then
 		local spell = GetItemSpell(actionId)
-		return LibSpellbook:Resolve(spell), macroConditionals, isMacro
+		return LibSpellbook:Resolve(spell), macroConditionals
 	elseif actionType == "spell" or actionType == "companion" then
-		return actionId, macroConditionals, isMacro
+		return actionId, macroConditionals
 	end
 end
 
