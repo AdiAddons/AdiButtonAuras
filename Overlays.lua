@@ -140,7 +140,7 @@ local conditionalsCache = addon.Memoize(function(index)
 	local body = GetMacroBody(index)
 	if not body then return false end
 	local conditionals = GetFirstConditionals(strsplit("\n", body))
-	if not conditionals then return false end
+	if not conditionals or strtrim(conditionals) == "" then return false end
 	return gsub(
 		gsub(
 			strjoin(';', StripSpells(strsplit(';', conditionals))),
