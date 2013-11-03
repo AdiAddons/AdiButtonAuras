@@ -28,6 +28,7 @@ local tostring = _G.tostring
 
 local function Memoize(func)
 	return setmetatable({}, {__index = function(self, key)
+		if key == nil then return nil end
 		local value = func(key)
 		self[key] = value
 		return value
