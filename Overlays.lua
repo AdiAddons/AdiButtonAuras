@@ -201,6 +201,8 @@ function overlayPrototype:Initialize(button)
 
 	self.units, self.events, self.handlers = EMPTY_TABLE, EMPTY_TABLE, EMPTY_TABLE
 
+	AceEvent.RegisterMessage(self, addonName..'_RulesUpdated', 'ForceUpdate')
+
 	self:Show()
 end
 
@@ -419,12 +421,6 @@ local overlays = addon.Memoize(function(button)
 		return false
 	end
 end)
-
-function addon:UpdateAllOverlays(event)
-	for button, overlay in pairs(overlays) do
-		overlay:FullUpdate(event)
-	end
-end
 
 function addon:GetOverlay(button)
 	return button and overlays[button]

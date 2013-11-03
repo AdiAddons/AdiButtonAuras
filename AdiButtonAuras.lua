@@ -21,6 +21,8 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 
 local addonName, addon = ...
 
+local LibSpellbook = LibStub('LibSpellbook-1.0')
+
 --------------------------------------------------------------------------------
 -- Stuff to embed
 --------------------------------------------------------------------------------
@@ -50,8 +52,19 @@ local toWatch = {
 }
 
 function addon:ADDON_LOADED(event, name)
+	if toWatch.Dominos and (name == 'Dominos' or IsAddOnLoaded('Dominos')) then
+		self:Debug('Dominos loaded')
+		toWatch.Dominos = nil
+		self:ScanButtons("DominosActionButton", 120)
+	end
+	if toWatch.Bartender4 and (name == 'Bartender4' or IsAddOnLoaded('Bartender4')) then
+		self:Debug('Bartender4 loaded')
+		toWatch.Bartender4 = nil
+		self:ScanButtons("BT4Button", 120)
+	end
 	if name == addonName then
 		self:Debug(name, 'loaded')
+		toWatch[addonName] = nil
 
 		self:ScanButtons("ActionButton", 12)
 		self:ScanButtons("BonusActionButton", 12)
@@ -59,25 +72,25 @@ function addon:ADDON_LOADED(event, name)
 		self:ScanButtons("MultiBarLeftButton", 12)
 		self:ScanButtons("MultiBarBottomRightButton", 12)
 		self:ScanButtons("MultiBarBottomLeftButton", 12)
-		hooksecurefunc('ActionButton_Update', function(button) self:GetOverlay(button):ForceUpdate('ActionButton_Update') end)
+		hooksecurefunc('ActionButton_Update', function(button)
+			local overlay = self:GetOverlay(button)
+			if overlay and overlay:IsVisible() then
+				return overlay:UpdateAction('ActionButton_Update')
+			end
+		end)
 
 		self:RegisterEvent('VARIABLES_LOADED', 'UpdateDynamicUnitConditionals')
 		self:RegisterEvent('UPDATE_BINDINGS', 'UpdateDynamicUnitConditionals')
 		self:RegisterEvent('CVAR_UPDATE')
 		self:RegisterEvent('UPDATE_MACROS')
 		self:RegisterEvent('UPDATE_MOUSEOVER_UNIT')
-
 		self:UpdateDynamicUnitConditionals()
+
+		LibSpellbook.RegisterCallback(addon, 'LibSpellbook_Spells_Changed')
+		if LibSpellbook:HasSpells() then
+			addon:LibSpellbook_Spells_Changed('OnLoad')
+		end
 	end
-	if toWatch.Dominos and (name == 'Dominos' or IsAddOnLoaded('Dominos')) then
-		self:Debug('Dominos loaded')
-		self:ScanButtons("DominosActionButton", 120)
-	end
-	if toWatch.Bartender4 and (name == 'Bartender4' or IsAddOnLoaded('Bartender4')) then
-		self:Debug('Bartender4 loaded')
-		self:ScanButtons("BT4Button", 120)
-	end
-	toWatch[name] = nil
 	if not next(toWatch) then
 		self:Debug('No more addons to watch.')
 		self:UnregisterEvent('ADDON_LOADED')

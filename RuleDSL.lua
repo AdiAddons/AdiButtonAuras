@@ -417,17 +417,13 @@ local RULES_ENV = setmetatable({
 --------------------------------------------------------------------------------
 
 local rules
+
 function addon:LibSpellbook_Spells_Changed(event)
-	addon:Debug('LibSpellbook_Spells_Changed')
+	addon:Debug(event)
 	if not rules then
 		rules = setfenv(addon.CreateRules, RULES_ENV)()
 	end
 	wipe(spellConfs)
 	Do(rules)
-	addon:UpdateAllOverlays(event)
-end
-
-LibSpellbook.RegisterCallback(addon, 'LibSpellbook_Spells_Changed')
-if LibSpellbook:HasSpells() then
-	addon:LibSpellbook_Spells_Changed('OnLoad')
+	self:SendMessage(addonName..'_RulesUpdated')
 end
