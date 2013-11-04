@@ -261,6 +261,7 @@ function overlayPrototype:ForceUpdate(event)
 		return self:UpdateState(event)
 	end
 end
+overlayPrototype.PLAYER_ENTERING_WORLD = overlayPrototype.ForceUpdate
 
 function overlayPrototype:UpdateAction(event)
 	local actionId, actionType = self:GetAction()
@@ -321,7 +322,7 @@ function overlayPrototype:SetAction(event, spellId, macroConditionals)
 			self:RegisterEvent(event)
 		end
 
-		self:RegisterEvent('PLAYER_ENTERING_WORLD', 'ForceUpdate')
+		self:RegisterEvent('PLAYER_ENTERING_WORLD')
 		if macroConditionals then
 			self:RegisterEvent('ACTIONBAR_SLOT_CHANGED')
 		end
