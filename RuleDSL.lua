@@ -309,15 +309,26 @@ local function ShowPower(spells, powerType, handler, highlight)
 			return handler(UnitPower("player", powerIndex), UnitPowerMax("player", powerIndex), model, highlight)
 		end
 	elseif type(handler) == "number" then
-		-- A value, handle it as a percentage of total power
-		local threshold = handler / 100
+		-- A number
+		local sign = handler < 0 and -1 or 1
 		if not highlight then
 			highlight = "flash"
 		end
-		actualHandler = function(_, model)
-			local current, maxPower = UnitPower("player", powerIndex), UnitPowerMax("player", powerIndex)
-			if current > 0 and maxPower > 0 and current / maxPower >= threshold then
-				model.highlight = highlight
+		if handler >= -1.0 and handler <= 1.0 then
+			-- Consider the handler as a percentage
+			actualHandler = function(_, model)
+				local current, maxPower = UnitPower("player", powerIndex), UnitPowerMax("player", powerIndex)
+				if maxPower ~= 0 and sign * current / maxPower >= handler then
+					model.highlight = highlight
+				end
+			end
+		else
+			-- Consider the handler as a an absolute value
+			actualHandler = function(_, model)
+				local current, maxPower = UnitPower("player", powerIndex)
+				if UnitPowerMax("player", powerIndex) ~= 0 and sign * current >= handler then
+					model.highlight = highlight
+				end
 			end
 		end
 	elseif not handler then
