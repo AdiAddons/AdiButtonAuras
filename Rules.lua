@@ -281,6 +281,35 @@ function addon.CreateRules()
 			}
 		}, -- Snares and anti-snares
 
+		-- Bloodlust & al
+		Configure {
+			{
+				 2825, -- Bloodlust (Horde shaman)
+				32182, -- Heroism (Alliance shaman)
+				80353, -- Time Warp (mage)
+				90355, -- Ancient Hysteria (hunter exotic pet ability)
+			},
+			"ally",
+			"UNIT_AURA",
+			(function()
+				local hasBloodlust = BuildAuraHandler_Longest("HELPFUL", "good", "ally",{
+					  2825, -- Bloodlust (Horde shaman)
+					 32182, -- Heroism (Alliance shaman)
+					 80353, -- Time Warp (mage)
+					 90355, -- Ancient Hysteria (hunter exotic pet ability)
+					146555, -- Drums of Rage
+				})
+				local isSated = BuildAuraHandler_Longest("HARMFUL", "bad", "ally", {
+					 57724, -- Sated (Bloodlst/Heroism debuff),
+					 80354, -- Temporal Displacement (Time Warp debuff)
+					 95809  -- Insanity (Ancient Hysteria debuff)
+				})
+				return function(units, model)
+					return hasBloodlust(units, model) or isSated(units, model)
+				end
+			end)(),
+		},
+
 		-- Druid spells
 		IfClass { "DRUID",
 			SimpleBuffs {
