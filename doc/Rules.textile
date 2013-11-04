@@ -32,13 +32,12 @@ h3. Units
 
 A list of "UnitIds":http://wowpedia.org/UnitId to watch. This is not always the target of the spell itself. Depending on the rule, you may want to watch another unit (quite often @player@) to look for a buff that could modify the spell. For example, warlocks' Backdraft is a player buff that reduces the casting time and cost of Incinerate, so a rule showing the number of Backdraft stacks on Incinerate should watch "player" and not the target of "Incinerate".
 
-In addition to the "standard UnitIds":http://wowpedia.org/UnitId#Base_Values, @"target"@, @"player"@, @"pet"@, @"focus"@, @"mouseover"@, AdiButtonAuras accepts three special UnitIds. They are resolved dynamically using the current target and the UI settings that affect targeting (self and focus keybindings, target self by default). Macro conditionals including, @target=unitId@, should be detected and used.
+In addition to the "standard UnitIds":http://wowpedia.org/UnitId#Base_Values, @"target"@, @"player"@, @"pet"@, @"focus"@, @"mouseover"@, AdiButtonAuras accepts two special UnitIds. They are resolved dynamically using the current target and the UI settings that affect targeting (self and focus keybindings, target self by default). Macro conditionals including, @target=unitId@, should be detected and used.
 
-Here are the three special UnitIds:
+Here are the two special UnitIds:
 
 * @"ally"@: @"target"@ if the player can help it else @"player"@.
 * @"enemy"@: @"target"@ if the player can attack it else @""@ (no one).
-* @"default"@: like @"ally"@ if the spell is helpful (according to @IsSpellHelpful@), else like @"enemy"@.
 
 h3. Events
 
@@ -48,9 +47,9 @@ The most common event is @UNIT_AURA@, since we are watching for auras.
 
 h3. Handlers
 
-The handlers are functions called to refresh the data. Their signature is @function(dynamicUnit, model)@, where:
+The handlers are functions called to refresh the data. Their signature is @function(units, model)@, where:
 
-* @dynamicUnit@ contains the UnitId resolved using @"default"@, @"ally"@ or @"enemy"@. If none of these were listed, or if the rule watches for a fixed unit, e.g. @"player"@, this argument must be ignored.
+* @units@ contains an map of UnitId to actual UnitId. It is mainly useful for @units.ally@ and @units.enemy@, that are resolved for the action button when they are listed in the rule. If none of these were listed, or if the rule watches for a fixed unit, e.g. @"player"@, this argument must be ignored.
 * @model@ is a table containing the data to display on the spell. The handler should update its attributes (see below).
 
 @model@ have three attributes:
