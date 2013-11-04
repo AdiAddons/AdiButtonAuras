@@ -228,6 +228,7 @@ local function BuildAuraHandler_Single(filter, highlight, token, spell)
 		local name, _, _, count, _, _, expiration = UnitAura(units[token], spellName, nil, filter)
 		if name then
 			model.highlight, model.count, model.expiration = highlight, count, expiration
+			return true
 		end
 	end
 end
@@ -248,9 +249,10 @@ local function BuildAuraHandler_Longest(filter, highlight, token, buffs)
 					model.highlight, model.count, model.expiration = highlight, count, expiration
 				end
 			else
-				return
+				break
 			end
 		end
+		return longest > -1
 	end
 end
 
@@ -267,7 +269,7 @@ local function BuildAuraHandler_FirstOf(filter, highlight, token, buffs)
 			if name then
 				if buffs[spellId] then
 					model.highlight, model.count, model.expiration = highlight, count, expiration
-					return
+					return true
 				end
 			else
 				return
@@ -352,7 +354,9 @@ local RULES_ENV = setmetatable({
 
 	-- Intended to be used un Lua
 	AddRuleFor = AddRuleFor,
+	BuildAuraHandler_Single = BuildAuraHandler_Single,
 	BuildAuraHandler_Longest = BuildAuraHandler_Longest,
+	BuildAuraHandler_FirstOf = BuildAuraHandler_FirstOf,
 
 	-- Basic functions
 	Configure = WrapTableArgFunc(Configure),
