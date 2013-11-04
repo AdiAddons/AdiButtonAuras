@@ -483,8 +483,8 @@ function addon.CreateRules()
 			},
 			SimpleBuffs {
 				   139, -- Renew
-				  6346, -- Pain Suppression -- shared ?
-				 47788, -- Guardian Spirit -- shared ?
+				  6346, -- Pain Suppression -- TODO: shared ?
+				 47788, -- Guardian Spirit -- TODO: shared ?
 			},
 			SharedSimpleBuff {
 				  1706, -- Levitate
@@ -494,6 +494,13 @@ function addon.CreateRules()
 				   589, -- Shadow Word: Pain
 				  2944, -- Devouring Plague
 				 34914, -- Vampiric Touch
+			},
+			ShowPower {
+				{
+					 2944, -- Devouring Plague
+					64044, -- Psychic Horror
+				},
+				"SHADOW_ORBS",
 			},
 			PassiveModifier {
 				63733, -- Serendipity
@@ -516,20 +523,12 @@ function addon.CreateRules()
 				"ally",
 				"UNIT_AURA",
 				(function()
-					local pwShield = GetSpellInfo(17) -- Power Word: Shield
-					local weakenedSoul = GetSpellInfo(6788) -- Weakened Soul
+					local hasPWShield = BuildAuraHandler_Single("HELPFUL", "good", "ally", 17)
+					local hasWeakenedSoul = BuildAuraHandler_Single("HARMFUL", "bad", "ally", 6788)
 					return function(units, model)
-						local name, _, _, _, _, _, expiration = UnitAura(units.ally, pwShield, nil, "HELPFUL")
-						if name then
-							model.highlight, model.expiration = "good", expiration
-						else
-							name, _, _, _, _, _, expiration = UnitAura(units.ally, weakenedSoul, nil, "HARMFUL")
-							if name then
-								model.highlight, model.expiration = "bad", expiration
-							end
-						end
+						return hasPWShield(units, model) or hasWeakenedSoul(units, model)
 					end
-				end),
+				end)(),
 			},
 		}, -- Priest spells
 
