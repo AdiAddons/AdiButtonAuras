@@ -243,7 +243,7 @@ end
 
 function overlayPrototype:OnEvent(event, ...)
 	if self:IsVisible() then
-		return self[event](self, event, ...)
+		return assert(self[event], "No event handler for "..event)(self, event, ...)
 	end
 end
 
