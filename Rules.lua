@@ -515,7 +515,7 @@ function addon.CreateRules()
 				  6346, -- Pain Suppression -- TODO: shared ?
 				 47788, -- Guardian Spirit -- TODO: shared ?
 			},
-			SharedSimpleBuff {
+			SharedSimpleBuffs {
 				  1706, -- Levitate
 				  6346, -- Fear Ward
 			},
