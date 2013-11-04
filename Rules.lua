@@ -176,7 +176,6 @@ function addon.CreateRules()
 			{ -- Spells to alter
 				  1490, -- Curse of the Elements (warlock)
 				104225, -- Curse of the Elements (warlock, Fire and Brimstone)
-				116202, -- Aura of the Elements (warlock)
 			},
 			{ -- Debuffs to look for
 				  1490, -- Curse of the Elements (warlock)
@@ -193,7 +192,6 @@ function addon.CreateRules()
 			{ -- Spells to alter
 				 73975, -- Necrotic Strike (death knight)
 				109466, -- Curse of Enfeeblement (warlock)
-				116198, -- Aura of Enfeeblement (warlock)
 			},
 			{ -- Debuffs to look for
 				 50274, -- Spore Cloud (hunter pet ability)
