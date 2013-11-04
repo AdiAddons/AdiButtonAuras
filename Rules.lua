@@ -468,6 +468,71 @@ function addon.CreateRules()
 			},
 		}, -- Monk spells
 
+		-- Priest spells
+		IfClass { "PRIEST",
+			SelfBuffs {
+				   586, -- Fade
+				 10060, -- Power Infusion
+				 15286, -- Vampiric Embrace
+				 47585, -- Dispersion
+				 73413, -- Inner Will
+				 81700, -- Archangel -- TODO: show Evangelism ?
+				 89485, -- Inner Focus
+				109964, -- Spirit Shell
+				112833, -- Spectral Guise
+			},
+			SimpleBuffs {
+				   139, -- Renew
+				  6346, -- Pain Suppression -- shared ?
+				 47788, -- Guardian Spirit -- shared ?
+			},
+			SharedSimpleBuff {
+				  1706, -- Levitate
+				  6346, -- Fear Ward
+			},
+			SimpleDebuffs {
+				   589, -- Shadow Word: Pain
+				  2944, -- Devouring Plague
+				 34914, -- Vampiric Touch
+			},
+			PassiveModifier {
+				63733, -- Serendipity
+				{
+					2060, -- Greater Heal
+					 596, -- Prayer of Healing
+				},
+				63735, -- Serendipity (buff)
+			},
+			PassiveModifier {
+				81662, -- Evangelism
+				{
+					  585, -- Smite
+					14914, -- Holy Fire
+				},
+				81662, -- Evangelism
+			},
+			Configure {
+			    17, -- Power Word: Shield
+				"ally",
+				"UNIT_AURA",
+				(function()
+					local pwShield = GetSpellInfo(17) -- Power Word: Shield
+					local weakenedSoul = GetSpellInfo(6788) -- Weakened Soul
+					return function(units, model)
+						local name, _, _, _, _, _, expiration = UnitAura(units.ally, pwShield, nil, "HELPFUL")
+						if name then
+							model.highlight, model.expiration = "good", expiration
+						else
+							name, _, _, _, _, _, expiration = UnitAura(units.ally, weakenedSoul, nil, "HARMFUL")
+							if name then
+								model.highlight, model.expiration = "bad", expiration
+							end
+						end
+					end
+				end),
+			},
+		}, -- Priest spells
+
 		-- Warlock spells
 		IfClass { "WARLOCK",
 			ShowPower {
