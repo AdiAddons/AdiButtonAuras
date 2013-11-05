@@ -78,26 +78,26 @@ do
 	function FlattenList(l) return Flatten0({}, l) end
 end
 
-local function AsList(value, checkType)
+local function AsList(value, checkType, callLevel)
 	if type(value) == "table" then
 		value = FlattenList(value)
-		if checkType then
-			for i, v in ipairs(value) do
-				assert(type(v) == checkType, format("%s expected, not %s", checkType, type(v)))
+		for i, v in ipairs(value) do
+			if type(v) ~= checkType then
+				error("Invalid value type, expected "..checkType..", got "..type(v), (callLevel or 0)+2)
 			end
 		end
 		return value
-	elseif not checkType or type(value) == checkType then
+	elseif checkType == nil or type(value) == checkType then
 		return { value }
 	else
-		error("Invalid value type for AsList, expected "..checkType..", got "..type(value), 2)
+		error("Invalid value type, expected "..checkType..", got "..type(value), (callLevel or 0)+2)
 	end
 end
 
-local function AsSet(value, checkType)
+local function AsSet(value, checkType, callLevel)
 	local set = {}
 	local size = 0
-	for i, value in ipairs(AsList(value, checkType)) do
+	for i, value in ipairs(AsList(value, checkType, (callLevel or 0)+1)) do
 		if not set[value] then
 			set[value] = true
 			size = size + 1
@@ -141,41 +141,56 @@ local function _AddRuleFor(spell, units, events, handlers)
 	ConcatLists(rule.handlers, handlers)
 end
 
-local function CheckRuleArgs(units, events, handlers)
+local function CheckRuleArgs(units, events, handlers, callLevel)
+	callLevel = (callLevel or 0) + 1
 	local numUnits, numEvents
-	units, numUnits = AsSet(units, "string")
-	assert(numUnits > 0, "No units given to Configure")
-	events, numEvents = AsSet(events, "string")
-	assert(numEvents > 0, "No events given to Configure")
-	handlers = AsList(handlers, "function")
-	assert(#handlers > 0, "No handlers given to Configure")
+
+	units, numUnits = AsSet(units, "string", callLevel)
+	if numUnits == 0 then
+		error("Empty unit list", callLevel+1)
+	end
+
+	events, numEvents = AsSet(events, "string", callLevel)
+	if numEvents == 0 then
+		error("Empty event list", callLevel+1)
+	end
+
+	handlers = AsList(handlers, "function", callLevel)
+	if #handlers == 0 then
+		error("Empty handler list", callLevel+1)
+	end
+
 	return units, events, handlers
 end
 
 local function AddRuleFor(spell, units, events, handlers)
-	return _AddRuleFor(spell, CheckRuleArgs(units, events, handlers))
+	units, events, handlers = CheckRuleArgs(units, events, handlers, 1)
+	return _AddRuleFor(spell, units, events, handlers, 1)
 end
 
-local function Configure(spells, units, events, handlers)
-	spells = AsList(spells, "number")
-	assert(#spells > 0, "No spells given to Configure")
-	units, events, handlers = CheckRuleArgs(units, events, handlers)
+local function Configure(spells, units, events, handlers, callLevel)
+	callLevel = (callLevel or 0) + 1
+	spells = AsList(spells, "number", callLevel)
+	if #spells == 0 then
+		error("Empty spell list", callLevel+2)
+	end
+	units, events, handlers = CheckRuleArgs(units, events, handlers, callLevel)
 	if #spells == 1 then
 		return function()
-			_AddRuleFor(spells[1], units, events, handlers)
+			_AddRuleFor(spells[1], units, events, handlers, callLevel+1)
 		end
 	else
 		return function()
-			for i, spell in ipairs(spells) do
-				_AddRuleFor(spell, units, events, handlers)
+			for i, spell in pairs(spells) do
+				_AddRuleFor, spells, units, events, handlers, callLevel+1)
 			end
 		end
 	end
 end
 
 local function IfSpell(spells, ...)
-	local spells = AsList(spells, "number")
-	local funcs = AsList({ ... }, "function")
+	local spells = AsList(spells, "number", 1)
+	local funcs = AsList({ ... }, "function", 1)
 	if #spells == 1 then
 		local spell = spells[1]
 		local link = GetSpellLink(spell)
@@ -200,7 +215,7 @@ end
 local function IfClass(class, ...)
 	knownClasses[class] = true
 	if playerClass == class then
-		local funcs = AsList({ ... }, "function")
+		local funcs = AsList({ ... }, "function", 1)
 		return function()
 			addon:Debug('Merging spells for', class)
 			return Do(funcs)
@@ -216,8 +231,11 @@ end
 -- Handler builders
 --------------------------------------------------------------------------------
 
-local function BuildAuraHandler_Single(filter, highlight, token, spell)
-	local spellName = assert(GetSpellInfo(spell), "Unknown spell "..spell)
+local function BuildAuraHandler_Single(filter, highlight, token, spell, callLevel)
+	local spellName = GetSpellInfo(spell)
+	if not spellName then
+		error("Unknown spell "..spell, (callLevel or 0)+2)
+	end
 	return function(units, model)
 		if not units[token] then return end
 		local name, _, _, count, _, _, expiration = UnitAura(units[token], spellName, nil, filter)
@@ -228,11 +246,11 @@ local function BuildAuraHandler_Single(filter, highlight, token, spell)
 	end
 end
 
-local function BuildAuraHandler_Longest(filter, highlight, token, buffs)
+local function BuildAuraHandler_Longest(filter, highlight, token, buffs, callLevel)
 	local numBuffs
-	buffs, numBuffs = AsSet(buffs, "number")
+	buffs, numBuffs = AsSet(buffs, "number", (callLevel or 0)+1)
 	if numBuffs == 1 then
-		return BuildAuraHandler_Single(filter, highlight, token, next(buffs))
+		return BuildAuraHandler_Single(filter, highlight, token, next(buffs), (callLevel or 0)+1)
 	end
 	return function(units, model)
 		local unit, longest = units[token], -1
@@ -252,11 +270,11 @@ local function BuildAuraHandler_Longest(filter, highlight, token, buffs)
 	end
 end
 
-local function BuildAuraHandler_FirstOf(filter, highlight, token, buffs)
+local function BuildAuraHandler_FirstOf(filter, highlight, token, buffs, callLevel)
 	local numBuffs
-	buffs, numBuffs = AsSet(buffs, "number")
+	buffs, numBuffs = AsSet(buffs, "number", (callLevel or 0)+1)
 	if numBuffs == 1 then
-		return BuildAuraHandler_Single(filter, highlight, token, next(buffs))
+		return BuildAuraHandler_Single(filter, highlight, token, next(buffs), (callLevel or 0)+1)
 	end
 	return function(units, model)
 		local unit = units[token]
@@ -276,31 +294,36 @@ local function BuildAuraHandler_FirstOf(filter, highlight, token, buffs)
 end
 
 --------------------------------------------------------------------------------
--- High-level helpers
+-- High-callLevel helpers
 --------------------------------------------------------------------------------
 
 local function Auras(filter, highlight, unit, spells)
 	local funcs = {}
-	for i, spell in ipairs(AsList(spells, "number")) do
-		tinsert(funcs, Configure(spell, unit, "UNIT_AURA", BuildAuraHandler_Single(filter, highlight, unit, spell)))
+	for i, spell in ipairs(AsList(spells, "number", 2)) do
+		tinsert(funcs, Configure(spell, unit, "UNIT_AURA", BuildAuraHandler_Single(filter, highlight, unit, spell), 2))
 	end
 	return (#funcs > 1) and funcs or funcs[1]
 end
 
 local function PassiveModifier(passive, spell, buff, unit, highlight)
 	unit = unit or "player"
-	local conf = Configure(spell, unit, "UNIT_AURA", BuildAuraHandler_Single("HEPLFUL PLAYER", highlight or "good", unit, buff))
+	local conf = Configure(spell, unit, "UNIT_AURA", BuildAuraHandler_Single("HEPLFUL PLAYER", highlight or "good", unit, buff), 1)
 	return passive and IfSpell(passive, conf) or conf
 end
 
 local function AuraAliases(filter, highlight, unit, spells, buffs)
-	buffs = AsList(buffs or spells, "number")
+	buffs = AsList(buffs or spells, "number", 2)
 	return Configure(spells, unit, "UNIT_AURA", BuildAuraHandler_FirstOf(filter, highlight, unit, buffs))
 end
 
 local function ShowPower(spells, powerType, handler, highlight)
-	assert(type(powerType) == "string")
-	local powerIndex = assert(_G["SPELL_POWER_"..powerType], "unknown power: "..powerType)
+	if type(powerType) != "string" then
+		error("Invalid power type value, expected string, got "..type(powerType), 2)
+	end
+	local powerIndex = _G["SPELL_POWER_"..powerType]
+	if not powerIndex then
+		error("Unknown power "..powerType, 2)
+	end
 	local actualHandler
 	if type(handler) == "function" then
 		-- User-supplied handler
@@ -331,9 +354,9 @@ local function ShowPower(spells, powerType, handler, highlight)
 			end
 		end
 	else
-		error("Invalid handler type: "..type(handler))
+		error("Invalid handler type, expected function, number or nil, got "..type(handler), 2)
 	end
-	return Configure(spells, "player", { "UNIT_POWER", "UNIT_POWER_MAX" }, actualHandler)
+	return Configure(spells, "player", { "UNIT_POWER", "UNIT_POWER_MAX" }, actualHandler, 1)
 end
 
 --------------------------------------------------------------------------------
@@ -362,7 +385,7 @@ local RULES_ENV = setmetatable({
 	ShowPower = WrapTableArgFunc(ShowPower),
 	PassiveModifier = WrapTableArgFunc(PassiveModifier),
 
-	-- High-level functions
+	-- High-callLevel functions
 
 	SimpleDebuffs = function(spells)
 		return Auras("HARMFUL PLAYER", "bad", "enemy", spells)
@@ -381,7 +404,7 @@ local RULES_ENV = setmetatable({
 	end,
 
 	LongestDebuffOf = function(spells, buffs)
-		return Configure(spells, "enemy", "UNIT_AURA", BuildAuraHandler_Longest("HARMFUL", "bad", "enemy", buffs or spells))
+		return Configure(spells, "enemy", "UNIT_AURA", BuildAuraHandler_Longest("HARMFUL", "bad", "enemy", buffs or spells), 1)
 	end,
 
 	SelfBuffs = function(spells)
