@@ -119,6 +119,8 @@ end
 
 local LibSpellbook = LibStub('LibSpellbook-1.0')
 
+local playerClass = select(2, UnitClass("player"))
+local knownClasses = {}
 local spellConfs = {}
 addon.spells = spellConfs
 
@@ -195,8 +197,8 @@ local function IfSpell(spells, ...)
 	end
 end
 
-local playerClass = select(2, UnitClass("player"))
 local function IfClass(class, ...)
+	knownClasses[class] = true
 	if playerClass == class then
 		local funcs = AsList({ ... }, "function")
 		return function()
@@ -414,6 +416,9 @@ function addon:LibSpellbook_Spells_Changed(event)
 	addon:Debug(event)
 	if not rules then
 		rules = setfenv(addon.CreateRules, RULES_ENV)()
+		if not knownClasses[playerClass] then
+			print(addonName.." has not specific rules for your class and will only handle common spells.")
+		end
 	end
 	wipe(spellConfs)
 	Do(rules)
