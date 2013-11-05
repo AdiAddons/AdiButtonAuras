@@ -113,14 +113,6 @@ local function MergeSets(a, b)
 	return a
 end
 
-local function GetSetSize(set)
-	local n = 0
-	for k in pairs(set) do
-		n = n + 1
-	end
-	return n
-end
-
 --------------------------------------------------------------------------------
 -- Rule creation
 --------------------------------------------------------------------------------
