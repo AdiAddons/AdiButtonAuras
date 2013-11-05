@@ -124,17 +124,38 @@ local knownClasses = {}
 local spellConfs = {}
 addon.spells = spellConfs
 
-local function _AddRuleFor(spell, units, events, handlers)
-	if not LibSpellbook:IsKnown(spell) then return end
-	addon:Debug("Adding rule for", GetSpellLink(spell),
+local function SpellOrItemId(value, callLevel)
+	callLevel = (callLevel or 0) + 2
+	local spellId = tonumber(type(value) == "string" and strmatch(value, "spell:(%d+)") or value)
+	if spellId then
+		if not GetSpellInfo(spellId) then
+			error(format("Invalid spell identifier: %s", tostring(value)), callLevel)
+		elseif not LibSpellbook:IsKnown(spell) then
+			return nil -- Unknown spell
+		end
+		return format("spell:%d", spellId), "spell "..GetSpellLink(spellId)
+	end
+	local itemId = tonumber(strmatch(tostring(value), "item:(%d)"))
+	if itemId then
+		return format("item:%d", itemId), "item "..GetItemLink(itemId)
+	end
+	error(format("Invalid spell or item identifier: %s", tostring(value)), callLevel)
+end
+
+local function _AddRuleFor(spell, units, events, handlers, callLevel)
+	local id, info = SpellOrItemId(spell, (callLevel or 0)+1)
+	if not id then
+		return
+	end
+	addon:Debug("Adding rule for", info,
 		"units:", strjoin(",", getkeys(units)),
 		"events:", strjoin(",", getkeys(events)),
 		"handlers:", handlers
 	)
-	local rule = spellConfs[spell]
+	local rule = spellConfs[id]
 	if not rule then
 		rule = { units = {}, events = {}, handlers = {} }
-		spellConfs[spell] = rule
+		spellConfs[id] = rule
 	end
 	MergeSets(rule.units, units)
 	MergeSets(rule.events, events)

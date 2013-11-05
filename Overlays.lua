@@ -198,10 +198,9 @@ local function GetActionSpell(actionType, actionId)
 
 	-- Resolve items and companions
 	if actionType == "item" then
-		local spell = GetItemSpell(actionId)
-		return LibSpellbook:Resolve(spell), macroConditionals
+		return "item:"..actionId, macroConditionals
 	elseif actionType == "spell" or actionType == "companion" then
-		return actionId, macroConditionals
+		return "spell:"..actionId, macroConditionals
 	end
 end
 
