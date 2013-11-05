@@ -279,6 +279,35 @@ function addon.CreateRules()
 			}
 		}, -- Snares and anti-snares
 
+		-- Bloodlust & al
+		Configure {
+			{
+				 2825, -- Bloodlust (Horde shaman)
+				32182, -- Heroism (Alliance shaman)
+				80353, -- Time Warp (mage)
+				90355, -- Ancient Hysteria (hunter exotic pet ability)
+			},
+			"ally",
+			"UNIT_AURA",
+			(function()
+				local hasBloodlust = BuildAuraHandler_Longest("HELPFUL", "good", "ally",{
+					  2825, -- Bloodlust (Horde shaman)
+					 32182, -- Heroism (Alliance shaman)
+					 80353, -- Time Warp (mage)
+					 90355, -- Ancient Hysteria (hunter exotic pet ability)
+					146555, -- Drums of Rage
+				})
+				local isSated = BuildAuraHandler_Longest("HARMFUL", "bad", "ally", {
+					 57724, -- Sated (Bloodlst/Heroism debuff),
+					 80354, -- Temporal Displacement (Time Warp debuff)
+					 95809  -- Insanity (Ancient Hysteria debuff)
+				})
+				return function(units, model)
+					return hasBloodlust(units, model) or isSated(units, model)
+				end
+			end)(),
+		},
+
 		-- Druid spells
 		IfClass { "DRUID",
 			SimpleBuffs {
@@ -465,6 +494,70 @@ function addon.CreateRules()
 				129914, -- Power Strikes (buff)
 			},
 		}, -- Monk spells
+
+		-- Priest spells
+		IfClass { "PRIEST",
+			SelfBuffs {
+				   586, -- Fade
+				 10060, -- Power Infusion
+				 15286, -- Vampiric Embrace
+				 47585, -- Dispersion
+				 73413, -- Inner Will
+				 81700, -- Archangel -- TODO: show Evangelism ?
+				 89485, -- Inner Focus
+				109964, -- Spirit Shell
+				112833, -- Spectral Guise
+			},
+			SimpleBuffs {
+				   139, -- Renew
+				  6346, -- Pain Suppression -- TODO: shared ?
+				 47788, -- Guardian Spirit -- TODO: shared ?
+			},
+			SharedSimpleBuffs {
+				  1706, -- Levitate
+				  6346, -- Fear Ward
+			},
+			SimpleDebuffs {
+				   589, -- Shadow Word: Pain
+				  2944, -- Devouring Plague
+				 34914, -- Vampiric Touch
+			},
+			ShowPower {
+				{
+					 2944, -- Devouring Plague
+					64044, -- Psychic Horror
+				},
+				"SHADOW_ORBS",
+			},
+			PassiveModifier {
+				63733, -- Serendipity
+				{
+					2060, -- Greater Heal
+					 596, -- Prayer of Healing
+				},
+				63735, -- Serendipity (buff)
+			},
+			PassiveModifier {
+				81662, -- Evangelism
+				{
+					  585, -- Smite
+					14914, -- Holy Fire
+				},
+				81662, -- Evangelism
+			},
+			Configure {
+			    17, -- Power Word: Shield
+				"ally",
+				"UNIT_AURA",
+				(function()
+					local hasPWShield = BuildAuraHandler_Single("HELPFUL", "good", "ally", 17)
+					local hasWeakenedSoul = BuildAuraHandler_Single("HARMFUL", "bad", "ally", 6788)
+					return function(units, model)
+						return hasPWShield(units, model) or hasWeakenedSoul(units, model)
+					end
+				end)(),
+			},
+		}, -- Priest spells
 
 		-- Warlock spells
 		IfClass { "WARLOCK",
