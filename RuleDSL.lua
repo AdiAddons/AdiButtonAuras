@@ -203,7 +203,7 @@ local function Configure(spells, units, events, handlers, callLevel)
 	else
 		return function()
 			for i, spell in pairs(spells) do
-				_AddRuleFor, spells, units, events, handlers, callLevel+1)
+				_AddRuleFor(spell, units, events, handlers, callLevel+1)
 			end
 		end
 	end
@@ -338,7 +338,7 @@ local function AuraAliases(filter, highlight, unit, spells, buffs)
 end
 
 local function ShowPower(spells, powerType, handler, highlight)
-	if type(powerType) != "string" then
+	if type(powerType) ~= "string" then
 		error("Invalid power type value, expected string, got "..type(powerType), 2)
 	end
 	local powerIndex = _G["SPELL_POWER_"..powerType]
