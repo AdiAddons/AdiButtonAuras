@@ -66,16 +66,35 @@ function addon:ADDON_LOADED(event, name)
 		self:Debug(name, 'loaded')
 		toWatch[addonName] = nil
 
-		self:ScanButtons("ActionButton", 12)
-		self:ScanButtons("BonusActionButton", 12)
-		self:ScanButtons("MultiBarRightButton", 12)
-		self:ScanButtons("MultiBarLeftButton", 12)
-		self:ScanButtons("MultiBarBottomRightButton", 12)
-		self:ScanButtons("MultiBarBottomLeftButton", 12)
+		self:ScanButtons("ActionButton", NUM_ACTIONBAR_BUTTONS)
+		self:ScanButtons("BonusActionButton", NUM_ACTIONBAR_BUTTONS)
+		self:ScanButtons("MultiBarRightButton", NUM_ACTIONBAR_BUTTONS)
+		self:ScanButtons("MultiBarLeftButton", NUM_ACTIONBAR_BUTTONS)
+		self:ScanButtons("MultiBarBottomRightButton", NUM_ACTIONBAR_BUTTONS)
+		self:ScanButtons("MultiBarBottomLeftButton", NUM_ACTIONBAR_BUTTONS)
+		self:ScanButtons("StanceButton", NUM_STANCE_SLOTS)
+		self:ScanButtons("PetActionButton", NUM_PET_ACTION_SLOTS)
+
 		hooksecurefunc('ActionButton_Update', function(button)
 			local overlay = self:GetOverlay(button)
 			if overlay and overlay:IsVisible() then
 				return overlay:UpdateAction('ActionButton_Update')
+			end
+		end)
+		hooksecurefunc('PetActionBar_Update', function()
+			for i = 1, NUM_PET_ACTION_SLOTS do
+				local overlay = self:GetOverlay(_G['PetActionButton'..i])
+				if overlay and overlay:IsVisible() then
+					return overlay:UpdateAction('PetActionBar_Update')
+				end
+			end
+		end)
+		hooksecurefunc('StanceBar_UpdateState', function()
+			for i = 1, NUM_STANCE_SLOTS do
+				local overlay = self:GetOverlay(_G['StanceButton'..i])
+				if overlay and overlay:IsVisible() then
+					return overlay:UpdateAction('StanceBar_UpdateState')
+				end
 			end
 		end)
 
@@ -98,3 +117,4 @@ function addon:ADDON_LOADED(event, name)
 end
 
 addon:RegisterEvent('ADDON_LOADED')
+

@@ -422,6 +422,10 @@ function overlayPrototype:UpdateState(event)
 	return true
 end
 
+function overlayPrototype:GetActionId()
+	-- NOOP
+end
+
 --------------------------------------------------------------------------------
 -- Blizzard button support
 --------------------------------------------------------------------------------
@@ -450,8 +454,33 @@ function labSupportPrototype:GetAction()
 	return self.button:GetAction()
 end
 
-function labSupportPrototype:GetActionId()
-	-- NOOP
+--------------------------------------------------------------------------------
+-- Stance buttons
+--------------------------------------------------------------------------------
+
+local stanceButtonPrototype = setmetatable({}, overlayMeta)
+local stanceButtonMeta = { __index = stanceButtonPrototype }
+
+function stanceButtonPrototype:GetAction()
+	local _, name = GetShapeshiftFormInfo(self.button:GetID())
+	local ids = LibSpellbook:GetAllIds(name)
+	if ids then
+		return 'spell', (next(ids))
+	end
+end
+
+--------------------------------------------------------------------------------
+-- Pet action buttons
+--------------------------------------------------------------------------------
+
+local petActionButtonPrototype = setmetatable({}, overlayMeta)
+local petActionButtonMeta = { __index = petActionButtonPrototype }
+
+function petActionButtonPrototype:GetAction()
+	local spellId = select(8, GetPetActionInfo(self.button:GetID()))
+	if spellId and spellId ~= 0 then
+		return 'spell', spellId
+	end
 end
 
 --------------------------------------------------------------------------------
@@ -461,10 +490,17 @@ end
 local overlays = addon.Memoize(function(button)
 	if button and button.IsObjectType and button:IsObjectType("Button") then
 		local name = button:GetName()
-		local overlay = setmetatable(
-			CreateFrame("Frame", name and (name..'Overlay'), button),
-			button.__LAB_Version and labSupportMeta or blizzardSupportMeta
-		)
+		local meta = blizzardSupportMeta
+		if button.__LAB_Version then
+			meta = blizzardSupportMeta
+		elseif name then
+			if strmatch(name, 'StanceButton') then
+				meta = stanceButtonMeta
+			elseif strmatch(name, 'PetActionButton') then
+				meta = petActionButtonMeta
+			end
+		end
+		local overlay = setmetatable(CreateFrame("Frame", name and (name..'Overlay'), button), meta)
 		overlay:Initialize(button)
 		return overlay
 	else
