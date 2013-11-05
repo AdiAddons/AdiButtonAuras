@@ -286,6 +286,7 @@ function addon.CreateRules()
 				32182, -- Heroism (Alliance shaman)
 				80353, -- Time Warp (mage)
 				90355, -- Ancient Hysteria (hunter exotic pet ability)
+				"item:102351", -- Drums of Rage
 			},
 			"ally",
 			"UNIT_AURA",
