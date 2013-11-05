@@ -361,6 +361,17 @@ function addon.CreateRules()
 				145518, -- Genesis
 				   774, -- Rejuvenation
 			},
+			PassiveModifier {
+				113043, -- Omen of Clarity
+				{
+					8936, -- Regrowth
+					5176, -- Wrath
+					5185, -- Healing Touch
+				},
+				16870, -- Clearcasting
+				"player",
+				"flash"
+			},
 			SelfBuffAliases {
 				{ 77761, 77764, 106898 }, -- Stampeding Roar
 			},
