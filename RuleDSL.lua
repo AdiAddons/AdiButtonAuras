@@ -81,16 +81,18 @@ end
 local function AsList(value, checkType, callLevel)
 	if type(value) == "table" then
 		value = FlattenList(value)
-		for i, v in ipairs(value) do
-			if type(v) ~= checkType then
-				error("Invalid value type, expected "..checkType..", got "..type(v), (callLevel or 0)+2)
+		if checkType then
+			for i, v in ipairs(value) do
+				if type(v) ~= checkType then
+					error(format("Invalid value type, expected %s, got %s", checkType, type(v)), (callLevel or 0)+2)
+				end
 			end
 		end
 		return value
 	elseif checkType == nil or type(value) == checkType then
 		return { value }
 	else
-		error("Invalid value type, expected "..checkType..", got "..type(value), (callLevel or 0)+2)
+		error(format("Invalid value type, expected %s, got %s", checkType, type(value)), (callLevel or 0)+2)
 	end
 end
 
@@ -130,12 +132,12 @@ local function SpellOrItemId(value, callLevel)
 	if spellId then
 		if not GetSpellInfo(spellId) then
 			error(format("Invalid spell identifier: %s", tostring(value)), callLevel)
-		elseif not LibSpellbook:IsKnown(spell) then
+		elseif not LibSpellbook:IsKnown(spellId) then
 			return nil -- Unknown spell
 		end
 		return format("spell:%d", spellId), "spell "..GetSpellLink(spellId)
 	end
-	local itemId = tonumber(strmatch(tostring(value), "item:(%d)"))
+	local itemId = tonumber(strmatch(tostring(value), "item:(%d+)"))
 	if itemId then
 		return format("item:%d", itemId), "item "..GetItemLink(itemId)
 	end
