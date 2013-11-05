@@ -521,12 +521,12 @@ function addon.CreateRules()
 			},
 			SimpleBuffs {
 				   139, -- Renew
-				  6346, -- Pain Suppression -- TODO: shared ?
-				 47788, -- Guardian Spirit -- TODO: shared ?
 			},
 			SharedSimpleBuffs {
 				  1706, -- Levitate
 				  6346, -- Fear Ward
+				 47788, -- Guardian Spirit -- can be stacked but this is not advised
+				  6346, -- Pain Suppression --  can be stacked but this is not advised
 			},
 			SimpleDebuffs {
 				   589, -- Shadow Word: Pain
