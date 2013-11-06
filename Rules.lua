@@ -345,15 +345,6 @@ function addon.CreateRules()
 				114107, -- Soul of the Forest
 				124974, -- Nature's Vigil
 			},
-			Configure {
-				18562, -- SwiftMend
-				"ally",
-				"UNIT_AURA",
-				BuildAuraHandler_Longest("HELPFUL", "good", "ally", {
-					   774, -- Rejuvenation
-					  8936, -- Regrowth
-				})
-			},
 			BuffAliases {
 				50464, -- Nourish
 				96206, -- Glyph of Rejuvenation
