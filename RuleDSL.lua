@@ -264,7 +264,10 @@ local function BuildAuraHandler_Single(filter, highlight, token, spell, callLeve
 		if not units[token] then return end
 		local name, _, _, count, _, _, expiration = UnitAura(units[token], spellName, nil, filter)
 		if name then
-			model.highlight, model.count, model.expiration = highlight, count, expiration
+			if highlight == "flash" or model.highlight ~= "flash" then
+				model.highlight = highlight
+			end
+			model.count, model.expiration = count, expiration
 			return true
 		end
 	end
@@ -284,7 +287,10 @@ local function BuildAuraHandler_Longest(filter, highlight, token, buffs, callLev
 			if name then
 				if buffs[spellId] and expiration > longest then
 					longest = expiration
-					model.highlight, model.count, model.expiration = highlight, count, expiration
+					if highlight == "flash" or model.highlight ~= "flash" then
+						model.highlight = highlight
+					end
+					model.count, model.expiration = count, expiration
 				end
 			else
 				break
@@ -307,7 +313,10 @@ local function BuildAuraHandler_FirstOf(filter, highlight, token, buffs, callLev
 			local name, _, _, count, _, _, expiration, _, _, _, spellId = UnitAura(unit, i, filter)
 			if name then
 				if buffs[spellId] then
-					model.highlight, model.count, model.expiration = highlight, count, expiration
+					if highlight == "flash" or model.highlight ~= "flash" then
+						model.highlight = highlight
+					end
+					model.count, model.expiration = count, expiration
 					return true
 				end
 			else
