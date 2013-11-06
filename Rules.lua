@@ -390,6 +390,22 @@ function addon.CreateRules()
 					model.count = points or 0
 				end,
 			},
+			IfSpell { 77495, -- Mastery: Harmony
+				Configure {
+					50464, -- Nourish
+					"player",
+					{ "UNIT_AURA", "PLAYER_REGEN_ENABLED", "PLAYER_REGEN_DISABLED" },
+					(function()
+						local harmonyBuff = GetSpellInfo(100977) -- Harmony
+						return function(units, model)
+							if InCombatLockdown() and not UnitAura("player", harmonyBuff, nil, "HELPFUL PLAYER") then
+								model.highlight = "flash"
+								return true
+							end
+						end
+					end)()
+				},
+			},
 		}, -- Druid spells
 
 		-- Hunter spells
