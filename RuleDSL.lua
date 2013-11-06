@@ -139,7 +139,8 @@ local function SpellOrItemId(value, callLevel)
 	end
 	local itemId = tonumber(strmatch(tostring(value), "item:(%d+)"))
 	if itemId then
-		return format("item:%d", itemId), "item "..tostring(select(2, GetItemInfo(itemId)))
+		local _, link = GetItemInfo(itemId)
+		return format("item:%d", itemId), "item "..tostring(link)
 	end
 	error(format("Invalid spell or item identifier: %s", tostring(value)), callLevel)
 end
