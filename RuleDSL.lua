@@ -139,7 +139,7 @@ local function SpellOrItemId(value, callLevel)
 	end
 	local itemId = tonumber(strmatch(tostring(value), "item:(%d+)"))
 	if itemId then
-		return format("item:%d", itemId), "item "..GetItemLink(itemId)
+		return format("item:%d", itemId), "item "..tostring(select(2, GetItemInfo(itemId)))
 	end
 	error(format("Invalid spell or item identifier: %s", tostring(value)), callLevel)
 end
@@ -193,7 +193,7 @@ end
 
 local function Configure(spells, units, events, handlers, callLevel)
 	callLevel = (callLevel or 0) + 1
-	spells = AsList(spells, "number", callLevel)
+	spells = AsList(spells)
 	if #spells == 0 then
 		error("Empty spell list", callLevel+2)
 	end
