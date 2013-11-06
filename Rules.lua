@@ -364,6 +364,13 @@ function addon.CreateRules()
 				"player",
 				"flash"
 			},
+			PassiveModifier {
+				114107, -- Soul of the Forest
+				 18562, -- Swiftmend
+				114108, -- Soul of the Forest (restoration)
+				"player",
+				"flash"
+			},
 			SelfBuffAliases {
 				{ 77761, 77764, 106898 }, -- Stampeding Roar
 			},
