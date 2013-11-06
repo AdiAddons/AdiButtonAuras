@@ -286,6 +286,7 @@ function addon.CreateRules()
 				32182, -- Heroism (Alliance shaman)
 				80353, -- Time Warp (mage)
 				90355, -- Ancient Hysteria (hunter exotic pet ability)
+				"item:102351", -- Drums of Rage
 			},
 			"ally",
 			"UNIT_AURA",
@@ -514,7 +515,6 @@ function addon.CreateRules()
 				 15286, -- Vampiric Embrace
 				 47585, -- Dispersion
 				 73413, -- Inner Will
-				 81700, -- Archangel -- TODO: show Evangelism ?
 				 89485, -- Inner Focus
 				109964, -- Spirit Shell
 				112833, -- Spectral Guise
@@ -550,10 +550,7 @@ function addon.CreateRules()
 			},
 			PassiveModifier {
 				81662, -- Evangelism
-				{
-					  585, -- Smite
-					14914, -- Holy Fire
-				},
+				81700, -- Archangel
 				81662, -- Evangelism
 			},
 			Configure {

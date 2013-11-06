@@ -139,7 +139,7 @@ local function SpellOrItemId(value, callLevel)
 	end
 	local itemId = tonumber(strmatch(tostring(value), "item:(%d+)"))
 	if itemId then
-		return format("item:%d", itemId), "item "..GetItemLink(itemId)
+		return format("item:%d", itemId), "item "..tostring(select(2, GetItemInfo(itemId)))
 	end
 	error(format("Invalid spell or item identifier: %s", tostring(value)), callLevel)
 end
@@ -193,7 +193,7 @@ end
 
 local function Configure(spells, units, events, handlers, callLevel)
 	callLevel = (callLevel or 0) + 1
-	spells = AsList(spells, "number", callLevel)
+	spells = AsList(spells)
 	if #spells == 0 then
 		error("Empty spell list", callLevel+2)
 	end
@@ -323,20 +323,21 @@ end
 local function Auras(filter, highlight, unit, spells)
 	local funcs = {}
 	for i, spell in ipairs(AsList(spells, "number", 2)) do
-		tinsert(funcs, Configure(spell, unit, "UNIT_AURA", BuildAuraHandler_Single(filter, highlight, unit, spell), 2))
+		tinsert(funcs, Configure(spell, unit, "UNIT_AURA", BuildAuraHandler_Single(filter, highlight, unit, spell, 2), 2))
 	end
 	return (#funcs > 1) and funcs or funcs[1]
 end
 
 local function PassiveModifier(passive, spell, buff, unit, highlight)
 	unit = unit or "player"
-	local conf = Configure(spell, unit, "UNIT_AURA", BuildAuraHandler_Single("HEPLFUL PLAYER", highlight or "good", unit, buff), 1)
+	local handler = BuildAuraHandler_Single("HEPLFUL PLAYER", highlight or "good", unit, buff, 3)
+	local conf = Configure(spell, unit, "UNIT_AURA", handler, 3)
 	return passive and IfSpell(passive, conf) or conf
 end
 
 local function AuraAliases(filter, highlight, unit, spells, buffs)
 	buffs = AsList(buffs or spells, "number", 2)
-	return Configure(spells, unit, "UNIT_AURA", BuildAuraHandler_FirstOf(filter, highlight, unit, buffs))
+	return Configure(spells, unit, "UNIT_AURA", BuildAuraHandler_FirstOf(filter, highlight, unit, buffs, 2), 2)
 end
 
 local function ShowPower(spells, powerType, handler, highlight)
