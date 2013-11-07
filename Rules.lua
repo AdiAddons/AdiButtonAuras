@@ -385,7 +385,13 @@ function addon.CreateRules()
 				"UNIT_COMBO_POINTS",
 				function(units, model)
 					local points = GetComboPoints(UnitHasVehicleUI("player") and "vehicle" or "player", units.enemy)
-					model.count = points or 0
+					if points and points > 0 then
+						model.count = points or 0
+						if points == 5 then
+							model.highlight = "flash"
+						end
+						return true
+					end
 				end,
 			},
 			IfSpell { 77495, -- Mastery: Harmony
