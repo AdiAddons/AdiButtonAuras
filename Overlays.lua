@@ -310,6 +310,7 @@ function overlayPrototype:SetAction(event, spellId, macroConditionals)
 		for unit, handler in pairs(units) do
 			local event = unitEvents[unit]
 			if event and events[event] ~= handler then
+				self:Debug('Event', event, '=>', handler)
 				events[event] = handler
 			end
 		end
@@ -340,9 +341,9 @@ function overlayPrototype:GenericUnitEvent(event, unit)
 	end
 end
 
-function overlayPrototype:GenericEvent(event)
+function overlayPrototype:GenericEvent(event, unit)
 	if self.events[event] then
-		return self[self.events[event]](self, event)
+		return self[self.events[event]](self, event, unit)
 	end
 end
 
@@ -354,12 +355,22 @@ end
 
 function overlayPrototype:UNIT_PET(event, unit)
 	if unit == "player" then
-		return self:GenericEvent(event)
+		return self:GenericEvent(event, "pet")
 	end
 end
 
-function overlayPrototype:UpdateDynamicUnits(event)
+function overlayPrototype:PLAYER_TARGET_CHANGED(event)
+	return self:GenericEvent(event, "target")
+end
+
+function overlayPrototype:PLAYER_FOCUS_CHANGED(event)
+	return self:GenericEvent(event, "focus")
+end
+
+function overlayPrototype:UpdateDynamicUnits(event, unit)
 	local updated, watchMouseover = false, false
+
+	updated = self:UpdateGUID(event, unit) or updated
 
 	for token, conditional in pairs(self.unitConditionals) do
 		local _, unit = SecureCmdOptionParse(conditional)
@@ -372,10 +383,8 @@ function overlayPrototype:UpdateDynamicUnits(event)
 				watchMouseover = true
 			end
 		end
-		if self.unitMap[token] ~= unit then
-			self.unitMap[token] = unit
-			updated = self:UpdateGUID(event, unit) or updated
-		end
+		self.unitMap[token] = unit
+		updated = self:UpdateGUID(event, unit) or updated
 	end
 
 	if watchMouseover then
