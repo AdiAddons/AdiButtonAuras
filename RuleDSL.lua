@@ -125,6 +125,7 @@ local playerClass = select(2, UnitClass("player"))
 local knownClasses = {}
 local spellConfs = {}
 addon.spells = spellConfs
+addon.knownClasses = knownClasses
 
 local function SpellOrItemId(value, callLevel)
 	callLevel = (callLevel or 0) + 2

@@ -44,5 +44,6 @@ Utils.lua
 RuleDSL.lua
 Overlays.lua
 Display.lua
+Config.lua
 
 Rules.lua
