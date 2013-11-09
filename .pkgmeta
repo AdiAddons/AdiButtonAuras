@@ -22,3 +22,6 @@ externals:
   libs/DRData-1.0:
     url: git://git.wowace.com/wow/drdata-1-0/mainline.git
     tag: latest
+  libs/BugGrabber:
+    url: svn://svn.wowace.com/wow/bug-grabber/mainline/trunk
+    tag: latest

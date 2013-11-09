@@ -32,6 +32,7 @@
 #@no-lib-strip@
 libs\LibStub\LibStub.lua
 libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
+libs\BugGrabber\load.xml
 libs\AceTimer-3.0\AceTimer-3.0.xml
 libs\AceEvent-3.0\AceEvent-3.0.xml
 libs\LibDispellable-1.0\LibDispellable-1.0.xml
