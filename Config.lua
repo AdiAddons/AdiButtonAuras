@@ -56,17 +56,20 @@ frame:SetScript('OnShow', function()
 		end
 	end
 
-	local errorGrabber = false
-	for i, name in ipairs{"!BugGrabber", "Swatter"} do
-		if IsAddOnLoaded(name) then
-			p("\nError grabber:", "|cffffffff", name, "|r")
-			errorGrabber = true
-			break
-		end
+	local bugGrabber
+	if addon.BugGrabber then
+		bugGrabber = 'Embedded BugGrabber'
+		p("\nError grabber:", "|cffffffff", name, "|r")
+	elseif IsAddOnLoaded("!BugGrabber") or _G.BugGrabber then
+		bugGrabber = "BugGrabber"
+	elseif IsAddOnLoaded("!Swatter") or _G.Swatter then
+		bugGrabber = "Swatter"
+	elseif IsAddOnLoaded("!ImprovedErrorFrame") then
+		bugGrabber = "ImprovedErrorFrame"
+	elseif GetCVarBool('scriptErrors') then
+		bugGrabber = "Blizzard Lua display"
 	end
-	if not errorGrabber then
-		p("\nError grabber:", "|cffff0000NONE|r")
-	end
+	p("\nError handler:", bugGrabber and ("|cffffffff"..bugGrabber.."|r") or "|cffff0000NONE|r")
 	
 	local function ColorClass(c, ...)
 		if c then
