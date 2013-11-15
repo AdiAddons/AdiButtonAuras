@@ -120,7 +120,7 @@ function addon.CreateRules()
 
 		-- Dispels, using LibDispellable
 		function()
-			for spell, dispelType in pairs(LibDispellable.spells) do
+			for spell, dispelType in LibDispellable:IterateDispelSpells() do
 				local spell, offensive = spell, (dispelType ~= 'defensive')
 				local unit = offensive and 'enemy' or 'ally'
 				AddRuleFor(
