@@ -586,6 +586,31 @@ function addon.CreateRules()
 						end
 					end)(),
 				}
+			},
+			Configure {
+				119582, -- Purifying Brew
+				"player",
+				{ "UNIT_AURA", "UNIT_HEALTH_MAX" },
+				(function()
+					local light, moderate, heavy = GetSpellInfo(124275), GetSpellInfo(124274), GetSpellInfo(124273)
+					return function(units, model)
+						local amount = select(15, UnitDebuff("player", light))
+						if not amount then
+							amount = select(15, UnitDebuff("player", moderate))
+							if amount then
+								model.highlight = "bad"
+							else
+								amount = select(15, UnitDebuff("player", heavy))
+								if amount then
+									model.highlight = "flash"
+								end
+							end
+						end
+						if amount then
+							model.count = ceil(amount / UnitHealthMax("player") * 100)
+						end
+					end
+				end)(),
 			}
 		}, -- Monk spells
 
