@@ -351,6 +351,23 @@ local function AuraAliases(filter, highlight, unit, spells, buffs)
 	return Configure(spells, unit, "UNIT_AURA", BuildAuraHandler_FirstOf(filter, highlight, unit, buffs, 2), 2)
 end
 
+local function ItemSelfBuffs(...)
+	local funcs = {}
+	for i = 1, select("#", ...), 2 do
+		local item, buffs = select(i, ...)
+		if type(item) ~= "string" then
+			error(format("%dth item should be a string, not %s", (i+1)/2, type(item)), 3)
+		elseif not strmatch(item, "^item:%d+$") then
+			error(format("%q is an invalid item", item), 3)
+		end
+		buffs = AsList(buffs, "number", 3)
+		local handler = BuildAuraHandler_FirstOf("PLAYER HELPFUL", "good", "player", buffs, 3)
+		local rule = Configure(item, "player", "UNIT_AURA", handler, 3)
+		tinsert(funcs, rule)
+	end
+	return (#funcs > 1) and funcs or funcs[1]
+end
+
 local function ShowPower(spells, powerType, handler, highlight)
 	if type(powerType) ~= "string" then
 		error("Invalid power type value, expected string, got "..type(powerType), 2)
@@ -430,6 +447,7 @@ local RULES_ENV = setmetatable({
 	IfClass = WrapTableArgFunc(IfClass),
 	ShowPower = WrapTableArgFunc(ShowPower),
 	PassiveModifier = WrapTableArgFunc(PassiveModifier),
+	ItemSelfBuffs = WrapTableArgFunc(ItemSelfBuffs),
 
 	-- High-callLevel functions
 
@@ -484,7 +502,7 @@ local rules
 function addon:LibSpellbook_Spells_Changed(event)
 	addon:Debug(event)
 	if not rules then
-		rules = setfenv(addon.CreateRules, RULES_ENV)()
+		rules = AsList(setfenv(addon.CreateRules, RULES_ENV)(), "function")
 		if not knownClasses[playerClass] then
 			print(addonName.." has not specific rules for your class and will only handle common spells.")
 		end
