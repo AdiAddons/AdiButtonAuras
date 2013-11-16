@@ -418,6 +418,34 @@ function addon.CreateRules()
 					end)()
 				},
 			},
+			IfSpell { 79577, -- Eclipse (passive)
+				Configure {
+					5176, -- Wrath
+					"player",
+					{ "UNIT_POWER_FREQUENT", "ECLIPSE_DIRECTION_CHANGE" },
+					function(units, model)
+						if GetEclipseDirection() ~= "sun" then
+							model.highlight = "lighten"
+							model.count = -UnitPower("player", SPELL_POWER_ECLIPSE)
+						else
+							model.highlight = "darken"
+						end
+					end,
+				},
+				Configure {
+					2912, -- Starfire
+					"player",
+					{ "UNIT_POWER_FREQUENT", "ECLIPSE_DIRECTION_CHANGE" },
+					function(units, model)
+						if GetEclipseDirection() ~= "moon" then
+							model.highlight = "lighten"
+							model.count = UnitPower("player", SPELL_POWER_ECLIPSE)
+						else
+							model.highlight = "darken"
+						end
+					end,
+				}
+			},
 		}, -- Druid spells
 
 		-- Hunter spells
