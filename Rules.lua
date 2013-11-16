@@ -530,13 +530,6 @@ function addon.CreateRules()
 			},
 			PassiveModifier {
 				117967, -- Brewmaster Training
-				115295, -- Guard
-				118636, -- Power Guard
-				"player",
-				"none", -- Already flashing
-			},
-			PassiveModifier {
-				117967, -- Brewmaster Training
 				100784, -- Blackout Kick
 				115307, -- Shuffle
 			},
