@@ -562,6 +562,31 @@ function addon.CreateRules()
 				},
 				129914, -- Power Strikes (buff)
 			},
+			IfSpell { 122280, -- Healing Elixirs (passive)
+				Configure {
+					{
+						115203, -- Fortifying Brew
+						115288, -- Energizing Brew
+						115294, -- Mana Tea
+						115308, -- Elusive Brew
+						115399, -- Chi Brew
+						116680, -- Thunder Focus Tea
+						116740, -- Tigereye Brew
+						119582, -- Purifying Brew
+						137562, -- Nimble Brew
+					},
+					"player",
+					"UNIT_AURA",
+					(function()
+						local healingElixirs = GetSpellInfo(134563) -- Healing Elixirs (buff)
+						return function(units, model)
+							if UnitBuff("player", healingElixirs) then
+								model.highlight = "good"
+							end
+						end
+					end)(),
+				}
+			}
 		}, -- Monk spells
 
 		-- Priest spells
