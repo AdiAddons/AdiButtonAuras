@@ -554,6 +554,7 @@ function addon.CreateRules()
 				121817, -- Power Strikes (talent)
 				{
 					115693, -- Jab
+					100780, -- Jab (glyphed)
 					115175, -- Soothing Mist
 					101546, -- Spinning Crane Kick
 					115072, -- Expel Harm
