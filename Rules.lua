@@ -623,6 +623,7 @@ function addon.CreateRules()
 				   139, -- Renew
 			},
 			SharedSimpleBuffs {
+				 41635, -- Prayer of Mending
 				  1706, -- Levitate
 				  6346, -- Fear Ward
 				 47788, -- Guardian Spirit -- can be stacked but this is not advised
@@ -652,6 +653,11 @@ function addon.CreateRules()
 				81662, -- Evangelism
 				81700, -- Archangel
 				81662, -- Evangelism
+			},
+			PassiveModifier {
+				109186, -- From Darkness, Comes Light
+				  2061, -- Flash Heal
+				114255, -- Surge of Light
 			},
 			Configure {
 			    17, -- Power Word: Shield
