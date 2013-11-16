@@ -309,6 +309,14 @@ function addon.CreateRules()
 			end)(),
 		},
 
+		-- Random useful items
+		ItemSelfBuffs {
+			 "item:75525", { 79638, 79639, 79640 }, -- Alchemist's Flask => Flask of Enhancement (strength, agility & intellect)
+			"item:103641", 147055, -- Singing Crystal
+			"item:103642", 147226, -- Book of the Ages
+			"item:103643", 147476, -- Dew of Eternal Morning
+		},
+
 		-- Druid spells
 		IfClass { "DRUID",
 			SimpleBuffs {
