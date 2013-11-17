@@ -22,29 +22,59 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 local addonName, addon = ...
 
 local _G = _G
+local GetItemInfo = _G.GetItemInfo
+local GetItemSpell = _G.GetItemSpell
+local IsHarmfulItem = _G.IsHarmfulItem
+local IsHelpfulItem = _G.IsHelpfulItem
+local select = _G.select
+local setmetatable = _G.setmetatable
+local UnitAura = _G.UnitAura
 
 local LibItemBuffs = LibStub('LibItemBuffs-1.0')
 
 local items = {}
 addon.items = items
 
-local function BuildItemRule(itemId, ...)
+local function GetItemTargetFilterAndHighlight(itemId)
+	if IsHarmfulItem(itemId) then
+		return "enemy", "PLAYER HARMFUL", "bad"
+	else
+		return IsHelpfulItem(itemId) and "ally" or "player", "PLAYER HELPFUL", "good"
+	end
+end
+
+local function BuildItemRuleForBuffName(itemId, buffName)
+	if not buffName then return end
+	local _, link = GetItemInfo(itemId)
+	addon:Debug('Buff for', link, '=>', buffName)
+	local token, filter, highlight = GetItemTargetFilterAndHighlight(itemId)
+	return {
+		units = { [token] = true },
+		events = { UNIT_AURA = true },
+		handlers = {
+			function(units, model)
+				if not units[token] then return end
+				local name, _, _, count, _, _, expiration, _, _, _, spellId = UnitAura(units[token], buffName, nil, filter)
+				if name then
+					model.highlight, model.expiration = highlight, expiration
+					return true
+				end
+			end
+		}
+	}
+end
+
+local function BuildItemRuleForBuffIdS(itemId, ...)
 	local numBuffs = select('#', ...)
+	if numBuffs == 0 or not ... then return false end
 	local _, link = GetItemInfo(itemId)
 	addon:Debug('Buffs for', link, '=>', ...)
-	if numBuffs == 0 or not ... then return false end
 	local buffs = {}
 	for i = 1, numBuffs do
 		local spellId = select(i, ...)
 		buffs[spellId] = true
 	end
-	local token, filter, highlight
-	if IsHarmfulItem(itemId) then
-		token, filter, highlight = "enemy", "PLAYER HARMFUL", "bad"
-	else
-		filter, highlight = "PLAYER HELPFUL", "good"
-		token = IsHelpfulItem(itemId) and "ally" or "player"
-	end
+	local token, filter, highlight = GetItemTargetFilterAndHighlight(itemId)
 	return {
 		units = { [token] = true },
 		events = { UNIT_AURA = true },
@@ -69,7 +99,12 @@ local function BuildItemRule(itemId, ...)
 end
 
 setmetatable(items, { __index = function(t, itemId)
-	local rule = itemId and BuildItemRule(itemId, LibItemBuffs:GetItemBuffs(itemId))
+	local rule = false
+	if itemId then
+		rule = BuildItemRuleForBuffIdS(itemId, LibItemBuffs:GetItemBuffs(itemId))
+			or BuildItemRuleForBuffName(itemId, GetItemSpell(itemId))
+			or false
+	end
 	t[itemId] = rule
 	return rule
 end})
