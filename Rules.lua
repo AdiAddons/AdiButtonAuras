@@ -510,6 +510,7 @@ function addon.CreateRules()
 				137562, -- Nimble Brew
 			},
 			SimpleDebuffs {
+				107428, -- Rising Sun Kick
 				116095, -- Disable
 			},
 			PassiveModifier {
