@@ -27,7 +27,7 @@
 ## X-License: GPL v3
 ## X-eMail: adirelle@gmail.com
 
-## OptionalDeps: Ace3, LibSpellbook-1.0, LibDispellable-1.0, DRData-1.0, AdiDebug, Dominos, Bartender4
+## OptionalDeps: Ace3, LibSpellbook-1.0, LibDispellable-1.0, LibItemBuffs-1.0, DRData-1.0, AdiDebug, Dominos, Bartender4
 
 #@no-lib-strip@
 libs\LibStub\LibStub.lua
@@ -39,10 +39,12 @@ libs\LibDispellable-1.0\LibDispellable-1.0.lua
 libs\DRData-1.0\DRData-1.0.xml
 #@end-no-lib-strip@
 libs\LibSpellbook-1.0\LibSpellbook-1.0.lua
+libs\LibItemBuffs-1.0\LibItemBuffs-1.0.lua
 
 AdiButtonAuras.lua
 Utils.lua
 RuleDSL.lua
+Items.lua
 Overlays.lua
 Display.lua
 Config.lua

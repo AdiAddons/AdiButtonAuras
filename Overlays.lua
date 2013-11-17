@@ -198,9 +198,9 @@ local function GetActionSpell(actionType, actionId)
 
 	-- Resolve items and companions
 	if actionType == "item" then
-		return "item:"..actionId, macroConditionals
+		return "item", actionId, macroConditionals
 	elseif actionType == "spell" or actionType == "companion" then
-		return "spell:"..actionId, macroConditionals
+		return "spell", actionId, macroConditionals
 	end
 end
 
@@ -251,7 +251,7 @@ function overlayPrototype:OnShow()
 end
 
 function overlayPrototype:OnHide()
-	self:SetAction('OnHide', nil, nil)
+	self:SetAction('OnHide')
 end
 
 function overlayPrototype:ForceUpdate(event)
@@ -264,13 +264,18 @@ overlayPrototype.PLAYER_ENTERING_WORLD = overlayPrototype.ForceUpdate
 
 function overlayPrototype:UpdateAction(event)
 	local actionId, actionType = self:GetAction()
-	local spellId, macroConditionals = GetActionSpell(actionId, actionType)
+	local actualType, actualId, macroConditionals = GetActionSpell(actionId, actionType)
 	self:Debug('UpdateAction', event, '|', actionId, actionType, '=>', spellId, macroConditionals)
-	return self:SetAction(event, spellId, macroConditionals)
+	return self:SetAction(event, actualType, actualId, macroConditionals)
 end
 
-function overlayPrototype:SetAction(event, spellId, macroConditionals)
-	local conf = spellId and addon.spells[spellId]
+function overlayPrototype:SetAction(event, actionType, actionId, macroConditionals)
+	local spellId, conf
+	if actionType and actionId then
+		spellId = actionType..":"..actionId
+		conf = addon.spells[spellId] or (actionType == "item" and addon.items[actionId])
+	end
+
 	if self.spellId == spellId and self.conf == conf and self.macroConditionals == macroConditionals then return end
 	self.spellId, self.conf, self.macroConditionals = spellId, conf, macroConditionals
 
