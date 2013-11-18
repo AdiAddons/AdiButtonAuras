@@ -614,6 +614,7 @@ function addon.CreateRules()
 			},
 			SimpleBuffs {
 				   139, -- Renew
+				 33076, -- Prayer of Mending
 			},
 			SharedSimpleBuffs {
 				  1706, -- Levitate
@@ -645,6 +646,11 @@ function addon.CreateRules()
 				81662, -- Evangelism
 				81700, -- Archangel
 				81662, -- Evangelism
+			},
+			PassiveModifier {
+				109186, -- From Darkness, Comes Light
+				  2061, -- Flash Heal
+				114255, -- Surge of Light
 			},
 			Configure {
 			    17, -- Power Word: Shield
