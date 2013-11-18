@@ -358,6 +358,7 @@ function addon.CreateRules()
 					8936, -- Regrowth
 					5176, -- Wrath
 					5185, -- Healing Touch
+
 				},
 				16870, -- Clearcasting
 				"player",
@@ -437,6 +438,26 @@ function addon.CreateRules()
 						end
 					end,
 				}
+			},
+			PassiveModifier {
+				16864, -- Omen of Clarity
+				{
+					5221, -- Shred
+				},
+				16870, -- Clearcasting
+				"player",
+				"flash"
+			},
+			PassiveModifier {
+				16974, -- Predatory Swiftness (passive)
+				{
+					 5185, -- Healing Touch
+					 2637, -- Hibernate
+					20484, -- Rebirth
+				},
+				69369, -- Predatory Swiftness (buff)
+				"player",
+				"flash"
 			},
 		}, -- Druid spells
 
