@@ -460,6 +460,12 @@ function addon.CreateRules()
 				"player",
 				"flash"
 			},
+			ShowPower {
+				5217, -- Tiger's Fury
+				"ENERGY",
+				35,
+				"darken"
+			},
 		}, -- Druid spells
 
 		-- Hunter spells
