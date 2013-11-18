@@ -2,9 +2,9 @@ h1. AdiButtonAuras
 
 Display auras on action buttons.
 
-AdiButtonAuras is a rewrite of Inline Aura, but with different design decisions based on my experience the latter.
+AdiButtonAuras is a rewrite of Inline Aura, but with different design decisions based on my experience on the latter.
 
-h2. States of the rules par class and specialization
+h2. Supported classes and specializations
 
 * !http://wow.zamimg.com/images/wow/icons/small/class_druid.jpg! Druid:
 ** Balance: 5.4
@@ -30,8 +30,10 @@ h2. States of the rules par class and specialization
 
 AdiButtonAuras also supports differents kinds of spells using libraries, regardless of class:
 * crowd-control spells using "DRData-1.0":http://www.curse.com/addons/wow/drdata-1-0,
-* dispel spells using" LibDispellabe-1.0":http://www.curse.com/addons/wow/libdispellable-1-0,
+* dispel spells using "LibDispellabe-1.0":http://www.curse.com/addons/wow/libdispellable-1-0,
 * trinket, enchantment and item buffs using "LibItemBuffs-1.0":https://github.com/Adirelle/LibItemBuffs-1.0.
+
+Finally, there is a default rule for *items* not supported by LibItemBuffs-1.0.
 
 h2. Design decisions
 
@@ -41,7 +43,7 @@ A separate button overlay is created for each button, with border texture, texts
 
 *Pro*: avoid tainting the action buttons, thus causing ADDON_BLOCKED errors. There is also no need to hook various methods to re-apply the state after the stock UI modified them.
 
-*Con*: this is not compatible with Masque or third-party action buttons.
+*Con*: this does not support skinning (Masque) or custom third-party action buttons (ElvUI). However, AdiButtonAuras fully support Dominos and Bartender4, and should support any addon using the stock action buttons (like Dominos) or LibActionButton-1.0 (like Bartender4).
 
 h3. Hard-coded rules
 
