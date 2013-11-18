@@ -621,9 +621,9 @@ function addon.CreateRules()
 			},
 			SimpleBuffs {
 				   139, -- Renew
+				 33076, -- Prayer of Mending
 			},
 			SharedSimpleBuffs {
-				 41635, -- Prayer of Mending
 				  1706, -- Levitate
 				  6346, -- Fear Ward
 				 47788, -- Guardian Spirit -- can be stacked but this is not advised
