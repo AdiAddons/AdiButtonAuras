@@ -625,6 +625,8 @@ function addon.CreateRules()
 				   589, -- Shadow Word: Pain
 				  2944, -- Devouring Plague
 				 34914, -- Vampiric Touch
+				 14914, -- Holy Fire
+				129250, -- Power Word: Solace
 			},
 			ShowPower {
 				{
