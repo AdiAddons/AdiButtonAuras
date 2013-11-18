@@ -207,8 +207,6 @@ function addon.CreateRules()
 		-- Weakened Blows
 		LongestDebuffOf {
 			{ -- Spells to alter
-				106830, -- Thrash (feral druid)
-				 77758, -- Thrash (guardian druid)
 				121253, -- Keg Smash (monk)
 				  6343, -- Thunder Clap (warrior)
 				-- 81132, -- Scarlet Fever (deathknight), this is a passive that modifies Blood Boil
@@ -324,7 +322,9 @@ function addon.CreateRules()
 				  1822, -- Rake
 				  8921, -- Moonfire
 				 33745, -- Lacerate
+				 77758, -- Thrash (guardian druid)
 				 93402, -- Sunfire
+				106830, -- Thrash (feral druid)
 			},
 			SelfBuffs {
 				  1850, -- Dash
