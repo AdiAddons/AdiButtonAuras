@@ -343,6 +343,7 @@ function addon.CreateRules()
 				112071, -- Celestial Alignment
 				114107, -- Soul of the Forest
 				124974, -- Nature's Vigil
+				127538, -- Savage Roar (glyphed)
 			},
 			BuffAliases {
 				50464, -- Nourish
@@ -358,7 +359,6 @@ function addon.CreateRules()
 					8936, -- Regrowth
 					5176, -- Wrath
 					5185, -- Healing Touch
-
 				},
 				16870, -- Clearcasting
 				"player",
@@ -380,6 +380,7 @@ function addon.CreateRules()
 					 22568, -- Ferocious Bite
 					 22570, -- Maim
 					 52610, -- Savage Roar
+					127538, -- Savage Roar (glyphed)
 				},
 				{ "enemy", "player" },
 				"UNIT_COMBO_POINTS",
