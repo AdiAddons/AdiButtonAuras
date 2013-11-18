@@ -632,11 +632,11 @@ function addon.CreateRules()
 		IfClass { "PRIEST",
 			SelfBuffs {
 				   586, -- Fade
+				   588, -- Inner Fire
 				 10060, -- Power Infusion
 				 15286, -- Vampiric Embrace
 				 47585, -- Dispersion
 				 73413, -- Inner Will
-				 89485, -- Inner Focus
 				109964, -- Spirit Shell
 				112833, -- Spectral Guise
 			},
