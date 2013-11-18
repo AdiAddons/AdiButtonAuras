@@ -47,14 +47,18 @@ AdiButtonAuras uses the spell numerical identifiers, instead of its name, to sea
 h2. States of the rules par class and specialization
 
 * !http://wow.zamimg.com/images/wow/icons/small/class_druid.jpg! Druid:
-** Balance: 5.4 untested
-** Feral Combat: 5.4 untested
+** Balance: 5.4
+** Feral Combat: 5.4
 ** Guardian: 5.4 untested
 ** Restoration: 5.4
 * !http://wow.zamimg.com/images/wow/icons/small/class_hunter.jpg! Hunter
 ** Beast Master: 5.4 untested
 ** Marksmanship: 5.4
 ** Survival: 5.4
+* !http://wow.zamimg.com/images/wow/icons/small/class_priest.jpg! Priest
+** Discipline: 5.4 untested
+** Holy: 5.4 untested
+** Shadow: 5.4 untested
 * !http://wow.zamimg.com/images/wow/icons/small/class_monk.jpg! Monk
 ** Brewmaster: 5.4
 ** Mistweaver: 5.4 untested
