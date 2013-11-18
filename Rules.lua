@@ -384,7 +384,8 @@ function addon.CreateRules()
 				{ "enemy", "player" },
 				"UNIT_COMBO_POINTS",
 				function(units, model)
-					local points = GetComboPoints(UnitHasVehicleUI("player") and "vehicle" or "player", units.enemy)
+					if not units.enemy then return end
+					local points = GetComboPoints("player", units.enemy)
 					if points and points > 0 then
 						model.count = points or 0
 						if points == 5 then
