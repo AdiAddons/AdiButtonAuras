@@ -2,47 +2,7 @@ h1. AdiButtonAuras
 
 Display auras on action buttons.
 
-AdiButtonAuras is a rewrite of Inline Aura, but different design decisions based on my experience with Inline Aura.
-
-h2. Features
-
-h3. Separate button overlays
-
-A separate button overlay is created for each button, with border texture, texts and glowing animation.
-
-*Pro*: avoid tainting the action buttons, thus causing ADDON_BLOCKED errors. There is also no need to hook various methods to re-apply the state after the stock UI modified them.
-
-*Con*: this is not compatible with Masque or third-party action buttons.
-
-h3. Hard-coded rules
-
-The rules are hard-coded using a pretty simple "Domain Specific Language":https://en.wikipedia.org/wiki/Domain_specific_language built on top of Lua.
-
-Each rules specifies the spells to modify, the units and events to watch and one or more handlers. Several rules about the same spell are merged together, or thrown if the character doesn't know the spell.
-
-Each time one of the event is triggered for one of the unit, the handlers are called to update the state of the associated button.
-
-A set of convenient functions are provided to easily configure most spells. If a more specific task is needed, Lua can be used (see interrupt spells).
-
-*Pro*: far more powerful than the Inline Aura engine. This allows to show data from one unit merged with the stat of another one, if need be.
-
-*Con*: there is no way to configure this using a GUI.
-
-h3. No auto-discovery
-
-AdiButtonAuras only shows data for existing rules. It does not try to guess what to show.
-
-*Pro*: avoid showing wrong data.
-
-*Con*: all spells for all class should be listed.
-
-h3. Using spell ids instead of spell names
-
-AdiButtonAuras uses the spell numerical identifiers, instead of its name, to search for the applicable rules.
-
-*Pro*: avoid showing information on a wrong spell that as the same name as the intended one.
-
-*Con*: spells ids are sometimes different depending on shapeshift forms, glyphs or talents. All of them should be listed.
+AdiButtonAuras is a rewrite of Inline Aura, but with different design decisions based on my experience the latter.
 
 h2. States of the rules par class and specialization
 
@@ -67,6 +27,55 @@ h2. States of the rules par class and specialization
 ** Affliction: 5.4 untested
 ** Demonology: 5.4 untested
 ** Destruction: 5.4
+
+AdiButtonAuras also supports differents kinds of spells using libraries, regardless of class:
+* crowd-control spells using "DRData-1.0":http://www.curse.com/addons/wow/drdata-1-0,
+* dispel spells using" LibDispellabe-1.0":http://www.curse.com/addons/wow/libdispellable-1-0,
+* trinket, enchantment and item buffs using "LibItemBuffs-1.0":https://github.com/Adirelle/LibItemBuffs-1.0.
+
+h2. Design decisions
+
+h3. Separate button overlays
+
+A separate button overlay is created for each button, with border texture, texts and glowing animation.
+
+*Pro*: avoid tainting the action buttons, thus causing ADDON_BLOCKED errors. There is also no need to hook various methods to re-apply the state after the stock UI modified them.
+
+*Con*: this is not compatible with Masque or third-party action buttons.
+
+h3. Hard-coded rules
+
+The rules are hard-coded using a pretty simple "Domain Specific Language":https://en.wikipedia.org/wiki/Domain_specific_language built on top of Lua.
+
+Each rules specifies the spells to modify, the units and events to watch and one or more handlers. Several rules about the same spell are merged together, or thrown if the character doesn't know the spell.
+
+Each time one of the event is triggered for one of the unit, the handlers are called to update the state of the associated button.
+
+A set of convenient functions are provided to easily configure most spells. If a more specific task is needed, Lua can be used (see interrupt spells).
+
+*Pro*: far more powerful than the Inline Aura engine. This allows to show data from one unit merged with the stat of another one, if need be.
+
+*Con*: there is no way to configure this using a GUI.
+
+h3. No spell auto-discovery
+
+AdiButtonAuras only shows data for existing rules. It does not try to guess what to show.
+
+*Pro*: avoid showing wrong data.
+
+*Con*: all spells for all class should be listed.
+
+h3. Using spell ids instead of spell names
+
+AdiButtonAuras uses the spell numerical identifiers, instead of its name, to search for the applicable rules.
+
+*Pro*: avoid showing information on a wrong spell that as the same name as the intended one.
+
+*Con*: spells ids are sometimes different depending on shapeshift forms, glyphs or talents. All of them should be listed.
+
+h2. Embedded BugGrabber
+
+"BugGrabber":http://www.curse.com/addons/wow/bug-grabber is shipped with AdiButtonAuras. You can install "BugSack":http://www.curse.com/addons/wow/bugsack to have a more user-friendly display of errors.
 
 h2. License
 
