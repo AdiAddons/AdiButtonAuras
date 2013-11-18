@@ -207,7 +207,6 @@ function addon.CreateRules()
 		-- Weakened Blows
 		LongestDebuffOf {
 			{ -- Spells to alter
-				121253, -- Keg Smash (monk)
 				  6343, -- Thunder Clap (warrior)
 				-- 81132, -- Scarlet Fever (deathknight), this is a passive that modifies Blood Boil
 				  8042, -- Earth Shock (shaman)
