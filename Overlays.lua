@@ -328,9 +328,7 @@ function overlayPrototype:SetAction(event, actionType, actionId, macroConditiona
 		end
 
 		self:RegisterEvent('PLAYER_ENTERING_WORLD')
-		if macroConditionals then
-			self:RegisterEvent('ACTIONBAR_SLOT_CHANGED')
-		end
+		self:RegisterEvent('ACTIONBAR_SLOT_CHANGED')
 
 		self.handlers = conf.handlers
 	else
