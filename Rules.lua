@@ -555,6 +555,11 @@ function addon.CreateRules()
 				115307, -- Shuffle
 			},
 			PassiveModifier {
+				116645, -- Teachings of the Monastery
+				100784, -- Blackout Kick
+				127722, -- Serpent's Zeal
+			},
+			PassiveModifier {
 				123980, -- Brewing: Tigereye Brew
 				116740, -- Tigereye Brew
 				125195, -- Tigereye Brew (stacking buff)
@@ -563,6 +568,18 @@ function addon.CreateRules()
 				128938, -- Brewing: Elusive Brew
 				115308, -- Elusive Brew
 				128939, -- Elusive Brew (stacking buff)
+			},
+			PassiveModifier {
+				123766, -- Brewing: Mana Tea
+				115294, -- Mana Tea
+				115867, -- Mana Tea (stacking buff)
+			},
+			PassiveModifier {
+				116645, -- Teachings of the Monastery
+				123273, -- Surging Mist
+				118674, -- Vital Mists
+				"player",
+				"none"
 			},
 			PassiveModifier {
 				121817, -- Power Strikes (talent)
