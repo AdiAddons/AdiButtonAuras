@@ -533,6 +533,17 @@ function addon.CreateRules()
 				107428, -- Rising Sun Kick
 				116095, -- Disable
 			},
+			BuffAliases {
+				115151, -- Renewing Mist
+				119611, -- Renewing Mist (buff)
+			},
+			BuffAliases {
+				124682, -- Enveloping Mist
+				132120, -- Enveloping Mist (buff)
+			},
+			SimpleBuff {
+				116849, -- Life Cocoon
+			},
 			PassiveModifier {
 				nil,
 				100787, -- Tiger Palm
