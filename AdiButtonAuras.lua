@@ -53,7 +53,7 @@ local toWatch = {
 }
 
 local function UpdateHandler(event, button)
-	local overlay = self:GetOverlay(button)
+	local overlay = addon:GetOverlay(button)
 	if overlay and overlay:IsVisible() then
 		return overlay:UpdateAction(event)
 	end
