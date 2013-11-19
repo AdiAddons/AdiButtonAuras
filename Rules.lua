@@ -529,6 +529,9 @@ function addon.CreateRules()
 				122783, -- Diffuse Magic
 				137562, -- Nimble Brew
 			},
+			SimpleBuffs {
+				116849, -- Life Cocoon
+			},
 			SimpleDebuffs {
 				107428, -- Rising Sun Kick
 				116095, -- Disable
@@ -540,9 +543,6 @@ function addon.CreateRules()
 			BuffAliases {
 				124682, -- Enveloping Mist
 				132120, -- Enveloping Mist (buff)
-			},
-			SimpleBuff {
-				116849, -- Life Cocoon
 			},
 			PassiveModifier {
 				nil,
