@@ -465,7 +465,12 @@ local labSupportPrototype = setmetatable({}, overlayMeta)
 local labSupportMeta = { __index = labSupportPrototype }
 
 function labSupportPrototype:GetAction()
-	return self.button:GetAction()
+	local actionType, actionId = self.button:GetAction()
+	if actionType == "action" then
+		return GetActionInfo(actionId)
+	else
+		return actionType, actionId
+	end
 end
 
 --------------------------------------------------------------------------------
@@ -506,11 +511,11 @@ local overlays = addon.Memoize(function(button)
 		local name = button:GetName()
 		local meta = blizzardSupportMeta
 		if button.__LAB_Version then
-			meta = blizzardSupportMeta
+			meta = labSupportMeta
 		elseif name then
 			if strmatch(name, 'StanceButton') then
 				meta = stanceButtonMeta
-			elseif strmatch(name, 'PetActionButton') then
+			elseif strmatch(name, 'PetActionButton') or strmatch(name, 'PetButton') then
 				meta = petActionButtonMeta
 			end
 		end

@@ -47,9 +47,17 @@ end
 
 local toWatch = {
 	[addonName] = true,
+	["LibActionButton-1.0"] = true,
 	Dominos = IsLoadable('Dominos'),
 	Bartender4 = IsLoadable('Bartender4'),
 }
+
+local function UpdateHandler(event, button)
+	local overlay = self:GetOverlay(button)
+	if overlay and overlay:IsVisible() then
+		return overlay:UpdateAction(event)
+	end
+end
 
 function addon:ADDON_LOADED(event, name)
 	if toWatch.Dominos and (name == 'Dominos' or IsAddOnLoaded('Dominos')) then
@@ -57,10 +65,22 @@ function addon:ADDON_LOADED(event, name)
 		toWatch.Dominos = nil
 		self:ScanButtons("DominosActionButton", 120)
 	end
+	if toWatch["LibActionButton-1.0"] and LibStub('LibActionButton-1.0', true) then
+		self:Debug('Found LibActionButton-1.0')
+		toWatch["LibActionButton-1.0"] = nil
+		local lab = LibStub('LibActionButton-1.0')
+		lab.RegisterCallback(self, 'OnButtonCreated', UpdateHandler)
+		lab.RegisterCallback(self, 'OnButtonUpdate', UpdateHandler)
+		for button in pairs(lab:GetAllButtons()) do
+			local _ = self:GetOverlay(button)
+		end
+	end
 	if toWatch.Bartender4 and (name == 'Bartender4' or IsAddOnLoaded('Bartender4')) then
 		self:Debug('Bartender4 loaded')
 		toWatch.Bartender4 = nil
 		self:ScanButtons("BT4Button", 120)
+		self:ScanButtons("BT4PetButton", NUM_PET_ACTION_SLOTS)
+		self:ScanButtons("BT4StanceButton", NUM_STANCE_SLOTS)
 	end
 	if name == addonName then
 		self:Debug(name, 'loaded')
@@ -76,25 +96,16 @@ function addon:ADDON_LOADED(event, name)
 		self:ScanButtons("PetActionButton", NUM_PET_ACTION_SLOTS)
 
 		hooksecurefunc('ActionButton_Update', function(button)
-			local overlay = self:GetOverlay(button)
-			if overlay and overlay:IsVisible() then
-				return overlay:UpdateAction('ActionButton_Update')
-			end
+			return UpdateHandler('ActionButton_Update', button)
 		end)
 		hooksecurefunc('PetActionBar_Update', function()
 			for i = 1, NUM_PET_ACTION_SLOTS do
-				local overlay = self:GetOverlay(_G['PetActionButton'..i])
-				if overlay and overlay:IsVisible() then
-					return overlay:UpdateAction('PetActionBar_Update')
-				end
+				UpdateHandler('PetActionBar_Update', _G['PetActionButton'..i])
 			end
 		end)
 		hooksecurefunc('StanceBar_UpdateState', function()
 			for i = 1, NUM_STANCE_SLOTS do
-				local overlay = self:GetOverlay(_G['StanceButton'..i])
-				if overlay and overlay:IsVisible() then
-					return overlay:UpdateAction('StanceBar_UpdateState')
-				end
+				UpdateHandler('StanceBar_UpdateState', _G['StanceButton'..i])
 			end
 		end)
 
