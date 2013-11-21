@@ -276,42 +276,15 @@ function addon.CreateRules()
 	--------------------------------------------------------------------------
 
 		IfClass { "DRUID",
-			SimpleBuffs {
-				   774, -- Rejuvenation
-				  8936, -- Regrowth
-				 29166, -- Innervate
-				 33763, -- Lifebloom
-				 48438, -- Wild Growth
-				102342, -- Ironbark
-			},
-			SimpleDebuffs {
-				  1079, -- Rip
-				  1822, -- Rake
-				  8921, -- Moonfire
-				 33745, -- Lacerate
-				 77758, -- Thrash (guardian druid)
-				 93402, -- Sunfire
-				106830, -- Thrash (feral druid)
-			},
-			SelfBuffs {
-				  1850, -- Dash
-				  5217, -- Tiger's Fury
-				  5229, -- Enrage
-				 16689, -- Nature's Grasp
-				 22812, -- Barkskin
-				 22842, -- Frenzied Regeneration
-				 48505, -- Starfall
-				 52610, -- Savage Roar
-				 61336, -- Survival Instincts
-				 62606, -- Savage Defense
-				106922, -- Might of Ursoc
-				106952, -- Berserk
-				108288, -- Heart of the Wild
-				110309, -- Symbiosis
-				112071, -- Celestial Alignment
-				114107, -- Soul of the Forest
-				124974, -- Nature's Vigil
-				127538, -- Savage Roar (glyphed)
+			ImportPlayerSpells {
+				-- Import all spells for ...
+				"DRUID",
+				-- ... but ...
+				 50464, -- Nourish
+				145518, -- Genesis
+				 16870, -- Clearcasting
+				114108, -- Soul of the Forest (restoration)
+				 16974, -- Predatory Swiftness (passive)
 			},
 			BuffAliases {
 				50464, -- Nourish
@@ -338,9 +311,6 @@ function addon.CreateRules()
 				114108, -- Soul of the Forest (restoration)
 				"player",
 				"flash"
-			},
-			SelfBuffAliases {
-				{ 77761, 77764, 106898 }, -- Stampeding Roar
 			},
 			Configure {
 				{
