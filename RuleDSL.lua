@@ -449,7 +449,7 @@ local RULES_ENV = setmetatable({
 	PassiveModifier = WrapTableArgFunc(PassiveModifier),
 	ItemSelfBuffs = WrapTableArgFunc(ItemSelfBuffs),
 
-	-- High-callLevel functions
+	-- High-level functions
 
 	SimpleDebuffs = function(spells)
 		return Auras("HARMFUL PLAYER", "bad", "enemy", spells)
