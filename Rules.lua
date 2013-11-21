@@ -441,123 +441,25 @@ function addon.CreateRules()
 	--------------------------------------------------------------------------
 
 		IfClass { "HUNTER",
-			SimpleBuffs {
-				 53271, -- Master's Call
-			},
-			SimpleDebuffs {
-				  1978, -- Serpent String
-				  3674, -- Black Arrow
-				 20736, -- Distracting Shot
-				131894, -- A Murder of Crows
-			},
-			PetBuffs {
-				   136, -- Mend Pet
-				 19574, -- Bestial Wrath
-			},
-			SelfBuffs {
-				  3045, -- Rapid Fire
-				 34477, -- Misdirection
-				 51753, -- Camouflage
-				 82726, -- Fervor
-			},
-			SelfBuffAliases {
-				-- Deterrence
-				{ 19263, 148467 },
-			},
-			SharedSimpleDebuffs {
-				  1130, -- Hunter's Mark
-			},
-			PassiveModifier {
-				34487, -- Master Marksman
-				19434, -- Aimed Shot
-				82925  -- Ready, Set, Aim...
-			},
-			PassiveModifier {
-				53224, -- Steady Focus
-				56641, -- Steady Shot
-				53220  -- Steady Focus (buff)
-			},
-			PassiveModifier {
-				nil,
-				82692, -- Focus Fire
-				19623, -- Frenzy
-				"pet",
-			},
-		}, -- Hunter spells
+			ImportPlayerSpells { "HUNTER" }
+		},
 
 	--------------------------------------------------------------------------
 	-- Monk
 	--------------------------------------------------------------------------
 
 		IfClass { "MONK",
-			SelfBuffs {
-				115295, -- Guard
-				115203, -- Fortifying Brew
-				115213, -- Avert Harm
-				115288, -- Energizing Brew
-				115308, -- Elusive Brew
-				116740, -- Tigereye Brew
-				116844, -- Ring of Peace
-				122278, -- Dampen Harm
-				122470, -- Touch of Karma
-				122783, -- Diffuse Magic
-				137562, -- Nimble Brew
-			},
-			SimpleBuffs {
-				116849, -- Life Cocoon
-			},
-			SimpleDebuffs {
-				107428, -- Rising Sun Kick
-				116095, -- Disable
-			},
-			BuffAliases {
-				115151, -- Renewing Mist
-				119611, -- Renewing Mist (buff)
-			},
-			BuffAliases {
-				124682, -- Enveloping Mist
-				132120, -- Enveloping Mist (buff)
-			},
-			PassiveModifier {
-				nil,
-				100787, -- Tiger Palm
-				125359, -- Tiger Power
+			ImportPlayerSpells {
+				-- Import all spells for ...
+				"MONK",
+				-- ... but ...
+				123273, -- Surging Mist
+				134563, -- Healing Elixirs (buff)
+				119582, -- Purifying Brew
 			},
 			DebuffAliases {
-				115181, -- Breath of Fire
-				123725, -- Breath of Fire (debuff)
-			},
-			DebuffAliases {
-				{
-					115180, -- Dizzying Haze
-					121253, -- Keg Smash
-				},
+				121253, -- Keg Smash
 				115180, -- Dizzying Haze
-			},
-			PassiveModifier {
-				117967, -- Brewmaster Training
-				100784, -- Blackout Kick
-				115307, -- Shuffle
-			},
-			PassiveModifier {
-				116645, -- Teachings of the Monastery
-				100784, -- Blackout Kick
-				127722, -- Serpent's Zeal
-			},
-			PassiveModifier {
-				123980, -- Brewing: Tigereye Brew
-				116740, -- Tigereye Brew
-				125195, -- Tigereye Brew (stacking buff)
-			},
-			PassiveModifier {
-				128938, -- Brewing: Elusive Brew
-				115308, -- Elusive Brew
-				128939, -- Elusive Brew (stacking buff)
-			},
-			PassiveModifier {
-				123766, -- Brewing: Mana Tea
-				115294, -- Mana Tea
-				115867, -- Mana Tea (stacking buff)
 			},
 			PassiveModifier {
 				116645, -- Teachings of the Monastery
@@ -565,18 +467,6 @@ function addon.CreateRules()
 				118674, -- Vital Mists
 				"player",
 				"none"
-			},
-			PassiveModifier {
-				121817, -- Power Strikes (talent)
-				{
-					115693, -- Jab
-					100780, -- Jab (glyphed)
-					115175, -- Soothing Mist
-					101546, -- Spinning Crane Kick
-					115072, -- Expel Harm
-					117952, -- Crackling Jade Lightning
-				},
-				129914, -- Power Strikes (buff)
 			},
 			IfSpell { 122280, -- Healing Elixirs (passive)
 				Configure {
