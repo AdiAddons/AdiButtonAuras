@@ -517,7 +517,7 @@ function addon.CreateRules()
 		-- Monk spells
 		IfClass { "MONK",
 			SelfBuffs {
-				100784, -- Guard
+				115295, -- Guard
 				115203, -- Fortifying Brew
 				115213, -- Avert Harm
 				115288, -- Energizing Brew
