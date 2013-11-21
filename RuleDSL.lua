@@ -423,6 +423,62 @@ local function ShowPower(spells, powerType, handler, highlight)
 	return Configure(spells, "player", { "UNIT_POWER", "UNIT_POWER_MAX" }, actualHandler, 3)
 end
 
+local function FilterOut(spells, exclude)
+	local result = {}
+	for _, spell in ipairs(spells) do
+		if not exclude[spell] then
+			tinsert(result, spell)
+		end
+	end
+	return result
+end
+
+local ImportPlayerSpells
+do
+	local LibPlayerSpells = LibStub('LibPlayerSpells-1.0')
+	local band = bit.band
+	local UNIQUE_AURA = LibPlayerSpells.constants.UNIQUE_AURA
+	local TARGETING = LibPlayerSpells.masks.TARGETING
+	local HARMFUL = LibPlayerSpells.constants.HARMFUL
+	local PERSONAL = LibPlayerSpells.constants.PERSONAL
+	local PET = LibPlayerSpells.constants.PET
+	local IMPORTANT = LibPlayerSpells.constants.IMPORTANT
+
+	function ImportPlayerSpells(filter, ...)
+		local exceptions = AsSet({...}, "number", 3)
+		local rules = {}
+		for buff, flags, provider, modified in LibPlayerSpells:IterateSpells(filter, "AURA") do
+			if not exceptions[buff] and not exceptions[provider] then
+				local spells = FilterOut(AsList(modified, "number"), exceptions)
+				if #spells > 0 then
+					local filter, highlight, token = "HELPFUL", "good", "ally"
+					local targeting = band(flags, TARGETING)
+					if targeting == HARMFUL then
+						filter, highlight, token = "HARMFUL", "bad", "enemy"
+					elseif targeting == PERSONAL then
+						token = "player"
+					elseif targeting == PET then
+						token = "pet"
+					end
+					if band(flags, UNIQUE_AURA) == 0 then
+						filter = filter.." PLAYER"
+					end
+					if band(flags, IMPORTANT) ~= 0 then
+						highlight = "flash"
+					end
+					local handler = BuildAuraHandler_Single(filter, highlight, token, buff, 3)
+					local rule = Configure(spells, token, "UNIT_AURA", handler, 3)
+					if provider ~= modified then
+						rule = IfSpell(provider, rule)
+					end
+					tinsert(rules, rule)
+				end
+			end
+		end
+		return (#rules > 1) and rules or rules[1]
+	end
+end
+
 --------------------------------------------------------------------------------
 -- Environment setup
 --------------------------------------------------------------------------------
@@ -449,6 +505,7 @@ local RULES_ENV = setmetatable({
 	ShowPower = WrapTableArgFunc(ShowPower),
 	PassiveModifier = WrapTableArgFunc(PassiveModifier),
 	ItemSelfBuffs = WrapTableArgFunc(ItemSelfBuffs),
+	ImportPlayerSpells = WrapTableArgFunc(ImportPlayerSpells),
 
 	-- High-level functions
 
