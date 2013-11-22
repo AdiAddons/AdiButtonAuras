@@ -114,32 +114,6 @@ function addon.CreateRules()
 		},
 
 	--------------------------------------------------------------------------
-	-- Dispels
-	--------------------------------------------------------------------------
-	-- Use LibDispellable
-
-		function()
-			local LibDispellable = LibStub('LibDispellable-1.0')
-			for spell, dispelType in LibDispellable:IterateDispelSpells() do
-				local spell, offensive = spell, (dispelType ~= 'defensive')
-				local unit = offensive and 'enemy' or 'ally'
-				AddRuleFor(
-					spell,
-					unit,
-					"UNIT_AURA",
-					function(units, model)
-						for i, dispel, _, _, _, count, _, _, expiration in LibDispellable:IterateDispellableAuras(units[unit], offensive) do
-							if dispel == spell then
-								model.highlight, model.count, model.expiration = "bad", count, expiration
-								return
-							end
-						end
-					end
-				)
-			end
-		end,
-
-	--------------------------------------------------------------------------
 	-- Shared debuffs
 	--------------------------------------------------------------------------
 	-- Only show them on spells that requires the player to specifically cast them
@@ -874,6 +848,33 @@ function addon.CreateRules()
 				end
 			end)
 		end
+	end
+
+	--------------------------------------------------------------------------
+	-- Dispels
+	--------------------------------------------------------------------------
+	-- Use LibDispellable
+
+	do
+		local LibDispellable = LibStub('LibDispellable-1.0')
+		local handlers = {}
+		tinsert(rules, function()
+			for spell, dispelType in LibDispellable:IterateDispelSpells() do
+				local spell, offensive = spell, (dispelType ~= 'defensive')
+				local token = offensive and 'enemy' or 'ally'
+				if not handlers[spell] then
+					handlers[spell] = function(units, model)
+						for i, dispel, _, _, _, count, _, _, expiration in LibDispellable:IterateDispellableAuras(units[token], offensive) do
+							if dispel == spell then
+								model.highlight, model.count, model.expiration = "bad", count, expiration
+								return
+							end
+						end
+					end
+				end
+				AddRuleFor(spell, token, "UNIT_AURA", handlers[spell])
+			end
+		end)
 	end
 
 	--------------------------------------------------------------------------
