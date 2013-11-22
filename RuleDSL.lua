@@ -447,7 +447,7 @@ do
 	function ImportPlayerSpells(filter, ...)
 		local exceptions = AsSet({...}, "number", 3)
 		local rules = {}
-		for buff, flags, provider, modified in LibPlayerSpells:IterateSpells(filter, "AURA") do
+		for buff, flags, provider, modified in LibPlayerSpells:IterateSpells(filter, "AURA", "RAIDBUFF") do
 			if not exceptions[buff] and not exceptions[provider] then
 				local spells = FilterOut(AsList(modified, "number"), exceptions)
 				if #spells > 0 then

@@ -738,6 +738,37 @@ function addon.CreateRules()
 	end
 
 	--------------------------------------------------------------------------
+	-- Raid buffs
+	--------------------------------------------------------------------------
+	-- Use LibPlayerSpells
+
+	local buffs, spells = {}, {}
+	for i, buffType in ipairs(LibPlayerSpells:GetRaidBuffTypes()) do
+		buffs[buffType] = {}
+		spells[buffType] = {}
+	end
+	local band = bit.band
+	for buff, _, _, target, _type in LibPlayerSpells:IterateSpells("RAIDBUFF") do
+		for buffType in pairs(buffs) do
+			if band(_type, buffType) == buffType then
+				tinsert(buffs[buffType], buff)
+				tinsert(spells[buffType], target)
+			end
+		end
+	end
+	-- Create a rule per buff type
+	for buffType in pairs(buffs) do
+		if #buffs[buffType] > 0 then
+			tinsert(rules, Configure {
+				spells[buffType],
+				"ally",
+				"UNIT_AURA",
+				BuildAuraHandler_Longest("HELPFUL", "good", "ally", buffs[buffType])
+			})
+		end
+	end
+
+	--------------------------------------------------------------------------
 	-- End of rules
 	--------------------------------------------------------------------------
 
