@@ -51,9 +51,17 @@ function addon.CreateRules()
 		tinsert(drspells[category], id)
 	end
 
-	return {
+	local rules = {
 
-		-- Interrupts: use a custom configuration
+	--------------------------------------------------------------------------
+	-- Start of rules
+	--------------------------------------------------------------------------
+
+	--------------------------------------------------------------------------
+	-- Interrupts
+	--------------------------------------------------------------------------
+	-- Use a custom configuration
+
 		Configure {
 			{ -- Spells
 				-- Deathknight
@@ -116,9 +124,13 @@ function addon.CreateRules()
 					end
 				end
 			end
-		}, -- Interrupts
+		},
 
-		-- Dispels, using LibDispellable
+	--------------------------------------------------------------------------
+	-- Dispels
+	--------------------------------------------------------------------------
+	-- Use LibDispellable
+
 		function()
 			for spell, dispelType in LibDispellable:IterateDispelSpells() do
 				local spell, offensive = spell, (dispelType ~= 'defensive')
@@ -137,9 +149,12 @@ function addon.CreateRules()
 					end
 				)
 			end
-		end, -- Dispels
+		end,
 
-		-- Some shared debuffs, only show them on spells that requires the player to specifically cast them
+	--------------------------------------------------------------------------
+	-- Shared debuffs
+	--------------------------------------------------------------------------
+	-- Only show them on spells that requires the player to specifically cast them
 
 		-- Physical Vulnerability is applied passively or automatically, don't bother showing it
 
@@ -219,7 +234,11 @@ function addon.CreateRules()
 			}
 		}, -- Weakened Blows
 
-		-- Crowd-control spells, grouped by DR categories
+	--------------------------------------------------------------------------
+	-- Crowd-control spells
+	--------------------------------------------------------------------------
+	-- Use DRData, grouped by DR categories
+
 		function()
 			for category, spells in pairs(drspells) do
 				local handler = nil
@@ -237,9 +256,12 @@ function addon.CreateRules()
 			end
 		end,
 
-		-- Snares and anti-snares
-		-- Note that some of these are talent procs or passive effects.
-		-- This is intended as they will show up on active spells anyway.
+	--------------------------------------------------------------------------
+	-- Snares and anti-snares
+	--------------------------------------------------------------------------
+	-- Note that some of these are talent procs or passive effects.
+	-- This is intended as they will show up on active spells anyway.
+
 		LongestDebuffOf {
 			{
 				  1604, -- Dazed (common),
@@ -276,7 +298,10 @@ function addon.CreateRules()
 			}
 		}, -- Snares and anti-snares
 
-		-- Bloodlust & al
+	--------------------------------------------------------------------------
+	-- Bloodlust & al
+	--------------------------------------------------------------------------
+
 		Configure {
 			{
 				 2825, -- Bloodlust (Horde shaman)
@@ -306,7 +331,10 @@ function addon.CreateRules()
 			end)(),
 		},
 
-		-- Druid spells
+	--------------------------------------------------------------------------
+	-- Druid
+	--------------------------------------------------------------------------
+
 		IfClass { "DRUID",
 			SimpleBuffs {
 				   774, -- Rejuvenation
@@ -466,9 +494,12 @@ function addon.CreateRules()
 				35,
 				"darken"
 			},
-		}, -- Druid spells
+		},
 
-		-- Hunter spells
+	--------------------------------------------------------------------------
+	-- Hunter
+	--------------------------------------------------------------------------
+
 		IfClass { "HUNTER",
 			SimpleBuffs {
 				 53271, -- Master's Call
@@ -514,7 +545,10 @@ function addon.CreateRules()
 			},
 		}, -- Hunter spells
 
-		-- Monk spells
+	--------------------------------------------------------------------------
+	-- Monk
+	--------------------------------------------------------------------------
+
 		IfClass { "MONK",
 			SelfBuffs {
 				115295, -- Guard
@@ -654,9 +688,12 @@ function addon.CreateRules()
 					end
 				end)(),
 			}
-		}, -- Monk spells
+		},
 
-		-- Priest spells
+	--------------------------------------------------------------------------
+	-- Priest
+	--------------------------------------------------------------------------
+
 		IfClass { "PRIEST",
 			SelfBuffs {
 				   586, -- Fade
@@ -722,9 +759,12 @@ function addon.CreateRules()
 					end
 				end)(),
 			},
-		}, -- Priest spells
+		},
 
-		-- Warlock spells
+	--------------------------------------------------------------------------
+	-- Warlock
+	--------------------------------------------------------------------------
+
 		IfClass { "WARLOCK",
 			ShowPower {
 				{
@@ -833,7 +873,12 @@ function addon.CreateRules()
 					end)()
 				}
 			},
-		}, -- Warlock spells
+		},
 	}
 
+	--------------------------------------------------------------------------
+	-- End of rules
+	--------------------------------------------------------------------------
+
+	return rules
 end
