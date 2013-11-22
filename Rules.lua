@@ -742,6 +742,8 @@ function addon.CreateRules()
 	--------------------------------------------------------------------------
 	-- Use LibPlayerSpells
 
+	local LibPlayerSpells = LibStub('LibPlayerSpells-1.0')
+
 	local buffs, spells = {}, {}
 	for i, buffType in ipairs(LibPlayerSpells:GetRaidBuffTypes()) do
 		buffs[buffType] = {}
