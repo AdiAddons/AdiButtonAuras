@@ -84,7 +84,7 @@ local function AsList(value, checkType, callLevel)
 		if checkType then
 			for i, v in ipairs(value) do
 				if type(v) ~= checkType then
-					error(format("Invalid value type, expected %s, got %s", checkType, type(v)), (callLevel or 0)+2)
+					error(format("Invalid value type, expected %s, got %s", checkType, type(v)), callLevel+1)
 				end
 			end
 		end
@@ -92,14 +92,14 @@ local function AsList(value, checkType, callLevel)
 	elseif checkType == nil or type(value) == checkType then
 		return { value }
 	else
-		error(format("Invalid value type, expected %s, got %s", checkType, type(value)), (callLevel or 0)+2)
+		error(format("Invalid value type, expected %s, got %s", checkType, type(value)), callLevel+1)
 	end
 end
 
 local function AsSet(value, checkType, callLevel)
 	local set = {}
 	local size = 0
-	for i, value in ipairs(AsList(value, checkType, (callLevel or 0)+1)) do
+	for i, value in ipairs(AsList(value, checkType, callLevel+1)) do
 		if not set[value] then
 			set[value] = true
 			size = size + 1
@@ -128,11 +128,10 @@ addon.spells = spellConfs
 addon.knownClasses = knownClasses
 
 local function SpellOrItemId(value, callLevel)
-	callLevel = (callLevel or 0) + 2
 	local spellId = tonumber(type(value) == "string" and strmatch(value, "spell:(%d+)") or value)
 	if spellId then
 		if not GetSpellInfo(spellId) then
-			error(format("Invalid spell identifier: %s", tostring(value)), callLevel)
+			error(format("Invalid spell identifier: %s", tostring(value)), callLevel+1)
 		elseif not LibSpellbook:IsKnown(spellId) then
 			return nil -- Unknown spell
 		end
@@ -143,11 +142,11 @@ local function SpellOrItemId(value, callLevel)
 		local _, link = GetItemInfo(itemId)
 		return format("item:%d", itemId), "item "..tostring(link)
 	end
-	error(format("Invalid spell or item identifier: %s", tostring(value)), callLevel)
+	error(format("Invalid spell or item identifier: %s", tostring(value)), callLevel+1)
 end
 
 local function _AddRuleFor(spell, units, events, handlers, callLevel)
-	local id, info = SpellOrItemId(spell, (callLevel or 0)+1)
+	local id, info = SpellOrItemId(spell, callLevel)
 	if not id then
 		return
 	end
@@ -167,20 +166,19 @@ local function _AddRuleFor(spell, units, events, handlers, callLevel)
 end
 
 local function CheckRuleArgs(units, events, handlers, callLevel)
-	callLevel = (callLevel or 0) + 1
 	local numUnits, numEvents
 
-	units, numUnits = AsSet(units, "string", callLevel)
+	units, numUnits = AsSet(units, "string", callLevel+1)
 	if numUnits == 0 then
 		error("Empty unit list", callLevel+1)
 	end
 
-	events, numEvents = AsSet(events, "string", callLevel)
+	events, numEvents = AsSet(events, "string", callLevel+1)
 	if numEvents == 0 then
 		error("Empty event list", callLevel+1)
 	end
 
-	handlers = AsList(handlers, "function", callLevel)
+	handlers = AsList(handlers, "function", callLevel+1)
 	if #handlers == 0 then
 		error("Empty handler list", callLevel+1)
 	end
@@ -189,17 +187,17 @@ local function CheckRuleArgs(units, events, handlers, callLevel)
 end
 
 local function AddRuleFor(spell, units, events, handlers)
-	units, events, handlers = CheckRuleArgs(units, events, handlers, 1)
-	return _AddRuleFor(spell, units, events, handlers, 1)
+	units, events, handlers = CheckRuleArgs(units, events, handlers, 2)
+	return _AddRuleFor(spell, units, events, handlers, 2)
 end
 
 local function Configure(spells, units, events, handlers, callLevel)
-	callLevel = (callLevel or 0) + 1
+	callLevel = callLevel or 1
 	spells = AsList(spells)
 	if #spells == 0 then
-		error("Empty spell list", callLevel+2)
+		error("Empty spell list", callLevel+1)
 	end
-	units, events, handlers = CheckRuleArgs(units, events, handlers, callLevel)
+	units, events, handlers = CheckRuleArgs(units, events, handlers, callLevel+1)
 	if #spells == 1 then
 		return function()
 			_AddRuleFor(spells[1], units, events, handlers, callLevel+1)
@@ -214,8 +212,8 @@ local function Configure(spells, units, events, handlers, callLevel)
 end
 
 local function IfSpell(spells, ...)
-	local spells = AsList(spells, "number", 1)
-	local funcs = AsList({ ... }, "function", 1)
+	local spells = AsList(spells, "number", 2)
+	local funcs = AsList({ ... }, "function", 2)
 	if #spells == 1 then
 		local spell = spells[1]
 		local link = GetSpellLink(spell)
@@ -240,7 +238,7 @@ end
 local function IfClass(class, ...)
 	knownClasses[class] = true
 	if playerClass == class then
-		local funcs = AsList({ ... }, "function", 1)
+		local funcs = AsList({ ... }, "function", 2)
 		return function()
 			addon:Debug('Merging spells for', class)
 			return Do(funcs)
@@ -259,7 +257,7 @@ end
 local function BuildAuraHandler_Single(filter, highlight, token, spell, callLevel)
 	local spellName = GetSpellInfo(spell)
 	if not spellName then
-		error("Unknown spell "..spell, (callLevel or 0)+2)
+		error("Unknown spell "..spell, (callLevel or 1)+1)
 	end
 	return function(units, model)
 		if not units[token] then return end
@@ -275,10 +273,11 @@ local function BuildAuraHandler_Single(filter, highlight, token, spell, callLeve
 end
 
 local function BuildAuraHandler_Longest(filter, highlight, token, buffs, callLevel)
+	callLevel = callLevel or 1
 	local numBuffs
-	buffs, numBuffs = AsSet(buffs, "number", (callLevel or 0)+1)
+	buffs, numBuffs = AsSet(buffs, "number", callLevel+1)
 	if numBuffs == 1 then
-		return BuildAuraHandler_Single(filter, highlight, token, next(buffs), (callLevel or 0)+1)
+		return BuildAuraHandler_Single(filter, highlight, token, next(buffs), callLevel+1)
 	end
 	return function(units, model)
 		local unit, longest = units[token], -1
@@ -302,10 +301,11 @@ local function BuildAuraHandler_Longest(filter, highlight, token, buffs, callLev
 end
 
 local function BuildAuraHandler_FirstOf(filter, highlight, token, buffs, callLevel)
+	callLevel = callLevel or 1
 	local numBuffs
-	buffs, numBuffs = AsSet(buffs, "number", (callLevel or 0)+1)
+	buffs, numBuffs = AsSet(buffs, "number", callLevel+1)
 	if numBuffs == 1 then
-		return BuildAuraHandler_Single(filter, highlight, token, next(buffs), (callLevel or 0)+1)
+		return BuildAuraHandler_Single(filter, highlight, token, next(buffs), callLevel+1)
 	end
 	return function(units, model)
 		local unit = units[token]
@@ -341,14 +341,15 @@ end
 
 local function PassiveModifier(passive, spell, buff, unit, highlight)
 	unit = unit or "player"
-	local handler = BuildAuraHandler_Single("HEPLFUL PLAYER", highlight or "good", unit, buff, 3)
+	highlight = highlight or "good"
+	local handler = BuildAuraHandler_Single("HEPLFUL PLAYER", highlight, unit, buff, 3)
 	local conf = Configure(spell, unit, "UNIT_AURA", handler, 3)
 	return passive and IfSpell(passive, conf) or conf
 end
 
 local function AuraAliases(filter, highlight, unit, spells, buffs)
-	buffs = AsList(buffs or spells, "number", 2)
-	return Configure(spells, unit, "UNIT_AURA", BuildAuraHandler_FirstOf(filter, highlight, unit, buffs, 2), 2)
+	buffs = AsList(buffs or spells, "number", 3)
+	return Configure(spells, unit, "UNIT_AURA", BuildAuraHandler_FirstOf(filter, highlight, unit, buffs, 3), 3)
 end
 
 local function ItemSelfBuffs(...)
@@ -370,11 +371,11 @@ end
 
 local function ShowPower(spells, powerType, handler, highlight)
 	if type(powerType) ~= "string" then
-		error("Invalid power type value, expected string, got "..type(powerType), 2)
+		error("Invalid power type value, expected string, got "..type(powerType), 3)
 	end
 	local powerIndex = _G["SPELL_POWER_"..powerType]
 	if not powerIndex then
-		error("Unknown power "..powerType, 2)
+		error("Unknown power "..powerType, 3)
 	end
 	local actualHandler
 	if type(handler) == "function" then
@@ -417,9 +418,9 @@ local function ShowPower(spells, powerType, handler, highlight)
 			end
 		end
 	else
-		error("Invalid handler type, expected function, number or nil, got "..type(handler), 2)
+		error("Invalid handler type, expected function, number or nil, got "..type(handler), 3)
 	end
-	return Configure(spells, "player", { "UNIT_POWER", "UNIT_POWER_MAX" }, actualHandler, 1)
+	return Configure(spells, "player", { "UNIT_POWER", "UNIT_POWER_MAX" }, actualHandler, 3)
 end
 
 --------------------------------------------------------------------------------
@@ -468,7 +469,7 @@ local RULES_ENV = setmetatable({
 	end,
 
 	LongestDebuffOf = function(spells, buffs)
-		return Configure(spells, "enemy", "UNIT_AURA", BuildAuraHandler_Longest("HARMFUL", "bad", "enemy", buffs or spells), 1)
+		return Configure(spells, "enemy", "UNIT_AURA", BuildAuraHandler_Longest("HARMFUL", "bad", "enemy", buffs or spells, 2), 2)
 	end,
 
 	SelfBuffs = function(spells)
