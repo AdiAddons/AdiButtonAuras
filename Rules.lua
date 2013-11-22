@@ -21,18 +21,6 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 
 local addonName, addon = ...
 
-local _G = _G
-local pairs = _G.pairs
-local GetSpellInfo = _G.GetSpellInfo
-local UnitAura = _G.UnitAura
-local UnitCanAttack = _G.UnitCanAttack
-local UnitCastingInfo = _G.UnitCastingInfo
-local UnitChannelInfo = _G.UnitChannelInfo
-
-local LibDispellable = LibStub('LibDispellable-1.0')
-local LibSpellbook = LibStub('LibSpellbook-1.0')
-local DRData = LibStub("DRData-1.0")
-
 -- Globals: AddRuleFor Configure IfSpell IfClass SimpleAuras UnitBuffs
 -- Globals: PassiveModifier SimpleDebuffs SharedSimpleDebuffs SimpleBuffs
 -- Globals: LongestDebuffOf SelfBuffs PetBuffs BuffAliases DebuffAliases
@@ -42,6 +30,13 @@ local DRData = LibStub("DRData-1.0")
 function addon.CreateRules()
 	addon:Debug('Creating Rules')
 
+	local _G = _G
+	local pairs = _G.pairs
+	local GetSpellInfo = _G.GetSpellInfo
+	local UnitAura = _G.UnitAura
+	local UnitCanAttack = _G.UnitCanAttack
+	local UnitCastingInfo = _G.UnitCastingInfo
+	local UnitChannelInfo = _G.UnitChannelInfo
 
 	local rules = {
 
@@ -124,6 +119,7 @@ function addon.CreateRules()
 	-- Use LibDispellable
 
 		function()
+			local LibDispellable = LibStub('LibDispellable-1.0')
 			for spell, dispelType in LibDispellable:IterateDispelSpells() do
 				local spell, offensive = spell, (dispelType ~= 'defensive')
 				local unit = offensive and 'enemy' or 'ally'
@@ -845,6 +841,7 @@ function addon.CreateRules()
 			},
 		},
 	}
+
 
 	--------------------------------------------------------------------------
 	-- Crowd-control spells
