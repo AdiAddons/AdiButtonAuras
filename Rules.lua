@@ -42,14 +42,6 @@ local DRData = LibStub("DRData-1.0")
 function addon.CreateRules()
 	addon:Debug('Creating Rules')
 
-	-- Build a list of spell ids per DR categories.
-	local drspells = {}
-	for id, category in pairs(DRData:GetSpells()) do
-		if not drspells[category] then
-			drspells[category] = {}
-		end
-		tinsert(drspells[category], id)
-	end
 
 	local rules = {
 
@@ -233,28 +225,6 @@ function addon.CreateRules()
 				 24423, -- Demoralizing Screech (hunter pet ability)
 			}
 		}, -- Weakened Blows
-
-	--------------------------------------------------------------------------
-	-- Crowd-control spells
-	--------------------------------------------------------------------------
-	-- Use DRData, grouped by DR categories
-
-		function()
-			for category, spells in pairs(drspells) do
-				local handler = nil
-				for i, spell in ipairs(spells) do
-					local ids = LibSpellbook:GetAllIds(spell)
-					if ids then
-						if not handler then
-							handler = BuildAuraHandler_Longest("HARMFUL", "bad", "enemy", spells)
-						end
-						for id in pairs(ids) do
-							AddRuleFor(id, "enemy", "UNIT_AURA", handler)
-						end
-					end
-				end
-			end
-		end,
 
 	--------------------------------------------------------------------------
 	-- Snares and anti-snares
@@ -875,6 +845,39 @@ function addon.CreateRules()
 			},
 		},
 	}
+
+	--------------------------------------------------------------------------
+	-- Crowd-control spells
+	--------------------------------------------------------------------------
+	-- Use DRData, grouped by DR categories
+
+	local DRData = LibStub("DRData-1.0")
+	local LibSpellbook = LibStub('LibSpellbook-1.0')
+
+	-- Build a list of spell ids per DR categories.
+	local drspells = {}
+	for id, category in pairs(DRData:GetSpells()) do
+		if not drspells[category] then
+			drspells[category] = {}
+		end
+		tinsert(drspells[category], id)
+	end
+
+	-- Create a rule for each spell of each category
+	for category, spells in pairs(drspells) do
+		local handler = BuildAuraHandler_Longest("HARMFUL", "bad", "enemy", spells)
+		for i, spell in ipairs(spells) do
+			local spell = spell
+			tinsert(rules, function()
+				local ids = LibSpellbook:GetAllIds(spell)
+				if ids then
+					for id in pairs(ids) do
+						AddRuleFor(id, "enemy", "UNIT_AURA", handler)
+					end
+				end
+			end)
+		end
+	end
 
 	--------------------------------------------------------------------------
 	-- End of rules
