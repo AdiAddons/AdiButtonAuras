@@ -42,10 +42,10 @@ local function Timer_Update(self)
 	if timeLeft >= 3600 then
 		self:SetFormattedText("%dh", floor(timeLeft/3600))
 		delay = timeLeft % 3600
-	elseif timeLeft >= 600 then
+	elseif timeLeft >= (self.compactTimeLeft and 60 or 600) then
 		self:SetFormattedText("%dm", floor(timeLeft/60))
 		delay = timeLeft % 60
-	elseif timeLeft >= 60 and not self.compactTimeLeft then
+	elseif timeLeft >= 60 then
 		self:SetFormattedText("%d:%02d", floor(timeLeft/60), floor(timeLeft%60))
 		delay = timeLeft % 1
 	elseif timeLeft >= 3 then
@@ -111,7 +111,7 @@ function overlayPrototype:LayoutTexts()
 	local parentCount = self.parentCount
 	local parentCountIsShown = parentCount:IsShown() and strtrim(parentCount:GetText() or "") ~= ""
 	local countIsShown = count:IsShown() or parentCountIsShown
-	self.compactTimeLeft = parentCountIsShown
+	timer.compactTimeLeft = countIsShown
 	timer:SetJustifyH(countIsShown and "LEFT" or "CENTER")
 	count:SetJustifyH(timer:IsShown() and "RIGHT" or "CENTER")
 end
