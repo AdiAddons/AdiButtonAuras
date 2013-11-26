@@ -623,17 +623,22 @@ function addon.CreateRules()
 	-- Use LibPlayerSpells
 
 	local LibPlayerSpells = LibStub('LibPlayerSpells-1.0')
+	local band, bor = bit.band, bit.bor
+
+	local classMask = LibPlayerSpells.constants[playerClass]
 
 	local buffsMasks, buffSpells = {}, {}
-	local band, bor = bit.band, bit.bor
-	for buff, _, _, target, buffMask in LibPlayerSpells:IterateSpells("RAIDBUFF") do
+	for buff, flags, _, target, buffMask in LibPlayerSpells:IterateSpells("RAIDBUFF") do
 		buffsMasks[buff] = buffMask
-		if buffSpells[buffMask] then
-			tinsert(buffSpells[buffMask], target)
-		else
-			buffSpells[buffMask] = { target }
+		if band(flags, classMask) ~= 0 then
+			if buffSpells[buffMask] then
+				tinsert(buffSpells[buffMask], target)
+			else
+				buffSpells[buffMask] = { target }
+			end
 		end
 	end
+
 	-- Create a rule per bitmask
 	for buffMask, spells in pairs(buffSpells) do
 		local buffMask = buffMask
@@ -656,6 +661,7 @@ function addon.CreateRules()
 							end
 							if found == buffMask then
 								model.highlight, model.expiration = "good", minExpiration
+								return
 							end
 						end
 					else
