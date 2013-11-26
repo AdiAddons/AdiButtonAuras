@@ -618,33 +618,6 @@ function addon.CreateRules()
 	end
 
 	--------------------------------------------------------------------------
-	-- Dispels
-	--------------------------------------------------------------------------
-	-- Use LibDispellable
-
-	do
-		local LibDispellable = LibStub('LibDispellable-1.0')
-		local handlers = {}
-		tinsert(rules, function()
-			for spell, dispelType in LibDispellable:IterateDispelSpells() do
-				local spell, offensive = spell, (dispelType ~= 'defensive')
-				local token = offensive and 'enemy' or 'ally'
-				if not handlers[spell] then
-					handlers[spell] = function(units, model)
-						for i, dispel, _, _, _, count, _, _, expiration in LibDispellable:IterateDispellableAuras(units[token], offensive) do
-							if dispel == spell then
-								model.highlight, model.count, model.expiration = "bad", count, expiration
-								return
-							end
-						end
-					end
-				end
-				AddRuleFor(spell, token, "UNIT_AURA", handlers[spell])
-			end
-		end)
-	end
-
-	--------------------------------------------------------------------------
 	-- Raid buffs
 	--------------------------------------------------------------------------
 	-- Use LibPlayerSpells
@@ -686,6 +659,32 @@ function addon.CreateRules()
 							end
 						end
 					else
+						return
+					end
+				end
+			end
+		})
+	end
+
+	--------------------------------------------------------------------------
+	-- Dispels
+	--------------------------------------------------------------------------
+	-- Use LibDispellable and LibPlayerSpells
+
+	local HELPFUL = LibPlayerSpells.constants.HELPFUL
+	for spell, flags in LibPlayerSpells:IterateSpells("DISPEL", playerClass) do
+		local offensive = band(flags, HELPFUL) == 0
+		local spell, token = spell, offensive and "enemy" or "ally"
+		tinsert(rules, Configure {
+			spell,
+			token,
+			"UNIT_AURA",
+			function(units, model)
+				local unit = units[token]
+				if not unit then return end
+				for i, dispel, _, _, _, count, _, _, expiration in LibDispellable:IterateDispellableAuras(unit, offensive) do
+					if dispel == spell then
+						model.highlight, model.count, model.expiration = "bad", count, expiration
 						return
 					end
 				end
