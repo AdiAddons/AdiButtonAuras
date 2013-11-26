@@ -25,18 +25,31 @@ local addonName, addon = ...
 -- Globals: PassiveModifier SimpleDebuffs SharedSimpleDebuffs SimpleBuffs
 -- Globals: LongestDebuffOf SelfBuffs PetBuffs BuffAliases DebuffAliases
 -- Globals: SelfBuffAliases SharedBuffs ShowPower SharedSimpleBuffs
--- Globals: BuildAuraHandler_Longest
+-- Globals: BuildAuraHandler_Longest ImportPlayerSpells bit BuildAuraHandler_Single
+-- Globals: math
 
 function addon.CreateRules()
 	addon:Debug('Creating Rules')
 
 	local _G = _G
-	local pairs = _G.pairs
+	local GetComboPoints = _G.GetComboPoints
+	local GetEclipseDirection = _G.GetEclipseDirection
 	local GetSpellInfo = _G.GetSpellInfo
+	local InCombatLockdown = _G.InCombatLockdown
+	local SPELL_POWER_ECLIPSE = _G.SPELL_POWER_ECLIPSE
 	local UnitAura = _G.UnitAura
+	local UnitBuff = _G.UnitBuff
 	local UnitCanAttack = _G.UnitCanAttack
 	local UnitCastingInfo = _G.UnitCastingInfo
 	local UnitChannelInfo = _G.UnitChannelInfo
+	local UnitDebuff = _G.UnitDebuff
+	local UnitHealthMax = _G.UnitHealthMax
+	local UnitPower = _G.UnitPower
+	local ceil = _G.ceil
+	local ipairs = _G.ipairs
+	local pairs = _G.pairs
+	local select = _G.select
+	local tinsert = _G.tinsert
 
 	local rules = {
 
@@ -744,30 +757,46 @@ function addon.CreateRules()
 
 	local LibPlayerSpells = LibStub('LibPlayerSpells-1.0')
 
-	local buffs, spells = {}, {}
-	for i, buffType in ipairs(LibPlayerSpells:GetRaidBuffTypes()) do
-		buffs[buffType] = {}
-		spells[buffType] = {}
+	local buffsMasks, buffSpells = {}, {}
+	local band, bor = bit.band, bit.bor
+	for buff, _, _, target, buffMask in LibPlayerSpells:IterateSpells("RAIDBUFF") do
+		buffsMasks[buff] = buffMask
+		if buffSpells[buffMask] then
+			tinsert(buffSpells[buffMask], target)
+		else
+			buffSpells[buffMask] = { target }
+		end
 	end
-	local band = bit.band
-	for buff, _, _, target, _type in LibPlayerSpells:IterateSpells("RAIDBUFF") do
-		for buffType in pairs(buffs) do
-			if band(_type, buffType) == buffType then
-				tinsert(buffs[buffType], buff)
-				tinsert(spells[buffType], target)
+	-- Create a rule per bitmask
+	for buffMask, spells in pairs(buffSpells) do
+		local buffMask = buffMask
+		tinsert(rules, Configure {
+			buffSpells[buffMask],
+			"ally",
+			"UNIT_AURA",
+			function(units, model)
+				local unit = units["ally"]
+				if not unit then return end
+				local found, minExpiration = 0
+				for i = 1, math.huge do
+					local name, _, _, count, _, _, expiration, _, _, _, spellId = UnitAura(unit, i, "HELPFUL")
+					if name then
+						local buffProvided = band(buffsMasks[spellId] or 0, buffMask)
+						if buffProvided ~= 0 then
+							found = bor(found, buffProvided)
+							if not minExpiration or expiration < minExpiration then
+								minExpiration = expiration
+							end
+							if found == buffMask then
+								model.highlight, model.expiration = "good", minExpiration
+							end
+						end
+					else
+						return
+					end
+				end
 			end
-		end
-	end
-	-- Create a rule per buff type
-	for buffType in pairs(buffs) do
-		if #buffs[buffType] > 0 then
-			tinsert(rules, Configure {
-				spells[buffType],
-				"ally",
-				"UNIT_AURA",
-				BuildAuraHandler_Longest("HELPFUL", "good", "ally", buffs[buffType])
-			})
-		end
+		})
 	end
 
 	--------------------------------------------------------------------------
