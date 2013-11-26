@@ -373,6 +373,22 @@ function addon.CreateRules()
 				134563, -- Healing Elixirs (buff)
 				119582, -- Purifying Brew
 			},
+			ShowPower {
+				-- Show current Chi on generators and 3-chi spenders
+				{
+					100780, -- Jab (glyphed)
+					101546, -- Spinning Crane Kick
+					115072, -- Expel Harm
+					115080, -- Touch of Death
+					115175, -- Soothing Mist
+					115693, -- Jab
+					116670, -- Uplift
+					116847, -- Rushing Jade Wind
+					117952, -- Crackling Jade Lightning
+					124682, -- Enveloping Mist
+				},
+				"CHI",
+			},
 			DebuffAliases {
 				121253, -- Keg Smash
 				115180, -- Dizzying Haze
