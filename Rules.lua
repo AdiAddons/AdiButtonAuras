@@ -441,32 +441,11 @@ function addon.CreateRules()
 	--------------------------------------------------------------------------
 
 		IfClass { "PRIEST",
-			SelfBuffs {
-				   586, -- Fade
-				   588, -- Inner Fire
-				 10060, -- Power Infusion
-				 15286, -- Vampiric Embrace
-				 47585, -- Dispersion
-				 73413, -- Inner Will
-				109964, -- Spirit Shell
-				112833, -- Spectral Guise
-			},
-			SimpleBuffs {
-				   139, -- Renew
-				 33076, -- Prayer of Mending
-			},
-			SharedSimpleBuffs {
-				  1706, -- Levitate
-				  6346, -- Fear Ward
-				 47788, -- Guardian Spirit -- can be stacked but this is not advised
-				  6346, -- Pain Suppression --  can be stacked but this is not advised
-			},
-			SimpleDebuffs {
-				   589, -- Shadow Word: Pain
-				  2944, -- Devouring Plague
-				 34914, -- Vampiric Touch
-				 14914, -- Holy Fire
-				129250, -- Power Word: Solace
+			ImportPlayerSpells {
+				-- Import all spells for ...
+				"PRIEST",
+				-- ... but ...
+				17, -- Power Word: Shield
 			},
 			ShowPower {
 				{
@@ -474,24 +453,6 @@ function addon.CreateRules()
 					64044, -- Psychic Horror
 				},
 				"SHADOW_ORBS",
-			},
-			PassiveModifier {
-				63733, -- Serendipity
-				{
-					2060, -- Greater Heal
-					 596, -- Prayer of Healing
-				},
-				63735, -- Serendipity (buff)
-			},
-			PassiveModifier {
-				81662, -- Evangelism
-				81700, -- Archangel
-				81662, -- Evangelism
-			},
-			PassiveModifier {
-				109186, -- From Darkness, Comes Light
-				  2061, -- Flash Heal
-				114255, -- Surge of Light
 			},
 			Configure {
 			    17, -- Power Word: Shield
