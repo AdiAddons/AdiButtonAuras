@@ -51,80 +51,13 @@ function addon.CreateRules()
 	local select = _G.select
 	local tinsert = _G.tinsert
 
+	local _, playerClass = UnitClass("player")
+
 	local rules = {
 
 	--------------------------------------------------------------------------
 	-- Start of rules
 	--------------------------------------------------------------------------
-
-	--------------------------------------------------------------------------
-	-- Interrupts
-	--------------------------------------------------------------------------
-	-- Use a custom configuration
-
-		Configure {
-			{ -- Spells
-				-- Deathknight
-				 47476, -- Strangulate
-				 47528, -- Mind Freeze
-				 91802, -- Shambling Rush (Ghoul)
-				-- Druid
-				 78675, -- Solar Beam
-				 80964, -- Skull Bash (bear)
-				 80965, -- Skull Bash (cat)
-				-- Hunter
-				 26090, -- Pummel (Gorilla)
-				 34490, -- Silencing Shot
-				 50318, -- Serenity Dust (Moth)
-				 50479, -- Nether Shock (Nether Ray)
-				147362, -- Counter Shot
-				-- Mage
-				  2139, -- Counterspell
-				-- Monk
-				116705, -- Spear Hand Strike
-				-- Paladin
-				 96231, -- Rebuke
-				-- Priest
-				 15487, -- Silence
-				-- Rogue
-				  1766, -- Kick
-				-- Shaman
-				 57994, -- Wind Shear
-				-- Warlock
-				 19647, -- Spell Lock (Felhunter)
-				103967, -- Carrion Swarm (demon form)
-				119911, -- Optical Blast (Observer special ability)
-				132409, -- Spell Lock (sacrified Felhunter)
-				-- Warrior
-				  6552, -- Pummel
-			},
-			-- Unit
-			"enemy",
-			{ -- Events
-				"UNIT_SPELLCAST_CHANNEL_START",
-				"UNIT_SPELLCAST_CHANNEL_STOP",
-				"UNIT_SPELLCAST_CHANNEL_UPDATE",
-				"UNIT_SPELLCAST_DELAYED",
-				"UNIT_SPELLCAST_INTERRUPTIBLE",
-				"UNIT_SPELLCAST_NOT_INTERRUPTIBLE",
-				"UNIT_SPELLCAST_START",
-				"UNIT_SPELLCAST_STOP",
-			},
-			-- Handler
-			function(units, model)
-				local unit = units.enemy
-				if UnitCanAttack("player", unit) then
-					local name, _, _, _, _, endTime, _, _, notInterruptible = UnitCastingInfo(unit)
-					if name and not notInterruptible then
-						model.highlight, model.expiration = "flash", endTime / 1000
-					end
-					name, _, _, _, _, endTime, _, notInterruptible = UnitChannelInfo(unit)
-					if name and not notInterruptible then
-						model.highlight, model.expiration = "flash", endTime / 1000
-					end
-				end
-			end
-		},
 
 	--------------------------------------------------------------------------
 	-- Shared debuffs
@@ -798,6 +731,44 @@ function addon.CreateRules()
 			end
 		})
 	end
+
+	--------------------------------------------------------------------------
+	-- Interrupts
+	--------------------------------------------------------------------------
+	-- Use LibPlayerSpells
+
+	local interrupts = {}
+	for spell in LibPlayerSpells:IterateSpells("INTERRUPT", playerClass) do
+		tinsert(interrupts, spell)
+	end
+	tinsert(rules, Configure {
+		interrupts,
+		"enemy",
+		{ -- Events
+			"UNIT_SPELLCAST_CHANNEL_START",
+			"UNIT_SPELLCAST_CHANNEL_STOP",
+			"UNIT_SPELLCAST_CHANNEL_UPDATE",
+			"UNIT_SPELLCAST_DELAYED",
+			"UNIT_SPELLCAST_INTERRUPTIBLE",
+			"UNIT_SPELLCAST_NOT_INTERRUPTIBLE",
+			"UNIT_SPELLCAST_START",
+			"UNIT_SPELLCAST_STOP",
+		},
+		-- Handler
+		function(units, model)
+			local unit = units.enemy
+			if UnitCanAttack("player", unit) then
+				local name, _, _, _, _, endTime, _, _, notInterruptible = UnitCastingInfo(unit)
+				if name and not notInterruptible then
+					model.highlight, model.expiration = "flash", endTime / 1000
+				end
+				name, _, _, _, _, endTime, _, notInterruptible = UnitChannelInfo(unit)
+				if name and not notInterruptible then
+					model.highlight, model.expiration = "flash", endTime / 1000
+				end
+			end
+		end
+	})
 
 	--------------------------------------------------------------------------
 	-- End of rules
