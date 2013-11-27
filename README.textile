@@ -6,6 +6,8 @@ AdiButtonAuras is a rewrite of Inline Aura, but with different design decisions 
 
 h2. Supported classes and specializations
 
+Most of the class spells are supported through the library "LibPlayerSpell-1.0":https://github.com/Adirelle/LibPlayerSpells-1.0.
+
 * !http://wow.zamimg.com/images/wow/icons/small/class_druid.jpg! Druid:
 ** Balance: 5.4
 ** Feral Combat: 5.4
@@ -16,12 +18,12 @@ h2. Supported classes and specializations
 ** Marksmanship: 5.4
 ** Survival: 5.4
 * !http://wow.zamimg.com/images/wow/icons/small/class_priest.jpg! Priest
-** Discipline: 5.4 untested
+** Discipline: 5.4
 ** Holy: 5.4 untested
 ** Shadow: 5.4 untested
 * !http://wow.zamimg.com/images/wow/icons/small/class_monk.jpg! Monk
 ** Brewmaster: 5.4
-** Mistweaver: 5.4 untested
+** Mistweaver: 5.4
 ** Windwalker: 5.4
 * !http://wow.zamimg.com/images/wow/icons/small/class_warlock.jpg! Warlock
 ** Affliction: 5.4 untested
