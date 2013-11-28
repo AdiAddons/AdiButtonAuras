@@ -50,4 +50,4 @@ Overlays.lua
 Display.lua
 Config.lua
 
-Rules.lua
+rules\rules.xml
