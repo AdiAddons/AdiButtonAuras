@@ -562,16 +562,20 @@ local ruleBuilders = {}
 
 function addon:BuildRules(event)
 	if not rules then
-		addon:Debug('BuildRules', event)
+		addon.Debug('Rules', 'Building rules', event)
 		if #ruleBuilders == 0 then
 			error("No rules registered !", 2)
 		end
-		wipe(knownClasses[playerClass])
-		local t =  {}
+		wipe(knownClasses)
+		local t = {}
 		for i, builder in ipairs(ruleBuilders) do
-			tinsert(t, builder())
+			local ok, funcs = xpcall(builder, errorhandler)
+			if ok and funcs then
+				tinsert(t, funcs)
+			end
 		end
 		rules = AsList(t, "function")
+		addon.Debug('Rules', #rules, 'rules found')
 	end
 	return rules
 end
@@ -583,15 +587,12 @@ function addon:LibSpellbook_Spells_Changed(event)
 	self:SendMessage(addonName..'_RulesUpdated')
 end
 
-function addon:RegisterRules(builder)
-	tinsert(ruleBuilders, setfenv(builder, RULES_ENV))
-	if rules then
-		rules = nil
-		return self:LibSpellbook_Spells_Changed('RegisterRules')
-	end
-end
-
--- For plugins
 function _G.AdiButtonAuras_RegisterRules(builder)
-	return addon:RegisterRules(builder)
+	setfenv(builder, RULES_ENV)
+	tinsert(ruleBuilders, function() return builder(addon) end)
+	if rules then
+		addon.Debug('Rules', 'Rebuilding rules')
+		rules = nil
+		return addon:LibSpellbook_Spells_Changed('RegisterRules')
+	end
 end
