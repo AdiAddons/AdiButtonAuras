@@ -264,7 +264,7 @@ overlayPrototype.PLAYER_ENTERING_WORLD = overlayPrototype.ForceUpdate
 function overlayPrototype:UpdateAction(event)
 	local actionId, actionType = self:GetAction()
 	local actualType, actualId, macroConditionals = GetActionSpell(actionId, actionType)
-	self:Debug('UpdateAction', event, '|', actionId, actionType, '=>', spellId, macroConditionals)
+	self:Debug('UpdateAction', event, '|', actionId, actionType, '=>', actualId, macroConditionals)
 	return self:SetAction(event, actualType, actualId, macroConditionals)
 end
 
