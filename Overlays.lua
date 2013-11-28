@@ -88,6 +88,10 @@ local function ResolveMouseover()
 	end
 end
 
+--------------------------------------------------------------------------------
+-- Mouseover
+--------------------------------------------------------------------------------
+
 local MOUSEOVER_CHANGED = addonName..'_Mouseover_Changed'
 local MOUSEOVER_TICK = addonName..'_Mouseover_Tick'
 
@@ -109,6 +113,17 @@ function addon:UPDATE_MOUSEOVER_UNIT()
 		return self:SendMessage(MOUSEOVER_TICK, unit)
 	end
 end
+
+addon:DeclareMessage(
+	MOUSEOVER_CHANGED,
+	function()
+		addon:RegisterEvent('UPDATE_MOUSEOVER_UNIT')
+		addon:UPDATE_MOUSEOVER_UNIT()
+	end,
+	function()
+		addon:UnregisterEvent('UPDATE_MOUSEOVER_UNIT')
+	end
+)
 
 --------------------------------------------------------------------------------
 -- Macro handling

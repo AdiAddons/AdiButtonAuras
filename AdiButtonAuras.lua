@@ -45,6 +45,21 @@ function events:OnUnused(event) return frame:UnregisterEvent(event) end
 local bus = LibStub('CallbackHandler-1.0'):New(addon, 'RegisterMessage', 'UnregisterMessage', 'UnregisterAllMessage')
 addon.SendMessage = bus.Fire
 
+local messages = {}
+function bus:OnUsed(message)
+	if messages[message] and messages[message].OnUsed then
+		messages[message].OnUsed(message)
+	end
+end
+function bus:OnUnused(message)
+	if messages[message] and messages[message].OnUnused then
+		messages[message].OnUnused(message)
+	end
+end
+function addon:DeclareMessage(message, OnUsed, OnUnused)
+	messages[message] = { OnUsed = OnUsed, OnUnused = OnUnused }
+end
+
 ------------------------------------------------------------------------------
 -- Initialization
 --------------------------------------------------------------------------------
@@ -122,7 +137,6 @@ function addon:ADDON_LOADED(event, name)
 		self:RegisterEvent('UPDATE_BINDINGS', 'UpdateDynamicUnitConditionals')
 		self:RegisterEvent('CVAR_UPDATE')
 		self:RegisterEvent('UPDATE_MACROS')
-		self:RegisterEvent('UPDATE_MOUSEOVER_UNIT')
 		self:UpdateDynamicUnitConditionals()
 
 		LibSpellbook.RegisterCallback(addon, 'LibSpellbook_Spells_Changed')
