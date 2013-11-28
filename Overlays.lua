@@ -126,6 +126,75 @@ addon:DeclareMessage(
 )
 
 --------------------------------------------------------------------------------
+-- Group roster update
+--------------------------------------------------------------------------------
+
+local GROUP_CHANGED = addonName..'_Mouseover_Tick'
+local groupPrefix, groupSize = "", 0
+local groupUnits = {}
+unitIdentity.group = groupUnits
+
+function addon:GROUP_ROSTER_UPDATE(event)
+	local prefix, start, size, start = "", 1, 0
+	if IsInRaid() then
+		prefix, size = "raid", GetNumGroupMembers()
+	elseif IsInGroup() then
+		prefix, start, size = "party", 0, GetNumGroupMembers()
+	else
+		start = 0
+	end
+	if prefix ~= groupPrefix then
+		wipe(groupUnits)
+	end
+	local changed = false
+	for i = start, size do
+		local unit, petUnit
+		if i == 0 then
+			unit, petUnit = "player", "pet"
+		else
+			unit, petUnit = prefix..i, prefix..'pet'..i
+		end
+		local guid, petGUID = UnitGUID(unit), UnitGUID(petUnit)
+		if groupUnits[unit] ~= guid or groupUnits[petUnit] ~= petGUID then
+			groupUnits[unit], groupUnits[petUnit] = guid, petGUID
+			changed = true
+		end
+	end
+	if changed then
+		return self:SendMessage(GROUP_CHANGED)
+	end
+end
+
+function addon:UNIT_PET(event, unit)
+	local petUnit
+	if unit == "player" then
+		petUnit = "pet"
+	elseif groupUnits[unit] then
+		petUnit = gsub(unit.."pet", "(%d+)pet", "pet%1")
+	else
+		return
+	end
+	local guid = UnitGUID(petUnit)
+	if groupUnits[petUnit] ~= guid then
+		groupUnits[petUnit] = guid
+		return self:SendMessage(GROUP_CHANGED)
+	end
+end
+
+addon:DeclareMessage(
+	GROUP_CHANGED,
+	function()
+		addon:RegisterEvent('GROUP_ROSTER_UPDATE')
+		addon:RegisterEvent('UNIT_PET')
+		addon:GROUP_ROSTER_UPDATE('OnUse')
+	end,
+	function()
+		addon:UnregisterEvent('GROUP_ROSTER_UPDATE')
+		addon:UnregisterEvent('UNIT_PET')
+	end
+)
+
+--------------------------------------------------------------------------------
 -- Macro handling
 --------------------------------------------------------------------------------
 
@@ -299,6 +368,7 @@ function overlayPrototype:SetAction(event, actionType, actionId, macroConditiona
 	self:UnregisterAllEvents()
 	addon.UnregisterMessage(self, MOUSEOVER_CHANGED)
 	addon.UnregisterMessage(self, MOUSEOVER_TICK)
+	addon.UnregisterMessage(self, GROUP_CHANGED)
 
 	if conf then
 		self:Debug('SetAction', event, GetSpellLink(spellId), macroConditionals)
@@ -323,6 +393,10 @@ function overlayPrototype:SetAction(event, actionType, actionId, macroConditiona
 				end
 				hasDynamicUnits = true
 			end
+		end
+
+		if units.group then
+			addon.RegisterMessage(self, GROUP_CHANGED, 'ScheduleUpdate')
 		end
 
 		for unit, handler in pairs(units) do
@@ -352,7 +426,7 @@ function overlayPrototype:SetAction(event, actionType, actionId, macroConditiona
 end
 
 function overlayPrototype:GenericUnitEvent(event, unit)
-	if self.units[unit] or unit == self.unitMap.ally or unit == self.unitMap.enemy then
+	if self.units[unit] or unit == self.unitMap.ally or unit == self.unitMap.enemy or (self.units.group and self.unitMap.group[unit]) then
 		return self:ScheduleUpdate(event)
 	end
 end
