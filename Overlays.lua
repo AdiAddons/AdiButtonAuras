@@ -96,7 +96,6 @@ local mouseoverUnit, mouseoverUnitTimer
 function addon:UPDATE_MOUSEOVER_UNIT()
 	local unit = ResolveMouseover()
 	if mouseoverUnit ~= unit then
-		self:Debug('mouseover changed:', unit)
 		mouseoverUnit = unit
 		if unit == 'mouseover' then
 			if not mouseoverUnitTimer then
