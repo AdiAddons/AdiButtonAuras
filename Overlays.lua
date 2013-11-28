@@ -120,7 +120,7 @@ local function GetMacroAction(macroId)
 	if macroSpell or macroSpellId then
 		return "spell", macroSpellId or LibSpellbook:Resolve(macroSpell)
 	else
-		local _, itemLink = GetMacroItem(actionId)
+		local _, itemLink = GetMacroItem(macroId)
 		local itemId = itemLink and tonumber(itemLink:match('item:(%d+):'))
 		if itemId then
 			return "item", itemId
