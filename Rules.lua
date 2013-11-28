@@ -29,7 +29,7 @@ local addonName, addon = ...
 -- Globals: math
 
 function addon.CreateRules()
-	addon:Debug('Creating Rules')
+	addon.Debug('Rules', 'Creating Rules')
 
 	local _G = _G
 	local GetComboPoints = _G.GetComboPoints

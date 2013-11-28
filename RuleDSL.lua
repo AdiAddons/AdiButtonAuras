@@ -150,7 +150,7 @@ local function _AddRuleFor(spell, units, events, handlers, callLevel)
 	if not id then
 		return
 	end
-	addon:Debug("Adding rule for", info,
+	addon.Debug('Rules', "Adding rule for", info,
 		"units:", strjoin(",", getkeys(units)),
 		"events:", strjoin(",", getkeys(events)),
 		"handlers:", handlers
@@ -219,7 +219,7 @@ local function IfSpell(spells, ...)
 		local link = GetSpellLink(spell)
 		return function()
 			if LibSpellbook:IsKnown(spell) then
-				addon:Debug('Merging rules depending on', link)
+				addon.Debug('Rules', 'Merging rules depending on', link)
 				return Do(funcs)
 			end
 		end
@@ -227,7 +227,7 @@ local function IfSpell(spells, ...)
 		return function()
 			for i, spell in ipairs(spells) do
 				if LibSpellbook:IsKnown(spell) then
-					addon:Debug('Merging rules depending on', (GetSpellLink(spell)))
+					addon.Debug('Rules', 'Merging rules depending on', (GetSpellLink(spell)))
 					return Do(funcs)
 				end
 			end
@@ -240,12 +240,12 @@ local function IfClass(class, ...)
 	if playerClass == class then
 		local funcs = AsList({ ... }, "function", 2)
 		return function()
-			addon:Debug('Merging spells for', class)
+			addon.Debug('Rules', 'Merging spells for', class)
 			return Do(funcs)
 		end
 	else
 		return function()
-			return addon:Debug('Ignoring spells for', class)
+			return addon.Debug('Rules', 'Ignoring spells for', class)
 		end
 	end
 end
