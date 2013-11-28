@@ -37,6 +37,8 @@ AdiButtonAuras_RegisterRules(function(addon)
 			"MONK",
 			-- ... but ...
 			115151, -- Renewing Mist
+			116670, -- Uplift
+			116680, -- Thunder Focus Tea
 			119582, -- Purifying Brew
 			123273, -- Surging Mist
 			134563, -- Healing Elixirs (buff)
@@ -118,44 +120,6 @@ AdiButtonAuras_RegisterRules(function(addon)
 				end
 			end)(),
 		},
-		(function()
-			local units = { "player" }
-			for i = 1, 4 do tinsert(units, "party"..i) end
-			for i = 1, 40 do tinsert(units, "raid"..i) end
-			--numGroupMembers = GetNumGroupMembers( [groupType] )
-			local buff = GetSpellInfo(115151) -- Renewing Mist
-			local count, shortest
-			local function ScanUnit(unit)
-				local name, _, _, _, _, _, expiration = UnitAura(unit, buff, nil, "HELPFUL PLAYER")
-				if name then
-					count = count + 1
-					if not shortest or expiration < shortest then
-						shortest = expiration
-					end
-				end
-			end
-			return Configure {
-				115151, -- Renewing Mist
-				units,
-				{ "UNIT_AURA", "GROUP_ROSTER_UPDATE" },
-				function(_, model)
-					count, shortest = 0, nil
-					if IsInRaid() then
-						for i = 1, GetNumGroupMembers() do
-							ScanUnit("raid"..i)
-						end
-					else
-						ScanUnit("player")
-						for i = 1, GetNumGroupMembers() do
-							ScanUnit("party"..i)
-						end
-					end
-					if count > 0 then
-						model.highlight, model.count, model.expiration = "good", count, shortest
-					end
-				end
-			}
-		end)()
 	}
 
 end)
