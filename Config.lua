@@ -47,7 +47,7 @@ frame:SetScript('OnShow', function()
 	p("\nVersion", "|cffffffff"..tostring(GetAddOnMetadata(addonName, "Version")).."|r")
 	
 	p("\nLibraries:")
-	for i, lib in ipairs{"CallbackHandler-1.0", "AceTimer-3.0", "AceEvent-3.0", "LibDispellable-1.0", "DRData-1.0", "LibSpellbook-1.0"} do
+	for i, lib in ipairs{"CallbackHandler-1.0", "AceTimer-3.0", "LibDispellable-1.0", "DRData-1.0", "LibSpellbook-1.0", "LibPlayerSpells-1.0" } do
 		local found, minor = LibStub(lib, true)
 		if found then
 			p("-", lib, "|cffffffff v"..tostring(minor).."|r")

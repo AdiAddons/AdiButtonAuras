@@ -10,9 +10,6 @@ externals:
   libs/AceTimer-3.0:
     url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceTimer-3.0
     tag: latest
-  libs/AceEvent-3.0:
-    url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceEvent-3.0
-    tag: latest
   libs/BugGrabber:
     url: svn://svn.wowace.com/wow/bug-grabber/mainline/trunk
     tag: latest

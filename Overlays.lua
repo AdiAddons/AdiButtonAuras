@@ -21,7 +21,6 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 
 local addonName, addon = ...
 
-local AceEvent = LibStub('AceEvent-3.0')
 local LibSpellbook = LibStub('LibSpellbook-1.0')
 local AceTimer = LibStub('AceTimer-3.0')
 
@@ -233,8 +232,8 @@ function overlayPrototype:Initialize(button)
 	self.events = {}
 	self.handlers = EMPTY_TABLE
 
-	AceEvent.RegisterMessage(self, addonName..'_RulesUpdated', 'ForceUpdate')
-	AceEvent.RegisterMessage(self, addonName..'_DynamicUnitConditionals_Changed', 'ForceUpdate')
+	addon.RegisterMessage(self, addonName..'_RulesUpdated', 'ForceUpdate')
+	addon.RegisterMessage(self, addonName..'_DynamicUnitConditionals_Changed', 'ForceUpdate')
 
 	self:Show()
 end
@@ -283,8 +282,8 @@ function overlayPrototype:SetAction(event, actionType, actionId, macroConditiona
 	local events = wipe(self.events)
 	wipe(self.unitConditionals)
 	self:UnregisterAllEvents()
-	AceEvent.UnregisterMessage(self, MOUSEOVER_CHANGED)
-	AceEvent.UnregisterMessage(self, MOUSEOVER_TICK)
+	addon.UnregisterMessage(self, MOUSEOVER_CHANGED)
+	addon.UnregisterMessage(self, MOUSEOVER_TICK)
 
 	if conf then
 		self:Debug('SetAction', event, GetSpellLink(spellId), macroConditionals)
@@ -390,11 +389,11 @@ function overlayPrototype:UpdateDynamicUnits(event, unit)
 	end
 
 	if watchMouseover then
-		AceEvent.RegisterMessage(self, MOUSEOVER_CHANGED, 'UpdateGUID', 'mouseover')
-		AceEvent.RegisterMessage(self, MOUSEOVER_TICK, 'ScheduleUpdate')
+		addon.RegisterMessage(self, MOUSEOVER_CHANGED, 'UpdateGUID', 'mouseover')
+		addon.RegisterMessage(self, MOUSEOVER_TICK, 'ScheduleUpdate')
 	else
-		AceEvent.UnregisterMessage(self, MOUSEOVER_CHANGED)
-		AceEvent.UnregisterMessage(self, MOUSEOVER_TICK)
+		addon.UnregisterMessage(self, MOUSEOVER_CHANGED)
+		addon.UnregisterMessage(self, MOUSEOVER_TICK)
 	end
 
 	return updated

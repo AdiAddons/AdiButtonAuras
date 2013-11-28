@@ -34,7 +34,16 @@ else
 	addon.Debug = function() end
 end
 
-LibStub('AceEvent-3.0'):Embed(addon)
+-- Event dispatching using CallbackHandler-1.0
+local events = LibStub('CallbackHandler-1.0'):New(addon, 'RegisterEvent', 'UnregisterEvent', 'UnregisterAllEvents')
+local frame = CreateFrame("Frame")
+frame:SetScript('OnEvent', function(_, ...) return events:Fire(...) end)
+function events:OnUsed(event) return frame:RegisterEvent(event) end
+function events:OnUnused(event) return frame:UnregisterEvent(event) end
+
+-- Messaging using CallbackHandler-1.0
+local bus = LibStub('CallbackHandler-1.0'):New(addon, 'RegisterMessage', 'UnregisterMessage', 'UnregisterAllMessage')
+addon.SendMessage = bus.Fire
 
 ------------------------------------------------------------------------------
 -- Initialization
