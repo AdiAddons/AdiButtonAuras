@@ -22,19 +22,12 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 local addonName, addon = ...
 
 local LibSpellbook = LibStub('LibSpellbook-1.0')
-local AceTimer = LibStub('AceTimer-3.0')
 
-local getkeys = addon.getkeys
+local MOUSEOVER_CHANGED, MOUSEOVER_TICK, GROUP_CHANGED = addon.MOUSEOVER_CHANGED, addon.MOUSEOVER_TICK, addon.GROUP_CHANGED
 
 --------------------------------------------------------------------------------
 -- Unit handling
 --------------------------------------------------------------------------------
-
-local unitList = { "player", "pet", "target", "focus" }
-local unitIdentity = {}
-for i = 1,4 do tinsert(unitList, "party"..i) end
-for i = 1,40 do tinsert(unitList, "raid"..i) end
-for i, unit in ipairs(unitList) do unitIdentity[unit] = unit end
 
 local unitEvents = {
 	target = 'PLAYER_TARGET_CHANGED',
@@ -43,155 +36,9 @@ local unitEvents = {
 	pet = 'UNIT_PET',
 }
 
+local unitIdentity = { group = addon.groupUnits }
+for i, unit in ipairs(addon.unitList) do unitIdentity[unit] = unit end
 local unitIdentityMeta = { __index = unitIdentity }
-
-local dynamicUnitConditionals = {}
-
-function addon:UpdateDynamicUnitConditionals()
-	local selfCast, focusCast = GetModifiedClick("SELFCAST"), GetModifiedClick("FOCUSCAST")
-	local enemy = "[harm]"
-	local ally
-	if GetCVarBool("autoSelfCast") then
-		ally = "[help,nodead][@player]"
-	else
-		ally = "[help]"
-	end
-	if focusCast ~= "NONE" then
-		enemy = "[@focus,mod:"..focusCast.."]"..enemy
-		ally = "[@focus,mod:"..focusCast.."]"..ally
-	end
-	if selfCast ~= "NONE" then
-		ally = "[@player,mod:"..selfCast.."]"..ally
-	end
-	if dynamicUnitConditionals.enemy ~= enemy or dynamicUnitConditionals.ally ~= ally then
-		dynamicUnitConditionals.enemy, dynamicUnitConditionals.ally = enemy, ally
-		addon:SendMessage(addonName..'_DynamicUnitConditionals_Changed')
-	end
-end
-
-function addon:CVAR_UPDATE(_, name)
-	if name == "autoSelfCast" then
-		return self:UpdateDynamicUnitConditionals()
-	end
-end
-
-local function ResolveMouseover()
-	if UnitExists('mouseover') then
-		for i, unit in pairs(unitList) do
-			if UnitIsUnit(unit, "mouseover") then
-				return unit
-			end
-		end
-		return 'mouseover'
-	end
-end
-
---------------------------------------------------------------------------------
--- Mouseover
---------------------------------------------------------------------------------
-
-local MOUSEOVER_CHANGED = addonName..'_Mouseover_Changed'
-local MOUSEOVER_TICK = addonName..'_Mouseover_Tick'
-
-local mouseoverUnit, mouseoverUnitTimer
-function addon:UPDATE_MOUSEOVER_UNIT()
-	local unit = ResolveMouseover()
-	if mouseoverUnit ~= unit then
-		mouseoverUnit = unit
-		if unit == 'mouseover' then
-			if not mouseoverUnitTimer then
-				mouseoverUnitTimer = AceTimer.ScheduleRepeatingTimer(self, 'UPDATE_MOUSEOVER_UNIT', 0.5)
-			end
-		elseif mouseoverUnitTimer then
-			AceTimer:CancelTimer(mouseoverUnitTimer)
-			mouseoverUnitTimer = nil
-		end
-		return self:SendMessage(MOUSEOVER_CHANGED, unit)
-	elseif unit == 'mouseover' then
-		return self:SendMessage(MOUSEOVER_TICK, unit)
-	end
-end
-
-addon:DeclareMessage(
-	MOUSEOVER_CHANGED,
-	function()
-		addon:RegisterEvent('UPDATE_MOUSEOVER_UNIT')
-		addon:UPDATE_MOUSEOVER_UNIT()
-	end,
-	function()
-		addon:UnregisterEvent('UPDATE_MOUSEOVER_UNIT')
-	end
-)
-
---------------------------------------------------------------------------------
--- Group roster update
---------------------------------------------------------------------------------
-
-local GROUP_CHANGED = addonName..'_Mouseover_Tick'
-local groupPrefix, groupSize = "", 0
-local groupUnits = {}
-unitIdentity.group = groupUnits
-
-function addon:GROUP_ROSTER_UPDATE(event)
-	local prefix, start, size = "", 1, 0
-	if IsInRaid() then
-		prefix, size = "raid", 40
-	elseif IsInGroup() then
-		prefix, start, size = "party", 0, 4
-	else
-		start = 0
-	end
-	if prefix ~= groupPrefix then
-		wipe(groupUnits)
-	end
-	local changed = false
-	for i = start, size do
-		local unit, petUnit
-		if i == 0 then
-			unit, petUnit = "player", "pet"
-		else
-			unit, petUnit = prefix..i, prefix..'pet'..i
-		end
-		local guid, petGUID = UnitGUID(unit), UnitGUID(petUnit)
-		if groupUnits[unit] ~= guid or groupUnits[petUnit] ~= petGUID then
-			groupUnits[unit], groupUnits[petUnit] = guid, petGUID
-			changed = true
-		end
-	end
-	if changed then
-		addon.Debug('Group', addon.getkeys(groupUnits))
-		return self:SendMessage(GROUP_CHANGED)
-	end
-end
-
-function addon:UNIT_PET(event, unit)
-	local petUnit
-	if unit == "player" then
-		petUnit = "pet"
-	elseif groupUnits[unit] then
-		petUnit = gsub(unit.."pet", "(%d+)pet", "pet%1")
-	else
-		return
-	end
-	local guid = UnitGUID(petUnit)
-	if groupUnits[petUnit] ~= guid then
-		groupUnits[petUnit] = guid
-		return self:SendMessage(GROUP_CHANGED)
-	end
-end
-
-addon:DeclareMessage(
-	GROUP_CHANGED,
-	function()
-		addon:RegisterEvent('GROUP_ROSTER_UPDATE')
-		addon:RegisterEvent('UNIT_PET')
-		addon:GROUP_ROSTER_UPDATE('OnUse')
-	end,
-	function()
-		addon:UnregisterEvent('GROUP_ROSTER_UPDATE')
-		addon:UnregisterEvent('UNIT_PET')
-	end
-)
 
 --------------------------------------------------------------------------------
 -- Macro handling
@@ -316,7 +163,7 @@ function overlayPrototype:Initialize(button)
 	self.handlers = nil
 
 	addon.RegisterMessage(self, addonName..'_RulesUpdated', 'ForceUpdate')
-	addon.RegisterMessage(self, addonName..'_DynamicUnitConditionals_Changed', 'ForceUpdate')
+	addon.RegisterMessage(self, addon.DYNAMIC_UNIT_CONDITONALS_CHANGED, 'ForceUpdate')
 
 	self:Show()
 end
@@ -378,7 +225,7 @@ function overlayPrototype:SetAction(event, actionType, actionId, macroConditiona
 			units[unit] = 'UpdateGUID'
 		end
 
-		for token, default in pairs(dynamicUnitConditionals) do
+		for token, default in pairs(addon.dynamicUnitConditionals) do
 			if units[token] then
 				local cond = macroConditionals and gsub(macroConditionals , "%[%]", default) or default
 				self.unitConditionals[token] = cond
@@ -466,6 +313,7 @@ function overlayPrototype:UpdateDynamicUnits(event, unit)
 		if not unit or unit == "" then
 			unit = "target"
 		elseif unit == "mouseover" then
+			local mouseoverUnit = addon:GetMouseoverUnit()
 			if mouseoverUnit and UnitIsUnit(mouseoverUnit, unit) then
 				unit = mouseoverUnit
 			else
