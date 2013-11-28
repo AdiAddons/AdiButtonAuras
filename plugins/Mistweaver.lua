@@ -75,10 +75,10 @@ AdiButtonAuras_RegisterRules(function(addon)
 			116670, -- Uplift
 			"group",
 			{ "UNIT_AURA", "UNIT_HEALTH", "UNIT_HEALTH_MAX", "GROUP_ROSTER_UPDATE" },
-			function(_, model)
+			function(units, model)
 				local count = 0
 				for unit in pairs(units.group) do
-					if UnitAura(unit, buff, nil, "HELPFUL PLAYER") and UnitHealth(unit) / UnitHealthMax() < 0.8 then
+					if UnitAura(unit, buff, nil, "HELPFUL PLAYER") and UnitHealth(unit) / UnitHealthMax(unit) < 0.8 then
 						count = count + 1
 					end
 				end

@@ -34,31 +34,34 @@ else
 	addon.Debug = function() end
 end
 
+local mixins = {}
 -- Event dispatching using CallbackHandler-1.0
-local events = LibStub('CallbackHandler-1.0'):New(addon, 'RegisterEvent', 'UnregisterEvent', 'UnregisterAllEvents')
+local events = LibStub('CallbackHandler-1.0'):New(mixins, 'RegisterEvent', 'UnregisterEvent', 'UnregisterAllEvents')
 local frame = CreateFrame("Frame")
 frame:SetScript('OnEvent', function(_, ...) return events:Fire(...) end)
-function events:OnUsed(event) return frame:RegisterEvent(event) end
-function events:OnUnused(event) return frame:UnregisterEvent(event) end
+function events:OnUsed(_, event) return frame:RegisterEvent(event) end
+function events:OnUnused(_, event) return frame:UnregisterEvent(event) end
 
 -- Messaging using CallbackHandler-1.0
-local bus = LibStub('CallbackHandler-1.0'):New(addon, 'RegisterMessage', 'UnregisterMessage', 'UnregisterAllMessage')
+local bus = LibStub('CallbackHandler-1.0'):New(mixins, 'RegisterMessage', 'UnregisterMessage', 'UnregisterAllMessage')
 addon.SendMessage = bus.Fire
 
 local messages = {}
-function bus:OnUsed(message)
+function bus:OnUsed(_, message)
 	if messages[message] and messages[message].OnUsed then
 		messages[message].OnUsed(message)
 	end
 end
-function bus:OnUnused(message)
+function bus:OnUnused(_, message)
 	if messages[message] and messages[message].OnUnused then
 		messages[message].OnUnused(message)
 	end
 end
-function addon:DeclareMessage(message, OnUsed, OnUnused)
+function mixins:DeclareMessage(message, OnUsed, OnUnused)
 	messages[message] = { OnUsed = OnUsed, OnUnused = OnUnused }
 end
+
+for n,m in pairs(mixins) do addon[n] = m end
 
 ------------------------------------------------------------------------------
 -- Initialization
