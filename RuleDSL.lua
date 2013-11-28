@@ -47,11 +47,13 @@ local wipe = _G.wipe
 -- Generic list and set tools
 --------------------------------------------------------------------------------
 
+local function errorhandler(...) return geterrorhandler()(...) end
+
 local getkeys = addon.getkeys
 
 local function Do(funcs)
 	for j, func in ipairs(funcs) do
-		func()
+		xpcall(func, errorhandler)
 	end
 end
 
