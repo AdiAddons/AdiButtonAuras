@@ -24,8 +24,6 @@ local addonName, addon = ...
 local LibSpellbook = LibStub('LibSpellbook-1.0')
 local AceTimer = LibStub('AceTimer-3.0')
 
-local EMPTY_TABLE = setmetatable({}, { __newindex = function() error(2, "Read only table") end })
-
 local getkeys = addon.getkeys
 
 --------------------------------------------------------------------------------
@@ -315,7 +313,7 @@ function overlayPrototype:Initialize(button)
 	self.unitConditionals = {}
 	self.units = {}
 	self.events = {}
-	self.handlers = EMPTY_TABLE
+	self.handlers = nil
 
 	addon.RegisterMessage(self, addonName..'_RulesUpdated', 'ForceUpdate')
 	addon.RegisterMessage(self, addonName..'_DynamicUnitConditionals_Changed', 'ForceUpdate')
@@ -420,7 +418,7 @@ function overlayPrototype:SetAction(event, actionType, actionId, macroConditiona
 
 		self.handlers = conf.handlers
 	else
-		self.handlers = EMPTY_TABLE
+		self.handlers = nil
 	end
 
 	return hasDynamicUnits and self:UpdateDynamicUnits(event) or self:ScheduleUpdate(event)
@@ -499,13 +497,16 @@ function overlayPrototype:UpdateGUID(event, unit)
 end
 
 function overlayPrototype:ScheduleUpdate(event)
-	self:SetScript('OnUpdate', self.UpdateState)
+	if self.handlers then
+		self:SetScript('OnUpdate', self.UpdateState)
+	end
 	return true
 end
 
 local model = {}
 function overlayPrototype:UpdateState(event)
 	self:SetScript('OnUpdate', nil)
+	if not self.handlers then return end
 
 	local unitMap = self.unitMap
 	model.count, model.expiration, model.highlight  = 0, 0, nil
