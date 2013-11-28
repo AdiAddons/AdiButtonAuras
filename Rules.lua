@@ -28,8 +28,7 @@ local addonName, addon = ...
 -- Globals: BuildAuraHandler_Longest ImportPlayerSpells bit BuildAuraHandler_Single
 -- Globals: math
 
-function addon.CreateRules()
-	addon.Debug('Rules', 'Creating Rules')
+addon:RegisterRules(function()
 
 	local _G = _G
 	local GetComboPoints = _G.GetComboPoints
@@ -797,4 +796,4 @@ function addon.CreateRules()
 	--------------------------------------------------------------------------
 
 	return rules
-end
+end)

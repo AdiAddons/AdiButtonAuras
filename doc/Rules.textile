@@ -8,15 +8,15 @@ Each time one of the event is triggered for one of the unit, the handlers are ca
 
 A set of convenient functions are provided to easily configure most spells. If a more specific task is needed, Lua can be used (see interrupt spells).
 
-h2. Main function
+h2. Adding rules
 
-@addon.CreateRules()@ is the main function of Rules.lua. It returns a table of functions. They are called each time the player spells change to find out which spells should be watched.
+Rules are added by registering a function using AdiButtonAuras_RegisterRules. This function is called once and should return a table of functions. These functions are called each time the player spells change, to find out which spells should be watched.
 
 The minimal @addon.CreateRules()@ is this:
 
-bc. function addon.CreateRules()
+bc. AdiButtonAuras_RegisterRules(function()
 	return {} -- No rules
-end
+end)
 
 h2. Rule anatomy
 

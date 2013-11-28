@@ -556,16 +556,40 @@ local RULES_ENV = setmetatable({
 --------------------------------------------------------------------------------
 
 local rules
+local ruleBuilders = {}
+
+function addon:BuildRules(event)
+	if not rules then
+		addon:Debug('BuildRules', event)
+		if #ruleBuilders == 0 then
+			error("No rules registered !", 2)
+		end
+		wipe(knownClasses[playerClass])
+		local t =  {}
+		for i, builder in ipairs(ruleBuilders) do
+			tinsert(t, builder())
+		end
+		rules = AsList(t, "function")
+	end
+	return rules
+end
 
 function addon:LibSpellbook_Spells_Changed(event)
 	addon:Debug(event)
-	if not rules then
-		rules = AsList(setfenv(addon.CreateRules, RULES_ENV)(), "function")
-		if not knownClasses[playerClass] then
-			print(addonName.." has not specific rules for your class and will only handle common spells.")
-		end
-	end
 	wipe(spellConfs)
-	Do(rules)
+	Do(self:BuildRules())
 	self:SendMessage(addonName..'_RulesUpdated')
+end
+
+function addon:RegisterRules(builder)
+	tinsert(ruleBuilders, setfenv(builder, RULES_ENV))
+	if rules then
+		rules = nil
+		return self:LibSpellbook_Spells_Changed('RegisterRules')
+	end
+end
+
+-- For plugins
+function _G.AdiButtonAuras_RegisterRules(builder)
+	return addon:RegisterRules(builder)
 end
