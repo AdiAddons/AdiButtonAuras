@@ -135,11 +135,11 @@ local groupUnits = {}
 unitIdentity.group = groupUnits
 
 function addon:GROUP_ROSTER_UPDATE(event)
-	local prefix, start, size, start = "", 1, 0
+	local prefix, start, size = "", 1, 0
 	if IsInRaid() then
-		prefix, size = "raid", GetNumGroupMembers()
+		prefix, size = "raid", 40
 	elseif IsInGroup() then
-		prefix, start, size = "party", 0, GetNumGroupMembers()
+		prefix, start, size = "party", 0, 4
 	else
 		start = 0
 	end
@@ -161,6 +161,7 @@ function addon:GROUP_ROSTER_UPDATE(event)
 		end
 	end
 	if changed then
+		addon.Debug('Group', addon.getkeys(groupUnits))
 		return self:SendMessage(GROUP_CHANGED)
 	end
 end
