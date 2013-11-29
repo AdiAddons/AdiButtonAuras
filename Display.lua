@@ -122,9 +122,14 @@ function overlayPrototype:SetExpiration(expiration)
 	end
 	if self.expiration ~= expiration then
 		self.expiration = expiration
-		self.Timer.expiration = expiration
-		self.Timer:Update()
+		self:ApplyExpiration()
 	end
+end
+
+function overlayPrototype:ApplyExpiration()
+	local expiration = self.expiration
+	self.Timer.expiration = expiration
+	self.Timer:Update()
 end
 
 function overlayPrototype:SetCount(count)
@@ -132,6 +137,11 @@ function overlayPrototype:SetCount(count)
 	if count == 0 then count = nil end
 	if self.count == count then return end
 	self.count = count
+	self:ApplyCount()
+end
+
+function overlayPrototype:ApplyCount()
+	local count = self.count
 	self.Count:SetShown(count)
 	if count then
 		self.Count:SetFormattedText("%d", count)
@@ -141,6 +151,11 @@ end
 function overlayPrototype:SetHighlight(highlight)
 	if self.highlight == highlight then return end
 	self.highlight = highlight
+	self:ApplyHighlight()
+end
+
+function overlayPrototype:ApplyHighlight()
+	local highlight = self.highlight
 
 	if highlight == "flash" then
 		self:ShowOverlayGlow()
@@ -165,15 +180,19 @@ function overlayPrototype:SetHighlight(highlight)
 			border:SetTexture([[Interface\Buttons\UI-ActionButton-Border]])
 			border:SetBlendMode("ADD")
 		end
-		if highlight == "good" then
-			border:SetVertexColor(0, 1, 0, 1)
-		else
-			border:SetVertexColor(1, 0, 0, 1)
-		end
+		border:SetVertexColor(unpack(addon.db.profile.colors[highlight], 1, 4))
 		border:Show()
 	else
 		border:Hide()
 	end
+end
+
+function overlayPrototype:UpdateDisplay(event)
+	self:Debug('UpdateDisplay' ,event)
+	self:ApplyExpiration()
+	self:ApplyCount()
+	self:ApplyHighlight()
+	return true
 end
 
 do

@@ -256,6 +256,31 @@ local function GetOptions()
 				type = 'group',
 				order = 10,
 				args = {
+					colors = {
+						name = "Colors",
+						type = "group",
+						inline = true,
+						get = function(info)
+							return unpack(addon.db.profile.colors[info[#info]], 1, 4)
+						end,
+						set = function(info, ...)
+							local c = addon.db.profile.colors[info[#info]]
+							c[1], c[2], c[3], c[4] = ...
+							addon:SendMessage(addon.CONFIG_CHANGED)
+						end,
+						args = {
+							good = {
+								name = '"Good" border',
+								type = 'color',
+								hasAlpha = true,
+							},
+							bad = {
+								name = '"Bad" border',
+								type = 'color',
+								hasAlpha = true,
+							},
+						},
+					}
 				},
 			},
 			spells = {

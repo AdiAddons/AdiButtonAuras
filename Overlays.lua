@@ -168,7 +168,7 @@ function overlayPrototype:Initialize(button)
 
 	self:RegisterMessage(addonName..'_RulesUpdated', 'ForceUpdate')
 	self:RegisterMessage(addon.DYNAMIC_UNIT_CONDITONALS_CHANGED, 'ForceUpdate')
-	self:RegisterMessage(addon.CONFIG_CHANGED, 'ForceUpdate')
+	self:RegisterMessage(addon.CONFIG_CHANGED, 'OnConfigChanged')
 
 	self:Show()
 end
@@ -185,6 +185,11 @@ end
 
 function overlayPrototype:OnHide()
 	self:SetAction('OnHide')
+end
+
+function overlayPrototype:OnConfigChanged(event)
+	self:ForceUpdate(event)
+	self:UpdateDisplay(event)
 end
 
 function overlayPrototype:ForceUpdate(event)
