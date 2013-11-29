@@ -79,13 +79,15 @@ AdiButtonAuras:RegisterRules(function(addon)
 			"group",
 			{ "UNIT_AURA", "UNIT_HEALTH", "UNIT_HEALTH_MAX" },
 			function(units, model)
-				local count = 0
+				-- Rough estimation at level 90
+				local heal = 1.2 * ((7210+8379)/2 + 0.68 * GetSpellBonusHealing())
+				local totalHeal = 0
 				for unit in pairs(units.group) do
-					if UnitAura(unit, buff, nil, "HELPFUL PLAYER") and UnitHealth(unit) / UnitHealthMax(unit) < 0.8 then
-						count = count + 1
+					if UnitAura(unit, buff, nil, "HELPFUL PLAYER") then
+						totalHeal = totalHeal + min(heal, UnitHealthMax(unit) - UnitHealth(unit))
 					end
 				end
-				if count >= 3 then
+				if totalHeal >= 2 * heal then
 					model.highlight = "flash"
 				end
 			end
