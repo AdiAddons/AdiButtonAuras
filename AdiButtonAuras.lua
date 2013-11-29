@@ -189,11 +189,12 @@ function addon:OnProfileChanged()
 end
 
 function addon:GetActionConfiguration(actionType, actionId)
+	if type(actionType) ~= "string" then return end
 	local key
-	if actionId == nil then
-		key, actionType, actionId = actionType, strmatch(actionType, "^(%a+):(%d+)$")
-	else
+	if type(actionId) == "number" then
 		key = actionType..':'..actionId
+	else
+		key, actionType, actionId = actionType, strmatch(actionType, "^(%a+):(%d+)$")
 	end
 	if not key then return end
 	local conf = self.spells[key] or (actionType == "item" and self.items[actionId])
