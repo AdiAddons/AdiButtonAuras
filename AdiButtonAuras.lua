@@ -43,7 +43,7 @@ function events:OnUsed(_, event) return frame:RegisterEvent(event) end
 function events:OnUnused(_, event) return frame:UnregisterEvent(event) end
 
 -- Messaging using CallbackHandler-1.0
-local bus = LibStub('CallbackHandler-1.0'):New(mixins, 'RegisterMessage', 'UnregisterMessage', 'UnregisterAllMessage')
+local bus = LibStub('CallbackHandler-1.0'):New(mixins, 'RegisterMessage', 'UnregisterMessage', 'UnregisterAllMessages')
 addon.SendMessage = bus.Fire
 
 local messages = {}
