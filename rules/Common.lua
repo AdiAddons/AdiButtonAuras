@@ -26,7 +26,7 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 -- Globals: BuildAuraHandler_Longest ImportPlayerSpells bit BuildAuraHandler_Single
 -- Globals: math
 
-AdiButtonAuras_RegisterRules(function(addon)
+AdiButtonAuras:RegisterRules(function(addon)
 	addon.Debug('Rules', 'Adding common rules')
 
 	local _, playerClass = UnitClass("player")

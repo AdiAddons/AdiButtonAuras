@@ -21,6 +21,11 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 
 local addonName, addon = ...
 
+-- API
+local api = {}
+addon.api = api
+_G.AdiButtonAuras = api
+
 local LibSpellbook = LibStub('LibSpellbook-1.0')
 
 --------------------------------------------------------------------------------
@@ -63,7 +68,10 @@ function mixins:DeclareMessage(message, OnUsed, OnUnused)
 	messages[message] = { OnUsed = OnUsed, OnUnused = OnUnused }
 end
 
-for n,m in pairs(mixins) do addon[n] = m end
+for name, func in pairs(mixins) do
+	addon[name] = func
+	api[name] = func
+end
 
 ------------------------------------------------------------------------------
 -- Initialization

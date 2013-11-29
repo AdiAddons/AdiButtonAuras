@@ -28,7 +28,7 @@ if select(2, UnitClass("player")) ~= "WARLOCK" then return end
 -- Globals: BuildAuraHandler_Longest ImportPlayerSpells bit BuildAuraHandler_Single
 -- Globals: math
 
-AdiButtonAuras_RegisterRules(function(addon)
+AdiButtonAuras:RegisterRules(function(addon)
 	addon.Debug('Rules', 'Adding warlock rules')
 
 	return {

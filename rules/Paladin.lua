@@ -30,7 +30,7 @@ local addonName, addon = ...
 -- Globals: BuildAuraHandler_Longest ImportPlayerSpells bit BuildAuraHandler_Single
 -- Globals: math
 
-AdiButtonAuras_RegisterRules(function(addon)
+AdiButtonAuras:RegisterRules(function(addon)
 	addon.Debug('Rules', 'Adding paladin rules')
 	return ImportPlayerSpells { "PALADIN" }
 end)

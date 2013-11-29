@@ -587,7 +587,7 @@ function addon:LibSpellbook_Spells_Changed(event)
 	self:SendMessage(addonName..'_RulesUpdated')
 end
 
-function _G.AdiButtonAuras_RegisterRules(builder)
+function addon.api:RegisterRules(builder)
 	setfenv(builder, RULES_ENV)
 	tinsert(ruleBuilders, function() return builder(addon) end)
 	if rules then
