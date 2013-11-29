@@ -270,6 +270,7 @@ function overlayPrototype:SetAction(event, actionType, actionId, macroConditiona
 		self.handlers = conf.handlers
 	else
 		self.handlers = nil
+
 	end
 
 	return hasDynamicUnits and self:UpdateDynamicUnits(event) or self:ScheduleUpdate(event)
@@ -349,22 +350,21 @@ function overlayPrototype:UpdateGUID(event, unit)
 end
 
 function overlayPrototype:ScheduleUpdate(event)
-	if self.handlers then
-		self:SetScript('OnUpdate', self.UpdateState)
-	end
+	self:SetScript('OnUpdate', self.UpdateState)
 	return true
 end
 
 local model = {}
 function overlayPrototype:UpdateState(event)
 	self:SetScript('OnUpdate', nil)
-	if not self.handlers then return end
 
-	local unitMap = self.unitMap
 	model.count, model.expiration, model.highlight  = 0, 0, nil
 
-	for i, handler in ipairs(self.handlers) do
-		handler(unitMap, model)
+	if self.handlers then
+		local unitMap = self.unitMap
+		for i, handler in ipairs(self.handlers) do
+			handler(unitMap, model)
+		end
 	end
 
 	--self:Debug("Scan =>", model.highlight, model.count, model.expiration)
