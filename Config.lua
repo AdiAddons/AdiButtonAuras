@@ -21,40 +21,45 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 
 local addonName, addon = ...
 
+local AceConfigRegistry = LibStub('AceConfigRegistry-3.0')
+
+local configOverlays
+local selectedKey, selectedName
+
 ------------------------------------------------------------------------------
 -- Button overlays for selection
 ------------------------------------------------------------------------------
 
-local selectedKey, selectedName
-
 local configParent = CreateFrame("Frame", addonName.."ConfigOverlay", UIParent)
-tinsert(UISpecialFrames, configParent:GetName())
 configParent:Hide()
 
-local configOverlays = {}
+function configParent:Update()
+	AceConfigRegistry:NotifyChange(addonName)
+end
+
+configParent:SetScript('OnShow', function(self)
+	for _, overlay in addon:IterateOverlays() do
+		configOverlays[overlay]:SetShown(overlay:IsVisible())
+	end
+	self:Update()
+end)
+configParent:SetScript('OnHide', configParent.Update)
+configParent:SetScript('OnEvent', configParent.Hide)
+configParent:RegisterEvent('PLAYER_REGEN_DISABLED')
+
+tinsert(UISpecialFrames, configParent:GetName())
+
+-- Overlays
 
 local overlayPrototype = setmetatable({	Debug = addon.Debug}, { __index = CreateFrame("Button") })
 local overlayMeta = { __index = overlayPrototype }
 
-local function SpawnConfigOverlay(overlay)
-	local conf = setmetatable(
-		CreateFrame("Button", overlay:GetName().."Config", configParent),
-		overlayMeta
-	)
+configOverlays = setmetatable({}, { __index = function(t, overlay)
+	local conf = setmetatable(CreateFrame("Button", overlay:GetName().."Config", configParent), overlayMeta)
 	conf:Initialize(overlay)
+	t[overlay] = conf
 	return conf
-end
-
-configParent:SetScript('OnShow', function()
-	for _, overlay in addon:IterateOverlays() do
-		if not configOverlays[overlay] then
-			configOverlays[overlay] = SpawnConfigOverlay(overlay)
-		end
-		configOverlays[overlay]:SetShown(overlay:IsVisible())
-	end
-end)
-configParent:SetScript('OnEvent', configParent.Hide)
-configParent:RegisterEvent('PLAYER_REGEN_DISABLED')
+end })
 
 local backdrop = {
 	bgFile = [[Interface\Tooltips\UI-Tooltip-Background]], tile = true, tileSize = 16,
@@ -82,6 +87,8 @@ function overlayPrototype:Initialize(overlay)
 
 	overlay:HookScript('OnShow', function() self:Show() end)
 	overlay:HookScript('OnHide', function() self:Hide() end)
+
+	addon.RegisterMessage(self, addon.CONFIG_CHANGED, "Update")
 end
 
 function overlayPrototype:Update()
@@ -98,12 +105,15 @@ function overlayPrototype:Update()
 		else
 			self:SetBackdropColor(0, 0, 1, 1)
 		end
+		if GameTooltip:GetOwner() == self then
+			self:OnEnter()
+		end
 	else
 		self:Disable()
 		self:SetBackdropColor(0, 0, 0, 1)
+		self:OnLeave()
 	end
 end
-
 
 function overlayPrototype:OnClick()
 	selectedKey, selectedName = self.key, self.name
@@ -245,7 +255,7 @@ local function GetOptions()
 				args = {
 					select = {
 						name = function()
-							return configParent:IsShown() and "Cancel" or "Select a button"
+							return configParent:IsShown() and "Hide" or "Select a button"
 						end,
 						order = 10,
 						type = 'execute',
