@@ -21,7 +21,7 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 
 local addonName, addon = ...
 
-local AceConfigRegistry = LibStub('AceConfigRegistry-3.0')
+local AceConfigRegistry = addon.GetLib('AceConfigRegistry-3.0')
 
 local configOverlays
 local selectedKey, selectedName
@@ -190,12 +190,11 @@ do
 		p("\nVersion", "|cffffffff"..tostring(GetAddOnMetadata(addonName, "Version")).."|r")
 
 		p("\nLibraries:")
-		for i, lib in ipairs{"CallbackHandler-1.0", "AceTimer-3.0", "LibDispellable-1.0", "DRData-1.0", "LibSpellbook-1.0", "LibPlayerSpells-1.0" } do
-			local found, minor = LibStub(lib, true)
-			if found then
-				p("-", lib, "|cffffffff v"..tostring(minor).."|r")
+		for major, minor in pairs(addon.libraries) do
+			if minor then
+				p("- "..major..": |cffffffff"..tostring(minor).."|r")
 			else
-				p("-", lib, "|cffff0000NOT FOUND|r")
+				p("- "..major..": |cffff0000NOT FOUND|r")
 			end
 		end
 
@@ -230,7 +229,7 @@ local options
 local function GetOptions()
 	if options then return options end
 
-	local profiles = LibStub('AceDBOptions-3.0'):GetOptionsTable(addon.db)
+	local profiles = addon.GetLib('AceDBOptions-3.0'):GetOptionsTable(addon.db)
 	profiles.order = -10
 	profiles.disabled = false
 
@@ -396,8 +395,8 @@ end
 -- Setup
 ------------------------------------------------------------------------------
 
-LibStub('AceConfig-3.0'):RegisterOptionsTable(addonName, GetOptions)
-local blizPanel = LibStub('AceConfigDialog-3.0'):AddToBlizOptions(addonName, addonName)
+addon.GetLib('AceConfig-3.0'):RegisterOptionsTable(addonName, GetOptions)
+local blizPanel = addon.GetLib('AceConfigDialog-3.0'):AddToBlizOptions(addonName, addonName)
 
 function addon:OpenOptions()
 	InterfaceOptionsFrame_OpenToCategory(blizPanel)

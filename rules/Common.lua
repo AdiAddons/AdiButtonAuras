@@ -196,8 +196,8 @@ AdiButtonAuras:RegisterRules(function(addon)
 	--------------------------------------------------------------------------
 	-- Use DRData, grouped by DR categories
 
-	local DRData = LibStub("DRData-1.0")
-	local LibSpellbook = LibStub('LibSpellbook-1.0')
+	local DRData = addon.GetLib("DRData-1.0")
+	local LibSpellbook = addon.GetLib('LibSpellbook-1.0')
 
 	-- Build a list of spell ids per DR categories.
 	local drspells = {}
@@ -229,7 +229,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 	--------------------------------------------------------------------------
 	-- Use LibPlayerSpells
 
-	local LibPlayerSpells = LibStub('LibPlayerSpells-1.0')
+	local LibPlayerSpells = addon.GetLib('LibPlayerSpells-1.0')
 	local band, bor = bit.band, bit.bor
 
 	local classMask = LibPlayerSpells.constants[playerClass]
@@ -283,7 +283,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 	-- Dispels
 	--------------------------------------------------------------------------
 	-- Use LibDispellable and LibPlayerSpells
-	local LibDispellable = LibStub('LibDispellable-1.0')
+	local LibDispellable = addon.GetLib('LibDispellable-1.0')
 
 	local HELPFUL = LibPlayerSpells.constants.HELPFUL
 	for spell, flags in LibPlayerSpells:IterateSpells("DISPEL", playerClass) do

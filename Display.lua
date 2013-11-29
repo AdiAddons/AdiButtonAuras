@@ -21,7 +21,7 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 
 local addonName, addon = ...
 
-local AceTimer = LibStub('AceTimer-3.0')
+local AceTimer = addon.GetLib('AceTimer-3.0')
 
 local _G = _G
 local CreateFrame = _G.CreateFrame

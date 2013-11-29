@@ -121,7 +121,7 @@ end
 -- Rule creation
 ------------------------------------------------------------------------------
 
-local LibSpellbook = LibStub('LibSpellbook-1.0')
+local LibSpellbook = addon.GetLib('LibSpellbook-1.0')
 
 local playerClass = select(2, UnitClass("player"))
 local knownClasses = {}
@@ -437,7 +437,7 @@ end
 
 local ImportPlayerSpells
 do
-	local LibPlayerSpells = LibStub('LibPlayerSpells-1.0')
+	local LibPlayerSpells = addon.GetLib('LibPlayerSpells-1.0')
 	local band = bit.band
 	local UNIQUE_AURA = LibPlayerSpells.constants.UNIQUE_AURA
 	local TARGETING = LibPlayerSpells.masks.TARGETING

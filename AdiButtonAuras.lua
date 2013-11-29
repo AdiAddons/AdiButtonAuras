@@ -45,6 +45,18 @@ addon.DEFAULT_SETTINGS = {
 }
 
 ------------------------------------------------------------------------------
+-- Keep track of used libraries and their version
+------------------------------------------------------------------------------
+
+local libraries = {}
+local function GetLib(major, silent)
+	local lib, minor = LibStub(major, silent)
+	libraries[major] = minor
+	return lib
+end
+addon.libraries, addon.GetLib = libraries, GetLib
+
+------------------------------------------------------------------------------
 -- Stuff to embed
 ------------------------------------------------------------------------------
 
@@ -57,14 +69,14 @@ end
 
 local mixins = {}
 -- Event dispatching using CallbackHandler-1.0
-local events = LibStub('CallbackHandler-1.0'):New(mixins, 'RegisterEvent', 'UnregisterEvent', 'UnregisterAllEvents')
+local events = GetLib('CallbackHandler-1.0'):New(mixins, 'RegisterEvent', 'UnregisterEvent', 'UnregisterAllEvents')
 local frame = CreateFrame("Frame")
 frame:SetScript('OnEvent', function(_, ...) return events:Fire(...) end)
 function events:OnUsed(_, event) return frame:RegisterEvent(event) end
 function events:OnUnused(_, event) return frame:UnregisterEvent(event) end
 
 -- Messaging using CallbackHandler-1.0
-local bus = LibStub('CallbackHandler-1.0'):New(mixins, 'RegisterMessage', 'UnregisterMessage', 'UnregisterAllMessages')
+local bus = GetLib('CallbackHandler-1.0'):New(mixins, 'RegisterMessage', 'UnregisterMessage', 'UnregisterAllMessages')
 addon.SendMessage = bus.Fire
 
 local messages = {}
@@ -121,7 +133,7 @@ function addon:ADDON_LOADED(event, name)
 		self:Debug(name, 'loaded')
 		toWatch[addonName] = nil
 
-		self.db = LibStub('AceDB-3.0'):New(addonName.."DB", self.DEFAULT_SETTINGS, true)
+		self.db = GetLib('AceDB-3.0'):New(addonName.."DB", self.DEFAULT_SETTINGS, true)
 		self.db.RegisterCallback(self, "OnProfileChanged")
 		self.db.RegisterCallback(self, "OnProfileCopied", "OnProfileChanged")
 		self.db.RegisterCallback(self, "OnProfileReset", "OnProfileChanged")
@@ -153,7 +165,7 @@ function addon:ADDON_LOADED(event, name)
 
 		self:UpdateDynamicUnitConditionals()
 
-		local LibSpellbook = LibStub('LibSpellbook-1.0')
+		local LibSpellbook = GetLib('LibSpellbook-1.0')
 		LibSpellbook.RegisterCallback(addon, 'LibSpellbook_Spells_Changed')
 		if LibSpellbook:HasSpells() then
 			addon:LibSpellbook_Spells_Changed('OnLoad')
@@ -166,10 +178,10 @@ function addon:ADDON_LOADED(event, name)
 		toWatch.Dominos = nil
 		self:ScanButtons("DominosActionButton", 120)
 	end
-	if toWatch["LibActionButton-1.0"] and LibStub('LibActionButton-1.0', true) then
+	if toWatch["LibActionButton-1.0"] and GetLib('LibActionButton-1.0', true) then
 		self:Debug('Found LibActionButton-1.0')
 		toWatch["LibActionButton-1.0"] = nil
-		local lab = LibStub('LibActionButton-1.0')
+		local lab = GetLib('LibActionButton-1.0')
 		lab.RegisterCallback(self, 'OnButtonCreated', UpdateHandler)
 		lab.RegisterCallback(self, 'OnButtonUpdate', UpdateHandler)
 		for button in pairs(lab:GetAllButtons()) do
@@ -287,7 +299,7 @@ addon:DeclareMessage(
 -- Mouseover watching
 ------------------------------------------------------------------------------
 
-local AceTimer = LibStub('AceTimer-3.0')
+local AceTimer = GetLib('AceTimer-3.0')
 
 local MOUSEOVER_CHANGED = addonName..'_Mouseover_Changed'
 local MOUSEOVER_TICK = addonName..'_Mouseover_Tick'

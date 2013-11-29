@@ -30,7 +30,7 @@ local select = _G.select
 local setmetatable = _G.setmetatable
 local UnitAura = _G.UnitAura
 
-local LibItemBuffs = LibStub('LibItemBuffs-1.0')
+local LibItemBuffs = addon.GetLib('LibItemBuffs-1.0')
 
 local items = {}
 addon.items = items
