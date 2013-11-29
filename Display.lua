@@ -119,6 +119,9 @@ function overlayPrototype:LayoutTexts()
 	local count, timer = self.Count, self.Timer
 	local parentCount = self.parentCount
 	local parentCountIsShown = parentCount:IsShown() and strtrim(parentCount:GetText() or "") ~= ""
+	if parentCountIsShown and count:IsShown() and parentCount:GetText() == count:GetText() then
+		return count:Hide()
+	end
 	local countIsShown = count:IsShown() or parentCountIsShown
 	timer.compactTimeLeft = countIsShown
 	timer:SetJustifyH(countIsShown and "LEFT" or "CENTER")
