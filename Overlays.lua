@@ -25,9 +25,9 @@ local LibSpellbook = LibStub('LibSpellbook-1.0')
 
 local MOUSEOVER_CHANGED, MOUSEOVER_TICK, GROUP_CHANGED = addon.MOUSEOVER_CHANGED, addon.MOUSEOVER_TICK, addon.GROUP_CHANGED
 
---------------------------------------------------------------------------------
+------------------------------------------------------------------------------
 -- Unit handling
---------------------------------------------------------------------------------
+------------------------------------------------------------------------------
 
 local unitEvents = {
 	target = 'PLAYER_TARGET_CHANGED',
@@ -40,9 +40,9 @@ local unitIdentity = { group = addon.groupUnits }
 for i, unit in ipairs(addon.unitList) do unitIdentity[unit] = unit end
 local unitIdentityMeta = { __index = unitIdentity }
 
---------------------------------------------------------------------------------
+------------------------------------------------------------------------------
 -- Macro handling
---------------------------------------------------------------------------------
+------------------------------------------------------------------------------
 
 local function GetMacroAction(macroId)
 	local macroSpell, _, macroSpellId = GetMacroSpell(macroId)
@@ -112,9 +112,9 @@ local function GetMacroConditionals(index)
 	return conditionalsCache[tonumber(index)]
 end
 
---------------------------------------------------------------------------------
+------------------------------------------------------------------------------
 -- Action handling
---------------------------------------------------------------------------------
+------------------------------------------------------------------------------
 
 local function GetActionSpell(actionType, actionId)
 	-- Resolve macros
@@ -132,9 +132,9 @@ local function GetActionSpell(actionType, actionId)
 	end
 end
 
---------------------------------------------------------------------------------
+------------------------------------------------------------------------------
 -- Button overlay prototype
---------------------------------------------------------------------------------
+------------------------------------------------------------------------------
 
 local overlayPrototype = setmetatable({
 	Debug                 = addon.Debug,
@@ -379,9 +379,9 @@ function overlayPrototype:GetActionId()
 	-- NOOP
 end
 
---------------------------------------------------------------------------------
+------------------------------------------------------------------------------
 -- Blizzard button support
---------------------------------------------------------------------------------
+------------------------------------------------------------------------------
 
 local blizzardSupportPrototype = setmetatable({}, overlayMeta)
 local blizzardSupportMeta = { __index = blizzardSupportPrototype }
@@ -396,9 +396,9 @@ function blizzardSupportPrototype:GetActionId()
 	return self.button.action
 end
 
---------------------------------------------------------------------------------
+------------------------------------------------------------------------------
 -- LibActionButton support
---------------------------------------------------------------------------------
+------------------------------------------------------------------------------
 
 local labSupportPrototype = setmetatable({}, overlayMeta)
 local labSupportMeta = { __index = labSupportPrototype }
@@ -412,9 +412,9 @@ function labSupportPrototype:GetAction()
 	end
 end
 
---------------------------------------------------------------------------------
+------------------------------------------------------------------------------
 -- Stance buttons
---------------------------------------------------------------------------------
+------------------------------------------------------------------------------
 
 local stanceButtonPrototype = setmetatable({}, overlayMeta)
 local stanceButtonMeta = { __index = stanceButtonPrototype }
@@ -427,9 +427,9 @@ function stanceButtonPrototype:GetAction()
 	end
 end
 
---------------------------------------------------------------------------------
+------------------------------------------------------------------------------
 -- Pet action buttons
---------------------------------------------------------------------------------
+------------------------------------------------------------------------------
 
 local petActionButtonPrototype = setmetatable({}, overlayMeta)
 local petActionButtonMeta = { __index = petActionButtonPrototype }
@@ -441,9 +441,9 @@ function petActionButtonPrototype:GetAction()
 	end
 end
 
---------------------------------------------------------------------------------
+------------------------------------------------------------------------------
 -- Overlay spawning
---------------------------------------------------------------------------------
+------------------------------------------------------------------------------
 
 local overlays = addon.Memoize(function(button)
 	if button and button.IsObjectType and button:IsObjectType("Button") then
