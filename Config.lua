@@ -101,16 +101,16 @@ function overlayPrototype:Update()
 	if self.conf then
 		self:Enable()
 		if self.enabled then
-			self:SetBackdropColor(0, 1, 0, 1)
+			self:SetBackdropColor(0, 1, 0, 0.8)
 		else
-			self:SetBackdropColor(0, 0, 1, 1)
+			self:SetBackdropColor(0, 0, 1, 0.8)
 		end
 		if GameTooltip:GetOwner() == self then
 			self:OnEnter()
 		end
 	else
 		self:Disable()
-		self:SetBackdropColor(0, 0, 0, 1)
+		self:SetBackdropColor(0, 0, 0, 0.8)
 		self:OnLeave()
 	end
 end
@@ -121,8 +121,8 @@ function overlayPrototype:OnClick()
 		addon.SendMessage(self, addon.CONFIG_CHANGED)
 	else
 		selectedKey, selectedName = self.key, self.name
-		AceConfigRegistry:NotifyChange(addonName)
 	end
+	AceConfigRegistry:NotifyChange(addonName)
 end
 
 function overlayPrototype:OnEnter()
@@ -187,8 +187,6 @@ do
 	function GetVersionInfo()
 		wipe(t)
 
-		p("\nPlease note there is no configuration options right now. This panel just is just there for debugging purpose.")
-
 		p("\nVersion", "|cffffffff"..tostring(GetAddOnMetadata(addonName, "Version")).."|r")
 
 		p("\nLibraries:")
@@ -215,8 +213,6 @@ do
 			bugGrabber = "Blizzard Lua display"
 		end
 		p("\nError handler:", bugGrabber and ("|cffffffff"..bugGrabber.."|r") or "|cffff0000NONE|r")
-
-		p("\nSpecific configuration for classes: ", strjoin(", ", ColorClass(addon.getkeys(addon.knownClasses))))
 
 		p("\nConfigured spells (spells that are both in your spellbook and", addonName, "rules:")
 
@@ -271,11 +267,13 @@ local function GetOptions()
 						args = {
 							good = {
 								name = '"Good" border',
+								desc = 'The color used for good things, usually buffs.',
 								type = 'color',
 								hasAlpha = true,
 							},
 							bad = {
 								name = '"Bad" border',
+								desc = 'The color used for bad things, usually debuffs.',
 								type = 'color',
 								hasAlpha = true,
 							},
@@ -284,42 +282,42 @@ local function GetOptions()
 				},
 			},
 			spells = {
-				name = 'Spells',
+				name = 'Spells & items',
+				desc = 'Configure spells and items individually.',
 				type = 'group',
 				order = 20,
+				disabled = function(info) return info[#info] ~= "spells" and not selectedKey end,
 				args = {
 					select = {
 						name = function()
-							return configParent:IsShown() and "Hide" or "Select a button"
+							return configParent:IsShown() and "Hide button highlights" or "Show button highlights"
 						end,
-						order = 10,
+						desc = 'Click to show or hide overlay over action buttons.',
+						order = 1,
 						type = 'execute',
 						width = "double",
+						disabled = false,
 						func = function()
-							selectedKey, selectedName = nil, nil
 							configParent:SetShown(not configParent:IsShown())
 						end,
 					},
-					selected = {
-						name = function() return selectedName end,
-						type = 'group',
+					_name = {
+						name = function() return selectedName or "Please select a spell or an item..." end,
+						type = 'header',
+						order = 10,
+					},
+					enabled = {
+						name = 'Enabled',
+						desc = 'Uncheck to ignore this spell/item.',
 						order = 20,
-						inline = true,
-						hidden = function() return not selectedKey end,
-						args = {
-							enabled = {
-								name = 'Enabled',
-								desc = 'Uncheck to ignore this spell/item.',
-								type = 'toggle',
-								get = function()
-									return addon.db.profile.enabled[selectedKey]
-								end,
-								set = function(_, flag)
-									addon.db.profile.enabled[selectedKey] = flag
-									addon:SendMessage(addon.CONFIG_CHANGED)
-								end
-							},
-						},
+						type = 'toggle',
+						get = function()
+							return addon.db.profile.enabled[selectedKey]
+						end,
+						set = function(_, flag)
+							addon.db.profile.enabled[selectedKey] = flag
+							addon:SendMessage(addon.CONFIG_CHANGED)
+						end
 					},
 				},
 			},
@@ -332,6 +330,7 @@ local function GetOptions()
 						name = GetVersionInfo,
 						type = "description",
 						width = 'full',
+						fontSize = 'medium',
 					},
 				},
 			},
