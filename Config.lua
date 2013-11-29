@@ -234,6 +234,10 @@ local options
 local function GetOptions()
 	if options then return options end
 
+	local profiles = LibStub('AceDBOptions-3.0'):GetOptionsTable(addon.db)
+	profiles.order = -10
+	profiles.disabled = false
+
 	options = {
 		--@debug@
 		name = addonName..' DEV',
@@ -306,6 +310,7 @@ local function GetOptions()
 					},
 				},
 			},
+			profiles = profiles,
 		},
 	}
 
