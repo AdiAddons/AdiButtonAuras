@@ -116,8 +116,13 @@ function overlayPrototype:Update()
 end
 
 function overlayPrototype:OnClick()
-	selectedKey, selectedName = self.key, self.name
-	configParent:Hide()
+	if IsShiftKeyDown() then
+		addon.db.profile.enabled[self.key] = not addon.db.profile.enabled[self.key]
+		addon.SendMessage(self, addon.CONFIG_CHANGED)
+	else
+		selectedKey, selectedName = self.key, self.name
+		AceConfigRegistry:NotifyChange(addonName)
+	end
 end
 
 function overlayPrototype:OnEnter()
@@ -141,6 +146,7 @@ function overlayPrototype:OnEnter()
 			title = " "
 		end
 		GameTooltip:AddDoubleLine('Handlers', #(self.conf.handlers), nil, nil, nil, 1, 1, 1)
+		GameTooltip:AddLine('Shift+click to toggle.')
 	else
 		GameTooltip:AddDoubleLine('Status', 'Unknown', nil, nil, nil, 0.5, 0.5, 0.5)
 	end
