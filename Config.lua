@@ -130,83 +130,91 @@ function overlayPrototype:OnLeave()
 		GameTooltip:Hide()
 	end
 end
-
 ------------------------------------------------------------------------------
--- Informative control panel
+-- Version display
 ------------------------------------------------------------------------------
 
-local frame = CreateFrame("Frame", nil, InterfaceOptionsFramePanelContainer)
-frame.name = addonName
-frame:Hide()
+local function ColorClass(c, ...)
+	if c then
+		return "|c"..RAID_CLASS_COLORS[c].colorStr..c.."|r", ColorClass(...)
+	end
+end
 
-frame:SetScript('OnShow', function()
-	frame:SetScript('OnShow', nil)
+local function IdToLink(idstr, ...)
+	if not idstr then return end
+	local id = tonumber(strmatch(idstr, "^spell:(%d+)$"))
+	if id then
+		local name, _, icon = GetSpellInfo(id)
+		return format("|T%s:0|t %s", icon, name), IdToLink(...)
+	else
+		return IdToLink(...)
+	end
+end
 
-	local header = frame:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
-	header:SetPoint("TOPLEFT", 16, -16)
-	header:SetText(addonName)
-
-	local text = frame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-	text:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -16)
-	text:SetPoint("BOTTOMRIGHT", -16, 16)
-	text:SetJustifyV("TOP")
-	text:SetJustifyH("LEFT")
-
+local GetVersionInfo() do
 	local t = {}
 	local p = function(...) tinsert(t, strjoin(" ", tostringall(...))) end
+	function GetVersionInfo()
+		wipe(t)
 
-	p("\nPlease note there is no configuration options right now. This panel just is just there for debugging purpose.")
+		p("\nPlease note there is no configuration options right now. This panel just is just there for debugging purpose.")
 
-	p("\nVersion", "|cffffffff"..tostring(GetAddOnMetadata(addonName, "Version")).."|r")
+		p("\nVersion", "|cffffffff"..tostring(GetAddOnMetadata(addonName, "Version")).."|r")
 
-	p("\nLibraries:")
-	for i, lib in ipairs{"CallbackHandler-1.0", "AceTimer-3.0", "LibDispellable-1.0", "DRData-1.0", "LibSpellbook-1.0", "LibPlayerSpells-1.0" } do
-		local found, minor = LibStub(lib, true)
-		if found then
-			p("-", lib, "|cffffffff v"..tostring(minor).."|r")
-		else
-			p("-", lib, "|cffff0000NOT FOUND|r")
+		p("\nLibraries:")
+		for i, lib in ipairs{"CallbackHandler-1.0", "AceTimer-3.0", "LibDispellable-1.0", "DRData-1.0", "LibSpellbook-1.0", "LibPlayerSpells-1.0" } do
+			local found, minor = LibStub(lib, true)
+			if found then
+				p("-", lib, "|cffffffff v"..tostring(minor).."|r")
+			else
+				p("-", lib, "|cffff0000NOT FOUND|r")
+			end
 		end
-	end
 
-	local bugGrabber
-	if addon.BugGrabber then
-		bugGrabber = 'Embedded BugGrabber'
-		p("\nError grabber:", "|cffffffff", name, "|r")
-	elseif IsAddOnLoaded("!BugGrabber") or _G.BugGrabber then
-		bugGrabber = "BugGrabber"
-	elseif IsAddOnLoaded("!Swatter") or _G.Swatter then
-		bugGrabber = "Swatter"
-	elseif IsAddOnLoaded("!ImprovedErrorFrame") then
-		bugGrabber = "ImprovedErrorFrame"
-	elseif GetCVarBool('scriptErrors') then
-		bugGrabber = "Blizzard Lua display"
-	end
-	p("\nError handler:", bugGrabber and ("|cffffffff"..bugGrabber.."|r") or "|cffff0000NONE|r")
-
-	local function ColorClass(c, ...)
-		if c then
-			return "|c"..RAID_CLASS_COLORS[c].colorStr..c.."|r", ColorClass(...)
+		local bugGrabber
+		if addon.BugGrabber then
+			bugGrabber = 'Embedded BugGrabber'
+			p("\nError grabber:", "|cffffffff", name, "|r")
+		elseif IsAddOnLoaded("!BugGrabber") or _G.BugGrabber then
+			bugGrabber = "BugGrabber"
+		elseif IsAddOnLoaded("!Swatter") or _G.Swatter then
+			bugGrabber = "Swatter"
+		elseif IsAddOnLoaded("!ImprovedErrorFrame") then
+			bugGrabber = "ImprovedErrorFrame"
+		elseif GetCVarBool('scriptErrors') then
+			bugGrabber = "Blizzard Lua display"
 		end
+		p("\nError handler:", bugGrabber and ("|cffffffff"..bugGrabber.."|r") or "|cffff0000NONE|r")
+
+		p("\nSpecific configuration for classes: ", strjoin(", ", ColorClass(addon.getkeys(addon.knownClasses))))
+
+		p("\nConfigured spells (spells that are both in your spellbook and", addonName, "rules:")
+
+		p("|cffffffff", strjoin(", ", IdToLink(addon.getkeys(addon.spells))), "|r")
+
+		return table.concat(t, "\n")
 	end
+end
 
-	p("\nSpecific configuration for classes: ", strjoin(", ", ColorClass(addon.getkeys(addon.knownClasses))))
+------------------------------------------------------------------------------
+-- Options
+------------------------------------------------------------------------------
 
-	p("\nConfigured spells (spells that are both in your spellbook and", addonName, "rules:")
+local options
+local function GetOptions()
+	if options then return options
+	options = {
+	
+	}
+	return options
+end
 
-	local function IdToLink(idstr, ...)
-		if not idstr then return end
-		local id = tonumber(strmatch(idstr, "^spell:(%d+)$"))
-		if id then
-			local name, _, icon = GetSpellInfo(id)
-			return format("|T%s:0|t %s", icon, name), IdToLink(...)
-		else
-			return IdToLink(...)
-		end
-	end
-	p("|cffffffff", strjoin(", ", IdToLink(addon.getkeys(addon.spells))), "|r")
+------------------------------------------------------------------------------
+-- Setup
+------------------------------------------------------------------------------
 
-	text:SetText(table.concat(t, "\n"))
-end)
+LibStub('AceConfig-3.0'):RegisterOptionsTable(addonName, GetOptions)
 
-InterfaceOptions_AddCategory(frame)
+function addon:OpenOptions()
+	LibStub('AceConfigDialog-3.0'):Open(addonName)
+end

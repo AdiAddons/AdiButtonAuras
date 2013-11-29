@@ -33,7 +33,11 @@
 libs\LibStub\LibStub.lua
 libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
 libs\BugGrabber\load.xml
+libs\AceDB-3.0\AceDB-3.0.xml
 libs\AceTimer-3.0\AceTimer-3.0.xml
+libs\AceDBOptions-3.0\AceDBOptions-3.0.xml
+libs\AceGUI-3.0\AceGUI-3.0.xml
+libs\AceConfig-3.0\AceConfig-3.0.xml
 libs\LibDispellable-1.0\LibDispellable-1.0.lua
 libs\DRData-1.0\DRData-1.0.xml
 #@end-no-lib-strip@

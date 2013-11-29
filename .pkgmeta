@@ -7,8 +7,20 @@ externals:
   libs/CallbackHandler-1.0:
     url: svn://svn.wowace.com/wow/callbackhandler/mainline/trunk/CallbackHandler-1.0
     tag: latest
+  libs/AceDB-3.0:
+    url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceDB-3.0
+    tag: latest
+  libs/AceDBOptions-3.0:
+    url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceDBOptions-3.0
+    tag: latest
   libs/AceTimer-3.0:
     url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceTimer-3.0
+    tag: latest
+  libs/AceGUI-3.0:
+    url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceGUI-3.0
+    tag: latest
+  libs/AceConfig-3.0:
+    url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConfig-3.0
     tag: latest
   libs/BugGrabber:
     url: svn://svn.wowace.com/wow/bug-grabber/mainline/trunk
