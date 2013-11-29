@@ -470,6 +470,10 @@ function addon:GetOverlay(button)
 	return button and overlays[button]
 end
 
+function addon:IterateOverlays()
+	return pairs(overlays)
+end
+
 function addon:ScanButtons(prefix, count)
 	for i = 1, count or 12 do
 		local button = _G[prefix..i]
