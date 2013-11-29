@@ -39,14 +39,11 @@ AdiButtonAuras:RegisterRules(function(addon)
 			"group",
 			"UNIT_AURA",
 			function(units, model)
-				local count, minExpiration = 0
+				local count, minExpiration = 0, math.huge
 				for unit in pairs(units.group) do
 					local name, _, _, _, _, _, expiration = UnitAura(unit, buff, nil, "HELPFUL PLAYER")
 					if name then
-						count = count + 1
-						if not minExpiration or expiration < minExpiration then
-							minExpiration = expiration
-						end
+						count, minExpiration = count + 1, min(minExpiration, expiration)
 					end
 				end
 				if count > 0 then
@@ -59,18 +56,15 @@ AdiButtonAuras:RegisterRules(function(addon)
 			"group",
 			"UNIT_AURA",
 			function(units, model)
-				local count, minExpiration = 0
+				local count, minExpiration = 0, math.huge
 				for unit in pairs(units.group) do
 					local name, _, _, _, _, _, expiration = UnitAura(unit, buff, nil, "HELPFUL PLAYER")
 					if name then
-						count = count + 1
-						if not minExpiration or expiration < minExpiration then
-							minExpiration = expiration
-						end
+						count, minExpiration = count + 1, min(minExpiration, expiration)
 					end
 				end
-				if count > 3 and minExpiration < 5 then
-					model.highlight = "flash"
+				if count > 3 and minExpiration < 6 then
+					model.highlight, model.expiration = "flash", minExpiration
 				end
 			end
 		},
