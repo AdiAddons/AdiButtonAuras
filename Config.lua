@@ -84,12 +84,12 @@ function overlayPrototype:Initialize(overlay)
 	overlay:HookScript('OnHide', function() self:Hide() end)
 end
 
-function overlay:Update()
+function overlayPrototype:Update()
 	self.conf, self.enabled, self.key, self.type, self.id = addon:GetActionConfiguration(self.overlay.spellId)
 	if self.type == "spell" then
-		self.name = GetSpellInfo(id)
+		self.name = GetSpellInfo(self.id)
 	elseif self.type == "item" then
-		self.name = GetItemInfo(id)
+		self.name = GetItemInfo(self.id)
 	end
 	if self.conf then
 		self:Enable()
