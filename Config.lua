@@ -301,7 +301,8 @@ end
 ------------------------------------------------------------------------------
 
 LibStub('AceConfig-3.0'):RegisterOptionsTable(addonName, GetOptions)
+local blizPanel = LibStub('AceConfigDialog-3.0'):AddToBlizOptions(addonName, addonName)
 
 function addon:OpenOptions()
-	LibStub('AceConfigDialog-3.0'):Open(addonName)
+	InterfaceOptionsFrame_OpenToCategory(blizPanel)
 end
