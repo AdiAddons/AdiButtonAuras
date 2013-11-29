@@ -251,7 +251,58 @@ local function GetOptions()
 				name = 'Global',
 				type = 'group',
 				order = 10,
+				get = function(info)
+					return addon.db.profile[info[#info]]
+				end,
+				set = function(info, value)
+					addon.db.profile[info[#info]] = value
+					addon:SendMessage(addon.CONFIG_CHANGED)
+				end,
 				args = {
+					countdownThresholds = {
+						name = "Countdown Thresholds",
+						type = "group",
+						inline = true,
+						args = {
+							maxCountdown = {
+								name = 'Maximum duration to show',
+								desc = 'Durations above this threshold are hidden.',
+								type = 'range',
+								width = 'full',
+								order = 10,
+								min = 0,
+								max = 600,
+								step = 1,
+							},
+							minMinutes = {
+								name = 'Minimum duration for "2m" format',
+								type = 'range',
+								width = 'full',
+								order = 20,
+								min = 60,
+								max = 600,
+								step = 1,
+							},
+							minMinuteSecs = {
+								name = 'Minimum duration for "4:58" format',
+								type = 'range',
+								width = 'full',
+								order = 30,
+								min = 60,
+								max = 600,
+								step = 1,
+							},
+							maxTenth = {
+								name = 'Maximum duration for "2.7" format',
+								type = 'range',
+								width = 'full',
+								order = 40,
+								min = 0,
+								max = 60,
+								step = 0.5,
+							},
+						}
+					},
 					colors = {
 						name = "Colors",
 						type = "group",

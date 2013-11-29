@@ -37,6 +37,10 @@ addon.DEFAULT_SETTINGS = {
 			good    = { 0, 1, 0, 1 },
 			bad     = { 1, 0, 0, 1 },
 		},
+		maxCountdown = 600,
+		minMinutes = 600,
+		minMinuteSecs = 60,
+		maxTenth = 3,
 	}
 }
 

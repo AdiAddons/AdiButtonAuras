@@ -36,28 +36,31 @@ local fontFile, fontSize, fontFlag = [[Fonts\ARIALN.TTF]], 13, "OUTLINE"
 local overlayPrototype = addon.overlayPrototype
 
 local function Timer_Update(self)
+	local prefs = addon.db.profile
 	local timeLeft = (self.expiration or 0) - GetTime()
-	local r, g, b, delay = 1, 1, 1
 
+	if timeLeft > prefs.maxCountdown then
+		self.timerId = AceTimer.ScheduleTimer(self, "Update", timeLeft - prefs.maxCountdown)
+		self:Hide()
+		return
+	end
+
+	local delay
 	if timeLeft >= 3600 then
 		self:SetFormattedText("%dh", floor(timeLeft/3600))
 		delay = timeLeft % 3600
-	elseif timeLeft >= (self.compactTimeLeft and 60 or 600) then
+	elseif timeLeft >= (self.compactTimeLeft and prefs.minMinuteSecs or prefs.minMinutes) then
 		self:SetFormattedText("%dm", floor(timeLeft/60))
 		delay = timeLeft % 60
-	elseif timeLeft >= 60 then
+	elseif timeLeft >= prefs.minMinuteSecs then
 		self:SetFormattedText("%d:%02d", floor(timeLeft/60), floor(timeLeft%60))
 		delay = timeLeft % 1
-	elseif timeLeft >= 3 then
+	elseif timeLeft >= prefs.maxTenth then
 		self:SetFormattedText("%d", floor(timeLeft))
 		delay = timeLeft % 1
-		if timeLeft <= 10 then
-			r, g, b = 1, 1, (timeLeft - 3) / 7
-		end
 	elseif timeLeft > 0 then
 		self:SetFormattedText("%.1f", floor(timeLeft*10)/10)
 		delay = timeLeft % 0.1
-		r, g, b = 1, 0.5 + timeLeft / 6, 0
 	else
 		if self.timerId then
 			AceTimer:CancelTimer(self.timerId)
@@ -66,7 +69,13 @@ local function Timer_Update(self)
 		self:Hide()
 		return
 	end
-	self:SetTextColor(r, g, b, 1)
+	if timeLeft <= 3 then
+		self:SetTextColor(1, timeLeft / 3, 0, 1)
+	elseif timeLeft <= 10 then
+		self:SetTextColor(1, 1, (timeLeft - 3) / 7, 1)
+	else
+		self:SetTextColor(1, 1, 1, 1)
+	end
 
 	self.timerId = AceTimer.ScheduleTimer(self, "Update", delay)
 	self:Show()
