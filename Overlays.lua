@@ -136,12 +136,16 @@ end
 -- Button overlay prototype
 --------------------------------------------------------------------------------
 
-local overlayPrototype = setmetatable({}, { __index = CreateFrame("Frame") })
+local overlayPrototype = setmetatable({
+	Debug                 = addon.Debug,
+	RegisterMessage       = addon.RegisterMessage,
+	UnregisterMessage     = addon.UnregisterMessage,
+	UnregisterAllMessages = addon.UnregisterAllMessages,
+	SendMessage           = addon.SendMessage,
+}, { __index = CreateFrame("Frame") })
 local overlayMeta = { __index = overlayPrototype }
 
 addon.overlayPrototype = overlayPrototype
-
-overlayPrototype.Debug = addon.Debug
 
 function overlayPrototype:Initialize(button)
 	self:Hide()
@@ -162,8 +166,8 @@ function overlayPrototype:Initialize(button)
 	self.events = {}
 	self.handlers = nil
 
-	addon.RegisterMessage(self, addonName..'_RulesUpdated', 'ForceUpdate')
-	addon.RegisterMessage(self, addon.DYNAMIC_UNIT_CONDITONALS_CHANGED, 'ForceUpdate')
+	self:RegisterMessage(addonName..'_RulesUpdated', 'ForceUpdate')
+	self:RegisterMessage(addon.DYNAMIC_UNIT_CONDITONALS_CHANGED, 'ForceUpdate')
 
 	self:Show()
 end
@@ -212,9 +216,9 @@ function overlayPrototype:SetAction(event, actionType, actionId, macroConditiona
 	local events = wipe(self.events)
 	wipe(self.unitConditionals)
 	self:UnregisterAllEvents()
-	addon.UnregisterMessage(self, MOUSEOVER_CHANGED)
-	addon.UnregisterMessage(self, MOUSEOVER_TICK)
-	addon.UnregisterMessage(self, GROUP_CHANGED)
+	self:UnregisterMessage(MOUSEOVER_CHANGED)
+	self:UnregisterMessage(MOUSEOVER_TICK)
+	self:UnregisterMessage(GROUP_CHANGED)
 
 	if conf then
 		self:Debug('SetAction', event, GetSpellLink(spellId), macroConditionals)
@@ -242,7 +246,7 @@ function overlayPrototype:SetAction(event, actionType, actionId, macroConditiona
 		end
 
 		if units.group then
-			addon.RegisterMessage(self, GROUP_CHANGED, 'ScheduleUpdate')
+			self:RegisterMessage(GROUP_CHANGED, 'ScheduleUpdate')
 		end
 
 		for unit, handler in pairs(units) do
@@ -325,11 +329,11 @@ function overlayPrototype:UpdateDynamicUnits(event, unit)
 	end
 
 	if watchMouseover then
-		addon.RegisterMessage(self, MOUSEOVER_CHANGED, 'UpdateGUID', 'mouseover')
-		addon.RegisterMessage(self, MOUSEOVER_TICK, 'ScheduleUpdate')
+		self:RegisterMessage(MOUSEOVER_CHANGED, 'UpdateGUID')
+		self:RegisterMessage(MOUSEOVER_TICK, 'ScheduleUpdate')
 	else
-		addon.UnregisterMessage(self, MOUSEOVER_CHANGED)
-		addon.UnregisterMessage(self, MOUSEOVER_TICK)
+		self:UnregisterMessage(MOUSEOVER_CHANGED)
+		self:UnregisterMessage(MOUSEOVER_TICK)
 	end
 
 	return updated
