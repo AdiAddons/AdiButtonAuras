@@ -25,6 +25,8 @@ local addonName, addon = ...
 -- Button overlays for selection
 ------------------------------------------------------------------------------
 
+local selectedKey, selectedName
+
 local configParent = CreateFrame("Frame", addonName.."ConfigOverlay", UIParent)
 tinsert(UISpecialFrames, configParent:GetName())
 configParent:Hide()
@@ -73,7 +75,7 @@ function overlayPrototype:Initialize(overlay)
 	self:SetAllPoints(overlay)
 	self:RegisterForClicks('LeftButtonUp')
 
-	self:SetScript('OnShow', self.OnShow)
+	self:SetScript('OnShow', self.Update)
 	self:SetScript('OnClick', self.OnClick)
 	self:SetScript('OnEnter', self.OnEnter)
 	self:SetScript('OnLeave', self.OnLeave)
@@ -82,44 +84,55 @@ function overlayPrototype:Initialize(overlay)
 	overlay:HookScript('OnHide', function() self:Hide() end)
 end
 
-function overlayPrototype:OnShow()
-	if self.overlay.conf then
-		self:SetBackdropColor(0, 1, 0, 1)
+function overlay:Update()
+	self.conf, self.enabled, self.key, self.type, self.id = addon:GetActionConfiguration(self.overlay.spellId)
+	if self.type == "spell" then
+		self.name = GetSpellInfo(id)
+	elseif self.type == "item" then
+		self.name = GetItemInfo(id)
+	end
+	if self.conf then
+		self:Enable()
+		if self.enabled then
+			self:SetBackdropColor(0, 1, 0, 1)
+		else
+			self:SetBackdropColor(0, 0, 1, 1)
+		end
 	else
+		self:Disable()
 		self:SetBackdropColor(0, 0, 0, 1)
 	end
 end
 
+
 function overlayPrototype:OnClick()
-	print(self:GetName(), 'Clickity !')
+	selectedKey, selectedName = self.key, self.name
+	configParent:Hide()
 end
 
 function overlayPrototype:OnEnter()
-	local what, id = strmatch(self.overlay.spellId, "^(%a+):(%d+)$")
-	local link
-	if what == "spell" then
-		link = GetSpellLink(id)
-	elseif what == "item" then
-		link = select(2, GetItemInfo(id))
-	else
-		return
-	end
 	GameTooltip_SetDefaultAnchor(GameTooltip, self)
-	GameTooltip:AddDoubleLine(link, what)
-	local conf = self.overlay.conf
+	GameTooltip:AddDoubleLine(self.name, self.type)
 	--@debug@
-	if conf then
+	if self.conf then
+		if self.enabled then
+			GameTooltip:AddDoubleLine('Status', 'Enabled', nil, nil, nil, 0, 1, 0)
+		else
+			GameTooltip:AddDoubleLine('Status', 'Disabled', nil, nil, nil, 0, 0, 1)
+		end
 		local title = "Units"
-		for unit in pairs(conf.units) do
+		for unit in pairs(self.conf.units) do
 			GameTooltip:AddDoubleLine(title, unit, nil, nil, nil, 1, 1, 1)
 			title = " "
 		end
 		title = "Events"
-		for event in pairs(conf.events) do
+		for event in pairs(self.conf.events) do
 			GameTooltip:AddDoubleLine(title, event, nil, nil, nil, 1, 1, 1)
 			title = " "
 		end
-		GameTooltip:AddDoubleLine('Handlers', #(conf.handlers), nil, nil, nil, 1, 1, 1)
+		GameTooltip:AddDoubleLine('Handlers', #(self.conf.handlers), nil, nil, nil, 1, 1, 1)
+	else
+		GameTooltip:AddDoubleLine('Status', 'Unknown', nil, nil, nil, 0.5, 0.5, 0.5)
 	end
 	--@end-debug@
 	GameTooltip:Show()
@@ -151,7 +164,8 @@ local function IdToLink(idstr, ...)
 	end
 end
 
-local GetVersionInfo() do
+local GetVersionInfo
+do
 	local t = {}
 	local p = function(...) tinsert(t, strjoin(" ", tostringall(...))) end
 	function GetVersionInfo()
@@ -202,10 +216,83 @@ end
 
 local options
 local function GetOptions()
-	if options then return options
+	if options then return options end
+
 	options = {
-	
+		--@debug@
+		name = addonName..' DEV',
+		--@end-debug@
+		--[===[@non-debug@
+		name = addonName..' @project-version@',
+		--@end-non-debug@]===]
+		type = 'group',
+		handler = handler,
+		get = 'Get',
+		set =' Set',
+		childGroups = 'tab',
+		args = {
+			global = {
+				name = 'Global',
+				type = 'group',
+				order = 10,
+				args = {
+				},
+			},
+			spells = {
+				name = 'Spells',
+				type = 'group',
+				order = 20,
+				args = {
+					select = {
+						name = function()
+							return configParent:IsShown() and "Cancel" or "Select a button"
+						end,
+						order = 10,
+						type = 'execute',
+						width = "double",
+						func = function()
+							selectedKey, selectedName = nil, nil
+							configParent:SetShown(not configParent:IsShown())
+						end,
+					},
+					selected = {
+						name = function() return selectedName end,
+						type = 'group',
+						order = 20,
+						inline = true,
+						hidden = function() return not selectedKey end,
+						args = {
+							enabled = {
+								name = 'Enabled',
+								desc = 'Uncheck to ignore this spell/item.',
+								type = 'toggle',
+								get = function()
+									return addon.db.profile.enabled[selectedKey]
+								end,
+								set = function(_, flag)
+									addon.db.profile.enabled[selectedKey] = flag
+									addon:SendMessage(addon.CONFIG_CHANGED)
+								end
+							},
+						},
+					},
+				},
+			},
+			debug = {
+				name = 'Debug information',
+				type = 'group',
+				order = -1,
+				args = {
+					_text = {
+						name = GetVersionInfo,
+						type = "description",
+						width = 'full',
+					},
+				},
+			},
+		},
 	}
+
 	return options
 end
 
