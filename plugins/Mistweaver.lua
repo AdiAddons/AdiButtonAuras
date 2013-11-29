@@ -37,7 +37,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 		Configure {
 			115151, -- Renewing Mist
 			"group",
-			{ "UNIT_AURA", "GROUP_ROSTER_UPDATE" },
+			"UNIT_AURA",
 			function(units, model)
 				local count, minExpiration = 0
 				for unit in pairs(units.group) do
@@ -57,7 +57,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 		Configure {
 			116680, -- Thunder Focus Tea
 			"group",
-			{ "UNIT_AURA", "GROUP_ROSTER_UPDATE" },
+			"UNIT_AURA",
 			function(units, model)
 				local limit, count = GetTime() + 6, 0
 				for unit in pairs(units.group) do
@@ -74,7 +74,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 		Configure {
 			116670, -- Uplift
 			"group",
-			{ "UNIT_AURA", "UNIT_HEALTH", "UNIT_HEALTH_MAX", "GROUP_ROSTER_UPDATE" },
+			{ "UNIT_AURA", "UNIT_HEALTH", "UNIT_HEALTH_MAX" },
 			function(units, model)
 				local count = 0
 				for unit in pairs(units.group) do
