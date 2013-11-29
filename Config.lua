@@ -351,3 +351,10 @@ local blizPanel = LibStub('AceConfigDialog-3.0'):AddToBlizOptions(addonName, add
 function addon:OpenOptions()
 	InterfaceOptionsFrame_OpenToCategory(blizPanel)
 end
+
+-- Add a macro command to open it
+_G.SlashCmdList["ADIBUTTONAURAS"] = function()
+	InterfaceOptionsFrame_OpenToCategory(addonName)
+end
+_G.SLASH_ADIBUTTONAURAS1 = "/adibuttonauras"
+_G.SLASH_ADIBUTTONAURAS2 = "/aba"
