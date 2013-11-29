@@ -26,7 +26,15 @@ local api = {}
 addon.api = api
 _G.AdiButtonAuras = api
 
-local LibSpellbook = LibStub('LibSpellbook-1.0')
+------------------------------------------------------------------------------
+-- Default config
+------------------------------------------------------------------------------
+
+addon.DEFAULT_SETTINGS = {
+	profile = {
+		enabled = { ['*'] = true },
+	}
+}
 
 ------------------------------------------------------------------------------
 -- Stuff to embed
@@ -94,34 +102,21 @@ local function UpdateHandler(event, button)
 	if overlay and overlay:IsVisible() then
 		return overlay:UpdateAction(event)
 	end
+
 end
+local CONFIG_CHANGED = addonName..'_Config_Changed'
+addon.CONFIG_CHANGED = CONFIG_CHANGED
 
 function addon:ADDON_LOADED(event, name)
-	if toWatch.Dominos and (name == 'Dominos' or IsAddOnLoaded('Dominos')) then
-		self:Debug('Dominos loaded')
-		toWatch.Dominos = nil
-		self:ScanButtons("DominosActionButton", 120)
-	end
-	if toWatch["LibActionButton-1.0"] and LibStub('LibActionButton-1.0', true) then
-		self:Debug('Found LibActionButton-1.0')
-		toWatch["LibActionButton-1.0"] = nil
-		local lab = LibStub('LibActionButton-1.0')
-		lab.RegisterCallback(self, 'OnButtonCreated', UpdateHandler)
-		lab.RegisterCallback(self, 'OnButtonUpdate', UpdateHandler)
-		for button in pairs(lab:GetAllButtons()) do
-			local _ = self:GetOverlay(button)
-		end
-	end
-	if toWatch.Bartender4 and (name == 'Bartender4' or IsAddOnLoaded('Bartender4')) then
-		self:Debug('Bartender4 loaded')
-		toWatch.Bartender4 = nil
-		self:ScanButtons("BT4Button", 120)
-		self:ScanButtons("BT4PetButton", NUM_PET_ACTION_SLOTS)
-		self:ScanButtons("BT4StanceButton", NUM_STANCE_SLOTS)
-	end
+	-- Initialization
 	if name == addonName then
 		self:Debug(name, 'loaded')
 		toWatch[addonName] = nil
+
+		self.db = LibStub('AceDB-3.0'):New(addonName.."DB", self.DEFAULT_SETTINGS, true)
+		self.db.RegisterCallback(self, "OnProfileChanged")
+		self.db.RegisterCallback(self, "OnProfileCopied", "OnProfileChanged")
+		self.db.RegisterCallback(self, "OnProfileReset", "OnProfileChanged")
 
 		self:ScanButtons("ActionButton", NUM_ACTIONBAR_BUTTONS)
 		self:ScanButtons("BonusActionButton", NUM_ACTIONBAR_BUTTONS)
@@ -146,15 +141,41 @@ function addon:ADDON_LOADED(event, name)
 			end
 		end)
 
-		self:RegisterEvent('CVAR_UPDATE')
 		self:RegisterEvent('UPDATE_MACROS')
+
 		self:UpdateDynamicUnitConditionals()
 
+		local LibSpellbook = LibStub('LibSpellbook-1.0')
 		LibSpellbook.RegisterCallback(addon, 'LibSpellbook_Spells_Changed')
 		if LibSpellbook:HasSpells() then
 			addon:LibSpellbook_Spells_Changed('OnLoad')
 		end
 	end
+
+	-- Supported addons and libraries
+	if toWatch.Dominos and (name == 'Dominos' or IsAddOnLoaded('Dominos')) then
+		self:Debug('Dominos loaded')
+		toWatch.Dominos = nil
+		self:ScanButtons("DominosActionButton", 120)
+	end
+	if toWatch["LibActionButton-1.0"] and LibStub('LibActionButton-1.0', true) then
+		self:Debug('Found LibActionButton-1.0')
+		toWatch["LibActionButton-1.0"] = nil
+		local lab = LibStub('LibActionButton-1.0')
+		lab.RegisterCallback(self, 'OnButtonCreated', UpdateHandler)
+		lab.RegisterCallback(self, 'OnButtonUpdate', UpdateHandler)
+		for button in pairs(lab:GetAllButtons()) do
+			local _ = self:GetOverlay(button)
+		end
+	end
+	if toWatch.Bartender4 and (name == 'Bartender4' or IsAddOnLoaded('Bartender4')) then
+		self:Debug('Bartender4 loaded')
+		toWatch.Bartender4 = nil
+		self:ScanButtons("BT4Button", 120)
+		self:ScanButtons("BT4PetButton", NUM_PET_ACTION_SLOTS)
+		self:ScanButtons("BT4StanceButton", NUM_STANCE_SLOTS)
+	end
+
 	if not next(toWatch) then
 		self:Debug('No more addons to watch.')
 		self:UnregisterEvent('ADDON_LOADED')
@@ -162,6 +183,26 @@ function addon:ADDON_LOADED(event, name)
 end
 
 addon:RegisterEvent('ADDON_LOADED')
+
+function addon:OnProfileChanged()
+	self:SendMessage(CONFIG_CHANGED)
+end
+
+function addon:GetActionConfiguration(actionType, actionId)
+	local key
+	if actionId == nil then
+		key, actionType, actionId = actionType, strmatch(actionType, "^(%a+):(%d+)$")
+	else
+		key = actionType..':'..actionId
+	end
+	if not key then return end
+	local conf = self.spells[key] or (actionType == "item" and self.items[actionId])
+	if conf then
+		return conf, self.db.profile.enabled[key], key, actionType, actionId
+	else
+		return nil, false, key, actionType, actionId
+	end
+end
 
 ------------------------------------------------------------------------------
 -- Group roster update

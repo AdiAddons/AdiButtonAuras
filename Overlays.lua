@@ -168,6 +168,7 @@ function overlayPrototype:Initialize(button)
 
 	self:RegisterMessage(addonName..'_RulesUpdated', 'ForceUpdate')
 	self:RegisterMessage(addon.DYNAMIC_UNIT_CONDITONALS_CHANGED, 'ForceUpdate')
+	self:RegisterMessage(addon.CONFIG_CHANGED, 'ForceUpdate')
 
 	self:Show()
 end
@@ -202,10 +203,9 @@ function overlayPrototype:UpdateAction(event)
 end
 
 function overlayPrototype:SetAction(event, actionType, actionId, macroConditionals)
-	local spellId, conf
-	if actionType and actionId then
-		spellId = actionType..":"..actionId
-		conf = addon.spells[spellId] or (actionType == "item" and addon.items[actionId])
+	local conf, enabled, spellId = addon:GetActionConfiguration(actionType, actionId)
+	if not enabled then
+		conf = nil
 	end
 
 	if self.spellId == spellId and self.conf == conf and self.macroConditionals == macroConditionals then return end
