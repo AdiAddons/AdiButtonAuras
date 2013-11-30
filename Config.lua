@@ -259,10 +259,20 @@ local function GetOptions()
 					addon:SendMessage(addon.CONFIG_CHANGED)
 				end,
 				args = {
+					notInCooldown = {
+						name = L['No flash in cooldown'],
+						desc = format("%s\n|cffff0000%s|r",
+							L['Do not display the flashing animation on actions in cooldown.'],
+							L['THIS DOES NOT AFFECT BLIZZARD ANIMATIONS.']
+						),
+						type = 'toggle',
+						order = 10,
+					},
 					countdownThresholds = {
 						name = L["Countdown Thresholds"],
 						type = "group",
 						inline = true,
+						order = -2,
 						args = {
 							maxCountdown = {
 								name = L['Maximum duration to show'],
@@ -307,6 +317,7 @@ local function GetOptions()
 						name = "Colors",
 						type = "group",
 						inline = true,
+						order = -1,
 						get = function(info)
 							return unpack(addon.db.profile.colors[info[#info]], 1, 4)
 						end,

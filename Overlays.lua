@@ -271,6 +271,7 @@ function overlayPrototype:SetAction(event, actionType, actionId, macroConditiona
 
 		self:RegisterEvent('PLAYER_ENTERING_WORLD')
 		self:RegisterEvent('ACTIONBAR_SLOT_CHANGED')
+		self:RegisterEvent('ACTIONBAR_UPDATE_COOLDOWN')
 
 		self.handlers = conf.handlers
 	else
@@ -311,6 +312,16 @@ end
 
 function overlayPrototype:PLAYER_FOCUS_CHANGED(event)
 	return self:GenericEvent(event, "focus")
+end
+
+function overlayPrototype:ACTIONBAR_UPDATE_COOLDOWN(event)
+	local start, duration = self:GetActionCooldown()
+	local inCooldown = start and duration and start > 0 and duration > 2 or false
+	addon.Debug('Cooldown', self, 'start=', start, 'duration=', duration, 'inCooldown=', inCooldown)
+	if self.inCooldown ~= inCooldown then
+		self.inCooldown = inCooldown
+		self:ApplyHighlight()
+	end
 end
 
 function overlayPrototype:UpdateDynamicUnits(event, unit)
@@ -394,6 +405,10 @@ function overlayPrototype:GetActionId()
 	-- NOOP
 end
 
+function overlayPrototype:GetActionCooldown()
+	-- NOOP
+end
+
 ------------------------------------------------------------------------------
 -- Blizzard button support
 ------------------------------------------------------------------------------
@@ -409,6 +424,12 @@ end
 
 function blizzardSupportPrototype:GetActionId()
 	return self.button.action
+end
+
+function blizzardSupportPrototype:GetActionCooldown()
+	if self.button.action then
+		return GetActionCooldown(self.button.action)
+	end
 end
 
 ------------------------------------------------------------------------------
@@ -427,6 +448,10 @@ function labSupportPrototype:GetAction()
 	end
 end
 
+function labSupportPrototype:GetActionCooldown()
+	return self.button:GetCooldown()
+end
+
 ------------------------------------------------------------------------------
 -- Stance buttons
 ------------------------------------------------------------------------------
@@ -442,6 +467,10 @@ function stanceButtonPrototype:GetAction()
 	end
 end
 
+function stanceButtonPrototype:GetActionCooldown()
+	return GetShapeshiftFormCooldown(self.button:GetID())
+end
+
 ------------------------------------------------------------------------------
 -- Pet action buttons
 ------------------------------------------------------------------------------
@@ -454,6 +483,10 @@ function petActionButtonPrototype:GetAction()
 	if spellId and spellId ~= 0 then
 		return 'spell', spellId
 	end
+end
+
+function petActionButtonPrototype:GetActionCooldown()
+	return GetPetActionCooldown(self.button:GetID())
 end
 
 ------------------------------------------------------------------------------

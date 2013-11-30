@@ -42,6 +42,7 @@ addon.DEFAULT_SETTINGS = {
 		minMinutes = 600,
 		minMinuteSecs = 60,
 		maxTenth = 3,
+		notInCooldown = false,
 	}
 }
 

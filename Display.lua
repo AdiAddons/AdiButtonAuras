@@ -170,7 +170,7 @@ end
 function overlayPrototype:ApplyHighlight()
 	local highlight = self.highlight
 
-	if highlight == "flash" then
+	if highlight == "flash" and not self.inCooldown then
 		self:ShowOverlayGlow()
 	else
 		self:HideOverlayGlow()
