@@ -385,8 +385,13 @@ local function GetOptions()
 				order = 20,
 				disabled = function(info) return info[#info] ~= "spells" and not selectedKey end,
 				args = {
+					_help = {
+						name = L["Select a spell or item by clicking on a green or blue button. Darkened buttons indicate spells and items unknown to AdiButtonAuras."],
+						type = 'description',
+						order = 1,
+					},
 					_name = {
-						name = function() return selectedName or L["Please select a spell or an item..."] end,
+						name = function() return selectedName or L["No selection"] end,
 						type = 'header',
 						order = 10,
 					},
