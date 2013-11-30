@@ -58,6 +58,7 @@ addon.DEFAULT_SETTINGS = {
 	profile = {
 		enabled = { ['*'] = true },
 		inverted = { ['*'] = false },
+		flashPromotion = { ['*'] = false },
 		colors = {
 			good    = { 0, 1, 0, 0.7 },
 			bad     = { 1, 0, 0, 0.7 },

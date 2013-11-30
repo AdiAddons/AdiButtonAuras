@@ -423,10 +423,23 @@ local function GetOptions()
 							addon:SendMessage(addon.CONFIG_CHANGED)
 						end
 					},
+					flashPromotion = {
+						name = L['Promote highlight to flash'],
+						desc = L['Check to flash instead of displaying a border.'],
+						order = 40,
+						type = 'toggle',
+						get = function()
+							return addon.db.profile.flashPromotion[selectedKey]
+						end,
+						set = function(_, flag)
+							addon.db.profile.flashPromotion[selectedKey] = flag
+							addon:SendMessage(addon.CONFIG_CHANGED)
+						end
+					},
 					rules = {
 						name = L['Rules'],
 						desc = L['Select which rules should by applied to the button.'],
-						order = 40,
+						order = 50,
 						width = 'full',
 						type = 'multiselect',
 						get = function()

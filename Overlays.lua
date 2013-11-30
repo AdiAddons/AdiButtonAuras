@@ -421,6 +421,10 @@ function overlayPrototype:UpdateState(event)
 				model.highlight = self.units.enemy and "bad" or "good"
 			end
 		end
+
+		if addon.db.profile.flashPromotion[self.spellId] and (model.highlight == "good" or model.highlight == "bad") then
+			model.highlight = "flash"
+		end
 	end
 
 	--self:Debug("Scan =>", model.highlight, model.count, model.expiration)
