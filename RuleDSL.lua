@@ -298,7 +298,7 @@ local tokenDescs = {
 	enemy  = L['the targeted enemy'],
 	group  = L['group members'],
 }
-local highlightDesc = {
+local highlightDescs = {
 	flash   = L['Flash'],
 	good    = L['Show the "good" border'],
 	bad     = L['Show the "bad" border'],
@@ -324,7 +324,7 @@ local function BuildDesc(filter, highlight, token, spell)
 	local spells = type(spell) == "table" and DescribeAllSpells(unpack(spell)) or DescribeAllSpells(spell)
 	return gsub(format(
 		L["%s when %s %s is found on %s."],
-		highlightDesc[highlight or false] or L["Show duration and/or stack count"],
+		highlightDescs[highlight or false] or L["Show duration and/or stack count"],
 		filterDescs[filter] or filter and tostring(filter) or "",
 		spells or "",
 		tokens or "?"
