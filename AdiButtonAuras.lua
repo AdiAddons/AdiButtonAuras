@@ -33,6 +33,7 @@ _G.AdiButtonAuras = api
 addon.DEFAULT_SETTINGS = {
 	profile = {
 		enabled = { ['*'] = true },
+		inverted = { ['*'] = false },
 		colors = {
 			good    = { 0, 1, 0, 0.7 },
 			bad     = { 1, 0, 0, 0.7 },

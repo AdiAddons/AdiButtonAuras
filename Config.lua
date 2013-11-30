@@ -370,6 +370,19 @@ local function GetOptions()
 							addon:SendMessage(addon.CONFIG_CHANGED)
 						end
 					},
+					inverted = {
+						name = L['Inverted'],
+						desc = L['Check to show a border when the buff is missing.'],
+						order = 30,
+						type = 'toggle',
+						get = function()
+							return addon.db.profile.inverted[selectedKey]
+						end,
+						set = function(_, flag)
+							addon.db.profile.inverted[selectedKey] = flag
+							addon:SendMessage(addon.CONFIG_CHANGED)
+						end
+					},
 				},
 			},
 			debug = {

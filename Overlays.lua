@@ -370,6 +370,16 @@ function overlayPrototype:UpdateState(event)
 		for i, handler in ipairs(self.handlers) do
 			handler(unitMap, model)
 		end
+
+		if addon.db.profile.inverted[self.spellId] then
+			if model.highlight then
+				if model.highlight ~= "flash" then
+					model.highlight = nil
+				end
+			else
+				model.highlight = self.units.enemy and "bad" or "good"
+			end
+		end
 	end
 
 	--self:Debug("Scan =>", model.highlight, model.count, model.expiration)

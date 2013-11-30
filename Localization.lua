@@ -49,6 +49,7 @@ addon.L = L
 
 
 -- Config.lua
+L["Check to show a border when the buff is missing."] = true
 L["Click to show or hide overlay over action buttons."] = true
 L["Configure spells and items individually."] = true
 L["Countdown Thresholds"] = true
@@ -58,6 +59,7 @@ L["Enabled"] = true
 L["Global"] = true
 L["Handlers"] = true
 L["Hide button highlights"] = true
+L["Inverted"] = true
 L["Maximum duration for \"2.7\" format"] = true
 L["Maximum duration to show"] = true
 L["Minimum duration for \"2m\" format"] = true
