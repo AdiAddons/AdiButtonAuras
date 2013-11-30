@@ -49,6 +49,7 @@ addon.L = L
 
 
 -- Config.lua
+L["Check to flash instead of displaying a border."] = true
 L["Check to show a border when the buff is missing."] = true
 L["Click to show or hide overlay over action buttons."] = true
 L["Configure spells and items individually."] = true
@@ -67,6 +68,7 @@ L["Minimum duration for \"2m\" format"] = true
 L["Minimum duration for \"4:58\" format"] = true
 L["No flash in cooldown"] = true
 L["Please select a spell or an item..."] = true
+L["Promote highlight to flash"] = true
 L["Rules"] = true
 L["Select which rules should by applied to the button."] = true
 L["Shift+click to toggle."] = true
@@ -85,11 +87,11 @@ L["%s when %s %s is found on %s."] = true
 L["Darken"] = true
 L["Flash"] = true
 L["Lighten"] = true
-L["Look"] = true
 L["Show %s and %s when %s %s%%."] = true
 L["Show %s and %s when %s %s."] = true
 L["Show %s and %s when it reaches its maximum."] = true
 L["Show %s."] = true
+L["Show duration and/or stack count"] = true
 L["Show the \"bad\" border"] = true
 L["Show the \"good\" border"] = true
 L["group members"] = true
@@ -121,7 +123,6 @@ L["Show lunar energy."] = true
 L["Show solar energy."] = true
 
 -- rules/Monk.lua
-L["Highlight with %s"] = true
 L["Show stagger level."] = true
 
 -- rules/Warlock.lua
