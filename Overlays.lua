@@ -21,6 +21,36 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 
 local addonName, addon = ...
 
+local _G = _G
+local assert = _G.assert
+local CreateFrame = _G.CreateFrame
+local GetActionCooldown = _G.GetActionCooldown
+local GetActionInfo = _G.GetActionInfo
+local GetMacroBody = _G.GetMacroBody
+local GetMacroItem = _G.GetMacroItem
+local GetMacroSpell = _G.GetMacroSpell
+local GetPetActionCooldown = _G.GetPetActionCooldown
+local GetPetActionInfo = _G.GetPetActionInfo
+local GetShapeshiftFormCooldown = _G.GetShapeshiftFormCooldown
+local GetShapeshiftFormInfo = _G.GetShapeshiftFormInfo
+local GetSpellLink = _G.GetSpellLink
+local gsub = _G.gsub
+local ipairs = _G.ipairs
+local next = _G.next
+local pairs = _G.pairs
+local SecureCmdOptionParse = _G.SecureCmdOptionParse
+local select = _G.select
+local setmetatable = _G.setmetatable
+local strjoin = _G.strjoin
+local strlower = _G.strlower
+local strmatch = _G.strmatch
+local strsplit = _G.strsplit
+local strtrim = _G.strtrim
+local tonumber = _G.tonumber
+local UnitGUID = _G.UnitGUID
+local UnitIsUnit = _G.UnitIsUnit
+local wipe = _G.wipe
+
 local LibSpellbook = addon.GetLib('LibSpellbook-1.0')
 
 local MOUSEOVER_CHANGED, MOUSEOVER_TICK, GROUP_CHANGED = addon.MOUSEOVER_CHANGED, addon.MOUSEOVER_TICK, addon.GROUP_CHANGED

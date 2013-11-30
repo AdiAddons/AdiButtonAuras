@@ -21,6 +21,30 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 
 local addonName, addon = ...
 
+local _G = _G
+local CreateFrame = _G.CreateFrame
+local GetAddOnInfo = _G.GetAddOnInfo
+local GetCVarBool = _G.GetCVarBool
+local GetModifiedClick = _G.GetModifiedClick
+local gsub = _G.gsub
+local hooksecurefunc = _G.hooksecurefunc
+local IsAddOnLoaded = _G.IsAddOnLoaded
+local IsInGroup = _G.IsInGroup
+local IsInRaid = _G.IsInRaid
+local next = _G.next
+local NUM_ACTIONBAR_BUTTONS = _G.NUM_ACTIONBAR_BUTTONS
+local NUM_PET_ACTION_SLOTS = _G.NUM_PET_ACTION_SLOTS
+local NUM_STANCE_SLOTS = _G.NUM_STANCE_SLOTS
+local pairs = _G.pairs
+local select = _G.select
+local strmatch = _G.strmatch
+local tinsert = _G.tinsert
+local type = _G.type
+local UnitExists = _G.UnitExists
+local UnitGUID = _G.UnitGUID
+local UnitIsUnit = _G.UnitIsUnit
+local wipe = _G.wipe
+
 -- API
 local api = {}
 addon.api = api

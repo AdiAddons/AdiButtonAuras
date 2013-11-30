@@ -21,6 +21,17 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 
 if select(2, UnitClass("player")) ~= "MONK" then return end
 
+local _G = _G
+local GetSpellBonusHealing = _G.GetSpellBonusHealing
+local GetSpellInfo = _G.GetSpellInfo
+local min = _G.min
+local pairs = _G.pairs
+local select = _G.select
+local UnitAura = _G.UnitAura
+local UnitClass = _G.UnitClass
+local UnitHealth = _G.UnitHealth
+local UnitHealthMax = _G.UnitHealthMax
+
 -- Globals: AddRuleFor Configure IfSpell IfClass SimpleAuras UnitBuffs
 -- Globals: PassiveModifier SimpleDebuffs SharedSimpleDebuffs SimpleBuffs
 -- Globals: LongestDebuffOf SelfBuffs PetBuffs BuffAliases DebuffAliases

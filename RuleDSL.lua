@@ -22,6 +22,7 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 local addonName, addon = ...
 
 local _G = _G
+local GetItemInfo = _G.GetItemInfo
 local GetSpellInfo = _G.GetSpellInfo
 local GetSpellLink = _G.GetSpellLink
 local UnitAura = _G.UnitAura
@@ -31,6 +32,7 @@ local UnitPowerMax = _G.UnitPowerMax
 local assert = _G.assert
 local error = _G.error
 local format = _G.format
+local geterrorhandler = _G.geterrorhandler
 local ipairs = _G.ipairs
 local next = _G.next
 local pairs = _G.pairs
@@ -38,10 +40,14 @@ local select = _G.select
 local setfenv = _G.setfenv
 local setmetatable = _G.setmetatable
 local strjoin = _G.strjoin
+local strmatch = _G.strmatch
 local tinsert = _G.tinsert
+local tonumber = _G.tonumber
+local tostring = _G.tostring
 local type = _G.type
 local unpack = _G.unpack
 local wipe = _G.wipe
+local xpcall = _G.xpcall
 
 ------------------------------------------------------------------------------
 -- Generic list and set tools

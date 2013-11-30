@@ -29,6 +29,16 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 AdiButtonAuras:RegisterRules(function(addon)
 	addon.Debug('Rules', 'Adding common rules')
 
+	local _G = _G
+	local ipairs = _G.ipairs
+	local pairs = _G.pairs
+	local tinsert = _G.tinsert
+	local UnitAura = _G.UnitAura
+	local UnitCanAttack = _G.UnitCanAttack
+	local UnitCastingInfo = _G.UnitCastingInfo
+	local UnitChannelInfo = _G.UnitChannelInfo
+	local UnitClass = _G.UnitClass
+
 	local _, playerClass = UnitClass("player")
 
 	local rules = {

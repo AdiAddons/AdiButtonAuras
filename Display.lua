@@ -21,15 +21,22 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 
 local addonName, addon = ...
 
-local AceTimer = addon.GetLib('AceTimer-3.0')
-
 local _G = _G
 local CreateFrame = _G.CreateFrame
-local floor = _G.floor
 local GetTime = _G.GetTime
+local UIParent = _G.UIParent
+local floor = _G.floor
+local hooksecurefunc = _G.hooksecurefunc
 local next = _G.next
 local pairs = _G.pairs
+local strtrim = _G.strtrim
+local tinsert = _G.tinsert
 local tonumber = _G.tonumber
+local tremove = _G.tremove
+local type = _G.type
+local unpack = _G.unpack
+
+local AceTimer = addon.GetLib('AceTimer-3.0')
 
 local fontFile, fontSize, fontFlag = [[Fonts\ARIALN.TTF]], 13, "OUTLINE"
 

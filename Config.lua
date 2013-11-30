@@ -20,6 +20,34 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 --]]
 
 local addonName, addon = ...
+
+local _G = _G
+local CreateFrame = _G.CreateFrame
+local format = _G.format
+local GameTooltip = _G.GameTooltip
+local GameTooltip_SetDefaultAnchor = _G.GameTooltip_SetDefaultAnchor
+local GetAddOnMetadata = _G.GetAddOnMetadata
+local GetCVarBool = _G.GetCVarBool
+local GetItemInfo = _G.GetItemInfo
+local GetSpellInfo = _G.GetSpellInfo
+local InterfaceOptionsFrame_OpenToCategory = _G.InterfaceOptionsFrame_OpenToCategory
+local IsAddOnLoaded = _G.IsAddOnLoaded
+local IsShiftKeyDown = _G.IsShiftKeyDown
+local pairs = _G.pairs
+local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
+local setmetatable = _G.setmetatable
+local strjoin = _G.strjoin
+local strmatch = _G.strmatch
+local tinsert = _G.tinsert
+local tonumber = _G.tonumber
+local tostring = _G.tostring
+local tostringall = _G.tostringall
+local UIParent = _G.UIParent
+local UISpecialFrames = _G.UISpecialFrames
+local UNKNOWN = _G.UNKNOWN
+local unpack = _G.unpack
+local wipe = _G.wipe
+
 local L = addon.L
 
 local AceConfigRegistry = addon.GetLib('AceConfigRegistry-3.0')
@@ -202,7 +230,7 @@ do
 		local bugGrabber
 		if addon.BugGrabber then
 			bugGrabber = 'Embedded BugGrabber'
-			p("\nError grabber:", "|cffffffff", name, "|r")
+			p("\nError grabber:", "|cffffffff", bugGrabber, "|r")
 		elseif IsAddOnLoaded("!BugGrabber") or _G.BugGrabber then
 			bugGrabber = "BugGrabber"
 		elseif IsAddOnLoaded("!Swatter") or _G.Swatter then
@@ -242,7 +270,6 @@ local function GetOptions()
 		name = addonName..' @project-version@',
 		--@end-non-debug@]===]
 		type = 'group',
-		handler = handler,
 		get = 'Get',
 		set =' Set',
 		childGroups = 'tab',
