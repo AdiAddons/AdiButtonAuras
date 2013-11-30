@@ -130,10 +130,8 @@ end
 local LibSpellbook = addon.GetLib('LibSpellbook-1.0')
 
 local playerClass = select(2, UnitClass("player"))
-local knownClasses = {}
 local spellConfs = {}
 addon.spells = spellConfs
-addon.knownClasses = knownClasses
 
 local function SpellOrItemId(value, callLevel)
 	local spellId = tonumber(type(value) == "string" and strmatch(value, "spell:(%d+)") or value)
@@ -239,21 +237,6 @@ local function IfSpell(spells, ...)
 					return Do(funcs)
 				end
 			end
-		end
-	end
-end
-
-local function IfClass(class, ...)
-	knownClasses[class] = true
-	if playerClass == class then
-		local funcs = AsList({ ... }, "function", 2)
-		return function()
-			addon.Debug('Rules', 'Merging spells for', class)
-			return Do(funcs)
-		end
-	else
-		return function()
-			return addon.Debug('Rules', 'Ignoring spells for', class)
 		end
 	end
 end
@@ -509,7 +492,6 @@ local RULES_ENV = setmetatable({
 	-- Basic functions
 	Configure = WrapTableArgFunc(Configure),
 	IfSpell = WrapTableArgFunc(IfSpell),
-	IfClass = WrapTableArgFunc(IfClass),
 	ShowPower = WrapTableArgFunc(ShowPower),
 	PassiveModifier = WrapTableArgFunc(PassiveModifier),
 	ItemSelfBuffs = WrapTableArgFunc(ItemSelfBuffs),
@@ -572,7 +554,6 @@ function addon:BuildRules(event)
 		if #ruleBuilders == 0 then
 			error("No rules registered !", 2)
 		end
-		wipe(knownClasses)
 		local t = {}
 		for i, builder in ipairs(ruleBuilders) do
 			local ok, funcs = xpcall(builder, errorhandler)

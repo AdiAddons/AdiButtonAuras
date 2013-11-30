@@ -21,7 +21,7 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 
 if select(2, UnitClass("player")) ~= "DRUID" then return end
 
--- Globals: AddRuleFor Configure IfSpell IfClass SimpleAuras UnitBuffs
+-- Globals: AddRuleFor Configure IfSpell SimpleAuras UnitBuffs
 -- Globals: PassiveModifier SimpleDebuffs SharedSimpleDebuffs SimpleBuffs
 -- Globals: LongestDebuffOf SelfBuffs PetBuffs BuffAliases DebuffAliases
 -- Globals: SelfBuffAliases SharedBuffs ShowPower SharedSimpleBuffs
