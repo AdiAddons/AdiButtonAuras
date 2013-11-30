@@ -557,33 +557,32 @@ do
 		local exceptions = AsSet({...}, "number", 3)
 		local rules = {}
 		for buff, flags, provider, modified in LibPlayerSpells:IterateSpells(filter, "AURA", "RAIDBUFF") do
-			if not exceptions[buff] and not exceptions[provider] then
-				local spells = FilterOut(AsList(modified, "number"), exceptions)
-				if #spells > 0 then
-					local filter, highlight, token = "HELPFUL", "good", "ally"
-					local targeting = band(flags, TARGETING)
-					if targeting == HARMFUL then
-						filter, highlight, token = "HARMFUL", "bad", "enemy"
-					elseif targeting == PERSONAL then
-						token = "player"
-					elseif targeting == PET then
-						token = "pet"
-					end
-					if band(flags, UNIQUE_AURA) == 0 then
-						filter = filter.." PLAYER"
-					end
-					if band(flags, IMPORTANT) ~= 0 then
-						highlight = "flash"
-					end
-					local key = BuildKey('LibPlayerSpell', provider, modified, filter, highlight, token, buff)
-					local desc = BuildDesc(filter, highlight, token, buff)
-					local handler = BuildAuraHandler_Single(filter, highlight, token, buff, 3)
-					local rule = Configure(key, desc, spells, token, "UNIT_AURA", handler, 3)
-					if provider ~= modified then
-						rule = IfSpell(provider, rule)
-					end
-					tinsert(rules, rule)
+			local buff = FilterOut(AsList(buff, "number"), exceptions)
+			local spells = FilterOut(AsList(modified, "number"), exceptions)
+			if not exceptions[provider] and #spells > 0 and #buff > 0 then
+				local filter, highlight, token = "HELPFUL", "good", "ally"
+				local targeting = band(flags, TARGETING)
+				if targeting == HARMFUL then
+					filter, highlight, token = "HARMFUL", "bad", "enemy"
+				elseif targeting == PERSONAL then
+					token = "player"
+				elseif targeting == PET then
+					token = "pet"
 				end
+				if band(flags, UNIQUE_AURA) == 0 then
+					filter = filter.." PLAYER"
+				end
+				if band(flags, IMPORTANT) ~= 0 then
+					highlight = "flash"
+				end
+				local key = BuildKey('LibPlayerSpell', provider, modified, filter, highlight, token, buff)
+				local desc = BuildDesc(filter, highlight, token, buff)
+				local handler = BuildAuraHandler_Longest(filter, highlight, token, buff, 3)
+				local rule = Configure(key, desc, spells, token, "UNIT_AURA", handler, 3)
+				if provider ~= modified then
+					rule = IfSpell(provider, rule)
+				end
+				tinsert(rules, rule)
 			end
 		end
 		return (#rules > 1) and rules or rules[1]
