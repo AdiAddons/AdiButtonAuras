@@ -50,144 +50,150 @@ local wipe = _G.wipe
 
 local L = addon.L
 
+local AceConfig = addon.GetLib('AceConfig-3.0')
+local AceConfigDialog = addon.GetLib('AceConfigDialog-3.0')
 local AceConfigRegistry = addon.GetLib('AceConfigRegistry-3.0')
 
-local configOverlays
 local selectedKey, selectedName, selectedConf
 
 ------------------------------------------------------------------------------
 -- Button overlays for selection
 ------------------------------------------------------------------------------
 
-local configParent = CreateFrame("Frame", addonName.."ConfigOverlay", UIParent)
-configParent:Hide()
+local configParent
+local function BuildConfigParent(parent)
+	if configParent then return end
 
-function configParent:Update()
-	AceConfigRegistry:NotifyChange(addonName)
-end
+	configParent = CreateFrame("Frame", addonName.."ConfigOverlay", parent)
+	configParent:Hide()
 
-configParent:SetScript('OnShow', function(self)
-	for _, overlay in addon:IterateOverlays() do
-		configOverlays[overlay]:SetShown(overlay:IsVisible())
+	local configOverlays
+
+	function configParent:Update()
+		AceConfigRegistry:NotifyChange(addonName)
 	end
-	self:Update()
-end)
-configParent:SetScript('OnHide', configParent.Update)
-configParent:SetScript('OnEvent', configParent.Hide)
-configParent:RegisterEvent('PLAYER_REGEN_DISABLED')
 
-tinsert(UISpecialFrames, configParent:GetName())
-
--- Overlays
-
-local overlayPrototype = setmetatable({	Debug = addon.Debug}, { __index = CreateFrame("Button") })
-local overlayMeta = { __index = overlayPrototype }
-
-configOverlays = setmetatable({}, { __index = function(t, overlay)
-	local conf = setmetatable(CreateFrame("Button", overlay:GetName().."Config", configParent), overlayMeta)
-	conf:Initialize(overlay)
-	t[overlay] = conf
-	return conf
-end })
-
-local backdrop = {
-	bgFile = [[Interface\Tooltips\UI-Tooltip-Background]], tile = true, tileSize = 16,
-	insets = { left = 0, right = 0, top = 0, bottom = 0 }
-}
-
-function overlayPrototype:Initialize(overlay)
-	self:Hide()
-
-	self:SetFrameStrata("HIGH")
-
-	self:SetBackdrop(backdrop)
-	self:SetBackdropBorderColor(0,0,0,0)
-
-	self:SetHighlightTexture([[Interface\Buttons\ButtonHilight-Square]], "ADD")
-
-	self.overlay = overlay
-	self:SetAllPoints(overlay)
-	self:RegisterForClicks('LeftButtonUp')
-
-	self:SetScript('OnShow', self.Update)
-	self:SetScript('OnClick', self.OnClick)
-	self:SetScript('OnEnter', self.OnEnter)
-	self:SetScript('OnLeave', self.OnLeave)
-
-	overlay:HookScript('OnShow', function() self:Show() end)
-	overlay:HookScript('OnHide', function() self:Hide() end)
-
-	addon.RegisterMessage(self, addon.CONFIG_CHANGED, "Update")
-end
-
-function overlayPrototype:Update()
-	self.conf, self.enabled, self.key, self.type, self.id = addon:GetActionConfiguration(self.overlay.spellId)
-	if self.type == "spell" then
-		self.name = GetSpellInfo(self.id)
-	elseif self.type == "item" then
-		self.name = GetItemInfo(self.id)
-	end
-	if self.conf then
-		self:Enable()
-		if self.enabled then
-			self:SetBackdropColor(0, 1, 0, 0.8)
-		else
-			self:SetBackdropColor(0, 0, 1, 0.8)
+	configParent:SetScript('OnShow', function(self)
+		for _, overlay in addon:IterateOverlays() do
+			configOverlays[overlay]:SetShown(overlay:IsVisible())
 		end
+		self:Update()
+	end)
+
+	-- Overlays
+
+	local overlayPrototype = setmetatable({	Debug = addon.Debug}, { __index = CreateFrame("Button") })
+	local overlayMeta = { __index = overlayPrototype }
+
+	configOverlays = setmetatable({}, { __index = function(t, overlay)
+		local conf = setmetatable(CreateFrame("Button", overlay:GetName().."Config", configParent), overlayMeta)
+		conf:Initialize(overlay)
+		t[overlay] = conf
+		return conf
+	end })
+
+	local backdrop = {
+		bgFile = [[Interface\Tooltips\UI-Tooltip-Background]], tile = true, tileSize = 16,
+		insets = { left = 0, right = 0, top = 0, bottom = 0 }
+	}
+
+	function overlayPrototype:Initialize(overlay)
+		self:Hide()
+
+		self:SetFrameStrata("HIGH")
+
+		self:SetBackdrop(backdrop)
+		self:SetBackdropBorderColor(0,0,0,0)
+
+		self:SetHighlightTexture([[Interface\Buttons\ButtonHilight-Square]], "ADD")
+
+		self.overlay = overlay
+		self:SetAllPoints(overlay)
+		self:RegisterForClicks('LeftButtonUp')
+
+		self:SetScript('OnShow', self.Update)
+		self:SetScript('OnClick', self.OnClick)
+		self:SetScript('OnEnter', self.OnEnter)
+		self:SetScript('OnLeave', self.OnLeave)
+
+		overlay:HookScript('OnShow', function() self:Show() end)
+		overlay:HookScript('OnHide', function() self:Hide() end)
+
+		addon.RegisterMessage(self, addon.CONFIG_CHANGED, "Update")
+	end
+
+	function overlayPrototype:Update()
+		self.conf, self.enabled, self.key, self.type, self.id = addon:GetActionConfiguration(self.overlay.spellId)
+		if self.type == "spell" then
+			self.name = GetSpellInfo(self.id)
+		elseif self.type == "item" then
+			self.name = GetItemInfo(self.id)
+		end
+		if self.conf then
+			self:Enable()
+			if self.enabled then
+				self:SetBackdropColor(0, 1, 0, 0.8)
+			else
+				self:SetBackdropColor(0, 0, 1, 0.8)
+			end
+			if GameTooltip:GetOwner() == self then
+				self:OnEnter()
+			end
+		else
+			self:Disable()
+			self:SetBackdropColor(0, 0, 0, 0.8)
+			self:OnLeave()
+		end
+	end
+
+	function overlayPrototype:OnClick()
+		if IsShiftKeyDown() then
+			addon.db.profile.enabled[self.key] = not addon.db.profile.enabled[self.key]
+			addon.SendMessage(self, addon.CONFIG_CHANGED)
+		else
+			selectedKey, selectedName, selectedConf = self.key, self.name, self.conf
+		end
+		AceConfigRegistry:NotifyChange(addonName)
+	end
+
+	function overlayPrototype:OnEnter()
+		GameTooltip_SetDefaultAnchor(GameTooltip, self)
+		GameTooltip:AddDoubleLine(self.name, self.type)
+		if self.conf then
+			if self.enabled then
+				GameTooltip:AddDoubleLine(L['Status'], L['Enabled'], nil, nil, nil, 0, 1, 0)
+			else
+				GameTooltip:AddDoubleLine(L['Status'], L['Disabled'], nil, nil, nil, 0, 0, 1)
+			end
+			--@debug@
+			local title = "Units"
+			for unit in pairs(self.conf.units) do
+				GameTooltip:AddDoubleLine(title, unit, nil, nil, nil, 1, 1, 1)
+				title = " "
+			end
+			title = "Events"
+			for event in pairs(self.conf.events) do
+				GameTooltip:AddDoubleLine(title, event, nil, nil, nil, 1, 1, 1)
+				title = " "
+			end
+			GameTooltip:AddDoubleLine(L['Handlers'], #(self.conf.handlers), nil, nil, nil, 1, 1, 1)
+			--@end-debug@
+			GameTooltip:AddLine(L['Shift+click to toggle.'])
+		else
+			GameTooltip:AddDoubleLine(L['Status'], UNKNOWN, nil, nil, nil, 0.5, 0.5, 0.5)
+		end
+		GameTooltip:Show()
+	end
+
+	function overlayPrototype:OnLeave()
 		if GameTooltip:GetOwner() == self then
-			self:OnEnter()
+			GameTooltip:Hide()
 		end
-	else
-		self:Disable()
-		self:SetBackdropColor(0, 0, 0, 0.8)
-		self:OnLeave()
 	end
+
+	configParent:Show()
 end
 
-function overlayPrototype:OnClick()
-	if IsShiftKeyDown() then
-		addon.db.profile.enabled[self.key] = not addon.db.profile.enabled[self.key]
-		addon.SendMessage(self, addon.CONFIG_CHANGED)
-	else
-		selectedKey, selectedName, selectedConf = self.key, self.name, self.conf
-	end
-	AceConfigRegistry:NotifyChange(addonName)
-end
-
-function overlayPrototype:OnEnter()
-	GameTooltip_SetDefaultAnchor(GameTooltip, self)
-	GameTooltip:AddDoubleLine(self.name, self.type)
-	if self.conf then
-		if self.enabled then
-			GameTooltip:AddDoubleLine(L['Status'], L['Enabled'], nil, nil, nil, 0, 1, 0)
-		else
-			GameTooltip:AddDoubleLine(L['Status'], L['Disabled'], nil, nil, nil, 0, 0, 1)
-		end
-		--@debug@
-		local title = "Units"
-		for unit in pairs(self.conf.units) do
-			GameTooltip:AddDoubleLine(title, unit, nil, nil, nil, 1, 1, 1)
-			title = " "
-		end
-		title = "Events"
-		for event in pairs(self.conf.events) do
-			GameTooltip:AddDoubleLine(title, event, nil, nil, nil, 1, 1, 1)
-			title = " "
-		end
-		GameTooltip:AddDoubleLine(L['Handlers'], #(self.conf.handlers), nil, nil, nil, 1, 1, 1)
-		--@end-debug@
-		GameTooltip:AddLine(L['Shift+click to toggle.'])
-	else
-		GameTooltip:AddDoubleLine(L['Status'], UNKNOWN, nil, nil, nil, 0.5, 0.5, 0.5)
-	end
-	GameTooltip:Show()
-end
-
-function overlayPrototype:OnLeave()
-	if GameTooltip:GetOwner() == self then
-		GameTooltip:Hide()
-	end
-end
 ------------------------------------------------------------------------------
 -- Version display
 ------------------------------------------------------------------------------
@@ -379,19 +385,6 @@ local function GetOptions()
 				order = 20,
 				disabled = function(info) return info[#info] ~= "spells" and not selectedKey end,
 				args = {
-					select = {
-						name = function()
-							return configParent:IsShown() and L["Hide button highlights"] or L["Show button highlights"]
-						end,
-						desc = L['Click to show or hide overlay over action buttons.'],
-						order = 1,
-						type = 'execute',
-						width = "double",
-						disabled = false,
-						func = function()
-							configParent:SetShown(not configParent:IsShown())
-						end,
-					},
 					_name = {
 						name = function() return selectedName or L["Please select a spell or an item..."] end,
 						type = 'header',
@@ -461,6 +454,7 @@ local function GetOptions()
 					},
 				},
 			},
+			--@debug@
 			debug = {
 				name = 'Debug information',
 				type = 'group',
@@ -474,6 +468,7 @@ local function GetOptions()
 					},
 				},
 			},
+			--@end-debug@
 			profiles = profiles,
 		},
 	}
@@ -485,16 +480,28 @@ end
 -- Setup
 ------------------------------------------------------------------------------
 
-addon.GetLib('AceConfig-3.0'):RegisterOptionsTable(addonName, GetOptions)
-local blizPanel = addon.GetLib('AceConfigDialog-3.0'):AddToBlizOptions(addonName, addonName)
+AceConfig:RegisterOptionsTable(addonName, GetOptions)
 
-function addon:OpenOptions()
-	InterfaceOptionsFrame_OpenToCategory(blizPanel)
-end
+local mainPanel = AceConfigDialog:AddToBlizOptions(addonName, addonName, nil, "global")
+local spellPanel = AceConfigDialog:AddToBlizOptions(addonName, L['Spells & items'], addonName, "spells")
+local profilePanel = AceConfigDialog:AddToBlizOptions(addonName, L['Profiles'], addonName, "profiles")
+
+spellPanel:HookScript('OnShow', function(self)
+	selectedKey, selectedName, selectedConf = nil, nil, nil
+	if not configParent then
+		BuildConfigParent(self)
+	end
+end)
 
 -- Add a macro command to open it
-_G.SlashCmdList["ADIBUTTONAURAS"] = function()
-	InterfaceOptionsFrame_OpenToCategory(addonName)
+_G.SlashCmdList["ADIBUTTONAURAS"] = function(_, what)
+	if what == 'spells' then
+		InterfaceOptionsFrame_OpenToCategory(spellPanel)
+	elseif what == 'profiles' then
+		InterfaceOptionsFrame_OpenToCategory(profilePanel)
+	else
+		InterfaceOptionsFrame_OpenToCategory(mainPanel)
+	end
 end
 _G.SLASH_ADIBUTTONAURAS1 = "/adibuttonauras"
 _G.SLASH_ADIBUTTONAURAS2 = "/aba"
