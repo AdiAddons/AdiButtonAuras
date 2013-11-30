@@ -46,6 +46,7 @@ libs\LibSpellbook-1.0\LibSpellbook-1.0.lua
 libs\LibItemBuffs-1.0\LibItemBuffs-1.0.lua
 libs\LibPlayerSpells-1.0\lib.xml
 
+Localization.lua
 AdiButtonAuras.lua
 Utils.lua
 RuleDSL.lua

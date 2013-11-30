@@ -20,6 +20,7 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 --]]
 
 local addonName, addon = ...
+local L = addon.L
 
 local AceConfigRegistry = addon.GetLib('AceConfigRegistry-3.0')
 
@@ -128,13 +129,13 @@ end
 function overlayPrototype:OnEnter()
 	GameTooltip_SetDefaultAnchor(GameTooltip, self)
 	GameTooltip:AddDoubleLine(self.name, self.type)
-	--@debug@
 	if self.conf then
 		if self.enabled then
-			GameTooltip:AddDoubleLine('Status', 'Enabled', nil, nil, nil, 0, 1, 0)
+			GameTooltip:AddDoubleLine(L['Status'], L['Enabled'], nil, nil, nil, 0, 1, 0)
 		else
-			GameTooltip:AddDoubleLine('Status', 'Disabled', nil, nil, nil, 0, 0, 1)
+			GameTooltip:AddDoubleLine(L['Status'], L['Disabled'], nil, nil, nil, 0, 0, 1)
 		end
+		--@debug@
 		local title = "Units"
 		for unit in pairs(self.conf.units) do
 			GameTooltip:AddDoubleLine(title, unit, nil, nil, nil, 1, 1, 1)
@@ -145,12 +146,12 @@ function overlayPrototype:OnEnter()
 			GameTooltip:AddDoubleLine(title, event, nil, nil, nil, 1, 1, 1)
 			title = " "
 		end
-		GameTooltip:AddDoubleLine('Handlers', #(self.conf.handlers), nil, nil, nil, 1, 1, 1)
-		GameTooltip:AddLine('Shift+click to toggle.')
+		GameTooltip:AddDoubleLine(L['Handlers'], #(self.conf.handlers), nil, nil, nil, 1, 1, 1)
+		--@end-debug@
+		GameTooltip:AddLine(L['Shift+click to toggle.'])
 	else
-		GameTooltip:AddDoubleLine('Status', 'Unknown', nil, nil, nil, 0.5, 0.5, 0.5)
+		GameTooltip:AddDoubleLine(L['Status'], UNKNOWN, nil, nil, nil, 0.5, 0.5, 0.5)
 	end
-	--@end-debug@
 	GameTooltip:Show()
 end
 
@@ -247,7 +248,7 @@ local function GetOptions()
 		childGroups = 'tab',
 		args = {
 			global = {
-				name = 'Global',
+				name = L['Global'],
 				type = 'group',
 				order = 10,
 				get = function(info)
@@ -259,13 +260,13 @@ local function GetOptions()
 				end,
 				args = {
 					countdownThresholds = {
-						name = "Countdown Thresholds",
+						name = L["Countdown Thresholds"],
 						type = "group",
 						inline = true,
 						args = {
 							maxCountdown = {
-								name = 'Maximum duration to show',
-								desc = 'Durations above this threshold are hidden.',
+								name = L['Maximum duration to show'],
+								desc = L['Durations above this threshold are hidden.'],
 								type = 'range',
 								width = 'full',
 								order = 10,
@@ -274,7 +275,7 @@ local function GetOptions()
 								step = 1,
 							},
 							minMinutes = {
-								name = 'Minimum duration for "2m" format',
+								name = L['Minimum duration for "2m" format'],
 								type = 'range',
 								width = 'full',
 								order = 20,
@@ -283,7 +284,7 @@ local function GetOptions()
 								step = 1,
 							},
 							minMinuteSecs = {
-								name = 'Minimum duration for "4:58" format',
+								name = L['Minimum duration for "4:58" format'],
 								type = 'range',
 								width = 'full',
 								order = 30,
@@ -292,7 +293,7 @@ local function GetOptions()
 								step = 1,
 							},
 							maxTenth = {
-								name = 'Maximum duration for "2.7" format',
+								name = L['Maximum duration for "2.7" format'],
 								type = 'range',
 								width = 'full',
 								order = 40,
@@ -316,14 +317,14 @@ local function GetOptions()
 						end,
 						args = {
 							good = {
-								name = '"Good" border',
-								desc = 'The color used for good things, usually buffs.',
+								name = L['"Good" border'],
+								desc = L['The color used for good things, usually buffs.'],
 								type = 'color',
 								hasAlpha = true,
 							},
 							bad = {
-								name = '"Bad" border',
-								desc = 'The color used for bad things, usually debuffs.',
+								name = L['"Bad" border'],
+								desc = L['The color used for bad things, usually debuffs.'],
 								type = 'color',
 								hasAlpha = true,
 							},
@@ -332,17 +333,17 @@ local function GetOptions()
 				},
 			},
 			spells = {
-				name = 'Spells & items',
-				desc = 'Configure spells and items individually.',
+				name = L['Spells & items'],
+				desc = L['Configure spells and items individually.'],
 				type = 'group',
 				order = 20,
 				disabled = function(info) return info[#info] ~= "spells" and not selectedKey end,
 				args = {
 					select = {
 						name = function()
-							return configParent:IsShown() and "Hide button highlights" or "Show button highlights"
+							return configParent:IsShown() and L["Hide button highlights"] or L["Show button highlights"]
 						end,
-						desc = 'Click to show or hide overlay over action buttons.',
+						desc = L['Click to show or hide overlay over action buttons.'],
 						order = 1,
 						type = 'execute',
 						width = "double",
@@ -352,13 +353,13 @@ local function GetOptions()
 						end,
 					},
 					_name = {
-						name = function() return selectedName or "Please select a spell or an item..." end,
+						name = function() return selectedName or L["Please select a spell or an item..."] end,
 						type = 'header',
 						order = 10,
 					},
 					enabled = {
-						name = 'Enabled',
-						desc = 'Uncheck to ignore this spell/item.',
+						name = L['Enabled'],
+						desc = L['Uncheck to ignore this spell/item.'],
 						order = 20,
 						type = 'toggle',
 						get = function()
