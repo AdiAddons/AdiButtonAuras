@@ -25,7 +25,7 @@ local L = setmetatable({}, {
 	__index = function(self, key)
 		if not key then return end
 		--@debug@
-		geterrorhandler()(format("Unlocalized string: %q", tostring(key)))
+		addon.Debug('Localization', key)
 		--@end-debug@
 		self[key] = key
 		return key
@@ -67,6 +67,8 @@ L["Minimum duration for \"2m\" format"] = true
 L["Minimum duration for \"4:58\" format"] = true
 L["No flash in cooldown"] = true
 L["Please select a spell or an item..."] = true
+L["Rules"] = true
+L["Select which rules should by applied to the button."] = true
 L["Shift+click to toggle."] = true
 L["Show button highlights"] = true
 L["Spells & items"] = true
@@ -77,6 +79,53 @@ L["The color used for good things, usually buffs."] = true
 L["Uncheck to ignore this spell/item."] = true
 L["\"Bad\" border"] = true
 L["\"Good\" border"] = true
+
+-- RuleDSL.lua
+L["%s when %s %s is found on %s."] = true
+L["Darken"] = true
+L["Flash"] = true
+L["Lighten"] = true
+L["Look"] = true
+L["Show %s and %s when %s %s%%."] = true
+L["Show %s and %s when %s %s."] = true
+L["Show %s and %s when it reaches its maximum."] = true
+L["Show %s."] = true
+L["Show the \"bad\" border"] = true
+L["Show the \"good\" border"] = true
+L["group members"] = true
+L["the buff"] = true
+L["the debuff"] = true
+L["the targeted ally"] = true
+L["the targeted enemy"] = true
+L["your buff"] = true
+L["your debuff"] = true
+L["your pet"] = true
+L["yourself"] = true
+
+-- plugins/Mistweaver.lua
+L["Highlight when at least %s %s are running and one of them is below %s seconds."] = true
+L["Highlight when total effective healing would be at least %d times the base healing."] = true
+L["Show the number of group member affected by @NAME and the shortest duration."] = true
+
+-- rules/Common.lua
+L["Flash when the targeted enemy is casting/channeling a spell you can interrupt."] = true
+L["Show good border when @NAME or an equivalent raid buff is found."] = true
+L["Show when @NAME or an equivalent haste buff is found on yourself."] = true
+L["a buff you can dispel"] = true
+L["a debuff you can dispel"] = true
+
+-- rules/Druid.lua
+L["Flash when mastery is inactive."] = true
+L["Show combo points and flash at 5."] = true
+L["Show lunar energy."] = true
+L["Show solar energy."] = true
+
+-- rules/Monk.lua
+L["Highlight with %s"] = true
+L["Show stagger level."] = true
+
+-- rules/Warlock.lua
+L["Highlight with 3 or more stacks of %s."] = true
 
 
 ------------------------ frFR ------------------------
