@@ -428,9 +428,9 @@ end
 local function PassiveModifier(passive, spell, buff, unit, highlight)
 	unit = unit or "player"
 	highlight = highlight or "good"
-	local handler = BuildAuraHandler_Single("HEPLFUL PLAYER", highlight, unit, buff, 3)
+	local handler = BuildAuraHandler_Single("HELPFUL PLAYER", highlight, unit, buff, 3)
 	local key = BuildKey("PassiveModifier", passive, spell, buff, unit, highlight)
-	local desc = BuildDesc("HEPLFUL PLAYER", highlight, unit, buff)
+	local desc = BuildDesc("HELPFUL PLAYER", highlight, unit, buff)
 	local conf = Configure(key, desc, spell, unit, "UNIT_AURA", handler, 3)
 	return passive and IfSpell(passive, conf) or conf
 end
