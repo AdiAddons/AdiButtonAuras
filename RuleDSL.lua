@@ -53,7 +53,10 @@ local xpcall = _G.xpcall
 -- Generic list and set tools
 ------------------------------------------------------------------------------
 
-local function errorhandler(...) return geterrorhandler()(...) end
+local function errorhandler(msg)
+	addon.Debug('Rules', '|cffff0000'..tostring(msg)..'|r')
+	return geterrorhandler()(msg)
+end
 
 local getkeys = addon.getkeys
 
