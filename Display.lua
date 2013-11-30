@@ -90,6 +90,7 @@ function overlayPrototype:InitializeDisplay()
 	self.parentCount = _G[self.button:GetName().."Count"]
 
 	local border = self:CreateTexture(self:GetName().."Border", "BACKGROUND", NumberFontNormalSmall)
+	border:SetAllPoints(self)
 	border:Hide()
 	self.Border = border
 
@@ -178,19 +179,15 @@ function overlayPrototype:ApplyHighlight()
 	local border = self.Border
 	if highlight == "darken" or highlight == "lighten" then
 		if border:GetTexture() ~= "Color-666666ff" then
-			border:SetAllPoints(self)
 			border:SetTexture(0.4, 0.4, 0.4, 1)
 			border:SetVertexColor(1, 1, 1, 1)
 		end
 		border:SetBlendMode(highlight == "darken" and "MOD" or "ADD")
 		border:Show()
 	elseif highlight == "good" or highlight == "bad" then
-		if border:GetTexture() ~= [[Interface\Buttons\UI-ActionButton-Border]] then
-			border:ClearAllPoints()
-			border:SetPoint("CENTER", self)
-			border:SetSize(62, 62)
-			border:SetTexture([[Interface\Buttons\UI-ActionButton-Border]])
-			border:SetBlendMode("ADD")
+		if border:GetTexture() ~= [[Interface\AddOns\AdiButtonAuras\media\Border]] then
+			border:SetTexture([[Interface\AddOns\AdiButtonAuras\media\Border]])
+			border:SetBlendMode("BLEND")
 		end
 		border:SetVertexColor(unpack(addon.db.profile.colors[highlight], 1, 4))
 		border:Show()

@@ -34,8 +34,8 @@ addon.DEFAULT_SETTINGS = {
 	profile = {
 		enabled = { ['*'] = true },
 		colors = {
-			good    = { 0, 1, 0, 1 },
-			bad     = { 1, 0, 0, 1 },
+			good    = { 0, 1, 0, 0.7 },
+			bad     = { 1, 0, 0, 0.7 },
 		},
 		maxCountdown = 600,
 		minMinutes = 600,
