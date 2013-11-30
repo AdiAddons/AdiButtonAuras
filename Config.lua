@@ -53,7 +53,7 @@ local L = addon.L
 local AceConfigRegistry = addon.GetLib('AceConfigRegistry-3.0')
 
 local configOverlays
-local selectedKey, selectedName
+local selectedKey, selectedName, selectedConf
 
 ------------------------------------------------------------------------------
 -- Button overlays for selection
@@ -149,7 +149,7 @@ function overlayPrototype:OnClick()
 		addon.db.profile.enabled[self.key] = not addon.db.profile.enabled[self.key]
 		addon.SendMessage(self, addon.CONFIG_CHANGED)
 	else
-		selectedKey, selectedName = self.key, self.name
+		selectedKey, selectedName, selectedConf = self.key, self.name, self.conf
 	end
 	AceConfigRegistry:NotifyChange(addonName)
 end
@@ -428,6 +428,7 @@ local function GetOptions()
 						desc = L['Check to flash instead of displaying a border.'],
 						order = 40,
 						type = 'toggle',
+						width = 'double',
 						get = function()
 							return addon.db.profile.flashPromotion[selectedKey]
 						end,
@@ -442,21 +443,21 @@ local function GetOptions()
 						order = 50,
 						width = 'full',
 						type = 'multiselect',
-						get = function()
-							return true
+						get = function(_, index)
+							return addon.db.profile.rules[selectedConf.keys[index]]
 						end,
-						set = function(_, flag)
+						set = function(_, index, flag)
+							addon.db.profile.rules[selectedConf.keys[index]] = flag
+							addon:LibSpellbook_Spells_Changed('OnRuleConfigChanged')
 						end,
 						values = function()
 							wipe(tmpRuleList)
-							local conf = selectedKey and addon.spells[selectedKey]
-							if conf then
-								for i, key in ipairs(conf.keys) do
-									tmpRuleList[i] = addon.ruleDescs[key]
-								end
+							for i, key in ipairs(selectedConf.keys) do
+								tmpRuleList[i] = addon.ruleDescs[key]
 							end
 							return tmpRuleList
 						end,
+						hidden = function() return not selectedConf or not selectedConf.keys or #(selectedConf.keys) == 0 end
 					},
 				},
 			},

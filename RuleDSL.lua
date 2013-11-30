@@ -201,6 +201,9 @@ local function _AddRuleFor(key, desc, spell, units, events, handlers, callLevel)
 	end
 	if key then
 		tinsert(rule.keys, key)
+		if not addon.db.profile.rules[key] then
+			return
+		end
 	end
 	MergeSets(rule.units, units)
 	MergeSets(rule.events, events)

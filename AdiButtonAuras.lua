@@ -57,6 +57,7 @@ _G.AdiButtonAuras = api
 addon.DEFAULT_SETTINGS = {
 	profile = {
 		enabled = { ['*'] = true },
+		rules = { ['*'] = true },
 		inverted = { ['*'] = false },
 		flashPromotion = { ['*'] = false },
 		colors = {
