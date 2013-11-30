@@ -72,6 +72,8 @@ AdiButtonAuras:RegisterRules(function(addon)
 		},
 		IfSpell { 122280, -- Healing Elixirs (passive)
 			Configure {
+				"HealingElixirs",
+				addon.BuildDesc("HELPFUL PLAYER", "good", "player", 122280),
 				{
 					115203, -- Fortifying Brew
 					115288, -- Energizing Brew
@@ -96,6 +98,8 @@ AdiButtonAuras:RegisterRules(function(addon)
 			}
 		},
 		Configure {
+			"PurifyingBrew",
+			addon.L["Show stagger level."],
 			119582, -- Purifying Brew
 			"player",
 			{ "UNIT_AURA", "UNIT_HEALTH_MAX" },

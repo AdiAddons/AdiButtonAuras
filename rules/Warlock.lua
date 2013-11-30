@@ -125,6 +125,8 @@ AdiButtonAuras:RegisterRules(function(addon)
 		},
 		IfSpell { 123686, -- Pyroclasm
 			Configure {
+				"Pyroclasm",
+				format(addon.L["Highlight with 3 or more stacks of %s."], GetSpellInfo(117828)),
 				116858, -- Chaos Bolt
 				"player",
 				"UNIT_AURA",

@@ -39,6 +39,8 @@ AdiButtonAuras:RegisterRules(function(addon)
 	local UnitChannelInfo = _G.UnitChannelInfo
 	local UnitClass = _G.UnitClass
 
+	local L = addon.L
+
 	local _, playerClass = UnitClass("player")
 
 	local rules = {
@@ -172,6 +174,8 @@ AdiButtonAuras:RegisterRules(function(addon)
 	--------------------------------------------------------------------------
 
 		Configure {
+			"bloodlust",
+			L["Show when @NAME or an equivalent haste buff is found on yourself."],
 			{
 				 2825, -- Bloodlust (Horde shaman)
 				32182, -- Heroism (Alliance shaman)
@@ -226,8 +230,10 @@ AdiButtonAuras:RegisterRules(function(addon)
 			tinsert(rules, function()
 				local ids = LibSpellbook:GetAllIds(spell)
 				if ids then
+					local key = addon.BuildKey("CrowdControl", category)
+					local desc = addon.BuildDesc("", "bad", "enemy",  DRData:GetCategoryName(category))
 					for id in pairs(ids) do
-						AddRuleFor(id, "enemy", "UNIT_AURA", handler)
+						AddRuleFor(key, desc, id, "enemy", "UNIT_AURA", handler)
 					end
 				end
 			end)
@@ -260,6 +266,8 @@ AdiButtonAuras:RegisterRules(function(addon)
 	for buffMask, spells in pairs(buffSpells) do
 		local buffMask = buffMask
 		tinsert(rules, Configure {
+			"Raidbuff:"..buffMask,
+			L["Show good border when @NAME or an equivalent raid buff is found."],
 			buffSpells[buffMask],
 			"ally",
 			"UNIT_AURA",
@@ -300,6 +308,11 @@ AdiButtonAuras:RegisterRules(function(addon)
 		local offensive = band(flags, HELPFUL) == 0
 		local spell, token = spell, offensive and "enemy" or "ally"
 		tinsert(rules, Configure {
+			"Dispel",
+			(offensive
+				and addon.BuildDesc(L["a buff you can dispel"], "good", "enemy")
+				or addon.BuildDesc(L["a debuff you can dispel"], "bad", "ally")
+			),
 			spell,
 			token,
 			"UNIT_AURA",
@@ -326,6 +339,8 @@ AdiButtonAuras:RegisterRules(function(addon)
 		tinsert(interrupts, spell)
 	end
 	tinsert(rules, Configure {
+		"Interrupt",
+		L["Flash when the targeted enemy is casting/channeling a spell you can interrupt."],
 		interrupts,
 		"enemy",
 		{ -- Events

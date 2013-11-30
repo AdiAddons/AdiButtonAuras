@@ -69,6 +69,8 @@ AdiButtonAuras:RegisterRules(function(addon)
 			"flash"
 		},
 		Configure {
+			"ComboPoints",
+			addon.L["Show combo points and flash at 5."],
 			{
 				  1079, -- Rip
 				 22568, -- Ferocious Bite
@@ -92,6 +94,8 @@ AdiButtonAuras:RegisterRules(function(addon)
 		},
 		IfSpell { 77495, -- Mastery: Harmony
 			Configure {
+				"Harmony",
+				addon.L['Flash when mastery is inactive.'],
 				50464, -- Nourish
 				"player",
 				{ "UNIT_AURA", "PLAYER_REGEN_ENABLED", "PLAYER_REGEN_DISABLED" },
@@ -108,6 +112,8 @@ AdiButtonAuras:RegisterRules(function(addon)
 		},
 		IfSpell { 79577, -- Eclipse (passive)
 			Configure {
+				"LunarEnergy",
+				addon.L["Show lunar energy."],
 				5176, -- Wrath
 				"player",
 				{ "UNIT_POWER_FREQUENT", "ECLIPSE_DIRECTION_CHANGE" },
@@ -121,6 +127,8 @@ AdiButtonAuras:RegisterRules(function(addon)
 				end,
 			},
 			Configure {
+				"SolarEnergy",
+				addon.L["Show solar energy."],
 				2912, -- Starfire
 				"player",
 				{ "UNIT_POWER_FREQUENT", "ECLIPSE_DIRECTION_CHANGE" },

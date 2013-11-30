@@ -126,6 +126,22 @@ local function MergeSets(a, b)
 	return a
 end
 
+local BuildKey
+do
+	local function BuildKey0(value, ...)
+		if type(value) == "table" then
+			return BuildKey(unpack(value)), BuildKey0(...)
+		elseif value then
+			return tostring(value), BuildKey0(...)
+		end
+	end
+
+	function BuildKey(...)
+		return strjoin(':', BuildKey0(...))
+	end
+end
+addon.BuildKey = BuildKey
+
 ------------------------------------------------------------------------------
 -- Rule creation
 ------------------------------------------------------------------------------
@@ -134,40 +150,57 @@ local LibSpellbook = addon.GetLib('LibSpellbook-1.0')
 
 local playerClass = select(2, UnitClass("player"))
 local spellConfs = {}
+local ruleDescs = {}
 addon.spells = spellConfs
+addon.ruleDescs = ruleDescs
 
 local function SpellOrItemId(value, callLevel)
 	local spellId = tonumber(type(value) == "string" and strmatch(value, "spell:(%d+)") or value)
 	if spellId then
-		if not GetSpellInfo(spellId) then
+		local name = GetSpellInfo(spellId)
+		if not name then
 			error(format("Invalid spell identifier: %s", tostring(value)), callLevel+1)
 		elseif not LibSpellbook:IsKnown(spellId) then
 			return nil -- Unknown spell
 		end
-		return format("spell:%d", spellId), "spell "..GetSpellLink(spellId)
+		return format("spell:%d", spellId), "spell "..GetSpellLink(spellId), name
 	end
 	local itemId = tonumber(strmatch(tostring(value), "item:(%d+)"))
 	if itemId then
-		local _, link = GetItemInfo(itemId)
-		return format("item:%d", itemId), "item "..tostring(link)
+		local name, link = GetItemInfo(itemId)
+		if not name then
+			error(format("Invalid item identifier: %s", tostring(value)), callLevel+1)
+		else
+			return format("item:%d", itemId), "item "..tostring(link), name
+		end
 	end
 	error(format("Invalid spell or item identifier: %s", tostring(value)), callLevel+1)
 end
 
-local function _AddRuleFor(spell, units, events, handlers, callLevel)
-	local id, info = SpellOrItemId(spell, callLevel)
+local function _AddRuleFor(key, desc, spell, units, events, handlers, callLevel)
+	local id, info, name = SpellOrItemId(spell, callLevel)
 	if not id then
 		return
 	end
+	if key then
+		key = id..':'..key
+		desc = gsub(desc or "", "@NAME", name)
+		ruleDescs[key] = desc
+	end
 	addon.Debug('Rules', "Adding rule for", info,
+		"key:", key,
+		"desc:", desc,
 		"units:", strjoin(",", getkeys(units)),
 		"events:", strjoin(",", getkeys(events)),
 		"handlers:", handlers
 	)
 	local rule = spellConfs[id]
 	if not rule then
-		rule = { units = {}, events = {}, handlers = {} }
+		rule = { units = {}, events = {}, handlers = {}, keys = {} }
 		spellConfs[id] = rule
+	end
+	if key then
+		tinsert(rule.keys, key)
 	end
 	MergeSets(rule.units, units)
 	MergeSets(rule.events, events)
@@ -195,12 +228,12 @@ local function CheckRuleArgs(units, events, handlers, callLevel)
 	return units, events, handlers
 end
 
-local function AddRuleFor(spell, units, events, handlers)
+local function AddRuleFor(key, desc, spell, units, events, handlers)
 	units, events, handlers = CheckRuleArgs(units, events, handlers, 2)
-	return _AddRuleFor(spell, units, events, handlers, 2)
+	return _AddRuleFor(key, desc, spell, units, events, handlers, 2)
 end
 
-local function Configure(spells, units, events, handlers, callLevel)
+local function Configure(key, desc, spells, units, events, handlers, callLevel)
 	callLevel = callLevel or 1
 	spells = AsList(spells)
 	if #spells == 0 then
@@ -209,12 +242,12 @@ local function Configure(spells, units, events, handlers, callLevel)
 	units, events, handlers = CheckRuleArgs(units, events, handlers, callLevel+1)
 	if #spells == 1 then
 		return function()
-			_AddRuleFor(spells[1], units, events, handlers, callLevel+1)
+			_AddRuleFor(key, desc, spells[1], units, events, handlers, callLevel+1)
 		end
 	else
 		return function()
 			for i, spell in pairs(spells) do
-				_AddRuleFor(spell, units, events, handlers, callLevel+1)
+				_AddRuleFor(key, desc, spell, units, events, handlers, callLevel+1)
 			end
 		end
 	end
@@ -243,6 +276,60 @@ local function IfSpell(spells, ...)
 		end
 	end
 end
+
+------------------------------------------------------------------------------
+-- Rule description
+------------------------------------------------------------------------------
+
+local L = addon.L
+local filterDescs = {
+	["HELPFUL"] = L['the buff'],
+	["HARMFUL"] = L['the debuff'],
+	["HELPFUL PLAYER"] = L['your buff'],
+	["HARMFUL PLAYER"] = L['your debuff'],
+}
+local tokenDescs = {
+	player = L['yourself'],
+	pet    = L['your pet'],
+	ally   = L['the targeted ally'],
+	enemy  = L['the targeted enemy'],
+	group  = L['group members'],
+}
+local highlightDesc = {
+	flash   = L['Flash'],
+	good    = L['Show the "good" border'],
+	bad     = L['Show the "bad" border'],
+	lighten = L['Lighten'],
+	darken  = L['Darken'],
+}
+
+local function DescribeAllTokens(token, ...)
+	if token ~= nil then
+		return tokenDescs[token] or token, DescribeAllTokens(...)
+	end
+end
+
+local function DescribeAllSpells(id, ...)
+	if id ~= nil then
+		local name = type(id) == "number" and GetSpellInfo(id) or tostring(id)
+		return name, DescribeAllSpells(...)
+	end
+end
+
+local function BuildDesc(filter, highlight, token, spell)
+	local tokens = type(token) == "table" and DescribeAllTokens(unpack(token)) or DescribeAllTokens(token)
+	local spells = type(spell) == "table" and DescribeAllSpells(unpack(spell)) or DescribeAllSpells(spell)
+	return gsub(format(
+		L["%s when %s %s is found on %s."],
+		highlightDesc[highlight or false] or L["Look"],
+		filterDescs[filter] or filter and tostring(filter) or "",
+		spells or "",
+		tokens or "?"
+	), "%s+", " ")
+end
+addon.DescribeAllTokens = DescribeAllTokens
+addon.DescribeAllSpells = DescribeAllSpells
+addon.BuildDesc = BuildDesc
 
 ------------------------------------------------------------------------------
 -- Handler builders
@@ -327,8 +414,10 @@ end
 
 local function Auras(filter, highlight, unit, spells)
 	local funcs = {}
+	local key = BuildKey('Auras', filter, highlight, unit)
+	local desc = BuildDesc(filter, highlight, token, '@NAME')
 	for i, spell in ipairs(AsList(spells, "number", 2)) do
-		tinsert(funcs, Configure(spell, unit, "UNIT_AURA", BuildAuraHandler_Single(filter, highlight, unit, spell, 2), 2))
+		tinsert(funcs, Configure(key, desc, spell, unit,  "UNIT_AURA",  BuildAuraHandler_Single(filter, highlight, unit, spell, 2), 2))
 	end
 	return (#funcs > 1) and funcs or funcs[1]
 end
@@ -337,13 +426,17 @@ local function PassiveModifier(passive, spell, buff, unit, highlight)
 	unit = unit or "player"
 	highlight = highlight or "good"
 	local handler = BuildAuraHandler_Single("HEPLFUL PLAYER", highlight, unit, buff, 3)
-	local conf = Configure(spell, unit, "UNIT_AURA", handler, 3)
+	local key = BuildKey("PassiveModifier", passive, spell, buff, unit, highlight)
+	local desc = BuildDesc("HEPLFUL PLAYER", highlight, unit, buff)
+	local conf = Configure(key, desc, spell, unit, "UNIT_AURA", handler, 3)
 	return passive and IfSpell(passive, conf) or conf
 end
 
 local function AuraAliases(filter, highlight, unit, spells, buffs)
 	buffs = AsList(buffs or spells, "number", 3)
-	return Configure(spells, unit, "UNIT_AURA", BuildAuraHandler_FirstOf(filter, highlight, unit, buffs, 3), 3)
+	local key = BuildKey("AuraAliases", filter, highlight, unit, spells, buffs)
+	local desc = BuildDesc(filter, highlight, unit, buffs)
+	return Configure(key, desc, spells, unit, "UNIT_AURA", BuildAuraHandler_FirstOf(filter, highlight, unit, buffs, 3), 3)
 end
 
 local function ItemSelfBuffs(...)
@@ -363,7 +456,7 @@ local function ItemSelfBuffs(...)
 	return (#funcs > 1) and funcs or funcs[1]
 end
 
-local function ShowPower(spells, powerType, handler, highlight)
+local function ShowPower(spells, powerType, handler, highlight, desc)
 	if type(powerType) ~= "string" then
 		error("Invalid power type value, expected string, got "..type(powerType), 3)
 	end
@@ -371,6 +464,8 @@ local function ShowPower(spells, powerType, handler, highlight)
 	if not powerIndex then
 		error("Unknown power "..powerType, 3)
 	end
+	local key = BuildKey("ShowPower", powerType, highlight)
+	local powerLoc = _G[powerType]
 	local actualHandler
 	if type(handler) == "function" then
 		-- User-supplied handler
@@ -391,6 +486,12 @@ local function ShowPower(spells, powerType, handler, highlight)
 					model.highlight = highlight
 				end
 			end
+			desc = format(L["Show %s and %s when %s %s%%."],
+				powerLoc,
+				highlightDescs[highlight],
+				sign < 0 and "below" or "above",
+				floor(100 * sign * handler)
+			)
 		else
 			-- Consider the handler as a an absolute value
 			actualHandler = function(_, model)
@@ -399,6 +500,12 @@ local function ShowPower(spells, powerType, handler, highlight)
 					model.highlight = highlight
 				end
 			end
+			desc = format(L["Show %s and %s when %s %s."],
+				powerLoc,
+				highlightDescs[highlight],
+				sign < 0 and "below" or "above",
+				sign * handler
+			)
 		end
 	elseif not handler then
 		-- Provide a simple handler, that shows the current power value and highlights when it reaches the maximum
@@ -411,10 +518,15 @@ local function ShowPower(spells, powerType, handler, highlight)
 				end
 			end
 		end
+		if highlight then
+			desc = format(L["Show %s and %s when it reaches its maximum."], powerLoc, highlightDescs[highlight])
+		else
+			desc = format(L["Show %s."], powerLoc)
+		end
 	else
 		error("Invalid handler type, expected function, number or nil, got "..type(handler), 3)
 	end
-	return Configure(spells, "player", { "UNIT_POWER", "UNIT_POWER_MAX" }, actualHandler, 3)
+	return Configure(key, desc, spells, "player", { "UNIT_POWER", "UNIT_POWER_MAX" }, actualHandler, 3)
 end
 
 local function FilterOut(spells, exclude)
@@ -460,8 +572,10 @@ do
 					if band(flags, IMPORTANT) ~= 0 then
 						highlight = "flash"
 					end
+					local key = BuildKey('LibPlayerSpell', provider, modified, filter, highlight, token, buff)
+					local desc = BuildDesc(filter, highlight, token, buff)
 					local handler = BuildAuraHandler_Single(filter, highlight, token, buff, 3)
-					local rule = Configure(spells, token, "UNIT_AURA", handler, 3)
+					local rule = Configure(key, desc, spells, token, "UNIT_AURA", handler, 3)
 					if provider ~= modified then
 						rule = IfSpell(provider, rule)
 					end
@@ -519,7 +633,9 @@ local RULES_ENV = setmetatable({
 	end,
 
 	LongestDebuffOf = function(spells, buffs)
-		return Configure(spells, "enemy", "UNIT_AURA", BuildAuraHandler_Longest("HARMFUL", "bad", "enemy", buffs or spells, 2), 2)
+		local key = BuildKey('LongestDebuffOf', spells, buffs)
+		local desc =  BuildDesc("HARMFUL", "bad", "enemy", buffs)
+		return Configure(key, desc, spells, "enemy", "UNIT_AURA", BuildAuraHandler_Longest("HARMFUL", "bad", "enemy", buffs or spells, 2), 2)
 	end,
 
 	SelfBuffs = function(spells)
@@ -573,6 +689,7 @@ end
 function addon:LibSpellbook_Spells_Changed(event)
 	addon:Debug(event)
 	wipe(spellConfs)
+	wipe(ruleDescs)
 	Do(self:BuildRules())
 	self:SendMessage(addonName..'_RulesUpdated')
 end

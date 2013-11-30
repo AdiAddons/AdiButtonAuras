@@ -262,6 +262,8 @@ local function GetOptions()
 	profiles.order = -10
 	profiles.disabled = false
 
+	local tmpRuleList = {}
+
 	options = {
 		--@debug@
 		name = addonName..' DEV',
@@ -420,6 +422,28 @@ local function GetOptions()
 							addon.db.profile.inverted[selectedKey] = flag
 							addon:SendMessage(addon.CONFIG_CHANGED)
 						end
+					},
+					rules = {
+						name = L['Rules'],
+						desc = L['Select which rules should by applied to the button.'],
+						order = 40,
+						width = 'full',
+						type = 'multiselect',
+						get = function()
+							return true
+						end,
+						set = function(_, flag)
+						end,
+						values = function()
+							wipe(tmpRuleList)
+							local conf = selectedKey and addon.spells[selectedKey]
+							if conf then
+								for i, key in ipairs(conf.keys) do
+									tmpRuleList[i] = addon.ruleDescs[key]
+								end
+							end
+							return tmpRuleList
+						end,
 					},
 				},
 			},

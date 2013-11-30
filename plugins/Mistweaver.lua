@@ -43,9 +43,15 @@ AdiButtonAuras:RegisterRules(function(addon)
 	addon.Debug('Rules', 'Adding mistweaver rules')
 
 	local buff = GetSpellInfo(115151) -- Renewing Mist
+	
+	local TFT_COUNT    = 4 -- Minimum number of Renewing Mist to highlight Thunder Focus Tea
+	local TFT_DURATION = 6 -- Duration threshold to highlight Thunder Focus Tea
+	local UPLIFT_THRESHOLD = 2 -- Heal multiplier to highlight Uplight
 
 	return {
 		Configure {
+			"RenewingMist",
+			addon.L["Show the number of group member affected by @NAME and the shortest duration."],
 			115151, -- Renewing Mist
 			"group",
 			"UNIT_AURA",
@@ -63,6 +69,8 @@ AdiButtonAuras:RegisterRules(function(addon)
 			end
 		},
 		Configure {
+			"ThunderFocusTea",
+			format(addon.L["Highlight when at least %s %s are running and one of them is below %s seconds."], TFT_COUNT, buff, TFT_DURATION),
 			116680, -- Thunder Focus Tea
 			"group",
 			"UNIT_AURA",
@@ -74,12 +82,14 @@ AdiButtonAuras:RegisterRules(function(addon)
 						count, minExpiration = count + 1, min(minExpiration, expiration)
 					end
 				end
-				if count > 3 and minExpiration < 6 then
+				if count > TFT_COUNT and minExpiration < TFT_DURATION then
 					model.highlight, model.expiration = "flash", minExpiration
 				end
 			end
 		},
 		Configure {
+			"Uplift",
+			format(addon.L["Highlight when total effective healing would be at least %d times the base healing."], UPLIFT_THRESHOLD),
 			116670, -- Uplift
 			"group",
 			{ "UNIT_AURA", "UNIT_HEALTH", "UNIT_HEALTH_MAX" },
@@ -92,7 +102,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 						totalHeal = totalHeal + min(heal, UnitHealthMax(unit) - UnitHealth(unit))
 					end
 				end
-				if totalHeal >= 2 * heal then
+				if totalHeal >= UPLIFT_THRESHOLD * heal then
 					model.highlight = "flash"
 				end
 			end
