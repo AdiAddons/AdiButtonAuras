@@ -177,7 +177,7 @@ end
 function overlayPrototype:ApplyHighlight()
 	local highlight = self.highlight
 
-	if highlight == "flash" and not self.inCooldown then
+	if highlight == "flash" and not (addon.db.profile.notInCooldown and self.inCooldown) then
 		self:ShowOverlayGlow()
 	else
 		self:HideOverlayGlow()
