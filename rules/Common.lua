@@ -40,6 +40,9 @@ AdiButtonAuras:RegisterRules(function(addon)
 	local UnitClass = _G.UnitClass
 
 	local L = addon.L
+	local GetLib = addon.GetLib
+	local BuildDesc = addon.BuildDesc
+	local BuildKey = addon.BuildKey
 
 	local _, playerClass = UnitClass("player")
 
@@ -210,8 +213,8 @@ AdiButtonAuras:RegisterRules(function(addon)
 	--------------------------------------------------------------------------
 	-- Use DRData, grouped by DR categories
 
-	local DRData = addon.GetLib("DRData-1.0")
-	local LibSpellbook = addon.GetLib('LibSpellbook-1.0')
+	local DRData = GetLib("DRData-1.0")
+	local LibSpellbook = GetLib('LibSpellbook-1.0')
 
 	-- Build a list of spell ids per DR categories.
 	local drspells = {}
@@ -230,8 +233,8 @@ AdiButtonAuras:RegisterRules(function(addon)
 			tinsert(rules, function()
 				local ids = LibSpellbook:GetAllIds(spell)
 				if ids then
-					local key = addon.BuildKey("CrowdControl", category)
-					local desc = addon.BuildDesc("", "bad", "enemy",  DRData:GetCategoryName(category))
+					local key = BuildKey("CrowdControl", category)
+					local desc = BuildDesc("", "bad", "enemy", DRData:GetCategoryName(category):lower())
 					for id in pairs(ids) do
 						AddRuleFor(key, desc, id, "enemy", "UNIT_AURA", handler)
 					end
@@ -245,7 +248,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 	--------------------------------------------------------------------------
 	-- Use LibPlayerSpells
 
-	local LibPlayerSpells = addon.GetLib('LibPlayerSpells-1.0')
+	local LibPlayerSpells = GetLib('LibPlayerSpells-1.0')
 	local band, bor = bit.band, bit.bor
 
 	local classMask = LibPlayerSpells.constants[playerClass]
@@ -267,7 +270,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 		local buffMask = buffMask
 		tinsert(rules, Configure {
 			"Raidbuff:"..buffMask,
-			L["Show good border when @NAME or an equivalent raid buff is found."],
+			BuildDesc("", "good", "group", "@NAME or an equivalent buff"),
 			buffSpells[buffMask],
 			"ally",
 			"UNIT_AURA",
@@ -301,7 +304,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 	-- Dispels
 	--------------------------------------------------------------------------
 	-- Use LibDispellable and LibPlayerSpells
-	local LibDispellable = addon.GetLib('LibDispellable-1.0')
+	local LibDispellable = GetLib('LibDispellable-1.0')
 
 	local HELPFUL = LibPlayerSpells.constants.HELPFUL
 	for spell, flags in LibPlayerSpells:IterateSpells("DISPEL", playerClass) do
@@ -310,8 +313,8 @@ AdiButtonAuras:RegisterRules(function(addon)
 		tinsert(rules, Configure {
 			"Dispel",
 			(offensive
-				and addon.BuildDesc(L["a buff you can dispel"], "good", "enemy")
-				or addon.BuildDesc(L["a debuff you can dispel"], "bad", "ally")
+				and BuildDesc(L["a buff you can dispel"], "good", "enemy")
+				or BuildDesc(L["a debuff you can dispel"], "bad", "ally")
 			),
 			spell,
 			token,
@@ -340,7 +343,10 @@ AdiButtonAuras:RegisterRules(function(addon)
 	end
 	tinsert(rules, Configure {
 		"Interrupt",
-		L["Flash when the targeted enemy is casting/channeling a spell you can interrupt."],
+		format(L["%s when %s is casting/channeling a spell that you can interrupt."],
+			addon.DescribeHighlight("flash"),
+			addon.DescribeAllTokens("enemy")
+		),
 		interrupts,
 		"enemy",
 		{ -- Events

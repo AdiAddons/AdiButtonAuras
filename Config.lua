@@ -176,7 +176,7 @@ local function BuildConfigParent(parent)
 				GameTooltip:AddDoubleLine(title, event, nil, nil, nil, 1, 1, 1)
 				title = " "
 			end
-			GameTooltip:AddDoubleLine(L['Handlers'], #(self.conf.handlers), nil, nil, nil, 1, 1, 1)
+			GameTooltip:AddDoubleLine('Handlers', #(self.conf.handlers), nil, nil, nil, 1, 1, 1)
 			--@end-debug@
 			GameTooltip:AddLine(L['Shift+click to toggle.'])
 		else
@@ -295,55 +295,61 @@ local function GetOptions()
 				end,
 				args = {
 					notInCooldown = {
-						name = L['No flash in cooldown'],
+						name = L['No flash on cooldown'],
 						desc = format("%s\n|cffff0000%s|r",
-							L['Do not display the flashing animation on actions in cooldown.'],
-							L['THIS DOES NOT AFFECT BLIZZARD ANIMATIONS.']
+							L['Check so actions on cooldown do not flash.'],
+							L['THIS DOES NOT AFFECT BLIZZARD FLASHS.']
 						),
 						type = 'toggle',
 						order = 10,
 					},
 					countdownThresholds = {
-						name = L["Countdown Thresholds"],
+						name = L["Countdown thresholds"],
 						type = "group",
 						inline = true,
 						order = -2,
 						args = {
 							maxCountdown = {
 								name = L['Maximum duration to show'],
-								desc = L['Durations above this threshold are hidden.'],
+								desc = L['Durations above this threshold are hidden. Set to 0 to disable all countdowns.'],
 								type = 'range',
 								width = 'full',
 								order = 10,
 								min = 0,
-								max = 600,
-								step = 1,
+								max = 3600*5,
+								softMax = 600,
+								step = 5,
 							},
 							minMinutes = {
-								name = L['Minimum duration for "2m" format'],
+								name = L['Minimum duration for the "2m" format'],
+								desc = L['Duration above this threshold will use this format.'],
 								type = 'range',
 								width = 'full',
 								order = 20,
 								min = 60,
 								max = 600,
-								step = 1,
+								softMax = 300,
+								step = 10,
 							},
 							minMinuteSecs = {
-								name = L['Minimum duration for "4:58" format'],
+								name = L['Minimum duration for the "4:58" format'],
+								desc = L['Duration above this threshold will use this format.'],
 								type = 'range',
 								width = 'full',
 								order = 30,
 								min = 60,
 								max = 600,
-								step = 1,
+								softMax = 300,
+								step = 10,
 							},
 							maxTenth = {
-								name = L['Maximum duration for "2.7" format'],
+								name = L['Maximum duration for the "2.7" format'],
+								desc = L['Duration below this threshold will show decimals. Set to 0 to disable it.'],
 								type = 'range',
 								width = 'full',
 								order = 40,
 								min = 0,
-								max = 60,
+								max = 10,
 								step = 0.5,
 							},
 						}
@@ -410,7 +416,7 @@ local function GetOptions()
 					},
 					inverted = {
 						name = L['Inverted'],
-						desc = L['Check to show a border when the buff is missing.'],
+						desc = L['Check to show a border when the (de)buff is missing.'],
 						order = 30,
 						type = 'toggle',
 						get = function()
@@ -422,7 +428,7 @@ local function GetOptions()
 						end
 					},
 					flashPromotion = {
-						name = L['Promote highlight to flash'],
+						name = L['Flash instead of border'],
 						desc = L['Check to flash instead of displaying a border.'],
 						order = 40,
 						type = 'toggle',
@@ -437,7 +443,7 @@ local function GetOptions()
 					},
 					rules = {
 						name = L['Rules'],
-						desc = L['Select which rules should by applied to the button.'],
+						desc = L['Select which rules should by applied.'],
 						order = 50,
 						width = 'full',
 						type = 'multiselect',

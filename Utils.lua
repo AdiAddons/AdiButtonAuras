@@ -43,3 +43,8 @@ local function getkeys(t, prevKey)
 	end
 end
 addon.getkeys = getkeys
+
+local function ucfirst(s)
+	return s:sub(0,1):upper()..s:sub(2)
+end
+addon.ucfirst = ucfirst

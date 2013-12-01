@@ -99,7 +99,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 		},
 		Configure {
 			"PurifyingBrew",
-			addon.L["Show stagger level."],
+			format(L["Show %s."], L["stagger level"]),
 			119582, -- Purifying Brew
 			"player",
 			{ "UNIT_AURA", "UNIT_HEALTH_MAX" },

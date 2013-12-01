@@ -49,6 +49,9 @@ local unpack = _G.unpack
 local wipe = _G.wipe
 local xpcall = _G.xpcall
 
+local getkeys = addon.getkeys
+local ucfirst = addon.ucfirst
+
 ------------------------------------------------------------------------------
 -- Generic list and set tools
 ------------------------------------------------------------------------------
@@ -58,7 +61,6 @@ local function errorhandler(msg)
 	return geterrorhandler()(msg)
 end
 
-local getkeys = addon.getkeys
 
 local function Do(funcs)
 	for j, func in ipairs(funcs) do
@@ -181,7 +183,7 @@ local function _AddRuleFor(key, desc, spell, units, events, handlers, callLevel)
 	if key then
 		key = id..':'..key
 		desc = gsub(desc or "", "@NAME", name)
-		ruleDescs[key] = desc
+		ruleDescs[key] = ucfirst(desc)
 	end
 	addon.Debug('Rules', "Adding rule for", info,
 		"key:", key,
@@ -292,15 +294,23 @@ local tokenDescs = {
 	pet    = L['your pet'],
 	ally   = L['the targeted ally'],
 	enemy  = L['the targeted enemy'],
-	group  = L['group members'],
+	group  = L['the group members'],
 }
 local highlightDescs = {
-	flash   = L['Flash'],
-	good    = L['Show the "good" border'],
-	bad     = L['Show the "bad" border'],
-	lighten = L['Lighten'],
-	darken  = L['Darken'],
+	flash   = L['flash'],
+	good    = L['show the "good" border'],
+	bad     = L['show the "bad" border'],
+	lighten = L['lighten'],
+	darken  = L['darken'],
 }
+
+local function DescribeHighlight(highlight)
+	return highlight and highlightDescs[highlight] or L["show duration and/or stack count"]
+end
+
+local function DescribeFilter(filter)
+	return filter and (filterDescs[filter] or tostring(filter)) or ""
+end
 
 local function DescribeAllTokens(token, ...)
 	if token ~= nil then
@@ -320,12 +330,15 @@ local function BuildDesc(filter, highlight, token, spell)
 	local spells = type(spell) == "table" and DescribeAllSpells(unpack(spell)) or DescribeAllSpells(spell)
 	return gsub(format(
 		L["%s when %s %s is found on %s."],
-		highlightDescs[highlight or false] or L["Show duration and/or stack count"],
-		filterDescs[filter] or filter and tostring(filter) or "",
+		DescribeHighlight(highlight),
+		DescribeFilter(filter),
 		spells or "",
 		tokens or "?"
 	), "%s+", " ")
 end
+
+addon.DescribeHighlight = DescribeHighlight
+addon.DescribeFilter = DescribeFilter
 addon.DescribeAllTokens = DescribeAllTokens
 addon.DescribeAllSpells = DescribeAllSpells
 addon.BuildDesc = BuildDesc
@@ -485,11 +498,13 @@ local function ShowPower(spells, powerType, handler, highlight, desc)
 					model.highlight = highlight
 				end
 			end
-			desc = format(L["Show %s and %s when %s %s%%."],
+			desc = format(L["Show %s and %s when %s."],
 				powerLoc,
 				highlightDescs[highlight],
-				sign < 0 and "below" or "above",
-				floor(100 * sign * handler)
+				format(
+					sign < 0 and L["it is below %s"] or L["it is above %s"],
+					floor(100 * sign * handler)..'%'
+				)
 			)
 		else
 			-- Consider the handler as a an absolute value
@@ -499,11 +514,13 @@ local function ShowPower(spells, powerType, handler, highlight, desc)
 					model.highlight = highlight
 				end
 			end
-			desc = format(L["Show %s and %s when %s %s."],
+			desc = format(L["Show %s and %s when %s."],
 				powerLoc,
 				highlightDescs[highlight],
-				sign < 0 and "below" or "above",
-				sign * handler
+				format(
+					sign < 0 and L["it is below %s"] or L["it is above %s"],
+					sign * handler
+				)
 			)
 		end
 	elseif not handler then
