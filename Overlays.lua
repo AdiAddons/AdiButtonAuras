@@ -355,20 +355,20 @@ function overlayPrototype:ACTIONBAR_UPDATE_COOLDOWN(event)
 end
 
 function overlayPrototype:UpdateDynamicUnits(event, unit)
-	local updated, watchMouseover = false, false
-
-	updated = self:UpdateGUID(event, unit) or updated
+	local watchMouseover, listenMouseover = false, false
+	local updated = self:UpdateGUID(event, unit)
 
 	for token, conditional in pairs(self.unitConditionals) do
 		local _, unit = SecureCmdOptionParse(conditional)
 		if not unit or unit == "" then
 			unit = "target"
 		elseif unit == "mouseover" then
+			watchMouseover = true
 			local mouseoverUnit = addon:GetMouseoverUnit()
 			if mouseoverUnit and UnitIsUnit(mouseoverUnit, unit) then
 				unit = mouseoverUnit
 			else
-				watchMouseover = true
+				listenMouseover = true
 			end
 		end
 		self.unitMap[token] = unit
@@ -377,9 +377,12 @@ function overlayPrototype:UpdateDynamicUnits(event, unit)
 
 	if watchMouseover then
 		self:RegisterMessage(MOUSEOVER_CHANGED, 'UpdateGUID')
-		self:RegisterMessage(MOUSEOVER_TICK, 'ScheduleUpdate')
 	else
 		self:UnregisterMessage(MOUSEOVER_CHANGED)
+	end
+	if listenMouseover then
+		self:RegisterMessage(MOUSEOVER_TICK, 'ScheduleUpdate')
+	else
 		self:UnregisterMessage(MOUSEOVER_TICK)
 	end
 

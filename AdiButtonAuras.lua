@@ -338,7 +338,7 @@ addon.MOUSEOVER_CHANGED, addon.MOUSEOVER_TICK, addon.unitList = MOUSEOVER_CHANGE
 for i = 1,4 do tinsert(unitList, "party"..i) end
 for i = 1,40 do tinsert(unitList, "raid"..i) end
 
-local mouseoverUnit, mouseoverUnitTimer
+local mouseoverMessages, mouseoverUnit, mouseoverUnitTimer = {}
 
 local function ResolveMouseover()
 	if UnitExists('mouseover') then
@@ -351,18 +351,19 @@ local function ResolveMouseover()
 	end
 end
 
-function addon:UPDATE_MOUSEOVER_UNIT()
+function addon:UPDATE_MOUSEOVER_UNIT(event)
 	local unit = ResolveMouseover()
 	if mouseoverUnit ~= unit then
 		mouseoverUnit = unit
 		if unit == 'mouseover' then
 			if not mouseoverUnitTimer then
-				mouseoverUnitTimer = AceTimer.ScheduleRepeatingTimer(self, 'UPDATE_MOUSEOVER_UNIT', 0.5)
+				mouseoverUnitTimer = AceTimer.ScheduleRepeatingTimer(self, 'UPDATE_MOUSEOVER_UNIT', 0.2, 'Timer')
 			end
 		elseif mouseoverUnitTimer then
 			AceTimer:CancelTimer(mouseoverUnitTimer)
 			mouseoverUnitTimer = nil
 		end
+		addon.Debug('Mouseover', event, 'Changed:', unit)
 		return self:SendMessage(MOUSEOVER_CHANGED, unit)
 	elseif unit == 'mouseover' then
 		return self:SendMessage(MOUSEOVER_TICK, unit)
@@ -373,16 +374,23 @@ function addon:GetMouseoverUnit()
 	return mouseoverUnit
 end
 
-addon:DeclareMessage(
-	MOUSEOVER_CHANGED,
-	function()
-		addon:RegisterEvent('UPDATE_MOUSEOVER_UNIT')
-		addon:UPDATE_MOUSEOVER_UNIT()
-	end,
-	function()
-		addon:UnregisterEvent('UPDATE_MOUSEOVER_UNIT')
+do
+	local function OnUsed(msg)
+		if not next(mouseoverMessages) then
+			addon:RegisterEvent('UPDATE_MOUSEOVER_UNIT')
+			addon:UPDATE_MOUSEOVER_UNIT('OnUsed')
+		end
+		mouseoverMessages[msg] = true
 	end
-)
+	local function OnUnused(msg)
+		mouseoverMessages[msg] = nil
+		if not next(mouseoverMessages) then
+			addon:UnregisterEvent('UPDATE_MOUSEOVER_UNIT')
+		end
+	end
+	addon:DeclareMessage(MOUSEOVER_CHANGED, OnUsed, OnUnused)
+	addon:DeclareMessage(MOUSEOVER_TICK, OnUsed, OnUnused)
+end
 
 ------------------------------------------------------------------------------
 -- "ally" and "enemy" pseudo-units
