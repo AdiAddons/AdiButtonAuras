@@ -1,12 +1,29 @@
 h1. AdiButtonAuras
 
-Display auras on action buttons.
+Display auras, and more, on action buttons.
 
 AdiButtonAuras is a rewrite of Inline Aura, but with different design decisions based on my experience on the latter.
 
+AdiButtonAuras uses a set of rules that apply to one or more spells. Each rule can track an aura on one or more unit and changes the display of the spell accordingly.
+
+h2. Options
+
+h3. Global options
+
+* do not flash actions on cooldown,
+* change "good" and "bad" border colors,
+* tweak countdown text display.
+
+h3. Spell/item options
+
+* disable the spell,
+* "promote to flash": replace any border with the flashing animation,
+* inverted highlight: highlight the spell when it is missing,
+* select which rules should apply.
+
 h2. Supported classes and specializations
 
-Most of the class spells are supported through the library "LibPlayerSpell-1.0":https://github.com/Adirelle/LibPlayerSpells-1.0.
+Most of the simple buffs are supported through the library "LibPlayerSpell-1.0":https://github.com/Adirelle/LibPlayerSpells-1.0.
 
 * !http://wow.zamimg.com/images/wow/icons/small/class_druid.jpg! Druid:
 ** Balance: 5.4
