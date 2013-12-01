@@ -31,6 +31,8 @@ if select(2, UnitClass("player")) ~= "MONK" then return end
 AdiButtonAuras:RegisterRules(function(addon)
 	addon.Debug('Rules', 'Adding monk rules')
 
+	local L = addon.L
+
 	return {
 		ImportPlayerSpells {
 			-- Import all spells for ...
