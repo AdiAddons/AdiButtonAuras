@@ -294,7 +294,7 @@ local function GetOptions()
 					addon:SendMessage(addon.CONFIG_CHANGED)
 				end,
 				args = {
-					notInCooldown = {
+					noFlashOnCooldown = {
 						name = L['No flash on cooldown'],
 						desc = format("%s\n|cffff0000%s|r",
 							L['Check so actions on cooldown do not flash.'],
@@ -302,6 +302,15 @@ local function GetOptions()
 						),
 						type = 'toggle',
 						order = 10,
+					},
+					noFlashOutOfCombat = {
+						name = L['No flash out of combat'],
+						desc = format("%s\n|cffff0000%s|r",
+							L['Check to disable flashs out of combat.'],
+							L['THIS DOES NOT AFFECT BLIZZARD FLASHS.']
+						),
+						type = 'toggle',
+						order = 15,
 					},
 					countdownThresholds = {
 						name = L["Countdown thresholds"],

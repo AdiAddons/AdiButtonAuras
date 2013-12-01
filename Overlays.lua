@@ -303,8 +303,12 @@ function overlayPrototype:SetAction(event, actionType, actionId, macroConditiona
 
 		self:RegisterEvent('PLAYER_ENTERING_WORLD')
 		self:RegisterEvent('ACTIONBAR_SLOT_CHANGED')
-		if addon.db.profile.notInCooldown then
+		if addon.db.profile.noFlashOnCooldown then
 			self:RegisterEvent('ACTIONBAR_UPDATE_COOLDOWN')
+		end
+		if addon.db.profile.noFlashOutOfCombat then
+			self:RegisterEvent('PLAYER_REGEN_ENABLED')
+			self:RegisterEvent('PLAYER_REGEN_DISABLED')
 		end
 
 		self.handlers = conf.handlers
