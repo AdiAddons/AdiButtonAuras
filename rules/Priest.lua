@@ -32,5 +32,31 @@ local addonName, addon = ...
 
 AdiButtonAuras:RegisterRules(function(addon)
 	addon.Debug('Rules', 'Adding priest rules')
-	return ImportPlayerSpells { "PRIEST" }
+	return {
+		ImportPlayerSpells {
+			-- Import all spells for ...
+			"PRIEST",
+			-- ... but ...
+			17, -- Power Word: Shield
+		},
+		ShowPower {
+			{
+				 2944, -- Devouring Plague
+				64044, -- Psychic Horror
+			},
+			"SHADOW_ORBS",
+		},
+		Configure {
+			17, -- Power Word: Shield
+			"ally",
+			"UNIT_AURA",
+			(function()
+				local hasPWShield = BuildAuraHandler_Single("HELPFUL", "good", "ally", 17)
+				local hasWeakenedSoul = BuildAuraHandler_Single("HARMFUL", "bad", "ally", 6788)
+				return function(units, model)
+					return hasPWShield(units, model) or hasWeakenedSoul(units, model)
+				end
+			end)(),
+		},
+	}
 end)
