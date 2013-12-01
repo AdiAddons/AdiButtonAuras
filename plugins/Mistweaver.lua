@@ -64,7 +64,10 @@ AdiButtonAuras:RegisterRules(function(addon)
 					end
 				end
 				if count > 0 then
-					model.highlight, model.count, model.expiration = "good", count, minExpiration
+					if count > 3 or GetNumGroupMembers() < 5 then
+						model.highlight = "good"
+					end
+					model.count, model.expiration = count, minExpiration
 				end
 			end
 		},
@@ -82,7 +85,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 						count, minExpiration = count + 1, min(minExpiration, expiration)
 					end
 				end
-				if count > TFT_COUNT and minExpiration < TFT_DURATION then
+				if count >= TFT_COUNT and minExpiration-GetTime() < TFT_DURATION then
 					model.highlight, model.expiration = "flash", minExpiration
 				end
 			end
