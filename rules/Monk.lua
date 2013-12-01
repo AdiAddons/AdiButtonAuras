@@ -39,10 +39,12 @@ AdiButtonAuras:RegisterRules(function(addon)
 			"MONK",
 			-- ... but ...
 			115151, -- Renewing Mist
+			115294, -- Mana Tea
 			116670, -- Uplift
 			116680, -- Thunder Focus Tea
 			119582, -- Purifying Brew
 			123273, -- Surging Mist
+			123761, -- Mana Tea (glyphed)
 			134563, -- Healing Elixirs (buff)
 		},
 		ShowPower {
@@ -123,6 +125,32 @@ AdiButtonAuras:RegisterRules(function(addon)
 					end
 				end
 			end)(),
+		},
+		Configure {
+			"ManaTea",
+			format(addon.L["%s on @NAME when it would not be wasted."], addon.DescribeHighlight("good")),
+			{
+				115294, -- Mana Tea
+				123761, -- Mana Tea (glyphed)
+			},
+			"player",
+			{ "UNIT_AURA", "UNIT_POWER", "UNIT_POWER_MAX" },
+			(function()
+				local buff = GetSpellInfo(115867) -- Mana Tea (stacking buff)
+				return function(_, model)
+					local name, _, _, count, _, _, expiration = UnitAura("player", buff, nil, "HELPFUL PLAYER")
+					if name then
+						model.expiration = expiration
+						local mana, manaMax = UnitPower("player", SPELL_POWER_MANA), UnitPowerMax("player", SPELL_POWER_MANA)
+						addon.Debug('ManaTea', count, mana, manaMax, floor(100 * (manaMax-mana) / manaMax))
+						if count >= 19 and mana < manaMax then
+							model.highlight = "flash"
+						elseif 0.04 * min(2, count) <= (manaMax-mana) / manaMax then
+							model.highlight = "good"
+						end
+					end
+				end
+			end)()
 		},
 	}
 
