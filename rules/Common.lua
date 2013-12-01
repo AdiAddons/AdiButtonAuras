@@ -227,14 +227,14 @@ AdiButtonAuras:RegisterRules(function(addon)
 
 	-- Create a rule for each spell of each category
 	for category, spells in pairs(drspells) do
+		local key = BuildKey("CrowdControl", category)
+		local desc = BuildDesc(L["a debuff"], "bad", "enemy", format(L["of type '%s'"], DRData:GetCategoryName(category):lower()))
 		local handler = BuildAuraHandler_Longest("HARMFUL", "bad", "enemy", spells)
 		for i, spell in ipairs(spells) do
 			local spell = spell
 			tinsert(rules, function()
 				local ids = LibSpellbook:GetAllIds(spell)
 				if ids then
-					local key = BuildKey("CrowdControl", category)
-					local desc = BuildDesc("", "bad", "enemy", DRData:GetCategoryName(category):lower())
 					for id in pairs(ids) do
 						AddRuleFor(key, desc, id, "enemy", "UNIT_AURA", handler)
 					end
@@ -270,7 +270,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 		local buffMask = buffMask
 		tinsert(rules, Configure {
 			"Raidbuff:"..buffMask,
-			BuildDesc("", "good", "group", "@NAME or an equivalent buff"),
+			BuildDesc("HELPFUL", "good", "group", L["@NAME or equivalent"]),
 			buffSpells[buffMask],
 			"ally",
 			"UNIT_AURA",
