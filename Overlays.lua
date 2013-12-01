@@ -52,6 +52,7 @@ local UnitIsUnit = _G.UnitIsUnit
 local wipe = _G.wipe
 
 local LibSpellbook = addon.GetLib('LibSpellbook-1.0')
+local AceTimer = addon.GetLib('AceTimer-3.0')
 
 local MOUSEOVER_CHANGED, MOUSEOVER_TICK, GROUP_CHANGED = addon.MOUSEOVER_CHANGED, addon.MOUSEOVER_TICK, addon.GROUP_CHANGED
 
@@ -225,8 +226,9 @@ end
 function overlayPrototype:ForceUpdate(event)
 	self:Debug('ForceUpdate', event)
 	if not self:UpdateAction(event) and not self:UpdateDynamicUnits(event) then
-		return self:UpdateState(event)
+		self:UpdateState(event)
 	end
+	self:UpdateCooldown(event)
 end
 overlayPrototype.PLAYER_ENTERING_WORLD = overlayPrototype.ForceUpdate
 
@@ -301,13 +303,16 @@ function overlayPrototype:SetAction(event, actionType, actionId, macroConditiona
 
 		self:RegisterEvent('PLAYER_ENTERING_WORLD')
 		self:RegisterEvent('ACTIONBAR_SLOT_CHANGED')
-		self:RegisterEvent('ACTIONBAR_UPDATE_COOLDOWN')
+		if addon.db.profile.notInCooldown then
+			self:RegisterEvent('ACTIONBAR_UPDATE_COOLDOWN')
+		end
 
 		self.handlers = conf.handlers
 	else
 		self.handlers = nil
-
 	end
+
+	self:UpdateCooldown()
 
 	return hasDynamicUnits and self:UpdateDynamicUnits(event) or self:ScheduleUpdate(event)
 end
@@ -344,15 +349,30 @@ function overlayPrototype:PLAYER_FOCUS_CHANGED(event)
 	return self:GenericEvent(event, "focus")
 end
 
-function overlayPrototype:ACTIONBAR_UPDATE_COOLDOWN(event)
+function overlayPrototype:UpdateCooldown(event)
 	local start, duration = self:GetActionCooldown()
-	local inCooldown = start and duration and start > 0 and duration > 2 or false
-	addon.Debug('Cooldown', self, 'start=', start, 'duration=', duration, 'inCooldown=', inCooldown)
+	local inCooldown = start and duration and start > 0 and duration > 2
+	if not inCooldown then
+		start, duration = nil, nil
+	end
+	if self.cooldownStart ~= start or self.cooldownDuration ~= duration then
+		self:Debug('cooldownStart=', start, 'cooldownDuration=', duration)
+		if self.cooldownTimer then
+			AceTimer:CancelTimer(self.cooldownTimer)
+			self.cooldownTimer = nil
+		end
+		self.cooldownStart, self.cooldownDuration = start, duration
+		if inCooldown then
+			self.cooldownTimer = AceTimer.ScheduleTimer(self, "UpdateCooldown", (start+duration+0.1)-GetTime())
+		end
+	end
 	if self.inCooldown ~= inCooldown then
+		self:Debug('inCooldown=', inCooldown)
 		self.inCooldown = inCooldown
 		self:ApplyHighlight()
 	end
 end
+overlayPrototype.ACTIONBAR_UPDATE_COOLDOWN = overlayPrototype.UpdateCooldown
 
 function overlayPrototype:UpdateDynamicUnits(event, unit)
 	local watchMouseover, listenMouseover = false, false
