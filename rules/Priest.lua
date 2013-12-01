@@ -47,6 +47,8 @@ AdiButtonAuras:RegisterRules(function(addon)
 			"SHADOW_ORBS",
 		},
 		Configure {
+			"PWShield",
+			addon.L["Show Power Word: Shield or Weakened Soul on targeted ally."],
 			17, -- Power Word: Shield
 			"ally",
 			"UNIT_AURA",
