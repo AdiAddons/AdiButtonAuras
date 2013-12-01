@@ -46,20 +46,18 @@ AdiButtonAuras:RegisterRules(function(addon)
 			134563, -- Healing Elixirs (buff)
 		},
 		ShowPower {
-			-- Show current Chi on generators and 3-chi spenders
+			-- Show current Chi on spenders and flash when reaching maximum
 			{
-				100780, -- Jab (glyphed)
-				101546, -- Spinning Crane Kick
-				115072, -- Expel Harm
-				115080, -- Touch of Death
-				115175, -- Soothing Mist
-				115693, -- Jab
+				100784, -- Blackout Kick
+				107428, -- Rising Sun Kick
+				113656, -- Fists of Fury
+				115181, -- Breath of Fire
 				116670, -- Uplift
-				116847, -- Rushing Jade Wind
-				117952, -- Crackling Jade Lightning
 				124682, -- Enveloping Mist
 			},
 			"CHI",
+			nil,
+			"flash"
 		},
 		DebuffAliases {
 			121253, -- Keg Smash
