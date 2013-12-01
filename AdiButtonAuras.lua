@@ -257,7 +257,7 @@ end
 -- Group roster update
 ------------------------------------------------------------------------------
 
-local GROUP_CHANGED = addonName..'_Mouseover_Tick'
+local GROUP_CHANGED = addonName..'_Group_Changed'
 local groupPrefix, groupSize = "", 0
 local groupUnits = {}
 addon.GROUP_CHANGED, addon.groupUnits = GROUP_CHANGED, groupUnits
