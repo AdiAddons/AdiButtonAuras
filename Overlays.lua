@@ -258,9 +258,7 @@ function overlayPrototype:SetAction(event, actionType, actionId, macroConditiona
 	local events = wipe(self.events)
 	wipe(self.unitConditionals)
 	self:UnregisterAllEvents()
-	self:UnregisterMessage(MOUSEOVER_CHANGED)
-	self:UnregisterMessage(MOUSEOVER_TICK)
-	self:UnregisterMessage(GROUP_CHANGED)
+	self:UnregisterAllMessages()
 
 	if conf then
 		self:Debug('SetAction', event, GetSpellLink(spellId), macroConditionals)
