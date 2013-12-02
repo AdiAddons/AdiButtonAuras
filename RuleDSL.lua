@@ -701,12 +701,15 @@ function addon:BuildRules(event)
 	return rules
 end
 
+local RULES_UPDATED = addonName..'_Rules_Updated'
+addon.RULES_UPDATED = RULES_UPDATED
+
 function addon:LibSpellbook_Spells_Changed(event)
 	addon:Debug(event)
 	wipe(spellConfs)
 	wipe(ruleDescs)
 	Do(self:BuildRules())
-	self:SendMessage(addonName..'_RulesUpdated')
+	self:SendMessage(RULES_UPDATED)
 end
 
 function addon.api:RegisterRules(builder)

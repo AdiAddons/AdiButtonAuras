@@ -54,7 +54,9 @@ local wipe = _G.wipe
 local LibSpellbook = addon.GetLib('LibSpellbook-1.0')
 local AceTimer = addon.GetLib('AceTimer-3.0')
 
-local MOUSEOVER_CHANGED, MOUSEOVER_TICK, GROUP_CHANGED = addon.MOUSEOVER_CHANGED, addon.MOUSEOVER_TICK, addon.GROUP_CHANGED
+local MOUSEOVER_CHANGED = addonMOUSEOVER_CHANGED
+local MOUSEOVER_TICK = addon.MOUSEOVER_TICK
+local GROUP_CHANGED = addon.GROUP_CHANGED
 
 ------------------------------------------------------------------------------
 -- Unit handling
@@ -197,9 +199,12 @@ function overlayPrototype:Initialize(button)
 	self.events = {}
 	self.handlers = nil
 
-	self:RegisterMessage(addonName..'_RulesUpdated', 'ForceUpdate')
-	self:RegisterMessage(addon.DYNAMIC_UNIT_CONDITONALS_CHANGED, 'ForceUpdate')
-	self:RegisterMessage(addon.CONFIG_CHANGED, 'OnConfigChanged')
+	-- Do not register these events to ourself so UnregisterAllMessages doesn't unregister them
+	local name = self:GetName()
+	local ForceUpdate = function(...) return self:ForceUpdate(...) end
+	self.RegisterMessage(name, addon.RULES_UPDATED, ForceUpdate)
+	self.RegisterMessage(name, addon.DYNAMIC_UNIT_CONDITONALS_CHANGED, ForceUpdate)
+	self.RegisterMessage(name, addon.CONFIG_CHANGED, function(...) return self:OnConfigChanged(...) end)
 
 	self:Show()
 end
