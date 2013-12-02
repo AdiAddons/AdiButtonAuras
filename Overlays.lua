@@ -65,8 +65,8 @@ local GROUP_CHANGED = addon.GROUP_CHANGED
 local unitEvents = {
 	target = 'PLAYER_TARGET_CHANGED',
 	focus = 'PLAYER_FOCUS_CHANGED',
-	mouseover = 'UPDATE_MOUSEOVER_UNIT',
 	pet = 'UNIT_PET',
+	mouseover = MOUSEOVER_CHANGED,
 }
 
 local unitIdentity = { group = addon.groupUnits }
@@ -386,7 +386,7 @@ end
 overlayPrototype.ACTIONBAR_UPDATE_COOLDOWN = overlayPrototype.UpdateCooldown
 
 function overlayPrototype:UpdateDynamicUnits(event, unit)
-	local watchMouseover, listenMouseover = false, false
+	local listenMouseover = false
 	local updated = self:UpdateGUID(event, unit)
 
 	for token, conditional in pairs(self.unitConditionals) do
@@ -394,23 +394,17 @@ function overlayPrototype:UpdateDynamicUnits(event, unit)
 		if not unit or unit == "" then
 			unit = "target"
 		elseif unit == "mouseover" then
-			watchMouseover = true
 			local mouseoverUnit = addon:GetMouseoverUnit()
-			if mouseoverUnit and UnitIsUnit(mouseoverUnit, unit) then
-				unit = mouseoverUnit
-			else
+			if mouseoverUnit == "mouseover" then
 				listenMouseover = true
+			else
+				unit = mouseoverUnit
 			end
 		end
 		self.unitMap[token] = unit
 		updated = self:UpdateGUID(event, unit) or updated
 	end
 
-	if watchMouseover then
-		self:RegisterMessage(MOUSEOVER_CHANGED, 'UpdateGUID')
-	else
-		self:UnregisterMessage(MOUSEOVER_CHANGED)
-	end
 	if listenMouseover then
 		self:RegisterMessage(MOUSEOVER_TICK, 'ScheduleUpdate')
 	else
