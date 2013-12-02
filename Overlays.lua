@@ -298,10 +298,14 @@ function overlayPrototype:SetAction(event, actionType, actionId, macroConditiona
 		end
 
 		for event, handler in pairs(events) do
-			if not self[event] then
-				self[event] = event:match('^UNIT_') and self.GenericUnitEvent or self.GenericEvent
+			if strsub(event, 0, 14) == "AdiButtonAuras" then
+				self:RegisterMessage(event, handler)
+			else
+				if not self[event] then
+					self[event] = event:match('^UNIT_') and self.GenericUnitEvent or self.GenericEvent
+				end
+				self:RegisterEvent(event)
 			end
-			self:RegisterEvent(event)
 		end
 
 		self:RegisterEvent('PLAYER_ENTERING_WORLD')
