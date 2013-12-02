@@ -67,6 +67,7 @@ local unitEvents = {
 	focus = 'PLAYER_FOCUS_CHANGED',
 	pet = 'UNIT_PET',
 	mouseover = MOUSEOVER_CHANGED,
+	group = GROUP_CHANGED,
 }
 
 local unitIdentity = { group = addon.groupUnits }
@@ -266,7 +267,7 @@ function overlayPrototype:SetAction(event, actionType, actionId, macroConditiona
 			events[event] = 'ScheduleUpdate'
 		end
 		for unit in pairs(conf.units) do
-			units[unit] = 'UpdateGUID'
+			units[unit] = unit == 'group' and 'ScheduleUpdate' or 'UpdateGUID'
 		end
 
 		for token, default in pairs(addon.dynamicUnitConditionals) do
@@ -283,10 +284,6 @@ function overlayPrototype:SetAction(event, actionType, actionId, macroConditiona
 				end
 				hasDynamicUnits = true
 			end
-		end
-
-		if units.group then
-			self:RegisterMessage(GROUP_CHANGED, 'ScheduleUpdate')
 		end
 
 		for unit, handler in pairs(units) do
