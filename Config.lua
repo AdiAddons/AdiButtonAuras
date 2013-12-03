@@ -514,14 +514,14 @@ spellPanel:HookScript('OnShow', function(self)
 end)
 
 -- Add a macro command to open it
-_G.SlashCmdList["ADIBUTTONAURAS"] = function(_, what)
-	if what == 'spells' then
-		InterfaceOptionsFrame_OpenToCategory(spellPanel)
-	elseif what == 'profiles' then
-		InterfaceOptionsFrame_OpenToCategory(profilePanel)
-	else
-		InterfaceOptionsFrame_OpenToCategory(mainPanel)
+_G.SlashCmdList["ADIBUTTONAURAS"] = function(what)
+	what = (what or ""):trim():lower()
+	if what == 'spell' or what == 'spells' then
+		return InterfaceOptionsFrame_OpenToCategory(spellPanel)
+	elseif what == 'profile' or what == 'profiles' then
+		return InterfaceOptionsFrame_OpenToCategory(profilePanel)
 	end
+	InterfaceOptionsFrame_OpenToCategory(mainPanel)
 end
 _G.SLASH_ADIBUTTONAURAS1 = "/adibuttonauras"
 _G.SLASH_ADIBUTTONAURAS2 = "/aba"
