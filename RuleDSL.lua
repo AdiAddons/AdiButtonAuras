@@ -451,23 +451,6 @@ local function AuraAliases(filter, highlight, unit, spells, buffs)
 	return Configure(key, desc, spells, unit, "UNIT_AURA", BuildAuraHandler_FirstOf(filter, highlight, unit, buffs, 3), 3)
 end
 
-local function ItemSelfBuffs(...)
-	local funcs = {}
-	for i = 1, select("#", ...), 2 do
-		local item, buffs = select(i, ...)
-		if type(item) ~= "string" then
-			error(format("%dth item should be a string, not %s", (i+1)/2, type(item)), 3)
-		elseif not strmatch(item, "^item:%d+$") then
-			error(format("%q is an invalid item", item), 3)
-		end
-		buffs = AsList(buffs, "number", 3)
-		local handler = BuildAuraHandler_FirstOf("PLAYER HELPFUL", "good", "player", buffs, 3)
-		local rule = Configure(item, "player", "UNIT_AURA", handler, 3)
-		tinsert(funcs, rule)
-	end
-	return (#funcs > 1) and funcs or funcs[1]
-end
-
 local function ShowPower(spells, powerType, handler, highlight, desc)
 	if type(powerType) ~= "string" then
 		error("Invalid power type value, expected string, got "..type(powerType), 3)
@@ -626,7 +609,6 @@ local RULES_ENV = setmetatable({
 	IfSpell = WrapTableArgFunc(IfSpell),
 	ShowPower = WrapTableArgFunc(ShowPower),
 	PassiveModifier = WrapTableArgFunc(PassiveModifier),
-	ItemSelfBuffs = WrapTableArgFunc(ItemSelfBuffs),
 	ImportPlayerSpells = WrapTableArgFunc(ImportPlayerSpells),
 
 	-- High-level functions
