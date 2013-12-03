@@ -45,6 +45,8 @@ AdiButtonAuras:RegisterRules(function(addon)
 			119582, -- Purifying Brew
 			123273, -- Surging Mist
 			123761, -- Mana Tea (glyphed)
+			125195, -- Tigereye Brew (stacking buff)
+			128939, -- Elusive Brew (stacking buff)
 			134563, -- Healing Elixirs (buff)
 		},
 		ShowPower {
