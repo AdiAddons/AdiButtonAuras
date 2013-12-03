@@ -52,12 +52,15 @@ local xpcall = _G.xpcall
 local getkeys = addon.getkeys
 local ucfirst = addon.ucfirst
 
+-- Local debug with dedicated prefix
+local function Debug(...) return addon.Debug('|cffffff00Rules:|r', ...) end
+
 ------------------------------------------------------------------------------
 -- Generic list and set tools
 ------------------------------------------------------------------------------
 
 local function errorhandler(msg)
-	addon.Debug('Rules', '|cffff0000'..tostring(msg)..'|r')
+	Debug('|cffff0000'..tostring(msg)..'|r')
 	return geterrorhandler()(msg)
 end
 
@@ -185,7 +188,7 @@ local function _AddRuleFor(key, desc, spell, units, events, handlers, callLevel)
 		desc = gsub(desc or "", "@NAME", name)
 		ruleDescs[key] = ucfirst(desc)
 	end
-	addon.Debug('Rules', "Adding rule for", info,
+	Debug("Adding rule for", info,
 		"key:", key,
 		"desc:", desc,
 		"units:", strjoin(",", getkeys(units)),
@@ -684,7 +687,7 @@ local ruleBuilders = {}
 
 function addon:BuildRules(event)
 	if not rules then
-		addon.Debug('Rules', 'Building rules', event)
+		Debug('Building rules', event)
 		if #ruleBuilders == 0 then
 			error("No rules registered !", 2)
 		end
@@ -696,7 +699,7 @@ function addon:BuildRules(event)
 			end
 		end
 		rules = AsList(t, "function")
-		addon.Debug('Rules', #rules, 'rules found')
+		Debug(#rules, 'rules found')
 	end
 	return rules
 end
@@ -716,7 +719,7 @@ function addon.api:RegisterRules(builder)
 	setfenv(builder, RULES_ENV)
 	tinsert(ruleBuilders, function() return builder(addon) end)
 	if rules then
-		addon.Debug('Rules', 'Rebuilding rules')
+		Debug('Rebuilding rules')
 		rules = nil
 		return addon:LibSpellbook_Spells_Changed('RegisterRules')
 	end
