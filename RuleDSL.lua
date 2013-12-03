@@ -166,7 +166,7 @@ local function SpellOrItemId(value, callLevel)
 		if not name then
 			error(format("Invalid spell identifier: %s", tostring(value)), callLevel+1)
 		end
-		return format("spell:%d", spellId), "spell "..(GetSpellLink(spellId) or "?"), name, "spell", spellId
+		return format("spell:%d", spellId), "spell "..(GetSpellLink(spellId) or spellId), name, "spell", spellId
 	end
 	local itemId = tonumber(strmatch(tostring(value), "item:(%d+)"))
 	if itemId then
