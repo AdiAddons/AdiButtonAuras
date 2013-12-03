@@ -362,7 +362,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 		-- Handler
 		function(units, model)
 			local unit = units.enemy
-			if UnitCanAttack("player", unit) then
+			if unit and UnitCanAttack("player", unit) then
 				local name, _, _, _, _, endTime, _, _, notInterruptible = UnitCastingInfo(unit)
 				if name and not notInterruptible then
 					model.highlight, model.expiration = "flash", endTime / 1000
