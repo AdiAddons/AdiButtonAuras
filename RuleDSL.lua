@@ -52,12 +52,15 @@ local xpcall = _G.xpcall
 local getkeys = addon.getkeys
 local ucfirst = addon.ucfirst
 
+-- Local debug with dedicated prefix
+local function Debug(...) return addon.Debug('|cffffff00Rules:|r', ...) end
+
 ------------------------------------------------------------------------------
 -- Generic list and set tools
 ------------------------------------------------------------------------------
 
 local function errorhandler(msg)
-	addon.Debug('Rules', '|cffff0000'..tostring(msg)..'|r')
+	Debug('|cffff0000'..tostring(msg)..'|r')
 	return geterrorhandler()(msg)
 end
 
@@ -162,22 +165,35 @@ local function SpellOrItemId(value, callLevel)
 		local name = GetSpellInfo(spellId)
 		if not name then
 			error(format("Invalid spell identifier: %s", tostring(value)), callLevel+1)
-		elseif not LibSpellbook:IsKnown(spellId) then
-			return nil -- Unknown spell
 		end
-		return format("spell:%d", spellId), "spell "..GetSpellLink(spellId), name
+		return format("spell:%d", spellId), "spell "..GetSpellLink(spellId), name, "spell", spellId
 	end
 	local itemId = tonumber(strmatch(tostring(value), "item:(%d+)"))
 	if itemId then
 		local name, link = GetItemInfo(itemId)
-		return format("item:%d", itemId), link and ("item "..tostring(link)) or value, name or value
+		return format("item:%d", itemId), link and ("item "..tostring(link)) or value, name or value, "item"
 	end
 	error(format("Invalid spell or item identifier: %s", tostring(value)), callLevel+1)
 end
 
-local function _AddRuleFor(key, desc, spell, units, events, handlers, callLevel)
-	local id, info, name = SpellOrItemId(spell, callLevel)
-	if not id then
+local function CheckAvailability(info, spellId, providers)
+	if not LibSpellbook:IsKnown(spellId) then
+		Debug('Unknown spell:', info)
+		return false
+	end
+	if not providers then return true end
+	for _, provider in ipairs(providers) do
+		if LibSpellbook:IsKnown(provider) then
+			return true
+		end
+	end
+	Debug(info..', no providers found: ', unpack(providers))
+	return false
+end
+
+local function _AddRuleFor(key, desc, spell, units, events, handlers, providers, callLevel)
+	local id, info, name, _type, subId = SpellOrItemId(spell, callLevel)
+	if not id or (_type == "spell" and not CheckAvailability(info, subId, providers)) then
 		return
 	end
 	if key then
@@ -185,12 +201,13 @@ local function _AddRuleFor(key, desc, spell, units, events, handlers, callLevel)
 		desc = gsub(desc or "", "@NAME", name)
 		ruleDescs[key] = ucfirst(desc)
 	end
-	addon.Debug('Rules', "Adding rule for", info,
+	Debug("Adding rule for", info,
 		"key:", key,
 		"desc:", desc,
 		"units:", strjoin(",", getkeys(units)),
 		"events:", strjoin(",", getkeys(events)),
-		"handlers:", handlers
+		"handlers:", handlers,
+		"providers:", providers and strjoin(",", unpack(providers)) or "-"
 	)
 	local rule = spellConfs[id]
 	if not rule then
@@ -208,7 +225,7 @@ local function _AddRuleFor(key, desc, spell, units, events, handlers, callLevel)
 	ConcatLists(rule.handlers, handlers)
 end
 
-local function CheckRuleArgs(units, events, handlers, callLevel)
+local function CheckRuleArgs(units, events, handlers, providers, callLevel)
 	local numUnits, numEvents
 
 	units, numUnits = AsSet(units, "string", callLevel+1)
@@ -226,56 +243,31 @@ local function CheckRuleArgs(units, events, handlers, callLevel)
 		error("Empty handler list", callLevel+1)
 	end
 
-	return units, events, handlers
+	providers = providers and AsList(providers, "number", callLevel+1) or nil
+
+	return units, events, handlers, providers
 end
 
-local function AddRuleFor(key, desc, spell, units, events, handlers)
-	units, events, handlers = CheckRuleArgs(units, events, handlers, 2)
-	return _AddRuleFor(key, desc, spell, units, events, handlers, 2)
+local function AddRuleFor(key, desc, spell, units, events, handlers, providers)
+	units, events, handlers, providers = CheckRuleArgs(units, events, handlers, providers, 2)
+	return _AddRuleFor(key, desc, spell, units, events, handlers, providers, 2)
 end
 
-local function Configure(key, desc, spells, units, events, handlers, callLevel)
+local function Configure(key, desc, spells, units, events, handlers, providers, callLevel)
 	callLevel = callLevel or 1
 	spells = AsList(spells)
 	if #spells == 0 then
 		error("Empty spell list", callLevel+1)
 	end
-	units, events, handlers = CheckRuleArgs(units, events, handlers, callLevel+1)
-	if #spells == 1 then
-		return function()
-			_AddRuleFor(key, desc, spells[1], units, events, handlers, callLevel+1)
-		end
-	else
-		return function()
-			for i, spell in pairs(spells) do
-				_AddRuleFor(key, desc, spell, units, events, handlers, callLevel+1)
-			end
-		end
+	units, events, handlers, providers = CheckRuleArgs(units, events, handlers, providers, callLevel+1)
+	local rules = {}
+	for i, spell in ipairs(spells) do
+		local spell = spell
+		tinsert(rules, function()
+			_AddRuleFor(key, desc, spell, units, events, handlers, providers, callLevel+1)
+		end)
 	end
-end
-
-local function IfSpell(spells, ...)
-	local spells = AsList(spells, "number", 2)
-	local funcs = AsList({ ... }, "function", 2)
-	if #spells == 1 then
-		local spell = spells[1]
-		local link = GetSpellLink(spell)
-		return function()
-			if LibSpellbook:IsKnown(spell) then
-				addon.Debug('Rules', 'Merging rules depending on', link)
-				return Do(funcs)
-			end
-		end
-	else
-		return function()
-			for i, spell in ipairs(spells) do
-				if LibSpellbook:IsKnown(spell) then
-					addon.Debug('Rules', 'Merging rules depending on', (GetSpellLink(spell)))
-					return Do(funcs)
-				end
-			end
-		end
-	end
+	return #rules == 1 and rules[1] or rules
 end
 
 ------------------------------------------------------------------------------
@@ -347,20 +339,20 @@ addon.BuildDesc = BuildDesc
 -- Handler builders
 ------------------------------------------------------------------------------
 
-local function BuildAuraHandler_Single(filter, highlight, token, spell, callLevel)
-	local spellName = GetSpellInfo(spell)
-	if not spellName then
-		error("Unknown spell "..spell, (callLevel or 1)+1)
-	end
+local function BuildAuraHandler_Single(filter, highlight, token, buff, callLevel)
 	return function(units, model)
-		if not units[token] then return end
-		local name, _, _, count, _, _, expiration = UnitAura(units[token], spellName, nil, filter)
-		if name then
-			if highlight == "flash" or model.highlight ~= "flash" then
-				model.highlight = highlight
+		local unit = units[token]
+		if not unit then return end
+		for i = 1, math.huge do
+			local name, _, _, count, _, _, expiration, _, _, _, spellId = UnitAura(unit, i, filter)
+			if name then
+				if spellId == buff then
+					model.highlight, model.count, model.expiration = highlight, count, expiration
+					return true
+				end
+			else
+				break
 			end
-			model.count, model.expiration = count, expiration
-			return true
 		end
 	end
 end
@@ -440,15 +432,14 @@ local function PassiveModifier(passive, spell, buff, unit, highlight)
 	local handler = BuildAuraHandler_Single("HELPFUL PLAYER", highlight, unit, buff, 3)
 	local key = BuildKey("PassiveModifier", passive, spell, buff, unit, highlight)
 	local desc = BuildDesc("HELPFUL PLAYER", highlight, unit, buff)
-	local conf = Configure(key, desc, spell, unit, "UNIT_AURA", handler, 3)
-	return passive and IfSpell(passive, conf) or conf
+	return Configure(key, desc, spell, unit, "UNIT_AURA", handler, passive, 3)
 end
 
 local function AuraAliases(filter, highlight, unit, spells, buffs)
 	buffs = AsList(buffs or spells, "number", 3)
 	local key = BuildKey("AuraAliases", filter, highlight, unit, spells, buffs)
 	local desc = BuildDesc(filter, highlight, unit, buffs)
-	return Configure(key, desc, spells, unit, "UNIT_AURA", BuildAuraHandler_FirstOf(filter, highlight, unit, buffs, 3), 3)
+	return Configure(key, desc, spells, unit, "UNIT_AURA", BuildAuraHandler_FirstOf(filter, highlight, unit, buffs, 3), nil, 3)
 end
 
 local function ShowPower(spells, powerType, handler, highlight, desc)
@@ -525,7 +516,7 @@ local function ShowPower(spells, powerType, handler, highlight, desc)
 	else
 		error("Invalid handler type, expected function, number or nil, got "..type(handler), 3)
 	end
-	return Configure(key, desc, spells, "player", { "UNIT_POWER", "UNIT_POWER_MAX" }, actualHandler, 3)
+	return Configure(key, desc, spells, "player", { "UNIT_POWER", "UNIT_POWER_MAX" }, actualHandler, nil, 3)
 end
 
 local function FilterOut(spells, exclude)
@@ -553,9 +544,9 @@ do
 		local exceptions = AsSet({...}, "number", 3)
 		local rules = {}
 		for buff, flags, provider, modified in LibPlayerSpells:IterateSpells(filter, "AURA", "RAIDBUFF") do
-			local providers = FilterOut(AsList(provider, "number"), exceptions)
+			local providers = provider ~= buff and FilterOut(AsList(provider, "number"), exceptions)
 			local spells = FilterOut(AsList(modified, "number"), exceptions)
-			if not exceptions[buff] and #spells > 0 and #providers > 0 then
+			if not exceptions[buff] and #spells > 0 and (not providers or #providers > 0) then
 				local filter, highlight, token = "HELPFUL", "good", "ally"
 				local targeting = band(flags, TARGETING)
 				if targeting == HARMFUL then
@@ -574,11 +565,7 @@ do
 				local key = BuildKey('LibPlayerSpell', provider, modified, filter, highlight, token, buff)
 				local desc = BuildDesc(filter, highlight, token, buff)
 				local handler = BuildAuraHandler_Longest(filter, highlight, token, buff, 3)
-				local rule = Configure(key, desc, spells, token, "UNIT_AURA", handler, 3)
-				if provider ~= modified then
-					rule = IfSpell(provider, rule)
-				end
-				tinsert(rules, rule)
+				tinsert(rules, Configure(key, desc, spells, token, "UNIT_AURA", handler, provider, 3))
 			end
 		end
 		return (#rules > 1) and rules or rules[1]
@@ -606,7 +593,6 @@ local RULES_ENV = setmetatable({
 
 	-- Basic functions
 	Configure = WrapTableArgFunc(Configure),
-	IfSpell = WrapTableArgFunc(IfSpell),
 	ShowPower = WrapTableArgFunc(ShowPower),
 	PassiveModifier = WrapTableArgFunc(PassiveModifier),
 	ImportPlayerSpells = WrapTableArgFunc(ImportPlayerSpells),
@@ -632,7 +618,7 @@ local RULES_ENV = setmetatable({
 	LongestDebuffOf = function(spells, buffs)
 		local key = BuildKey('LongestDebuffOf', spells, buffs)
 		local desc =  BuildDesc("HARMFUL", "bad", "enemy", buffs)
-		return Configure(key, desc, spells, "enemy", "UNIT_AURA", BuildAuraHandler_Longest("HARMFUL", "bad", "enemy", buffs or spells, 2), 2)
+		return Configure(key, desc, spells, "enemy", "UNIT_AURA", BuildAuraHandler_Longest("HARMFUL", "bad", "enemy", buffs or spells, 2), nil, 2)
 	end,
 
 	SelfBuffs = function(spells)
@@ -666,7 +652,7 @@ local ruleBuilders = {}
 
 function addon:BuildRules(event)
 	if not rules then
-		addon.Debug('Rules', 'Building rules', event)
+		Debug('Building rules', event)
 		if #ruleBuilders == 0 then
 			error("No rules registered !", 2)
 		end
@@ -678,7 +664,7 @@ function addon:BuildRules(event)
 			end
 		end
 		rules = AsList(t, "function")
-		addon.Debug('Rules', #rules, 'rules found')
+		Debug(#rules, 'rules found')
 	end
 	return rules
 end
@@ -698,7 +684,7 @@ function addon.api:RegisterRules(builder)
 	setfenv(builder, RULES_ENV)
 	tinsert(ruleBuilders, function() return builder(addon) end)
 	if rules then
-		addon.Debug('Rules', 'Rebuilding rules')
+		Debug('Rebuilding rules')
 		rules = nil
 		return addon:LibSpellbook_Spells_Changed('RegisterRules')
 	end
