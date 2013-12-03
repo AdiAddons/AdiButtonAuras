@@ -553,9 +553,9 @@ do
 		local exceptions = AsSet({...}, "number", 3)
 		local rules = {}
 		for buff, flags, provider, modified in LibPlayerSpells:IterateSpells(filter, "AURA", "RAIDBUFF") do
-			local buff = FilterOut(AsList(buff, "number"), exceptions)
+			local providers = FilterOut(AsList(provider, "number"), exceptions)
 			local spells = FilterOut(AsList(modified, "number"), exceptions)
-			if not exceptions[provider] and #spells > 0 and #buff > 0 then
+			if not exceptions[buff] and #spells > 0 and #providers > 0 then
 				local filter, highlight, token = "HELPFUL", "good", "ally"
 				local targeting = band(flags, TARGETING)
 				if targeting == HARMFUL then
