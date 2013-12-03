@@ -339,20 +339,20 @@ addon.BuildDesc = BuildDesc
 -- Handler builders
 ------------------------------------------------------------------------------
 
-local function BuildAuraHandler_Single(filter, highlight, token, spell, callLevel)
-	local spellName = GetSpellInfo(spell)
-	if not spellName then
-		error("Unknown spell "..spell, (callLevel or 1)+1)
-	end
+local function BuildAuraHandler_Single(filter, highlight, token, buff, callLevel)
 	return function(units, model)
-		if not units[token] then return end
-		local name, _, _, count, _, _, expiration = UnitAura(units[token], spellName, nil, filter)
-		if name then
-			if highlight == "flash" or model.highlight ~= "flash" then
-				model.highlight = highlight
+		local unit = units[token]
+		if not unit then return end
+		for i = 1, math.huge do
+			local name, _, _, count, _, _, expiration, _, _, _, spellId = UnitAura(unit, i, filter)
+			if name then
+				if spellId == buff then
+					model.highlight, model.count, model.expiration = highlight, count, expiration
+					return true
+				end
+			else
+				break
 			end
-			model.count, model.expiration = count, expiration
-			return true
 		end
 	end
 end
