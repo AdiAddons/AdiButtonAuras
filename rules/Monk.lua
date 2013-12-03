@@ -21,7 +21,7 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 
 if select(2, UnitClass("player")) ~= "MONK" then return end
 
--- Globals: AddRuleFor Configure IfSpell SimpleAuras UnitBuffs
+-- Globals: AddRuleFor Configure SimpleAuras UnitBuffs
 -- Globals: PassiveModifier SimpleDebuffs SharedSimpleDebuffs SimpleBuffs
 -- Globals: LongestDebuffOf SelfBuffs PetBuffs BuffAliases DebuffAliases
 -- Globals: SelfBuffAliases SharedBuffs ShowPower SharedSimpleBuffs
@@ -72,32 +72,31 @@ AdiButtonAuras:RegisterRules(function(addon)
 			"player",
 			"none"
 		},
-		IfSpell { 122280, -- Healing Elixirs (passive)
-			Configure {
-				"HealingElixirs",
-				addon.BuildDesc("HELPFUL PLAYER", "good", "player", 122280),
-				{
-					115203, -- Fortifying Brew
-					115288, -- Energizing Brew
-					115294, -- Mana Tea
-					115308, -- Elusive Brew
-					115399, -- Chi Brew
-					116680, -- Thunder Focus Tea
-					116740, -- Tigereye Brew
-					119582, -- Purifying Brew
-					137562, -- Nimble Brew
-				},
-				"player",
-				"UNIT_AURA",
-				(function()
-					local healingElixirs = GetSpellInfo(134563) -- Healing Elixirs (buff)
-					return function(units, model)
-						if UnitBuff("player", healingElixirs) then
-							model.highlight = "good"
-						end
+		Configure {
+			"HealingElixirs",
+			addon.BuildDesc("HELPFUL PLAYER", "good", "player", 122280),
+			{
+				115203, -- Fortifying Brew
+				115288, -- Energizing Brew
+				115294, -- Mana Tea
+				115308, -- Elusive Brew
+				115399, -- Chi Brew
+				116680, -- Thunder Focus Tea
+				116740, -- Tigereye Brew
+				119582, -- Purifying Brew
+				137562, -- Nimble Brew
+			},
+			"player",
+			"UNIT_AURA",
+			(function()
+				local healingElixirs = GetSpellInfo(134563) -- Healing Elixirs (buff)
+				return function(units, model)
+					if UnitBuff("player", healingElixirs) then
+						model.highlight = "good"
 					end
-				end)(),
-			}
+				end
+			end)(),
+			122280, -- Provided by: healing Elixirs (passive)
 		},
 		Configure {
 			"PurifyingBrew",

@@ -21,7 +21,7 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 
 if select(2, UnitClass("player")) ~= "DRUID" then return end
 
--- Globals: AddRuleFor Configure IfSpell SimpleAuras UnitBuffs
+-- Globals: AddRuleFor Configure SimpleAuras UnitBuffs
 -- Globals: PassiveModifier SimpleDebuffs SharedSimpleDebuffs SimpleBuffs
 -- Globals: LongestDebuffOf SelfBuffs PetBuffs BuffAliases DebuffAliases
 -- Globals: SelfBuffAliases SharedBuffs ShowPower SharedSimpleBuffs
@@ -98,55 +98,54 @@ AdiButtonAuras:RegisterRules(function(addon)
 				end
 			end,
 		},
-		IfSpell { 77495, -- Mastery: Harmony
-			Configure {
-				"Harmony",
-				L['Flash when mastery is inactive.'],
-				50464, -- Nourish
-				"player",
-				{ "UNIT_AURA", "PLAYER_REGEN_ENABLED", "PLAYER_REGEN_DISABLED" },
-				(function()
-					local harmonyBuff = GetSpellInfo(100977) -- Harmony
-					return function(units, model)
-						if InCombatLockdown() and not UnitAura("player", harmonyBuff, nil, "HELPFUL PLAYER") then
-							model.highlight = "flash"
-							return true
-						end
+		Configure {
+			"Harmony",
+			L['Flash when mastery is inactive.'],
+			50464, -- Nourish
+			"player",
+			{ "UNIT_AURA", "PLAYER_REGEN_ENABLED", "PLAYER_REGEN_DISABLED" },
+			(function()
+				local harmonyBuff = GetSpellInfo(100977) -- Harmony
+				return function(units, model)
+					if InCombatLockdown() and not UnitAura("player", harmonyBuff, nil, "HELPFUL PLAYER") then
+						model.highlight = "flash"
+						return true
 					end
-				end)()
-			},
+				end
+			end)(),
+			77495, -- Provided by: Mastery: Harmony
 		},
-		IfSpell { 79577, -- Eclipse (passive)
-			Configure {
-				"LunarEnergy",
-				format(L["Show %s."], L["lunar energy"]),
-				5176, -- Wrath
-				"player",
-				{ "UNIT_POWER_FREQUENT", "ECLIPSE_DIRECTION_CHANGE" },
-				function(units, model)
-					if GetEclipseDirection() ~= "sun" then
-						model.highlight = "lighten"
-						model.count = -UnitPower("player", SPELL_POWER_ECLIPSE)
-					else
-						model.highlight = "darken"
-					end
-				end,
-			},
-			Configure {
-				"SolarEnergy",
-				format(L["Show %s."], L["solar energy"]),
-				2912, -- Starfire
-				"player",
-				{ "UNIT_POWER_FREQUENT", "ECLIPSE_DIRECTION_CHANGE" },
-				function(units, model)
-					if GetEclipseDirection() ~= "moon" then
-						model.highlight = "lighten"
-						model.count = UnitPower("player", SPELL_POWER_ECLIPSE)
-					else
-						model.highlight = "darken"
-					end
-				end,
-			}
+		Configure {
+			"LunarEnergy",
+			format(L["Show %s."], L["lunar energy"]),
+			5176, -- Wrath
+			"player",
+			{ "UNIT_POWER_FREQUENT", "ECLIPSE_DIRECTION_CHANGE" },
+			function(units, model)
+				if GetEclipseDirection() ~= "sun" then
+					model.highlight = "lighten"
+					model.count = -UnitPower("player", SPELL_POWER_ECLIPSE)
+				else
+					model.highlight = "darken"
+				end
+			end,
+			79577, -- Provided by: Eclipse (passive)
+		},
+		Configure {
+			"SolarEnergy",
+			format(L["Show %s."], L["solar energy"]),
+			2912, -- Starfire
+			"player",
+			{ "UNIT_POWER_FREQUENT", "ECLIPSE_DIRECTION_CHANGE" },
+			function(units, model)
+				if GetEclipseDirection() ~= "moon" then
+					model.highlight = "lighten"
+					model.count = UnitPower("player", SPELL_POWER_ECLIPSE)
+				else
+					model.highlight = "darken"
+				end
+			end,
+			79577, -- Provided by: Eclipse (passive)
 		},
 		PassiveModifier {
 			16864, -- Omen of Clarity

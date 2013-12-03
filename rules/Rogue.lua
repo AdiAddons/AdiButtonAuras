@@ -23,7 +23,7 @@ if select(2, UnitClass("player")) ~= "ROGUE" then return end
 
 local addonName, addon = ...
 
--- Globals: AddRuleFor Configure IfSpell SimpleAuras UnitBuffs
+-- Globals: AddRuleFor Configure SimpleAuras UnitBuffs
 -- Globals: PassiveModifier SimpleDebuffs SharedSimpleDebuffs SimpleBuffs
 -- Globals: LongestDebuffOf SelfBuffs PetBuffs BuffAliases DebuffAliases
 -- Globals: SelfBuffAliases SharedBuffs ShowPower SharedSimpleBuffs

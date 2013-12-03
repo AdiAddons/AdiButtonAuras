@@ -21,7 +21,7 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 
 if select(2, UnitClass("player")) ~= "WARLOCK" then return end
 
--- Globals: AddRuleFor Configure IfSpell SimpleAuras UnitBuffs
+-- Globals: AddRuleFor Configure SimpleAuras UnitBuffs
 -- Globals: PassiveModifier SimpleDebuffs SharedSimpleDebuffs SimpleBuffs
 -- Globals: LongestDebuffOf SelfBuffs PetBuffs BuffAliases DebuffAliases
 -- Globals: SelfBuffAliases SharedBuffs ShowPower SharedSimpleBuffs
@@ -123,23 +123,22 @@ AdiButtonAuras:RegisterRules(function(addon)
 			105174, -- Hand of Gul'dan
 			 47960, -- Shadowflame
 		},
-		IfSpell { 123686, -- Pyroclasm
-			Configure {
-				"Pyroclasm",
-				format(addon.L["%s when you have 3 or more stacks of %s."], addon.DescribeHighlight("good"), GetSpellInfo(117828)),
-				116858, -- Chaos Bolt
-				"player",
-				"UNIT_AURA",
-				(function()
-					local backdraft = GetSpellInfo(117828)
-					return function(_, model)
-						local name, _, _, count = UnitAura("player", backdraft, nil, "PLAYER HELPFUL")
-						if name and count >= 3 then
-							model.highlight = "good"
-						end
+		Configure {
+			"Pyroclasm",
+			format(addon.L["%s when you have 3 or more stacks of %s."], addon.DescribeHighlight("good"), GetSpellInfo(117828)),
+			116858, -- Chaos Bolt
+			"player",
+			"UNIT_AURA",
+			(function()
+				local backdraft = GetSpellInfo(117828)
+				return function(_, model)
+					local name, _, _, count = UnitAura("player", backdraft, nil, "PLAYER HELPFUL")
+					if name and count >= 3 then
+						model.highlight = "good"
 					end
-				end)()
-			}
+				end
+			end)(),
+			123686, -- Provided by: Pyroclasm
 		},
 	}
 

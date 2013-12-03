@@ -32,7 +32,7 @@ local UnitClass = _G.UnitClass
 local UnitHealth = _G.UnitHealth
 local UnitHealthMax = _G.UnitHealthMax
 
--- Globals: AddRuleFor Configure IfSpell SimpleAuras UnitBuffs
+-- Globals: AddRuleFor Configure SimpleAuras UnitBuffs
 -- Globals: PassiveModifier SimpleDebuffs SharedSimpleDebuffs SimpleBuffs
 -- Globals: LongestDebuffOf SelfBuffs PetBuffs BuffAliases DebuffAliases
 -- Globals: SelfBuffAliases SharedBuffs ShowPower SharedSimpleBuffs
