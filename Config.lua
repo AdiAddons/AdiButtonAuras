@@ -513,6 +513,8 @@ spellPanel:HookScript('OnShow', function(self)
 	end
 end)
 
+local LibSpellbook = addon.GetLib('LibSpellbook-1.0')
+
 -- Add a macro command to open it
 _G.SlashCmdList["ADIBUTTONAURAS"] = function(what)
 	what = (what or ""):trim():lower()
@@ -520,6 +522,23 @@ _G.SlashCmdList["ADIBUTTONAURAS"] = function(what)
 		return InterfaceOptionsFrame_OpenToCategory(spellPanel)
 	elseif what == 'profile' or what == 'profiles' then
 		return InterfaceOptionsFrame_OpenToCategory(profilePanel)
+	end
+	if what then
+		local _type, id = strmatch(what, '([si][pt]e[lm]l?):(%d+)')
+		if not id then
+			id = LibSpellbook:Resolve(what)
+			if id then
+				_type = 'spell'
+			end
+		end
+		local key = (_type == 'spell' or _type == 'item') and id and _type..':'..id
+		if key and addon.spells[key] then
+			local name = _type == 'spell' and GetSpellInfo(id) or GetItemInfo(id)
+			InterfaceOptionsFrame_OpenToCategory(spellPanel)
+			selectedKey, selectedName, selectedConf = key, name, addon.spells[key]
+			AceConfigRegistry:NotifyChange(addonName)
+			return
+		end
 	end
 	InterfaceOptionsFrame_OpenToCategory(mainPanel)
 end
