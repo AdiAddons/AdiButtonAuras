@@ -178,9 +178,9 @@ function overlayPrototype:ApplyHighlight()
 	local highlight = self.highlight
 
 	if highlight == "flash" and not (addon.db.profile.noFlashOnCooldown and self.inCooldown) and (not addon.db.profile.noFlashOutOfCombat or InCombatLockdown()) then
-		self:ShowOverlayGlow()
+		self:ShowFlash()
 	else
-		self:HideOverlayGlow()
+		self:HideFlash()
 	end
 
 	local border = self.Border
@@ -213,70 +213,111 @@ function overlayPrototype:UpdateDisplay(event)
 	return true
 end
 
-do
+-- Overlay factory
+local function CreateOverlayFactory(create, onAcquire, onRelease, onEnable, onDisable, onShow, onHide)
 	local serial = 1
 	local heap = {}
 
-	local OnHide, AnimOutFinished
+	local function Release(overlay)
+		if heap[overlay] then return end
+		heap[overlay] = true
+		if onRelease then
+			onRelease(overlay)
+		end
+		overlay.owner[heap] = nil
+		overlay.owner = nil
+		overlay:Hide()
+		overlay:SetParent(nil)
+		overlay:ClearAllPoints()
+	end
 
-	local function CreateOverlayGlow()
+	local function Create()
 		serial = serial + 1
-		local overlay = CreateFrame("Frame", addonName.."ButtonOverlay"..serial, UIParent, "ActionBarButtonSpellActivationAlert")
-		overlay.animOut:SetScript("OnFinished", AnimOutFinished)
-		overlay:SetScript("OnHide", OnHide)
+		local overlay = create(serial)
+		overlay:Hide()
+		overlay:SetScript('OnShow', onShow)
+		overlay:SetScript('OnHide', onHide)
+		overlay.Release = Release
 		return overlay
 	end
 
-	function AnimOutFinished(animGroup)
-		local overlay = animGroup:GetParent()
-		overlay:Hide()
-		overlay:ClearAllPoints()
-		overlay:SetParent(nil)
-		overlay.state.overlay = nil
-		overlay.state = nil
-		tinsert(heap, overlay)
-	end
-
-	function OnHide(button)
-		if button.animOut:IsPlaying() then
-			button.animOut:Stop()
-			return AnimOutFinished(button.animOut)
+	local function Enable(owner)
+		local overlay = owner[heap]
+		if not overlay then
+			overlay = tremove(heap) or Create()
+			heap[overlay] = nil
+			overlay.owner = owner
+			owner[heap] = overlay
+			onAcquire(overlay)
+		end
+		overlay:Show()
+		if onEnable then
+			onEnable(overlay)
 		end
 	end
 
-	function overlayPrototype:ShowOverlayGlow()
-		local overlay = self.overlay
+	local function Disable(owner)
+		local overlay = owner[heap]
 		if overlay then
-			if overlay.animOut:IsPlaying() then
-				overlay.animOut:Stop()
-				overlay.animIn:Play()
-			end
-		else
-			overlay = tremove(heap) or CreateOverlayGlow()
-			local button = self.button
-			local width, height = button:GetSize()
-			overlay:SetParent(button)
-			overlay:ClearAllPoints()
-			overlay:SetSize(width * 1.4, height * 1.4)
-			overlay:SetPoint("TOPLEFT", button, "TOPLEFT", -width * 0.2, height * 0.2)
-			overlay:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", width * 0.2, -height * 0.2)
-			overlay:Show()
-			overlay.animIn:Play()
-			overlay.state, self.overlay = self, overlay
+			(onDisable or Release)(overlay)
 		end
 	end
 
-	function overlayPrototype:HideOverlayGlow()
-		local overlay = self.overlay
-		if overlay then
-			if overlay.animIn:IsPlaying() then
-				overlay.animIn:Stop()
-			end
-			if overlay:IsVisible() then
-				overlay.animOut:Play()
-			else
-				AnimOutFinished(overlay.animOut)
-			end
-		end
-	end
+	return Enable, Disable
 end
+
+-- Use Blizzard template
+overlayPrototype.ShowFlash, overlayPrototype.HideFlash = CreateOverlayFactory(
+	-- create
+	-- create
+	function(serial)
+		local overlay = CreateFrame("Frame", addonName.."Flash"..serial, UIParent, "ActionBarButtonSpellActivationAlert")
+		overlay.animOut:SetScript("OnFinished", function() overlay:Release() end)
+		return overlay
+	end,
+	-- onAcquire
+	function(overlay)
+		local button = overlay.owner.button
+		local width, height = button:GetSize()
+		overlay:SetParent(button)
+		overlay:ClearAllPoints()
+		overlay:SetSize(width * 1.4, height * 1.4)
+		overlay:SetPoint("TOPLEFT", button, "TOPLEFT", -width * 0.2, height * 0.2)
+		overlay:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", width * 0.2, -height * 0.2)
+	end,
+	-- onRelease
+	function(overlay)
+		if overlay.animOut:IsPlaying() then
+			overlay.animOut:Stop()
+		end
+		if overlay.animIn:IsPlaying() then
+			overlay.animIn:Stop()
+		end
+	end,
+	-- onEnable
+	function(overlay)
+		if overlay.animOut:IsPlaying() then
+			overlay.animOut:Stop()
+			overlay.animIn:Play()
+		end
+	end,
+	-- onDisable
+	function(overlay)
+		if overlay.animIn:IsPlaying() then
+			overlay.animIn:Stop()
+		end
+		if overlay:IsVisible() then
+			overlay.animOut:Play()
+		else
+			overlay:Release()
+		end
+	end,
+	-- onShow
+	function(overlay)
+		overlay.animIn:Play()
+	end,
+	-- onHide
+	function(overlay)
+		overlay:Release()
+	end
+)
