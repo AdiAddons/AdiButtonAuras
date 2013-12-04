@@ -172,8 +172,9 @@ AdiButtonAuras:RegisterRules(function(addon)
 						addon.Debug('ManaTea', count, mana, manaMax, floor(100 * (manaMax-mana) / manaMax))
 						if count >= 19 and mana < manaMax then
 							model.highlight = "flash"
-						elseif 0.04 * min(2, count) <= (manaMax-mana) / manaMax then
-							model.highlight = "good"
+						end
+						if 0.04 * min(2, count) <= (manaMax-mana) / manaMax then
+							model.hint = true
 						end
 					end
 				end
@@ -195,7 +196,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 				end
 				if count > 0 then
 					if count > 3 or GetNumGroupMembers() < 5 then
-						model.highlight = "good"
+						model.hint = true
 					end
 					model.count, model.expiration = count, minExpiration
 				end
@@ -216,7 +217,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 					end
 				end
 				if count >= TFT_COUNT and minExpiration-GetTime() < TFT_DURATION then
-					model.highlight, model.expiration = "flash", minExpiration
+					model.hint, model.expiration = true, minExpiration
 				end
 			end
 		},
@@ -236,7 +237,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 					end
 				end
 				if totalHeal >= UPLIFT_THRESHOLD * heal then
-					model.highlight = "flash"
+					model.hint = true
 				end
 			end
 		},
