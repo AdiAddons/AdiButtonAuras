@@ -307,13 +307,9 @@ function overlayPrototype:SetAction(event, actionType, actionId, macroConditiona
 
 		self:RegisterEvent('PLAYER_ENTERING_WORLD')
 		self:RegisterEvent('ACTIONBAR_SLOT_CHANGED')
-		if addon.db.profile.noFlashOnCooldown then
-			self:RegisterEvent('ACTIONBAR_UPDATE_COOLDOWN')
-		end
-		if addon.db.profile.noFlashOutOfCombat then
-			self:RegisterEvent('PLAYER_REGEN_ENABLED')
-			self:RegisterEvent('PLAYER_REGEN_DISABLED')
-		end
+		self:RegisterEvent('ACTIONBAR_UPDATE_COOLDOWN')
+		self:RegisterEvent('PLAYER_REGEN_ENABLED')
+		self:RegisterEvent('PLAYER_REGEN_DISABLED')
 
 		self.handlers = conf.handlers
 	else
@@ -378,6 +374,7 @@ function overlayPrototype:UpdateCooldown(event)
 		self:Debug('inCooldown=', inCooldown)
 		self.inCooldown = inCooldown
 		self:ApplyHighlight()
+		self:ApplyHint()
 	end
 end
 overlayPrototype.ACTIONBAR_UPDATE_COOLDOWN = overlayPrototype.UpdateCooldown
@@ -429,7 +426,7 @@ local model = {}
 function overlayPrototype:UpdateState(event)
 	self:SetScript('OnUpdate', nil)
 
-	model.count, model.expiration, model.highlight  = 0, 0, nil
+	model.count, model.expiration, model.highlight, model.hint  = 0, 0, nil, false
 
 	if self.handlers then
 		local unitMap = self.unitMap
@@ -452,10 +449,11 @@ function overlayPrototype:UpdateState(event)
 		end
 	end
 
-	--self:Debug("Scan =>", model.highlight, model.count, model.expiration)
+	--self:Debug("Scan =>", model.highlight, model.count, model.expiration, model.hint)
 	self:SetCount(model.count)
 	self:SetExpiration(model.expiration)
 	self:SetHighlight(model.highlight)
+	self:SetHint(model.hint)
 
 	return true
 end

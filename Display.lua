@@ -202,16 +202,37 @@ function overlayPrototype:ApplyHighlight()
 		border:Hide()
 	end
 end
-overlayPrototype.PLAYER_REGEN_ENABLED = overlayPrototype.ApplyHighlight
-overlayPrototype.PLAYER_REGEN_DISABLED = overlayPrototype.PLAYER_REGEN_ENABLED
+
+function overlayPrototype:SetHint(hint)
+	hint = not not hint
+	if self.hint ~= hint then
+		self.hint = hint
+		self:ApplyHint()
+	end
+end
+
+function overlayPrototype:ApplyHint()
+	if self.hint and not self.inCooldown and InCombatLockdown() then
+		self:ShowHint()
+	else
+		self:HideHint()
+	end
+end
 
 function overlayPrototype:UpdateDisplay(event)
 	self:Debug('UpdateDisplay' ,event)
 	self:ApplyExpiration()
 	self:ApplyCount()
 	self:ApplyHighlight()
+	self:ApplyHint()
 	return true
 end
+
+function overlayPrototype:PLAYER_REGEN_ENABLED(event)
+	self:ApplyHighlight()
+	self:ApplyHint()
+end
+overlayPrototype.PLAYER_REGEN_DISABLED = overlayPrototype.PLAYER_REGEN_ENABLED
 
 -- Overlay factory
 local function CreateOverlayFactory(create, onAcquire, onRelease, onEnable, onDisable, onShow, onHide)
@@ -319,5 +340,54 @@ overlayPrototype.ShowFlash, overlayPrototype.HideFlash = CreateOverlayFactory(
 	-- onHide
 	function(overlay)
 		overlay:Release()
+	end
+)
+
+-- Another overlay, for suggestion
+overlayPrototype.ShowHint, overlayPrototype.HideHint = CreateOverlayFactory(
+	-- create
+	function(serial)
+		local overlay = CreateFrame("Frame", addonName.."Hint"..serial)
+		overlay:SetAlpha(0.5)
+
+		local tex = overlay:CreateTexture("OVERLAY")
+		tex:SetTexture([[Interface\Cooldown\star4]])
+		tex:SetBlendMode("ADD")
+		tex:SetAllPoints(overlay)
+		overlay.Texture = tex
+
+		local animRotate = overlay:CreateAnimationGroup()
+		animRotate:SetLooping("REPEAT")
+
+		local rotation = animRotate:CreateAnimation("Rotation")
+		rotation:SetOrder(1)
+		rotation:SetDuration(3)
+		rotation:SetDegrees(360)
+		rotation:SetOrigin("CENTER", 0, 0)
+
+		animRotate:Play()
+
+		--[[
+		local animScale = overlay:CreateAnimationGroup()
+		animScale:SetLooping("BOUNCE")
+
+		local scaling = animScale:CreateAnimation("Scale")
+		scaling:SetOrder(1)
+		scaling:SetDuration(0.5)
+		scaling:SetScale(1.2, 1.2)
+		scaling:SetOrigin("CENTER", 0, 0)
+		scaling:SetSmoothing('IN_OUT')
+
+		animScale:Play()
+		--]]
+
+		return overlay
+	end,
+	-- onAcquire
+	function(overlay)
+		overlay:SetParent(overlay.owner)
+		overlay:SetPoint("CENTER")
+		local w, h = overlay.owner:GetSize()
+		overlay:SetSize(w*1.4, h*1.4)
 	end
 )
