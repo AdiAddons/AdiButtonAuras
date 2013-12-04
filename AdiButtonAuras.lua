@@ -45,6 +45,8 @@ local UnitGUID = _G.UnitGUID
 local UnitIsUnit = _G.UnitIsUnit
 local wipe = _G.wipe
 
+local L = addon.L
+
 -- API
 local api = {}
 addon.api = api
@@ -252,6 +254,55 @@ function addon:GetActionConfiguration(actionType, actionId)
 	else
 		return nil, false, key, actionType, actionId
 	end
+
+end
+
+------------------------------------------------------------------------------
+-- Handle load-on-demand configuration
+------------------------------------------------------------------------------
+
+-- Create a fake configuration panel
+local configLoaderPanel = CreateFrame("Frame")
+configLoaderPanel.name = addonName
+configLoaderPanel:Hide()
+configLoaderPanel:SetScript('OnShow', function() return addon:OpenConfiguration() end)
+InterfaceOptions_AddCategory(configLoaderPanel)
+
+-- The loading handler
+function addon:OpenConfiguration(args)
+	local loaded, why
+
+	-- Replace the handler to avoid infinite recursive loops
+	addon.OpenConfiguration = function()
+		if not loaded then
+			print(format('|cffff0000[%s] %s: %s|r', addonName, L["Could not load configuration panel"], _G["ADDON_"..why]))
+		end
+	end
+
+	-- Remove the fake configuration panel
+	configLoaderPanel:Hide()
+	for i, panel in ipairs(INTERFACEOPTIONS_ADDONCATEGORIES) do
+		if panel == configLoaderPanel then
+			tremove(INTERFACEOPTIONS_ADDONCATEGORIES, i)
+			break
+		end
+	end
+
+	-- Load the configuration addon
+	loaded, why = LoadAddOn(addonName..'_Config')
+
+	-- Forward the arguments
+	return addon:OpenConfiguration(args)
+end
+
+-- The slash command
+_G.SLASH_ADIBUTTONAURAS1 = "/adibuttonauras"
+_G.SLASH_ADIBUTTONAURAS2 = "/aba"
+_G.SlashCmdList["ADIBUTTONAURAS"] = function(args) return addon:OpenConfiguration(args) end
+
+-- Used to register the actual configuration GUI, with access to internals
+function addon.api:CreateConfig(func)
+	return func(addonName, addon)
 end
 
 ------------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-# AdiButtonAuras - Display auras on action buttons.
+# AdiButtonAuras - Mistweaver plugin - Enhanced displays for Renewing Mist.
 # Copyright 2013 Adirelle (adirelle@gmail.com)
 # All rights reserved.
 #
@@ -19,36 +19,21 @@
 
 ## Interface: 50400
 
-## Title: AdiButtonAuras
-## Notes: Display auras on action buttons.
+## Title: AdiButtonAuras - Configuration
+## Notes: Load-on-demand configuration GUI.
 ## Author: Adirelle
 ## Version: @project-version@
 ## X-Date: @project-date-iso@
 ## X-License: GPL v3
 ## X-eMail: adirelle@gmail.com
-## SavedVariables: AdiButtonAurasDB
 
-## OptionalDeps: Ace3, LibSpellbook-1.0, LibDispellable-1.0, LibItemBuffs-1.0, LibPlayerSpells-1.0, DRData-1.0, AdiDebug, Dominos, LibActionButton-1.0, Bartender4
+## Dependencies: AdiButtonAuras
+## LoadOnDemand: 1
 
 #@no-lib-strip@
-libs\LibStub\LibStub.lua
-libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
-libs\BugGrabber\load.xml
-libs\AceDB-3.0\AceDB-3.0.xml
-libs\AceTimer-3.0\AceTimer-3.0.xml
-libs\LibDispellable-1.0\LibDispellable-1.0.lua
-libs\DRData-1.0\DRData-1.0.xml
+..\AdiButtonAuras\libs\AceDBOptions-3.0\AceDBOptions-3.0.xml
+..\AdiButtonAuras\libs\AceGUI-3.0\AceGUI-3.0.xml
+..\AdiButtonAuras\libs\AceConfig-3.0\AceConfig-3.0.xml
 #@end-no-lib-strip@
-libs\LibSpellbook-1.0\LibSpellbook-1.0.lua
-libs\LibItemBuffs-1.0\LibItemBuffs-1.0.lua
-libs\LibPlayerSpells-1.0\lib.xml
 
-Localization.lua
-AdiButtonAuras.lua
-Utils.lua
-RuleDSL.lua
-Items.lua
-Overlays.lua
-Display.lua
-
-rules\rules.xml
+..\AdiButtonAuras\Config.lua

@@ -33,3 +33,4 @@ externals:
 
 move-folders:
   modules/AdiButtonAuras_Mistweaver: AdiButtonAuras_Mistweaver
+  modules/AdiButtonAuras_Config: AdiButtonAuras_Config:
