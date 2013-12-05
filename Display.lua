@@ -348,7 +348,7 @@ overlayPrototype.ShowHint, overlayPrototype.HideHint = CreateOverlayFactory(
 	-- create
 	function(serial)
 		local overlay = CreateFrame("Frame", addonName.."Hint"..serial)
-		overlay:SetAlpha(0.5)
+		overlay:SetAlpha(0.8)
 
 		local tex = overlay:CreateTexture("OVERLAY")
 		tex:SetTexture([[Interface\Cooldown\star4]])
@@ -388,6 +388,6 @@ overlayPrototype.ShowHint, overlayPrototype.HideHint = CreateOverlayFactory(
 		overlay:SetParent(overlay.owner)
 		overlay:SetPoint("CENTER")
 		local w, h = overlay.owner:GetSize()
-		overlay:SetSize(w*1.4, h*1.4)
+		overlay:SetSize(w*1.5, h*1.5)
 	end
 )
