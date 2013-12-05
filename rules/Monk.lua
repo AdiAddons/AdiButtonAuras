@@ -195,10 +195,10 @@ AdiButtonAuras:RegisterRules(function(addon)
 					end
 				end
 				if count > 0 then
-					if count > 3 or GetNumGroupMembers() < 5 then
-						model.hint = true
-					end
-					model.count, model.expiration = count, minExpiration
+					model.highlight, model.count, model.expiration = "good", count, minExpiration
+				end
+				if count < 4 and GetNumGroupMembers() >= 5 then
+					model.hint = true
 				end
 			end
 		},
