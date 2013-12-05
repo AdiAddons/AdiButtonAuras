@@ -168,12 +168,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 					local name, _, _, count, _, _, expiration = UnitAura("player", buff, nil, "HELPFUL PLAYER")
 					if name then
 						model.expiration = expiration
-						local mana, manaMax = UnitPower("player", SPELL_POWER_MANA), UnitPowerMax("player", SPELL_POWER_MANA)
-						addon.Debug('ManaTea', count, mana, manaMax, floor(100 * (manaMax-mana) / manaMax))
-						if count >= 19 and mana < manaMax then
-							model.highlight = "flash"
-						end
-						if 0.04 * min(2, count) <= (manaMax-mana) / manaMax then
+						if count > 0 and UnitPower("player", SPELL_POWER_MANA) / UnitPowerMax("player", SPELL_POWER_MANA) < 0.92 then
 							model.hint = true
 						end
 					end
