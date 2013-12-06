@@ -268,32 +268,49 @@ AdiButtonAuras:RegisterRules(function(addon)
 	-- Create a rule per bitmask
 	for buffMask, spells in pairs(buffSpells) do
 		local buffMask = buffMask
+
+		local function CheckUnitBuffs(unit)
+			local found, minExpiration = 0
+			for i = 1, math.huge do
+				local name, _, _, _, _, _, expiration, _, _, _, spellId = UnitAura(unit, i, "HELPFUL")
+				if name then
+					local buffProvided = band(buffsMasks[spellId] or 0, buffMask)
+					addon.Debug('Raidbuff', unit, i, name, expiration, buffsMasks[spellId], buffProvided)
+					if buffProvided ~= 0 then
+						found = bor(found, buffProvided)
+						if not minExpiration or expiration < minExpiration then
+							minExpiration = expiration
+						end
+					end
+				else
+					break
+				end
+			end
+			return found == buffMask, minExpiration
+		end
+
 		tinsert(rules, Configure {
 			"Raidbuff:"..buffMask,
 			BuildDesc("HELPFUL", "good", "group", L["@NAME or equivalent"]),
 			buffSpells[buffMask],
-			"ally",
+			"group",
 			"UNIT_AURA",
 			function(units, model)
-				local unit = units["ally"]
-				if not unit then return end
-				local found, minExpiration = 0
-				for i = 1, math.huge do
-					local name, _, _, count, _, _, expiration, _, _, _, spellId = UnitAura(unit, i, "HELPFUL")
-					if name then
-						local buffProvided = band(buffsMasks[spellId] or 0, buffMask)
-						if buffProvided ~= 0 then
-							found = bor(found, buffProvided)
-							if not minExpiration or expiration < minExpiration then
-								minExpiration = expiration
-							end
-							if found == buffMask then
-								model.highlight, model.expiration = "good", minExpiration
-								return
-							end
+				local count, minExpiration = 0
+				for unit in pairs(units.group) do
+					local found, expiration = CheckUnitBuffs(unit)
+					addon.Debug('Raidbuff', buffMask, unit, found, expiration)
+					if found then
+						count = count + 1
+						if not minExpiration or expiration < minExpiration then
+							minExpiration = expiration
 						end
-					else
-						return
+					end
+				end
+				if count > 0 then
+					model.highlight, model.expiration = "good", expiration
+					if count < GetNumGroupMembers() then
+						mode.count = GetNumGroupMembers() - count
 					end
 				end
 			end
