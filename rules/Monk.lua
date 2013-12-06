@@ -156,10 +156,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 		Configure {
 			"ManaTea",
 			format(addon.L["%s on @NAME when it would not be wasted."], addon.DescribeHighlight("good")),
-			{
-				115294, -- Mana Tea
-				123761, -- Mana Tea (glyphed)
-			},
+			123761, -- Mana Tea (glyphed)
 			"player",
 			{ "UNIT_AURA", "UNIT_POWER", "UNIT_POWER_MAX" },
 			(function()
@@ -168,7 +165,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 					local name, _, _, count, _, _, expiration = UnitAura("player", buff, nil, "HELPFUL PLAYER")
 					if name then
 						model.expiration = expiration
-						if count > 0 and UnitPower("player", SPELL_POWER_MANA) / UnitPowerMax("player", SPELL_POWER_MANA) < 0.92 then
+						if count >= 2 and UnitPower("player", SPELL_POWER_MANA) / UnitPowerMax("player", SPELL_POWER_MANA) <= 0.92 then
 							model.hint = true
 						end
 					end
