@@ -54,7 +54,7 @@ local wipe = _G.wipe
 local LibSpellbook = addon.GetLib('LibSpellbook-1.0')
 local AceTimer = addon.GetLib('AceTimer-3.0')
 
-local MOUSEOVER_CHANGED = addonMOUSEOVER_CHANGED
+local MOUSEOVER_CHANGED = addon.MOUSEOVER_CHANGED
 local MOUSEOVER_TICK = addon.MOUSEOVER_TICK
 local GROUP_CHANGED = addon.GROUP_CHANGED
 
