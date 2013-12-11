@@ -126,6 +126,9 @@ end
 function mixins:DeclareMessage(message, OnUsed, OnUnused)
 	messages[message] = { OnUsed = OnUsed, OnUnused = OnUnused }
 end
+function mixins:IsDeclaredMessage(str)
+	return str and messages[str] and true
+end
 
 for name, func in pairs(mixins) do
 	addon[name] = func

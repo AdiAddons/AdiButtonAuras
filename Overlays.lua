@@ -295,7 +295,7 @@ function overlayPrototype:SetAction(event, actionType, actionId, macroConditiona
 		end
 
 		for event, handler in pairs(events) do
-			if strsub(event, 0, 14) == "AdiButtonAuras" then
+			if addon:IsDeclaredMessage(event) then
 				self:RegisterMessage(event, handler)
 			else
 				if not self[event] then
