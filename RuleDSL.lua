@@ -294,6 +294,7 @@ local highlightDescs = {
 	bad     = L['show the "bad" border'],
 	lighten = L['lighten'],
 	darken  = L['darken'],
+	hint    = L['suggest'], -- Not really an highlight but who cares ?
 }
 
 local function DescribeHighlight(highlight)
