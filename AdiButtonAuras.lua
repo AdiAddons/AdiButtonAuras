@@ -382,8 +382,6 @@ addon:DeclareMessage(
 -- Mouseover watching
 ------------------------------------------------------------------------------
 
-local AceTimer = GetLib('AceTimer-3.0')
-
 local MOUSEOVER_CHANGED = addonName..'_Mouseover_Changed'
 local MOUSEOVER_TICK = addonName..'_Mouseover_Tick'
 local unitList = { "player", "pet", "target", "focus" }
@@ -393,7 +391,7 @@ addon.MOUSEOVER_CHANGED, addon.MOUSEOVER_TICK, addon.unitList = MOUSEOVER_CHANGE
 for i = 1,4 do tinsert(unitList, "party"..i) end
 for i = 1,40 do tinsert(unitList, "raid"..i) end
 
-local mouseoverMessages, mouseoverUnit, mouseoverUnitTimer = {}
+local mouseoverUnit, mouseoverGUID = 'mouseover'
 
 local function ResolveMouseover()
 	if UnitExists('mouseover') then
@@ -406,41 +404,55 @@ local function ResolveMouseover()
 	end
 end
 
-function addon:UPDATE_MOUSEOVER_UNIT(event)
+local mouseoverFrame = CreateFrame("Frame")
+mouseoverFrame:Hide()
+
+function mouseoverFrame:Update(event)
 	local unit = ResolveMouseover()
+	mouseoverGUID = UnitGUID('mouseover')
 	if mouseoverUnit ~= unit then
 		mouseoverUnit = unit
-		if unit == 'mouseover' then
-			if not mouseoverUnitTimer then
-				mouseoverUnitTimer = AceTimer.ScheduleRepeatingTimer(self, 'UPDATE_MOUSEOVER_UNIT', 0.2, 'Timer')
-			end
-		elseif mouseoverUnitTimer then
-			AceTimer:CancelTimer(mouseoverUnitTimer)
-			mouseoverUnitTimer = nil
-		end
+		self:SetShown(unit == 'mouseover')
 		addon.Debug('Mouseover', event, 'Changed:', unit)
-		return self:SendMessage(MOUSEOVER_CHANGED, unit)
+		return addon:SendMessage(MOUSEOVER_CHANGED, 'mouseover', unit)
 	elseif unit == 'mouseover' then
-		return self:SendMessage(MOUSEOVER_TICK, unit)
+		addon.Debug('Mouseover', event, 'Tick')
+		return addon:SendMessage(MOUSEOVER_TICK)
 	end
 end
+
+local timer = 0
+function mouseoverFrame:OnUpdate(elapsed)
+	timer = timer - elapsed
+	if timer <= 0 or UnitGUID('mouseover') ~= mouseoverGUID then
+		timer = 0.5
+		return self:Update('OnUpdate')
+	end
+end
+
+mouseoverFrame:SetScript('OnEvent', mouseoverFrame.Update)
+mouseoverFrame:SetScript('OnUpdate', mouseoverFrame.OnUpdate)
 
 function addon:GetMouseoverUnit()
 	return mouseoverUnit
 end
 
 do
+	local mouseoverUsed = 0
 	local function OnUsed(msg)
-		if not next(mouseoverMessages) then
-			addon:RegisterEvent('UPDATE_MOUSEOVER_UNIT')
-			addon:UPDATE_MOUSEOVER_UNIT('OnUsed')
+		if mouseoverUsed == 0 then
+			mouseoverFrame:RegisterEvent('UPDATE_MOUSEOVER_UNIT')
+			addon.Debug('Mouseover', 'Started listening to UPDATE_MOUSEOVER_UNIT')
+			mouseoverFrame:Update('OnUsed')
 		end
-		mouseoverMessages[msg] = true
+		mouseoverUsed = mouseoverUsed + 1
 	end
 	local function OnUnused(msg)
-		mouseoverMessages[msg] = nil
-		if not next(mouseoverMessages) then
-			addon:UnregisterEvent('UPDATE_MOUSEOVER_UNIT')
+		mouseoverUsed = mouseoverUsed - 1
+		if mouseoverUsed == 0 then
+			mouseoverFrame:UnregisterEvent('UPDATE_MOUSEOVER_UNIT')
+			mouseoverFrame:Hide()
+			addon.Debug('Mouseover', 'Stopped listening to UPDATE_MOUSEOVER_UNIT')
 		end
 	end
 	addon:DeclareMessage(MOUSEOVER_CHANGED, OnUsed, OnUnused)
