@@ -310,7 +310,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 				if count > 0 then
 					model.highlight, model.expiration = "good", expiration
 					if count < GetNumGroupMembers() then
-						mode.count = GetNumGroupMembers() - count
+						model.count = GetNumGroupMembers() - count
 					end
 				end
 			end
