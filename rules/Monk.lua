@@ -57,7 +57,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 	local buff = GetSpellInfo(115151) -- Renewing Mist
 	local TFT_COUNT    = 4 -- Minimum number of Renewing Mist to highlight Thunder Focus Tea
 	local TFT_DURATION = 6 -- Duration threshold to highlight Thunder Focus Tea
-	local UPLIFT_THRESHOLD = 2 -- Heal multiplier to highlight Uplight
+	local UPLIFT_THRESHOLD = 3 -- Heal multiplier to highlight Uplight
 
 	return {
 		ImportPlayerSpells {
@@ -155,7 +155,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 		},
 		Configure {
 			"ManaTea",
-			format(addon.L["%s on @NAME when it would not be wasted."], addon.DescribeHighlight("good")),
+			L["Suggest using @NAME under 92% mana."],
 			123761, -- Mana Tea (glyphed)
 			"player",
 			{ "UNIT_AURA", "UNIT_POWER", "UNIT_POWER_MAX" },
@@ -196,7 +196,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 		},
 		Configure {
 			"ThunderFocusTea",
-			format(addon.L["Highlight when at least %s %s are running and one of them is below %s seconds."], TFT_COUNT, buff, TFT_DURATION),
+			format(addon.L["Suggest when at least %s %s are running and one of them is below %s seconds."], TFT_COUNT, buff, TFT_DURATION),
 			116680, -- Thunder Focus Tea
 			"group",
 			"UNIT_AURA",
@@ -215,7 +215,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 		},
 		Configure {
 			"Uplift",
-			format(addon.L["Highlight when total effective healing would be at least %d times the base healing."], UPLIFT_THRESHOLD),
+			format(addon.L["Suggest when total effective healing would be at least %d times the base healing."], UPLIFT_THRESHOLD),
 			116670, -- Uplift
 			"group",
 			{ "UNIT_AURA", "UNIT_HEALTH", "UNIT_HEALTH_MAX" },
