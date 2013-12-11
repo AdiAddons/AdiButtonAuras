@@ -122,11 +122,9 @@ AdiButtonAuras:RegisterRules(function(addon)
 			"player",
 			{ "UNIT_POWER_FREQUENT", "ECLIPSE_DIRECTION_CHANGE" },
 			function(units, model)
-				if GetEclipseDirection() ~= "sun" then
-					model.highlight = "lighten"
+				if GetEclipseDirection() == "moon" then
+					model.hint = true
 					model.count = -UnitPower("player", SPELL_POWER_ECLIPSE)
-				else
-					model.highlight = "darken"
 				end
 			end,
 			79577, -- Provided by: Eclipse (passive)
@@ -138,11 +136,9 @@ AdiButtonAuras:RegisterRules(function(addon)
 			"player",
 			{ "UNIT_POWER_FREQUENT", "ECLIPSE_DIRECTION_CHANGE" },
 			function(units, model)
-				if GetEclipseDirection() ~= "moon" then
-					model.highlight = "lighten"
+				if GetEclipseDirection() == "sun" then
+					model.hint = true
 					model.count = UnitPower("player", SPELL_POWER_ECLIPSE)
-				else
-					model.highlight = "darken"
 				end
 			end,
 			79577, -- Provided by: Eclipse (passive)
