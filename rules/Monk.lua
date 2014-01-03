@@ -133,22 +133,16 @@ AdiButtonAuras:RegisterRules(function(addon)
 			"player",
 			{ "UNIT_AURA", "UNIT_HEALTH_MAX" },
 			(function()
-				local light, moderate, heavy = GetSpellInfo(124275), GetSpellInfo(124274), GetSpellInfo(124273)
+				local STANCE_OF_THE_STURY_OX_ID = 23
+				local STAGGER_YELLOW_TRANSITION = STAGGER_YELLOW_TRANSITION
 				return function(units, model)
-					local amount = select(15, UnitDebuff("player", light))
-					if not amount then
-						amount = select(15, UnitDebuff("player", moderate))
-						if amount then
-							model.highlight = "bad"
-						else
-							amount = select(15, UnitDebuff("player", heavy))
-							if amount then
-								model.highlight = "flash"
-							end
+					local stagger = GetShapeshiftFormID() == STANCE_OF_THE_STURY_OX_ID and UnitStagger("player")
+					if stagger then
+						local percent = stagger / UnitHealthMax("player")
+						model.count = ceil(percent * 100)
+						if percent >= STAGGER_YELLOW_TRANSITION then
+							model.hint = true
 						end
-					end
-					if amount then
-						model.count = ceil(amount / UnitHealthMax("player") * 100)
 					end
 				end
 			end)(),
