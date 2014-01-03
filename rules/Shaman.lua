@@ -32,5 +32,31 @@ local addonName, addon = ...
 
 AdiButtonAuras:RegisterRules(function(addon)
 	addon.Debug('Rules', 'Adding shaman rules')
-	return ImportPlayerSpells { "SHAMAN" }
+
+	local format = _G.format
+	local GetSpellInfo = _G.GetSpellInfo
+	local select = _G.select
+	local UnitAura = _G.UnitAura
+	local UnitClass = _G.UnitClass
+
+	local L = addon.L
+	local lightningShield = GetSpellInfo(324)
+
+	return {
+		ImportPlayerSpells { "SHAMAN" },
+		Configure {
+			lightningShield,
+			format(L['Show %s stacks.'], lightningShield),
+			8042, -- Earth Shock
+			"player",
+			"UNIT_AURA",
+			function(_, model)
+				local found, _, _, count = UnitAura("player", lightningShield, nil, "HELPFUL PLAYER")
+				if found then
+					model.count = count
+				end
+			end,
+			88766, -- Provided by: Fulmination
+		},
+	}
 end)
