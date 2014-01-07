@@ -32,4 +32,4 @@ externals:
   libs/LibPlayerSpells-1.0: git://github.com/Adirelle/LibPlayerSpells-1.0.git
 
 move-folders:
-  AdiButtonAuras/modules/Config: AdiButtonAuras_Config
+  AdiButtonAuras/modules/AdiButtonAuras_Config: AdiButtonAuras_Config
