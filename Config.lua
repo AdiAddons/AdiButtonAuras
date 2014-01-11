@@ -248,6 +248,14 @@ AdiButtonAuras:CreateConfig(function(addonName, addon)
 			end
 			p("\nError handler:", bugGrabber and ("|cffffffff"..bugGrabber.."|r") or "|cffff0000NONE|r")
 
+			p("\nLibPlayerSpells-1.0 database versions:")
+			local lps = LibStub('LibPlayerSpells-1.0')
+			for cat in lps:IterateCategories() do
+				local _, patch, rev = lps:GetVersionInfo(cat)
+				local maj, min = floor(patch/10000), floor(patch/100) % 100
+				p(format("- %s: %d.%d, v%d", _G[cat] or cat, maj, min, rev))
+			end
+
 			p("\nConfigured spells (spells that are both in your spellbook and", addonName, "rules:")
 
 			p("|cffffffff", strjoin(", ", IdToLink(addon.getkeys(addon.spells))), "|r")
