@@ -10,9 +10,11 @@ h2. Options
 
 h3. Global options
 
-* do not flash actions on cooldown,
-* change "good" and "bad" border colors,
-* tweak countdown text display.
+* do not flash actions on cooldown (do not affect Blizzard flash),
+* do not flash actions out of combat (do not affect Blizzard flash),
+* change the colors of "good" and "bad" borders,
+* tweak the format of the countdown text,
+* change colors of the countdown text.
 
 h3. Spell/item options
 
@@ -23,36 +25,15 @@ h3. Spell/item options
 
 h2. Supported classes and specializations
 
-Most of the simple buffs are supported through the library "LibPlayerSpell-1.0":https://github.com/Adirelle/LibPlayerSpells-1.0.
-
-* !http://wow.zamimg.com/images/wow/icons/small/class_druid.jpg! Druid:
-** Balance: 5.4
-** Feral Combat: 5.4
-** Guardian: 5.4 untested
-** Restoration: 5.4
-* !http://wow.zamimg.com/images/wow/icons/small/class_hunter.jpg! Hunter
-** Beast Master: 5.4 untested
-** Marksmanship: 5.4
-** Survival: 5.4
-* !http://wow.zamimg.com/images/wow/icons/small/class_priest.jpg! Priest
-** Discipline: 5.4
-** Holy: 5.4 untested
-** Shadow: 5.4 untested
-* !http://wow.zamimg.com/images/wow/icons/small/class_monk.jpg! Monk
-** Brewmaster: 5.4
-** Mistweaver: 5.4
-** Windwalker: 5.4
-* !http://wow.zamimg.com/images/wow/icons/small/class_warlock.jpg! Warlock
-** Affliction: 5.4 untested
-** Demonology: 5.4 untested
-** Destruction: 5.4
-
-AdiButtonAuras also supports differents kinds of spells using libraries, regardless of class:
+Most of the simple buffs are supported through the librarires:
+* most class, tradeskill and racial spells using "LibPlayerSpell-1.0":http://www.curse.com/addons/wow/libplayerspells-1-0,
 * crowd-control spells using "DRData-1.0":http://www.curse.com/addons/wow/drdata-1-0,
 * dispel spells using "LibDispellabe-1.0":http://www.curse.com/addons/wow/libdispellable-1-0,
 * trinket, enchantment and item buffs using "LibItemBuffs-1.0":https://github.com/Adirelle/LibItemBuffs-1.0.
 
-Finally, there is a default rule for *items* not supported by LibItemBuffs-1.0.
+Special cases and hints are handled using customized rules, see below.
+
+There is also a default rule for *items* not supported by LibItemBuffs-1.0.
 
 h2. Design decisions
 
@@ -60,7 +41,7 @@ h3. Separate button overlays
 
 A separate button overlay is created for each button, with border texture, texts and glowing animation.
 
-*Pro*: avoid tainting the action buttons, thus causing ADDON_BLOCKED errors. There is also no need to hook various methods to re-apply the state after the stock UI modified them.
+*Pro*: avoid tainting the action buttons, which could cause ADDON_BLOCKED errors. This also reduces complexity, i.e. possibility of bugs.
 
 *Con*: this does not support skinning (Masque) or custom third-party action buttons (ElvUI). However, AdiButtonAuras fully support Dominos and Bartender4, and should support any addon using the stock action buttons (like Dominos) or LibActionButton-1.0 (like Bartender4).
 
