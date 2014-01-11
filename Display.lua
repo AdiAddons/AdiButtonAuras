@@ -41,6 +41,7 @@ local AceTimer = addon.GetLib('AceTimer-3.0')
 local fontFile, fontSize, fontFlag = [[Fonts\ARIALN.TTF]], 13, "OUTLINE"
 
 local overlayPrototype = addon.overlayPrototype
+local ColorGradient = addon.ColorGradient
 
 local function Timer_Update(self)
 	local prefs = addon.db.profile
@@ -76,13 +77,17 @@ local function Timer_Update(self)
 		self:Hide()
 		return
 	end
+
+	local r, g, b = unpack(prefs.colors.countdownHigh)
 	if timeLeft <= 3 then
-		self:SetTextColor(1, timeLeft / 3, 0, 1)
+		local r1, g1, b1 = unpack(prefs.colors.countdownLow)
+		local r2, g2, b2 = unpack(prefs.colors.countdownMedium)
+		r, g, b = ColorGradient(timeLeft, 3, r1, g1, b1, r2, g2, b2)
 	elseif timeLeft <= 10 then
-		self:SetTextColor(1, 1, (timeLeft - 3) / 7, 1)
-	else
-		self:SetTextColor(1, 1, 1, 1)
+		local r2, g2, b2 = unpack(prefs.colors.countdownMedium)
+		r, g, b = ColorGradient(timeLeft - 3, 7, r2, g2, b2, r, g, b)
 	end
+	self:SetTextColor(r, g, b, 1)
 
 	self.timerId = AceTimer.ScheduleTimer(self, "Update", delay)
 	self:Show()

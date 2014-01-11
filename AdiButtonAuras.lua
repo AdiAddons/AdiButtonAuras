@@ -63,8 +63,11 @@ addon.DEFAULT_SETTINGS = {
 		inverted = { ['*'] = false },
 		flashPromotion = { ['*'] = false },
 		colors = {
-			good    = { 0, 1, 0, 0.7 },
-			bad     = { 1, 0, 0, 0.7 },
+			good            = { 0.0, 1.0, 0.0, 0.7 },
+			bad             = { 1.0, 0.0, 0.0, 0.7 },
+			countdownLow    = { 1.0, 0.0, 0.0 },
+			countdownMedium = { 1.0, 1.0, 0.0 },
+			countdownHigh   = { 1.0, 1.0, 1.0 },
 		},
 		maxCountdown = 600,
 		minMinutes = 600,

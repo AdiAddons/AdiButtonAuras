@@ -390,12 +390,32 @@ AdiButtonAuras:CreateConfig(function(addonName, addon)
 									desc = L['The color used for good things, usually buffs.'],
 									type = 'color',
 									hasAlpha = true,
+									order = 10,
 								},
 								bad = {
 									name = L['"Bad" border'],
 									desc = L['The color used for bad things, usually debuffs.'],
 									type = 'color',
 									hasAlpha = true,
+									order = 20,
+								},
+								countdownLow = {
+									name = L['Countdown around 0'],
+									desc = L['Color of the countdown text for values around 0.'],
+									type = 'color',
+									order = 30,
+								},
+								countdownMedium = {
+									name = L['Countdown around 3'],
+									desc = L['Color of the countdown text for values around 3.'],
+									type = 'color',
+									order = 40,
+								},
+								countdownHigh = {
+									name = L['Countdown above 10'],
+									desc = L['Color of the countdown text for values above 3.'],
+									type = 'color',
+									order = 50,
 								},
 							},
 						}
