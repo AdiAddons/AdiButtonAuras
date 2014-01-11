@@ -513,6 +513,9 @@ AdiButtonAuras:CreateConfig(function(addonName, addon)
 	local mainPanel = AceConfigDialog:AddToBlizOptions(addonName, addonName, nil, "global")
 	local spellPanel = AceConfigDialog:AddToBlizOptions(addonName, L['Spells & items'], addonName, "spells")
 	local profilePanel = AceConfigDialog:AddToBlizOptions(addonName, L['Profiles'], addonName, "profiles")
+	--@debug@
+	AceConfigDialog:AddToBlizOptions(addonName, "Debug", addonName, "debug")
+	--@end-debug@
 
 	spellPanel:HookScript('OnShow', function(self)
 		selectedKey, selectedName, selectedConf = nil, nil, nil
