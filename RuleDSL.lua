@@ -605,7 +605,7 @@ local RULES_ENV = setmetatable({
 	end,
 
 	SharedSimpleDebuffs = function(spells)
-		return Auras("HARMFUL", "bad", "enmey", spells)
+		return Auras("HARMFUL", "bad", "enemy", spells)
 	end,
 
 	SimpleBuffs = function(spells)
