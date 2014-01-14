@@ -58,5 +58,65 @@ AdiButtonAuras:RegisterRules(function(addon)
 			end,
 			88766, -- Provided by: Fulmination
 		},
+		Configure {
+			"FireTotems",
+			format(L["Show %s duration."], L["fire totems"]),
+			{3599, 8190, 2894}, -- Searing, Magma, Fire Elemental Totem
+			"player",
+			"PLAYER_TOTEM_UPDATE",
+			function(units, model)
+				local haveTotem, name, startTime, duration, icon = GetTotemInfo(FIRE_TOTEM_SLOT)
+				if haveTotem then
+					model.highlight = "good"
+					model.expiration = startTime + duration
+				end
+			end,
+			{3599, 8190, 2894},
+		},
+		Configure {
+			"EarthTotems",
+			format(L["Show %s duration."], L["earth totems"]),
+			{2484, 8143, 51485, 108270, 2062}, -- Earthbind, Tremor, Earthgrab, Stone Bulwark, Earth Elemental Totem
+			"player",
+			"PLAYER_TOTEM_UPDATE",
+			function(units, model)
+				local haveTotem, name, startTime, duration, icon = GetTotemInfo(EARTH_TOTEM_SLOT)
+				if haveTotem then
+					model.highlight = "good"
+					model.expiration = startTime + duration
+				end
+			end,
+			{2484, 8143, 51485, 108270, 2062},
+		},
+		Configure {
+			"WaterTotems",
+			format(L["Show %s duration."], L["water totems"]),
+			{16190, 108280, 5394}, -- Mana Tide, Healing Tide, Healing Stream Totem
+			"player",
+			"PLAYER_TOTEM_UPDATE",
+			function(units, model)
+				local haveTotem, name, startTime, duration, icon = GetTotemInfo(WATER_TOTEM_SLOT)
+				if haveTotem then
+					model.highlight = "good"
+					model.expiration = startTime + duration
+				end
+			end,
+			{16190, 108280, 5394},
+		},
+		Configure {
+			"AirTotems",
+			format(L["Show %s duration."], L["air totems"]),
+			{98008, 120668, 108269, 8177, 108273}, -- Spirit Link, Stormlash, Capacitator, Grounding, Windwalk Totem
+			"player",
+			"PLAYER_TOTEM_UPDATE",
+			function(units, model)
+				local haveTotem, name, startTime, duration, icon = GetTotemInfo(AIR_TOTEM_SLOT)
+				if haveTotem then
+					model.highlight = "good"
+					model.expiration = startTime + duration
+				end
+			end,
+			{98008, 120668, 108269, 8177, 108273},
+		},
 	}
 end)
