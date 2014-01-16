@@ -38,6 +38,8 @@ AdiButtonAuras:RegisterRules(function(addon)
 			"PRIEST",
 			-- ... but ...
 			17, -- Power Word: Shield
+			81700, -- Archangel
+			81661, -- Evangelism
 		},
 		ShowPower {
 			{
@@ -45,6 +47,13 @@ AdiButtonAuras:RegisterRules(function(addon)
 				64044, -- Psychic Horror
 			},
 			"SHADOW_ORBS",
+		},
+		SelfBuffAliases {
+			81700, -- Archangel
+			{
+				81661, -- Evangelism (takes priority for display)
+				81700  -- Archangel
+			}
 		},
 		Configure {
 			"PWShield",
