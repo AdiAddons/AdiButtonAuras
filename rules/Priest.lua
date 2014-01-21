@@ -69,6 +69,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 			"UNIT_AURA",
 			(function()
 				local hasEvangelism = BuildAuraHandler_Single("HELPFUL PLAYER", nil, "player", 6788)
+				local proxy = {} -- Local model
 				return function(units, model)
 					if hasEvangelism(units, proxy) then
 						model.count = proxy.count
