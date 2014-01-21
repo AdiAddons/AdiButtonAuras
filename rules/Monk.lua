@@ -248,6 +248,19 @@ AdiButtonAuras:RegisterRules(function(addon)
 				end
 			end,
 		},
+		Configure {
+			"DesperateMeasures",
+			addon.L["Show hint when your health is below 35."],
+			115072, -- Expel Harm
+			"player",
+			{ "UNIT_HEALTH", "UNIT_HEALTH_MAX" },
+			function(_, model)
+				if UnitHealth("player") / UnitHealthMax("player") < 0.35 then
+					model.hint = true
+				end
+			end,
+			126060, -- Desperate Measures
+		},
 	}
 
 end)
