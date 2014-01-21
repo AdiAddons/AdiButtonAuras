@@ -37,9 +37,11 @@ AdiButtonAuras:RegisterRules(function(addon)
 	local floor = _G.floor
 	local format = _G.format
 	local GetNumGroupMembers = _G.GetNumGroupMembers
+	local GetShapeshiftFormID = _G.GetShapeshiftFormID
 	local GetSpellBonusHealing = _G.GetSpellBonusHealing
 	local GetSpellInfo = _G.GetSpellInfo
 	local GetTime = _G.GetTime
+	local GetTotemInfo = _G.GetTotemInfo
 	local min = _G.min
 	local pairs = _G.pairs
 	local select = _G.select
@@ -52,6 +54,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 	local UnitHealthMax = _G.UnitHealthMax
 	local UnitPower = _G.UnitPower
 	local UnitPowerMax = _G.UnitPowerMax
+	local UnitStagger = _G.UnitStagger
 
 	-- Mistweaver constants
 	local buff = GetSpellInfo(115151) -- Renewing Mist
@@ -134,7 +137,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 			{ "UNIT_AURA", "UNIT_HEALTH_MAX" },
 			(function()
 				local STANCE_OF_THE_STURY_OX_ID = 23
-				local STAGGER_YELLOW_TRANSITION = STAGGER_YELLOW_TRANSITION
+				local STAGGER_YELLOW_TRANSITION = _G.STAGGER_YELLOW_TRANSITION
 				return function(units, model)
 					local stagger = GetShapeshiftFormID() == STANCE_OF_THE_STURY_OX_ID and UnitStagger("player")
 					if stagger then
