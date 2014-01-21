@@ -37,7 +37,8 @@ AdiButtonAuras:RegisterRules(function(addon)
 			-- Import all spells for ...
 			"PRIEST",
 			-- ... but ...
-			17, -- Power Word: Shield
+			   17, -- Power Word: Shield
+			81661, -- Evangelism
 		},
 		ShowPower {
 			{
@@ -59,6 +60,25 @@ AdiButtonAuras:RegisterRules(function(addon)
 					return hasPWShield(units, model) or hasWeakenedSoul(units, model)
 				end
 			end)(),
+		},
+		Configure {
+			"Archangel",
+			addon.BuildDesc("HELPFUL PLAYER", nil, "player", 81661),
+			81700, -- Archangel
+			"player",
+			"UNIT_AURA",
+			(function()
+				local hasEvangelism = BuildAuraHandler_Single("HELPFUL PLAYER", nil, "player", 6788)
+				return function(units, model)
+					if hasEvangelism(units, proxy) then
+						model.count = proxy.count
+						if proxy.expiration - GetTime() < 5 then
+							model.hint = true
+						end
+					end
+				end
+			end)(),
+			81661, -- Evangelism
 		},
 	}
 end)
