@@ -63,12 +63,12 @@ AdiButtonAuras:RegisterRules(function(addon)
 		},
 		Configure {
 			"Archangel",
-			addon.BuildDesc("HELPFUL PLAYER", nil, "player", 81661),
+			addon.BuildDesc("HELPFUL PLAYER", nil, "player", 81662),
 			81700, -- Archangel
 			"player",
 			"UNIT_AURA",
 			(function()
-				local hasEvangelism = BuildAuraHandler_Single("HELPFUL PLAYER", nil, "player", 6788)
+				local hasEvangelism = BuildAuraHandler_Single("HELPFUL PLAYER", nil, "player", 81661) -- Evangelism (buff)
 				local proxy = {} -- Local model
 				return function(units, model)
 					if hasEvangelism(units, proxy) then
@@ -79,7 +79,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 					end
 				end
 			end)(),
-			81661, -- Evangelism
+			81662, -- Evangelism
 		},
 	}
 end)
