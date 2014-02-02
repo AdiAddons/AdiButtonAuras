@@ -399,10 +399,13 @@ function overlayPrototype:UpdateDynamicUnits(event, unit)
 		updated = self:UpdateGUID(event, unit) or updated
 	end
 
-	if listenMouseover then
-		self:RegisterMessage(MOUSEOVER_TICK, 'ScheduleUpdate')
-	else
-		self:UnregisterMessage(MOUSEOVER_TICK)
+	if self.listenMouseover ~= listenMouseover then
+		self.listenMouseover = listenMouseover
+		if listenMouseover then
+			self:RegisterMessage(MOUSEOVER_TICK, 'ScheduleUpdate')
+		else
+			self:UnregisterMessage(MOUSEOVER_TICK)
+		end
 	end
 
 	return updated
