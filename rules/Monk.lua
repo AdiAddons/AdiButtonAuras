@@ -271,9 +271,8 @@ AdiButtonAuras:RegisterRules(function(addon)
 				for i = 1, math.huge do
 					local name, _, _, count, _, _, _, _, _, _, spellId = UnitAura("player", i, "HELPFUL PLAYER")
 					if name and spellId == 128939 then -- Elusive Brew (stacking buff)
-						model.count = count
 						if count >= 10 then
-							model.hints = true
+							model.hint = true
 						end
 						return true
 					elseif not name then
