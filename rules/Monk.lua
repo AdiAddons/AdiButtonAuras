@@ -157,9 +157,9 @@ AdiButtonAuras:RegisterRules(function(addon)
 			"player",
 			{ "UNIT_AURA", "UNIT_POWER", "UNIT_POWER_MAX" },
 			(function()
-				local buff = GetSpellInfo(115867) -- Mana Tea (stacking buff)
+				local manaTea = GetSpellInfo(115867) -- Mana Tea (stacking buff)
 				return function(_, model)
-					local name, _, _, count, _, _, expiration = UnitAura("player", buff, nil, "HELPFUL PLAYER")
+					local name, _, _, count, _, _, expiration = UnitAura("player", manaTea, nil, "HELPFUL PLAYER")
 					if name then
 						model.expiration = expiration
 						if count >= 2 and UnitPower("player", SPELL_POWER_MANA) / UnitPowerMax("player", SPELL_POWER_MANA) <= 0.92 then
