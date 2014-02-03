@@ -57,7 +57,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 	local UnitStagger = _G.UnitStagger
 
 	-- Mistweaver constants
-	local buff = GetSpellInfo(115151) -- Renewing Mist
+	local renewingMist = GetSpellInfo(115151) -- Renewing Mist
 	local TFT_COUNT    = 4 -- Minimum number of Renewing Mist to highlight Thunder Focus Tea
 	local TFT_DURATION = 6 -- Duration threshold to highlight Thunder Focus Tea
 	local UPLIFT_THRESHOLD = 3 -- Heal multiplier to highlight Uplight
@@ -178,7 +178,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 			function(units, model)
 				local count, minExpiration = 0, math.huge
 				for unit in pairs(units.group) do
-					local name, _, _, _, _, _, expiration = UnitAura(unit, buff, nil, "HELPFUL PLAYER")
+					local name, _, _, _, _, _, expiration = UnitAura(unit, renewingMist, nil, "HELPFUL PLAYER")
 					if name then
 						count, minExpiration = count + 1, min(minExpiration, expiration)
 					end
@@ -193,14 +193,14 @@ AdiButtonAuras:RegisterRules(function(addon)
 		},
 		Configure {
 			"ThunderFocusTea",
-			format(addon.L["Suggest when at least %s %s are running and one of them is below %s seconds."], TFT_COUNT, buff, TFT_DURATION),
+			format(addon.L["Suggest when at least %s %s are running and one of them is below %s seconds."], TFT_COUNT, renewingMist, TFT_DURATION),
 			116680, -- Thunder Focus Tea
 			"group",
 			"UNIT_AURA",
 			function(units, model)
 				local count, minExpiration = 0, math.huge
 				for unit in pairs(units.group) do
-					local name, _, _, _, _, _, expiration = UnitAura(unit, buff, nil, "HELPFUL PLAYER")
+					local name, _, _, _, _, _, expiration = UnitAura(unit, renewingMist, nil, "HELPFUL PLAYER")
 					if name then
 						count, minExpiration = count + 1, min(minExpiration, expiration)
 					end
@@ -221,7 +221,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 				local heal = 1.2 * ((7210+8379)/2 + 0.68 * GetSpellBonusHealing())
 				local totalHeal = 0
 				for unit in pairs(units.group) do
-					if UnitAura(unit, buff, nil, "HELPFUL PLAYER") then
+					if UnitAura(unit, renewingMist, nil, "HELPFUL PLAYER") then
 						totalHeal = totalHeal + min(heal, UnitHealthMax(unit) - UnitHealth(unit))
 					end
 				end
@@ -260,6 +260,27 @@ AdiButtonAuras:RegisterRules(function(addon)
 				end
 			end,
 			126060, -- Desperate Measures
+		},
+		Configure {
+			"ElusiveBrewStacks",
+			format(addon.L["Show %s count and suggest using it at 10 or more stacks."], GetSpellInfo(128939)),
+			115308, -- Elusive Brew
+			"player",
+			"UNIT_AURA",
+			function(_, model)
+				for i = 1, math.huge do
+					local name, _, _, count, _, _, _, _, _, _, spellId = UnitAura("player", i, "HELPFUL PLAYER")
+					if name and spellId == 128939 then -- Elusive Brew (stacking buff)
+						model.count = count
+						if count >= 10 then
+							model.hints = true
+						end
+						return true
+					elseif not name then
+						return false
+					end
+				end
+			end,
 		},
 	}
 
