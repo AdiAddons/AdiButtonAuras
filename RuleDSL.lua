@@ -535,6 +535,7 @@ do
 	local LibPlayerSpells = addon.GetLib('LibPlayerSpells-1.0')
 	local band = bit.band
 	local UNIQUE_AURA = LibPlayerSpells.constants.UNIQUE_AURA
+	local INVERT_AURA = LibPlayerSpells.constants.INVERT_AURA
 	local TARGETING = LibPlayerSpells.masks.TARGETING
 	local HARMFUL = LibPlayerSpells.constants.HARMFUL
 	local PERSONAL = LibPlayerSpells.constants.PERSONAL
@@ -556,6 +557,9 @@ do
 					token = "player"
 				elseif targeting == PET then
 					token = "pet"
+				end
+				if band(flags, INVERT_AURA) ~= 0 then
+					filter = (filter == "HARMFUL") and "HELPFUL" or "HARMFUL"
 				end
 				if band(flags, UNIQUE_AURA) == 0 then
 					filter = filter.." PLAYER"
