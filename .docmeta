@@ -7,3 +7,8 @@
     type: textile
     input-file: doc/Rules.textile
     output-page: "Rule API"
+
+-
+    type: markdown
+    input-file: doc/Rules.md
+    output-page: "Rule Reference"
