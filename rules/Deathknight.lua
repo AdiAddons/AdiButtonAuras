@@ -32,5 +32,19 @@ local addonName, addon = ...
 
 AdiButtonAuras:RegisterRules(function(addon)
 	addon.Debug('Rules', 'Adding deathknight rules')
-	return ImportPlayerSpells { "DEATHKNIGHT" }
+	return {
+		ImportPlayerSpells {
+		-- Import all spells for ...
+			"DEATHKNIGHT",
+		-- ... but ...
+			115635, -- Death Barrier
+			114851, -- Blood Charge
+			 50421, -- Scent of Blood
+			 81141, -- Crimson Scourge
+			 51124, -- Killing Machine
+			 59052, -- Freezing Fog
+			 81340, -- Sudden Doom
+			 91342, -- Shadow Infusion
+		},
+	}
 end)
