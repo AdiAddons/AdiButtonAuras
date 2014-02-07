@@ -182,7 +182,7 @@ end
 function overlayPrototype:ApplyHighlight()
 	local highlight = self.highlight
 
-	if highlight == "flash" and not (addon.db.profile.noFlashOnCooldown and self.inCooldown) and (not addon.db.profile.noFlashOutOfCombat or InCombatLockdown()) then
+	if highlight == "flash" and not (addon.db.profile.noFlashOnCooldown and self.inCooldown) and (not addon.db.profile.noFlashOutOfCombat or self.inCombat) then
 		self:ShowFlash()
 	else
 		self:HideFlash()
@@ -217,7 +217,7 @@ function overlayPrototype:SetHint(hint)
 end
 
 function overlayPrototype:ApplyHint()
-	if self.hint and not self.inCooldown and InCombatLockdown() then
+	if self.hint and not self.inCooldown and self.inCombat then
 		self:ShowHint()
 	else
 		self:HideHint()
@@ -226,6 +226,7 @@ end
 
 function overlayPrototype:UpdateDisplay(event)
 	self:Debug('UpdateDisplay' ,event)
+	self.inCombat = InCombatLockdown()
 	self:ApplyExpiration()
 	self:ApplyCount()
 	self:ApplyHighlight()
@@ -234,6 +235,7 @@ function overlayPrototype:UpdateDisplay(event)
 end
 
 function overlayPrototype:PLAYER_REGEN_ENABLED(event)
+	self.inCombat = (event == "PLAYER_REGEN_DISABLED")
 	self:ApplyHighlight()
 	self:ApplyHint()
 end
