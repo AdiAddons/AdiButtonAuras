@@ -341,7 +341,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 				if not unit then return end
 				for i, dispel, _, _, _, count, _, _, expiration in LibDispellable:IterateDispellableAuras(unit, offensive) do
 					if dispel == spell then
-						model.highlight, model.count, model.expiration = "bad", count, expiration
+						model.highlight, model.count, model.expiration = offensive and "good" or "bad", count, expiration
 						return
 					end
 				end
