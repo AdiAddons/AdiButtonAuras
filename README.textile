@@ -79,6 +79,10 @@ h2. Embedded BugGrabber
 
 "BugGrabber":http://www.curse.com/addons/wow/bug-grabber is shipped with AdiButtonAuras. You can install "BugSack":http://www.curse.com/addons/wow/bugsack to have a more user-friendly display of errors.
 
+h2. Acknowledgment
+
+Thanks to "ckaotik":https://github.com/ckaotik and "Rainrider":https://github.com/Rainrider for testing and contributons to class rules.
+
 h2. License
 
 AdiButtonAuras is licensed using the GPL v3.
