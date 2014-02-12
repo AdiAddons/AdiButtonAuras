@@ -175,6 +175,8 @@ function addon:ADDON_LOADED(event, name)
 		self.db.RegisterCallback(self, "OnProfileCopied", "OnProfileChanged")
 		self.db.RegisterCallback(self, "OnProfileReset", "OnProfileChanged")
 
+		GetLib('LibDualSpec-1.0'):EnhanceDatabase(self.db, addonName)
+
 		self:ScanButtons("ActionButton", NUM_ACTIONBAR_BUTTONS)
 		self:ScanButtons("BonusActionButton", NUM_ACTIONBAR_BUTTONS)
 		self:ScanButtons("MultiBarRightButton", NUM_ACTIONBAR_BUTTONS)

@@ -273,6 +273,7 @@ AdiButtonAuras:CreateConfig(function(addonName, addon)
 		if options then return options end
 
 		local profiles = addon.GetLib('AceDBOptions-3.0'):GetOptionsTable(addon.db)
+		addon.GetLib('LibDualSpec-1.0'):EnhanceOptions(profiles, addon.db)
 		profiles.order = -10
 		profiles.disabled = false
 
