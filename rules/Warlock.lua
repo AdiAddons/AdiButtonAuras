@@ -41,6 +41,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 			-- Import all spells for ...
 			"WARLOCK",
 			-- ... but ...
+			 80240, -- Havoc
 			116858, -- Chaos Bolt
 		},
 		ShowPower {
@@ -72,6 +73,29 @@ AdiButtonAuras:RegisterRules(function(addon)
 				end
 			end)(),
 			123686, -- Provided by: Pyroclasm
+		},
+		Configure {
+			"Havoc",
+			format(
+				addon.L["%s Else %s"],
+				addon.BuildDesc("HARMFUL PLAYER", "bad", "enemy", 80240),
+				addon.BuildDesc("HELPFUL PLAYER", "good", "player", 80240)
+			),
+			80240, -- Havoc
+			{ "player", "enemy" },
+			"UNIT_AURA",
+			(function()
+				local selfHavoc = BuildAuraHandler_Single("HELPFUL PLAYER", "good", "player", 80240)
+				local enemyHavoc = BuildAuraHandler_Single("HARMFUL PLAYER", "bad", "enemy", 80240)
+				return function(units, model)
+					if selfHavoc(units, model) then
+						enemyHavoc(units, model)
+						return true
+					else
+						model.hint = true
+					end
+				end
+			end)()
 		},
 	}
 
