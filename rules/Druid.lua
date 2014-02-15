@@ -96,16 +96,20 @@ AdiButtonAuras:RegisterRules(function(addon)
 		},
 		Configure {
 			"Harmony",
-			L['Flash when mastery is inactive.'],
-			50464, -- Nourish
+			L['Suggests when mastery is inactive.'],
+			{
+				 5185, -- Healing Touch
+				 8936, -- Regrowth
+				18562, -- Swiftmend
+				50464, -- Nourish
+			},
 			"player",
-			{ "UNIT_AURA", "PLAYER_REGEN_ENABLED", "PLAYER_REGEN_DISABLED" },
+			"UNIT_AURA",
 			(function()
 				local harmonyBuff = GetSpellInfo(100977) -- Harmony
-				return function(units, model)
-					if InCombatLockdown() and not UnitAura("player", harmonyBuff, nil, "HELPFUL PLAYER") then
-						model.highlight = "flash"
-						return true
+				return function(_, model)
+					if not UnitAura("player", harmonyBuff, nil, "HELPFUL PLAYER") then
+						model.hint = true
 					end
 				end
 			end)(),
