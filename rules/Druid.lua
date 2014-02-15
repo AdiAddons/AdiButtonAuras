@@ -45,10 +45,6 @@ AdiButtonAuras:RegisterRules(function(addon)
 			 16974, -- Predatory Swiftness (passive)
 		},
 		BuffAliases {
-			50464, -- Nourish
-			96206, -- Glyph of Rejuvenation
-		},
-		BuffAliases {
 			145518, -- Genesis
 			   774, -- Rejuvenation
 		},
@@ -168,6 +164,22 @@ AdiButtonAuras:RegisterRules(function(addon)
 			"ENERGY",
 			35,
 			"darken"
+		},
+		Configure {
+			"GlyphOfRejuvenation",
+			addon.L["Suggests to cast Rejuvenation to enable Glyph of Rejuvenation effect."],
+			  774, -- Rejuvenation
+			"player",
+			"UNIT_AURA",
+			(function()
+				local buffName = GetSpellInfo(96206) -- Glyph of Rejuvenation
+				return function(units, model)
+					if not UnitAura("player", buffName, nil, "HELPFUL PLAYER") then
+						model.hint = true
+					end
+				end
+			end)(),
+			17076, -- Glyph of Rejuvenation
 		},
 	}
 
