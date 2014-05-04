@@ -226,6 +226,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 	end
 
 	-- Create a rule for each spell of each category
+	local drproviders = DRData.GetProviders and DRData:GetProviders() or {}
 	for category, spells in pairs(drspells) do
 		local key = BuildKey("CrowdControl", category)
 		local desc = BuildDesc(L["a debuff"], "bad", "enemy", format(L["of type '%s'"], DRData:GetCategoryName(category):lower()))
@@ -236,7 +237,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 				local ids = LibSpellbook:GetAllIds(spell)
 				if ids then
 					for id in pairs(ids) do
-						AddRuleFor(key, desc, id, "enemy", "UNIT_AURA", handler)
+						AddRuleFor(key, desc, id, "enemy", "UNIT_AURA", handler, drproviders[id])
 					end
 				end
 			end)
