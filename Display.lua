@@ -23,6 +23,7 @@ local addonName, addon = ...
 
 local _G = _G
 local CreateFrame = _G.CreateFrame
+local C_Timer = _G.C_Timer
 local GetTime = _G.GetTime
 local UIParent = _G.UIParent
 local floor = _G.floor
@@ -35,8 +36,7 @@ local tonumber = _G.tonumber
 local tremove = _G.tremove
 local type = _G.type
 local unpack = _G.unpack
-
-local AceTimer = addon.GetLib('AceTimer-3.0')
+local max = _G.max
 
 local fontFile, fontSize, fontFlag = [[Fonts\ARIALN.TTF]], 13, "OUTLINE"
 
@@ -44,38 +44,35 @@ local overlayPrototype = addon.overlayPrototype
 local ColorGradient = addon.ColorGradient
 
 local function Timer_Update(self)
-	local prefs = addon.db.profile
 	local timeLeft = (self.expiration or 0) - GetTime()
+	if timeLeft <= 0 then
+		self:Hide()
+		return
+	end
 
+	local prefs = addon.db.profile
 	if timeLeft > prefs.maxCountdown then
-		self.timerId = AceTimer.ScheduleTimer(self, "Update", timeLeft - prefs.maxCountdown)
+		C_Timer.After(max(0.1, timeLeft - prefs.maxCountdown), function() return Timer_Update(self) end)
 		self:Hide()
 		return
 	end
 
 	local delay
-	if timeLeft >= 3600 then
+	if timeLeft > 3600 then
 		self:SetFormattedText("%dh", floor(timeLeft/3600))
-		delay = timeLeft % 3600
-	elseif timeLeft >= (self.compactTimeLeft and prefs.minMinuteSecs or prefs.minMinutes) then
+		delay = ceil(timeLeft % 3600)
+	elseif timeLeft > (self.compactTimeLeft and prefs.minMinuteSecs or prefs.minMinutes) then
 		self:SetFormattedText("%dm", floor(timeLeft/60))
-		delay = timeLeft % 60
-	elseif timeLeft >= prefs.minMinuteSecs then
+		delay = ceil(timeLeft % 60)
+	elseif timeLeft > prefs.minMinuteSecs then
 		self:SetFormattedText("%d:%02d", floor(timeLeft/60), floor(timeLeft%60))
-		delay = timeLeft % 1
-	elseif timeLeft >= prefs.maxTenth then
+		delay = ceil((timeLeft % 1) * 10) / 10
+	elseif timeLeft > prefs.maxTenth then
 		self:SetFormattedText("%d", floor(timeLeft))
-		delay = timeLeft % 1
-	elseif timeLeft > 0 then
-		self:SetFormattedText("%.1f", floor(timeLeft*10)/10)
-		delay = timeLeft % 0.1
+		delay = ceil((timeLeft % 1) * 10) / 10
 	else
-		if self.timerId then
-			AceTimer:CancelTimer(self.timerId)
-			self.timerId = nil
-		end
-		self:Hide()
-		return
+		self:SetFormattedText("%.1f", floor(timeLeft*10)/10)
+		delay = 0.1
 	end
 
 	local r, g, b = unpack(prefs.colors.countdownHigh)
@@ -89,7 +86,7 @@ local function Timer_Update(self)
 	end
 	self:SetTextColor(r, g, b, 1)
 
-	self.timerId = AceTimer.ScheduleTimer(self, "Update", delay)
+	C_Timer.After(max(0.1, delay), function() return Timer_Update(self) end)
 	self:Show()
 end
 
