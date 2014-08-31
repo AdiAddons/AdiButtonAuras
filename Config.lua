@@ -130,23 +130,23 @@ AdiButtonAuras:CreateConfig(function(addonName, addon)
 				self.name = GetItemInfo(self.id)
 			end
 			if self.conf then
-				self:Enable()
 				if self.enabled then
 					self:SetBackdropColor(0, 1, 0, 0.8)
 				else
-					self:SetBackdropColor(0, 0, 1, 0.8)
-				end
-				if GameTooltip:GetOwner() == self then
-					self:OnEnter()
+					self:SetBackdropColor(1, 0, 0, 0.8)
 				end
 			else
-				self:Disable()
 				self:SetBackdropColor(0, 0, 0, 0.8)
-				self:OnLeave()
+			end
+			if GameTooltip:GetOwner() == self then
+				self:OnEnter()
 			end
 		end
 
 		function overlayPrototype:OnClick()
+			if not self.conf then
+				return
+			end
 			if IsShiftKeyDown() then
 				addon.db.profile.enabled[self.key] = not addon.db.profile.enabled[self.key]
 				addon.SendMessage(self, addon.CONFIG_CHANGED)
@@ -156,16 +156,33 @@ AdiButtonAuras:CreateConfig(function(addonName, addon)
 			AceConfigRegistry:NotifyChange(addonName)
 		end
 
+		local function wrap(str, width)
+			local a, b = str:find("%s+", width)
+			if not a then return str end
+			return str:sub(1, a-1).."\n"..wrap(str:sub(b+1), width)
+		end
+
 		function overlayPrototype:OnEnter()
 			GameTooltip_SetDefaultAnchor(GameTooltip, self)
-			GameTooltip:AddDoubleLine(self.name, self.type)
+			GameTooltip:AddDoubleLine(self.name, self.type and L[self.type]) -- L['item'] L['spell']
 			if self.conf then
 				if self.enabled then
 					GameTooltip:AddDoubleLine(L['Status'], L['Enabled'], nil, nil, nil, 0, 1, 0)
 				else
-					GameTooltip:AddDoubleLine(L['Status'], L['Disabled'], nil, nil, nil, 0, 0, 1)
+					GameTooltip:AddDoubleLine(L['Status'], L['Disabled'], nil, nil, nil, 1, 0, 0)
 				end
+				if self.conf.keys then
+					GameTooltip:AddLine(L['Rules:'])
+					for i, ruleKey in ipairs(self.conf.keys) do
+						local enabled = addon.db.profile.rules[ruleKey]
+						GameTooltip:AddLine(wrap("- "..addon.ruleDescs[ruleKey], 30), enabled and 0 or 1, enabled and 1 or 0, 0)
+					end
+				end
+				GameTooltip:AddLine(L['Shift+click to toggle.'])
 				--@debug@
+				GameTooltip:AddLine("-- debug --", 0.5, 0.5, 0.5)
+				GameTooltip:AddDoubleLine("Key", self.key, nil, nil, nil, 1, 1, 1)
+				GameTooltip:AddDoubleLine("Id", self.id, nil, nil, nil, 1, 1, 1)
 				local title = "Units"
 				for unit in pairs(self.conf.units) do
 					GameTooltip:AddDoubleLine(title, unit, nil, nil, nil, 1, 1, 1)
@@ -178,9 +195,9 @@ AdiButtonAuras:CreateConfig(function(addonName, addon)
 				end
 				GameTooltip:AddDoubleLine('Handlers', #(self.conf.handlers), nil, nil, nil, 1, 1, 1)
 				--@end-debug@
-				GameTooltip:AddLine(L['Shift+click to toggle.'])
 			else
 				GameTooltip:AddDoubleLine(L['Status'], UNKNOWN, nil, nil, nil, 0.5, 0.5, 0.5)
+				GameTooltip:AddLine(L['AdiButtonAuras has no rule for this spell/item.'])
 			end
 			GameTooltip:Show()
 		end
