@@ -75,6 +75,7 @@ addon.DEFAULT_SETTINGS = {
 		maxTenth = 3,
 		noFlashOnCooldown = false,
 		noFlashOutOfCombat = false,
+		hints = "show",
 	}
 }
 

@@ -338,6 +338,17 @@ AdiButtonAuras:CreateConfig(function(addonName, addon)
 							type = 'toggle',
 							order = 15,
 						},
+						hints = {
+							name = L['Suggestion display'],
+							desc = L['AdiButtonAuras has special rules to suggest using a spell. How would like it to be display ?'],
+							type = 'select',
+							order = 20,
+							values = {
+								show  = L['Rotary star'],
+								flash = L['Flashing border'],
+								hide  = L['Nothing'],
+							},
+						},
 						countdownThresholds = {
 							name = L["Countdown thresholds"],
 							type = "group",
