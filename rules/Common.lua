@@ -292,7 +292,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 
 		tinsert(rules, Configure {
 			"Raidbuff:"..buffMask,
-			BuildDesc("HELPFUL", "good", "group", L["@NAME or equivalent"]),
+			L["Track @NAME or equivalent raid buffs on all group members. Indicate the duration of the shortest buff and the number of missing buffs."],
 			buffSpells[buffMask],
 			"group",
 			"UNIT_AURA",
