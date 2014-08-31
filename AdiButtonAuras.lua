@@ -87,7 +87,7 @@ local libraries = {}
 local function GetLib(major, silent)
 	local lib, minor = LibStub(major, silent)
 	libraries[major] = minor
-	return lib
+	return lib, minor
 end
 addon.libraries, addon.GetLib = libraries, GetLib
 

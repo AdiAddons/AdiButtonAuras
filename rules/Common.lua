@@ -213,8 +213,9 @@ AdiButtonAuras:RegisterRules(function(addon)
 	--------------------------------------------------------------------------
 	-- Use DRData, grouped by DR categories
 
-	local DRData = GetLib("DRData-1.0")
-	local LibSpellbook = GetLib('LibSpellbook-1.0')
+	local DRData, DRVer = GetLib("DRData-1.0")
+	local LibSpellbook, LSBVer = GetLib('LibSpellbook-1.0')
+	local source = format(" [DR-%d,LSB-%d]", DRVer, LSBVer)
 
 	-- Build a list of spell ids per DR categories.
 	local drspells = {}
@@ -229,7 +230,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 	local drproviders = DRData.GetProviders and DRData:GetProviders() or {}
 	for category, spells in pairs(drspells) do
 		local key = BuildKey("CrowdControl", category)
-		local desc = BuildDesc(L["a debuff"], "bad", "enemy", format(L["of type '%s'"], DRData:GetCategoryName(category):lower()))
+		local desc = BuildDesc(L["a debuff"], "bad", "enemy", format(L["of type '%s'"], DRData:GetCategoryName(category):lower()))..source
 		local handler = BuildAuraHandler_Longest("HARMFUL", "bad", "enemy", spells)
 		for i, spell in ipairs(spells) do
 			local spell = spell
@@ -292,7 +293,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 
 		tinsert(rules, Configure {
 			"Raidbuff:"..buffMask,
-			L["Track @NAME or equivalent raid buffs on all group members. Indicate the duration of the shortest buff and the number of missing buffs."],
+			L["Track @NAME or equivalent raid buffs on all group members. Indicate the duration of the shortest buff and the number of missing buffs."].." [LPS]",
 			buffSpells[buffMask],
 			"group",
 			"UNIT_AURA",
@@ -325,10 +326,10 @@ AdiButtonAuras:RegisterRules(function(addon)
 	-- Dispels
 	--------------------------------------------------------------------------
 	-- Use LibDispellable and LibPlayerSpells
-	local LibDispellable = GetLib('LibDispellable-1.0')
+	local LibDispellable, LDVer = GetLib('LibDispellable-1.0')
 
 	local HELPFUL = LibPlayerSpells.constants.HELPFUL
-	for spell, flags in LibPlayerSpells:IterateSpells("DISPEL", playerClass) do
+	for spell, flags, _, _, _, category in LibPlayerSpells:IterateSpells("DISPEL", playerClass) do
 		local offensive = band(flags, HELPFUL) == 0
 		local spell, token = spell, offensive and "enemy" or "ally"
 		tinsert(rules, Configure {
@@ -336,7 +337,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 			(offensive
 				and BuildDesc(L["a buff you can dispel"], "good", "enemy")
 				or BuildDesc(L["a debuff you can dispel"], "bad", "ally")
-			),
+			)..format(" [LD-%d,%s]", LDVer, addon.DescribeLPSSource(category)),
 			spell,
 			token,
 			"UNIT_AURA",
@@ -359,14 +360,16 @@ AdiButtonAuras:RegisterRules(function(addon)
 	-- Use LibPlayerSpells
 
 	local interrupts = {}
-	for spell in LibPlayerSpells:IterateSpells("INTERRUPT", playerClass) do
+	for spell, _, _, _, _, category in LibPlayerSpells:IterateSpells("INTERRUPT", playerClass) do
 		tinsert(interrupts, spell)
 	end
+	local source = addon.DescribeLPSSource(playerClass)
 	tinsert(rules, Configure {
 		"Interrupt",
-		format(L["%s when %s is casting/channeling a spell that you can interrupt."],
+		format(L["%s when %s is casting/channeling a spell that you can interrupt."].." [%s]",
 			addon.DescribeHighlight("flash"),
-			addon.DescribeAllTokens("enemy")
+			addon.DescribeAllTokens("enemy"),
+			source
 		),
 		interrupts,
 		"enemy",
