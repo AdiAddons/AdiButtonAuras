@@ -297,22 +297,25 @@ AdiButtonAuras:RegisterRules(function(addon)
 			"group",
 			"UNIT_AURA",
 			function(units, model)
-				local count, minExpiration = 0
+				local missing, minExpiration = 0
 				for unit in pairs(units.group) do
-					local found, expiration = CheckUnitBuffs(unit)
-					addon.Debug('Raidbuff', buffMask, unit, found, expiration)
-					if found then
-						count = count + 1
-						if not minExpiration or expiration < minExpiration then
+					if not UnitIsDeadOrGhost(unit) then
+						local found, expiration = CheckUnitBuffs(unit)
+						addon.Debug('Raidbuff', buffMask, unit, found, expiration)
+						if not found then
+							missing = missing + 1
+						elseif not minExpiration or expiration < minExpiration then
 							minExpiration = expiration
 						end
+					else
+						addon.Debug('Raidbuff', unit, "dead or ghost")
 					end
 				end
-				if count > 0 then
-					model.highlight, model.expiration = "good", expiration
-					if count < GetNumGroupMembers() then
-						model.count = GetNumGroupMembers() - count
-					end
+				if minExpiration then
+					model.highlight, model.expiration = "good", minExpiration
+				end
+				if missing > 0 then
+					model.count = missing
 				end
 			end
 		})
