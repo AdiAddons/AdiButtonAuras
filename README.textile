@@ -6,12 +6,17 @@ AdiButtonAuras is a rewrite of Inline Aura, but with different design decisions 
 
 AdiButtonAuras uses a set of rules that apply to one or more spells. Each rule can track an aura on one or more unit and changes the display of the spell accordingly.
 
+AdiButtonAuras has several custom rules to suggest using spells at meaningful times. By default, these suggestions are displayed using a rotary, shinning star on the buttons.
+
+AdiButtonAuras smartly track raid/group buffs: it shows the number of *missing* buffs and the duration of the shortest one, taking into account equivalent buffs.
+
 h2. Options
 
 h3. Global options
 
-* do not flash actions on cooldown (do not affect Blizzard flash),
-* do not flash actions out of combat (do not affect Blizzard flash),
+* do not show flashing border for actions on cooldown (do not affect Blizzard flash),
+* do not show flashing border for actions out of combat (do not affect Blizzard flash),
+* select how suggestions are displayed (hidden, rotary star or flashing border),
 * change the colors of "good" and "bad" borders,
 * tweak the format of the countdown text,
 * change colors of the countdown text.
@@ -79,9 +84,44 @@ h2. Embedded BugGrabber
 
 "BugGrabber":http://www.curse.com/addons/wow/bug-grabber is shipped with AdiButtonAuras. You can install "BugSack":http://www.curse.com/addons/wow/bugsack to have a more user-friendly display of errors.
 
+h2. FAQ
+
+h3. When I try to configure a spell, the button is dimmed and I cannot chose it. Why ?
+
+AdiButtons has no rule about this spell. Consider filing an issue.
+
+h3. What do some rules ending with some obscure characters between brackets, like [LPS-DRUID-5.4.1-7] ?
+
+These are references to the libraries AdiButtonAuras used to create the rule.
+
+* LPS-<class>-<patch>-<revision>: data from "LibPlayerSpells-1.0":https://github.com/Adirelle/LibPlayerSpells-1.0 for <class>, patch <patch>, <revision>th revision. E.g. "[LPS-DRUID-5.4.1-7]" stands for "rule created accordingly to LibPlayerSpells-1.0 data for druid, patch 5.4.1, 7th revision."
+* DR-<minor>: "DRData-1.0":https://github.com/Adirelle/DRData-1.0, <minor>th revision.
+* LSB-<minor>: "LibSpellbook-1.0":https://github.com/Adirelle/LibSpellbook-1.0, <minor>th revision.
+* LD-<minor>: "LibDispellable-1.0":https://github.com/Adirelle/LibDispellable-1.0/, <minor>th revision.
+
+h3. Are you going to support button skinning, e.g. Masque ?
+
+No, unless Masque supports to skin partial buttons.
+
+h3. Are you going to support ElvUI ?
+
+AdiButtonAuras should work with ElvUI. I am not going to support its skin though.
+
+h3. Are you going to add a configuration panel to create custom rules ?
+
+Not in the way InlineAura did it. At best will it support custom rules written in Lua using the DSL (and I make no promise).
+
 h2. Acknowledgment
 
-Thanks to "ckaotik":https://github.com/ckaotik and "Rainrider":https://github.com/Rainrider for testing and contributons to class rules.
+Thanks to the following people for testing and contributions to AdiButtonAuras and related libraries.
+
+Contributors (in alphabetical order):
+
+* "arcadepro":https://github.com/arcadepro
+* "ckaotik":https://github.com/ckaotik
+* "dafzor":https://github.com/dafzor
+* "mjmurray88":https://github.com/mjmurray88
+* "Rainrider":https://github.com/Rainrider
 
 h2. License
 
