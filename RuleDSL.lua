@@ -52,6 +52,8 @@ local xpcall = _G.xpcall
 local getkeys = addon.getkeys
 local ucfirst = addon.ucfirst
 
+local LibPlayerSpells = addon.GetLib('LibPlayerSpells-1.0')
+
 -- Local debug with dedicated prefix
 local function Debug(...) return addon.Debug('|cffffff00Rules:|r', ...) end
 
@@ -330,11 +332,19 @@ local function BuildDesc(filter, highlight, token, spell)
 	), "%s+", " ")
 end
 
+local function DescribeLPSSource(category)
+	if category then
+		local _, interface, rev = LibPlayerSpells:GetVersionInfo(category)
+		return format("LPS-%s-%d.%d.%d-%d", category, interface/10000, (interface/100)%100, interface%100, rev)
+	end
+end
+
 addon.DescribeHighlight = DescribeHighlight
 addon.DescribeFilter = DescribeFilter
 addon.DescribeAllTokens = DescribeAllTokens
 addon.DescribeAllSpells = DescribeAllSpells
 addon.BuildDesc = BuildDesc
+addon.DescribeLPSSource = DescribeLPSSource
 
 ------------------------------------------------------------------------------
 -- Handler builders
@@ -532,7 +542,6 @@ end
 
 local ImportPlayerSpells
 do
-	local LibPlayerSpells = addon.GetLib('LibPlayerSpells-1.0')
 	local band = bit.band
 	local UNIQUE_AURA = LibPlayerSpells.constants.UNIQUE_AURA
 	local INVERT_AURA = LibPlayerSpells.constants.INVERT_AURA
@@ -545,7 +554,7 @@ do
 	function ImportPlayerSpells(filter, ...)
 		local exceptions = AsSet({...}, "number", 3)
 		local rules = {}
-		for buff, flags, provider, modified in LibPlayerSpells:IterateSpells(filter, "AURA", "RAIDBUFF") do
+		for buff, flags, provider, modified, _, category in LibPlayerSpells:IterateSpells(filter, "AURA", "RAIDBUFF") do
 			local providers = provider ~= buff and FilterOut(AsList(provider, "number"), exceptions)
 			local spells = FilterOut(AsList(modified, "number"), exceptions)
 			if not exceptions[buff] and #spells > 0 and (not providers or #providers > 0) then
@@ -568,7 +577,7 @@ do
 					highlight = "flash"
 				end
 				local key = BuildKey('LibPlayerSpell', provider, modified, filter, highlight, token, buff)
-				local desc = BuildDesc(filter, highlight, token, buff)
+				local desc = BuildDesc(filter, highlight, token, buff).." ["..DescribeLPSSource(category).."]"
 				local handler = BuildAuraHandler_Longest(filter, highlight, token, buff, 3)
 				tinsert(rules, Configure(key, desc, spells, token, "UNIT_AURA", handler, provider, 3))
 			end

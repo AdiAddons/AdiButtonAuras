@@ -142,12 +142,15 @@ DebuffAliases {
 * `arg2` - power type (_string_)  
     One of the possible suffixes of `SPELL_POWER_` (i.e. "ENERGY")
 * (`arg3`) - handler (_function_ or _number_)
-    - if of type _number_ then it serves as a lower bound for displaying the power value either as percent (`arg3` is between -1 and 1) or as an absolute value else
+    - if a _number_ is provided, it is interpreted as follow :
+        - numbers in the [-1.0;1.0] range indicate a fraction of the maximum, e.g. 0.5 for 50%, else they are taken as is.
+        - positive numbers indicates a minimum threshold, e.g. 50 triggers when the power is equal or greater than 50.
+        - negative numbers indicates a maximum threshold, e.g. -50 triggers when the power is equal or less than 50.
     - default value: a _function_ that displays the current power value and highlights when it reaches it's maximum
 * (`arg4`) - [highlight type](#highlight-type) (_string_)  
     default value: "flash"
 * (`arg5`) - description for the config panel (_string_)  
-    default value: "" (if the user supplied a _function_ in `arg3`), multiple possible values else
+    default value: nothing if the user supplied a _function_ in `arg3`, else a meaningful description
 
 >Example:
 ```

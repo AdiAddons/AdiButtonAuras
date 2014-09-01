@@ -46,5 +46,21 @@ AdiButtonAuras:RegisterRules(function(addon)
 			 81340, -- Sudden Doom
 			 91342, -- Shadow Infusion
 		},
+		Configure {
+			"Soul Reaper",
+			addon.L["Shows Hint when target is below 35% health."],
+			{
+				114866, -- Soul Reaper (Blood)
+				130735, -- Soul Reaper (Frost)
+				130736, -- Soul Reaper (Unholly)
+			}, 
+			"target",
+			{ "UNIT_HEALTH", "UNIT_HEALTH_MAX" },
+			function(_, model)
+				if UnitHealth("target") / UnitHealthMax("target") < 0.35 then
+					model.hint = true
+				end
+			end,
+		}
 	}
 end)

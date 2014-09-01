@@ -451,6 +451,13 @@ function overlayPrototype:UpdateState(event)
 	--self:Debug("Scan =>", model.highlight, model.count, model.expiration, model.hint)
 	self:SetCount(model.count)
 	self:SetExpiration(model.expiration)
+	if model.hint then
+		if addon.db.profile.hints == "flash" then
+			model.hint, model.highlight = false, "flash"
+		elseif addon.db.profile.hints ~= "show" then
+			model.hint = false
+		end
+	end
 	self:SetHighlight(model.highlight)
 	self:SetHint(model.hint)
 

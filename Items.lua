@@ -46,8 +46,9 @@ end
 local function BuildItemRuleForBuffName(itemId, buffName)
 	if not buffName then return end
 	local _, link = GetItemInfo(itemId)
-	addon:Debug('Buff for', link, '=>', buffName)
 	local token, filter, highlight = GetItemTargetFilterAndHighlight(itemId)
+	local _, link = GetItemInfo(itemId)
+	addon:Debug(link, 'token=', token, 'filter=', filter, 'highlight=', highlight, 'buff=', buffName)
 	return {
 		units = { [token] = true },
 		events = { UNIT_AURA = true },
@@ -64,17 +65,17 @@ local function BuildItemRuleForBuffName(itemId, buffName)
 	}
 end
 
-local function BuildItemRuleForBuffIdS(itemId, ...)
+local function BuildItemRuleForBuffIds(itemId, ...)
 	local numBuffs = select('#', ...)
 	if numBuffs == 0 or not ... then return false end
-	local _, link = GetItemInfo(itemId)
-	addon:Debug('Buffs for', link, '=>', ...)
 	local buffs = {}
 	for i = 1, numBuffs do
 		local spellId = select(i, ...)
 		buffs[spellId] = true
 	end
 	local token, filter, highlight = GetItemTargetFilterAndHighlight(itemId)
+	local _, link = GetItemInfo(itemId)
+	addon:Debug(link, 'token=', token, 'filter=', filter, 'highlight=', highlight, 'buffs=', ...)
 	return {
 		units = { [token] = true },
 		events = { UNIT_AURA = true },
@@ -101,7 +102,8 @@ end
 setmetatable(items, { __index = function(t, itemId)
 	local rule = false
 	if itemId then
-		rule = BuildItemRuleForBuffIdS(itemId, LibItemBuffs:GetItemBuffs(itemId))
+		itemId = tonumber(itemId)
+		rule = BuildItemRuleForBuffIds(itemId, LibItemBuffs:GetItemBuffs(itemId))
 			or BuildItemRuleForBuffName(itemId, GetItemSpell(itemId))
 			or false
 	end
