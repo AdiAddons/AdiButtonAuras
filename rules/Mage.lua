@@ -19,9 +19,9 @@ You should have received a copy of the GNU General Public License
 along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 --]]
 
-if select(2, UnitClass("player")) ~= "MAGE" then return end
+local _, addon = ...
 
-local addonName, addon = ...
+if not addon.isClass("MAGE") then return end
 
 AdiButtonAuras:RegisterRules(function()
 	Debug('Adding mage rules')

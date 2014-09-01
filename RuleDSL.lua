@@ -590,6 +590,13 @@ end
 -- Environment setup
 ------------------------------------------------------------------------------
 
+function addon.isClass(class)
+	return class == select(2, UnitClass("player"))
+	--@debug@
+		or true
+	--@end-debug@
+end
+
 -- Wrap an existing function to accept all its arguments in a table
 local function WrapTableArgFunc(func)
 	return function(args)

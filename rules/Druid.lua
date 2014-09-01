@@ -19,8 +19,9 @@ You should have received a copy of the GNU General Public License
 along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 --]]
 
-if select(2, UnitClass("player")) ~= "DRUID" then return end
+local _, addon = ...
 
+if not addon.isClass("DRUID") then return end
 
 AdiButtonAuras:RegisterRules(function()
 	Debug('Rules', 'Adding druid rules')

@@ -19,9 +19,9 @@ You should have received a copy of the GNU General Public License
 along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 --]]
 
-if select(2, UnitClass("player")) ~= "PALADIN" then return end
+local _, addon = ...
 
-local addonName, addon = ...
+if not addon.isClass("PALADIN") then return end
 
 AdiButtonAuras:RegisterRules(function()
 	Debug('Adding paladin rules')
