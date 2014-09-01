@@ -21,40 +21,9 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 
 if select(2, UnitClass("player")) ~= "MONK" then return end
 
--- Globals: AddRuleFor Configure SimpleAuras UnitBuffs
--- Globals: PassiveModifier SimpleDebuffs SharedSimpleDebuffs SimpleBuffs
--- Globals: LongestDebuffOf SelfBuffs PetBuffs BuffAliases DebuffAliases
--- Globals: SelfBuffAliases SharedBuffs ShowPower SharedSimpleBuffs
--- Globals: BuildAuraHandler_Longest ImportPlayerSpells bit BuildAuraHandler_Single
--- Globals: math
 
-AdiButtonAuras:RegisterRules(function(addon)
-	addon.Debug('Rules', 'Adding monk rules')
-
-	local L = addon.L
-
-	local ceil = _G.ceil
-	local floor = _G.floor
-	local format = _G.format
-	local GetNumGroupMembers = _G.GetNumGroupMembers
-	local GetShapeshiftFormID = _G.GetShapeshiftFormID
-	local GetSpellBonusHealing = _G.GetSpellBonusHealing
-	local GetSpellInfo = _G.GetSpellInfo
-	local GetTime = _G.GetTime
-	local GetTotemInfo = _G.GetTotemInfo
-	local min = _G.min
-	local pairs = _G.pairs
-	local select = _G.select
-	local SPELL_POWER_MANA = _G.SPELL_POWER_MANA
-	local UnitAura = _G.UnitAura
-	local UnitBuff = _G.UnitBuff
-	local UnitClass = _G.UnitClass
-	local UnitDebuff = _G.UnitDebuff
-	local UnitHealth = _G.UnitHealth
-	local UnitHealthMax = _G.UnitHealthMax
-	local UnitPower = _G.UnitPower
-	local UnitPowerMax = _G.UnitPowerMax
-	local UnitStagger = _G.UnitStagger
+AdiButtonAuras:RegisterRules(function()
+	Debug('Adding monk rules')
 
 	-- Mistweaver constants
 	local renewingMist = GetSpellInfo(115151) -- Renewing Mist
@@ -105,7 +74,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 		},
 		Configure {
 			"HealingElixirs",
-			addon.BuildDesc("HELPFUL PLAYER", "good", "player", 122280),
+			BuildDesc("HELPFUL PLAYER", "good", "player", 122280),
 			{
 				115203, -- Fortifying Brew
 				115288, -- Energizing Brew
@@ -137,7 +106,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 			{ "UNIT_AURA", "UNIT_HEALTH_MAX" },
 			(function()
 				local STANCE_OF_THE_STURY_OX_ID = 23
-				local STAGGER_YELLOW_TRANSITION = _G.STAGGER_YELLOW_TRANSITION
+				local STAGGER_YELLOW_TRANSITION = STAGGER_YELLOW_TRANSITION
 				return function(units, model)
 					local stagger = GetShapeshiftFormID() == STANCE_OF_THE_STURY_OX_ID and UnitStagger("player")
 					if stagger then
@@ -171,7 +140,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 		},
 		Configure {
 			"RenewingMist",
-			addon.L["Show the number of group member affected by @NAME and the shortest duration."],
+			L["Show the number of group member affected by @NAME and the shortest duration."],
 			115151, -- Renewing Mist
 			"group",
 			"UNIT_AURA",
@@ -193,7 +162,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 		},
 		Configure {
 			"ThunderFocusTea",
-			format(addon.L["Suggest when at least %s %s are running and one of them is below %s seconds."], TFT_COUNT, renewingMist, TFT_DURATION),
+			format(L["Suggest when at least %s %s are running and one of them is below %s seconds."], TFT_COUNT, renewingMist, TFT_DURATION),
 			116680, -- Thunder Focus Tea
 			"group",
 			"UNIT_AURA",
@@ -212,7 +181,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 		},
 		Configure {
 			"Uplift",
-			format(addon.L["Suggest when total effective healing would be at least %d times the base healing."], UPLIFT_THRESHOLD),
+			format(L["Suggest when total effective healing would be at least %d times the base healing."], UPLIFT_THRESHOLD),
 			116670, -- Uplift
 			"group",
 			{ "UNIT_AURA", "UNIT_HEALTH", "UNIT_HEALTH_MAX" },
@@ -232,7 +201,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 		},
 		Configure {
 			"Statue",
-			addon.L["Show good border and remaining time of your summoned statue."],
+			L["Show good border and remaining time of your summoned statue."],
 			{
 				115313, -- Summon Jade Serpent Statue
 				115315, -- Summon Black Ox Statue
@@ -250,7 +219,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 		},
 		Configure {
 			"DesperateMeasures",
-			addon.L["Show hint when your health is below 35%."],
+			L["Show hint when your health is below 35%."],
 			115072, -- Expel Harm
 			"player",
 			{ "UNIT_HEALTH_FREQUENT", "UNIT_HEALTH_MAX" },
@@ -263,7 +232,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 		},
 		Configure {
 			"ElusiveBrewStacks",
-			format(addon.L["Show %s count and suggest using it at 10 or more stacks."], GetSpellInfo(128939)),
+			format(L["Show %s count and suggest using it at 10 or more stacks."], GetSpellInfo(128939)),
 			115308, -- Elusive Brew
 			"player",
 			"UNIT_AURA",

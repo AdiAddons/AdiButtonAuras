@@ -23,15 +23,8 @@ if select(2, UnitClass("player")) ~= "DEATHKNIGHT" then return end
 
 local addonName, addon = ...
 
--- Globals: AddRuleFor Configure SimpleAuras UnitBuffs
--- Globals: PassiveModifier SimpleDebuffs SharedSimpleDebuffs SimpleBuffs
--- Globals: LongestDebuffOf SelfBuffs PetBuffs BuffAliases DebuffAliases
--- Globals: SelfBuffAliases SharedBuffs ShowPower SharedSimpleBuffs
--- Globals: BuildAuraHandler_Longest ImportPlayerSpells bit BuildAuraHandler_Single
--- Globals: math
-
-AdiButtonAuras:RegisterRules(function(addon)
-	addon.Debug('Rules', 'Adding deathknight rules')
+AdiButtonAuras:RegisterRules(function()
+	Debug('Adding deathknight rules')
 	return {
 		ImportPlayerSpells {
 		-- Import all spells for ...
@@ -48,7 +41,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 		},
 		Configure {
 			"Soul Reaper",
-			addon.L["Shows Hint when target is below 35% health."],
+			L["Shows Hint when target is below 35% health."],
 			{
 				114866, -- Soul Reaper (Blood)
 				130735, -- Soul Reaper (Frost)

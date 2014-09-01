@@ -21,17 +21,9 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 
 if select(2, UnitClass("player")) ~= "DRUID" then return end
 
--- Globals: AddRuleFor Configure SimpleAuras UnitBuffs
--- Globals: PassiveModifier SimpleDebuffs SharedSimpleDebuffs SimpleBuffs
--- Globals: LongestDebuffOf SelfBuffs PetBuffs BuffAliases DebuffAliases
--- Globals: SelfBuffAliases SharedBuffs ShowPower SharedSimpleBuffs
--- Globals: BuildAuraHandler_Longest ImportPlayerSpells bit BuildAuraHandler_Single
--- Globals: math
 
-AdiButtonAuras:RegisterRules(function(addon)
-	addon.Debug('Rules', 'Adding druid rules')
-	
-	local L = addon.L
+AdiButtonAuras:RegisterRules(function()
+	Debug('Rules', 'Adding druid rules')
 
 	return {
 		ImportPlayerSpells {
@@ -69,9 +61,9 @@ AdiButtonAuras:RegisterRules(function(addon)
 		Configure {
 			"ComboPoints",
 			format(
-				addon.L["Show %s and %s when it reaches its maximum."],
-				addon.L["combo points"],
-				addon.DescribeHighlight("flash")
+				L["Show %s and %s when it reaches its maximum."],
+				L["combo points"],
+				DescribeHighlight("flash")
 			),
 			{
 				  1079, -- Rip
@@ -171,7 +163,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 		},
 		Configure {
 			"GlyphOfRejuvenation",
-			addon.L["Suggests to cast Rejuvenation to enable Glyph of Rejuvenation effect."],
+			L["Suggests to cast Rejuvenation to enable Glyph of Rejuvenation effect."],
 			  774, -- Rejuvenation
 			"player",
 			"UNIT_AURA",

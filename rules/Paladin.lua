@@ -23,15 +23,8 @@ if select(2, UnitClass("player")) ~= "PALADIN" then return end
 
 local addonName, addon = ...
 
--- Globals: AddRuleFor Configure SimpleAuras UnitBuffs
--- Globals: PassiveModifier SimpleDebuffs SharedSimpleDebuffs SimpleBuffs
--- Globals: LongestDebuffOf SelfBuffs PetBuffs BuffAliases DebuffAliases
--- Globals: SelfBuffAliases SharedBuffs ShowPower SharedSimpleBuffs
--- Globals: BuildAuraHandler_Longest ImportPlayerSpells bit BuildAuraHandler_Single
--- Globals: math
-
-AdiButtonAuras:RegisterRules(function(addon)
-	addon.Debug('Rules', 'Adding paladin rules')
+AdiButtonAuras:RegisterRules(function()
+	Debug('Adding paladin rules')
 	return {
 		ImportPlayerSpells { "PALADIN" },
 		-- display current holy power on spenders and flash it maximum reached

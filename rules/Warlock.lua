@@ -21,20 +21,8 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 
 if select(2, UnitClass("player")) ~= "WARLOCK" then return end
 
--- Globals: AddRuleFor Configure SimpleAuras UnitBuffs
--- Globals: PassiveModifier SimpleDebuffs SharedSimpleDebuffs SimpleBuffs
--- Globals: LongestDebuffOf SelfBuffs PetBuffs BuffAliases DebuffAliases
--- Globals: SelfBuffAliases SharedBuffs ShowPower SharedSimpleBuffs
--- Globals: BuildAuraHandler_Longest ImportPlayerSpells bit BuildAuraHandler_Single
--- Globals: math
-
-AdiButtonAuras:RegisterRules(function(addon)
-	addon.Debug('Rules', 'Adding warlock rules')
-
-	local _G = _G
-	local format = _G.format
-	local GetSpellInfo = _G.GetSpellInfo
-	local UnitAura = _G.UnitAura
+AdiButtonAuras:RegisterRules(function()
+	Debug('Adding warlock rules')
 
 	return {
 		ImportPlayerSpells {
@@ -59,7 +47,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 		},
 		Configure {
 			"Pyroclasm",
-			format(addon.L["%s when you have 3 or more stacks of %s."], addon.DescribeHighlight("good"), GetSpellInfo(117828)),
+			format(L["%s when you have 3 or more stacks of %s."], DescribeHighlight("good"), GetSpellInfo(117828)),
 			116858, -- Chaos Bolt
 			"player",
 			"UNIT_AURA",
@@ -77,9 +65,9 @@ AdiButtonAuras:RegisterRules(function(addon)
 		Configure {
 			"Havoc",
 			format(
-				addon.L["%s Else %s"],
-				addon.BuildDesc("HARMFUL PLAYER", "bad", "enemy", 80240),
-				addon.BuildDesc("HELPFUL PLAYER", "good", "player", 80240)
+				L["%s Else %s"],
+				BuildDesc("HARMFUL PLAYER", "bad", "enemy", 80240),
+				BuildDesc("HELPFUL PLAYER", "good", "player", 80240)
 			),
 			80240, -- Havoc
 			{ "player", "enemy" },

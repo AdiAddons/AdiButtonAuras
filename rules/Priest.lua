@@ -23,15 +23,8 @@ if select(2, UnitClass("player")) ~= "PRIEST" then return end
 
 local addonName, addon = ...
 
--- Globals: AddRuleFor Configure SimpleAuras UnitBuffs
--- Globals: PassiveModifier SimpleDebuffs SharedSimpleDebuffs SimpleBuffs
--- Globals: LongestDebuffOf SelfBuffs PetBuffs BuffAliases DebuffAliases
--- Globals: SelfBuffAliases SharedBuffs ShowPower SharedSimpleBuffs
--- Globals: BuildAuraHandler_Longest ImportPlayerSpells bit BuildAuraHandler_Single
--- Globals: math
-
-AdiButtonAuras:RegisterRules(function(addon)
-	addon.Debug('Rules', 'Adding priest rules')
+AdiButtonAuras:RegisterRules(function()
+	Debug('Adding priest rules')
 	return {
 		ImportPlayerSpells {
 			-- Import all spells for ...
@@ -49,7 +42,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 		},
 		Configure {
 			"PWShield",
-			addon.L["Show Power Word: Shield or Weakened Soul on targeted ally."],
+			L["Show Power Word: Shield or Weakened Soul on targeted ally."],
 			17, -- Power Word: Shield
 			"ally",
 			"UNIT_AURA",
@@ -63,7 +56,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 		},
 		Configure {
 			"Archangel",
-			addon.BuildDesc("HELPFUL PLAYER", nil, "player", 81662),
+			BuildDesc("HELPFUL PLAYER", nil, "player", 81662),
 			81700, -- Archangel
 			"player",
 			"UNIT_AURA",

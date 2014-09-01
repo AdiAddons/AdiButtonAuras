@@ -23,23 +23,9 @@ if select(2, UnitClass("player")) ~= "SHAMAN" then return end
 
 local addonName, addon = ...
 
--- Globals: AddRuleFor Configure SimpleAuras UnitBuffs
--- Globals: PassiveModifier SimpleDebuffs SharedSimpleDebuffs SimpleBuffs
--- Globals: LongestDebuffOf SelfBuffs PetBuffs BuffAliases DebuffAliases
--- Globals: SelfBuffAliases SharedBuffs ShowPower SharedSimpleBuffs
--- Globals: BuildAuraHandler_Longest ImportPlayerSpells bit BuildAuraHandler_Single
--- Globals: math
+AdiButtonAuras:RegisterRules(function()
+	Debug('Adding shaman rules')
 
-AdiButtonAuras:RegisterRules(function(addon)
-	addon.Debug('Rules', 'Adding shaman rules')
-
-	local format = _G.format
-	local GetSpellInfo = _G.GetSpellInfo
-	local select = _G.select
-	local UnitAura = _G.UnitAura
-	local UnitClass = _G.UnitClass
-
-	local L = addon.L
 	local lightningShield = GetSpellInfo(324)
 
 	return {

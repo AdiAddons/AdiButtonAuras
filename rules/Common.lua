@@ -19,32 +19,8 @@ You should have received a copy of the GNU General Public License
 along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 --]]
 
--- Globals: AddRuleFor Configure SimpleAuras UnitBuffs
--- Globals: PassiveModifier SimpleDebuffs SharedSimpleDebuffs SimpleBuffs
--- Globals: LongestDebuffOf SelfBuffs PetBuffs BuffAliases DebuffAliases
--- Globals: SelfBuffAliases SharedBuffs ShowPower SharedSimpleBuffs
--- Globals: BuildAuraHandler_Longest ImportPlayerSpells bit BuildAuraHandler_Single
--- Globals: math
-
-AdiButtonAuras:RegisterRules(function(addon)
-	addon.Debug('Rules', 'Adding common rules')
-
-	local _G = _G
-	local ipairs = _G.ipairs
-	local pairs = _G.pairs
-	local tinsert = _G.tinsert
-	local UnitAura = _G.UnitAura
-	local UnitCanAttack = _G.UnitCanAttack
-	local UnitCastingInfo = _G.UnitCastingInfo
-	local UnitChannelInfo = _G.UnitChannelInfo
-	local UnitClass = _G.UnitClass
-
-	local L = addon.L
-	local GetLib = addon.GetLib
-	local BuildDesc = addon.BuildDesc
-	local BuildKey = addon.BuildKey
-
-	local _, playerClass = UnitClass("player")
+AdiButtonAuras:RegisterRules(function()
+	Debug('Adding common rules')
 
 	local rules = {
 	--------------------------------------------------------------------------
@@ -253,7 +229,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 	local LibPlayerSpells = GetLib('LibPlayerSpells-1.0')
 	local band, bor = bit.band, bit.bor
 
-	local classMask = LibPlayerSpells.constants[playerClass]
+	local classMask = LibPlayerSpells.constants[PLAYER_CLASS]
 
 	local buffsMasks, buffSpells = {}, {}
 	for buff, flags, _, target, buffMask in LibPlayerSpells:IterateSpells("RAIDBUFF") do
@@ -277,7 +253,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 				local name, _, _, _, _, _, expiration, _, _, _, spellId = UnitAura(unit, i, "HELPFUL")
 				if name then
 					local buffProvided = band(buffsMasks[spellId] or 0, buffMask)
-					addon.Debug('Raidbuff', unit, i, name, expiration, buffsMasks[spellId], buffProvided)
+					Debug('Raidbuff', unit, i, name, expiration, buffsMasks[spellId], buffProvided)
 					if buffProvided ~= 0 then
 						found = bor(found, buffProvided)
 						if not minExpiration or expiration < minExpiration then
@@ -302,14 +278,14 @@ AdiButtonAuras:RegisterRules(function(addon)
 				for unit in pairs(units.group) do
 					if not UnitIsDeadOrGhost(unit) then
 						local found, expiration = CheckUnitBuffs(unit)
-						addon.Debug('Raidbuff', buffMask, unit, found, expiration)
+						Debug('Raidbuff', buffMask, unit, found, expiration)
 						if not found then
 							missing = missing + 1
 						elseif not minExpiration or expiration < minExpiration then
 							minExpiration = expiration
 						end
 					else
-						addon.Debug('Raidbuff', unit, "dead or ghost")
+						Debug('Raidbuff', unit, "dead or ghost")
 					end
 				end
 				if minExpiration then
@@ -329,7 +305,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 	local LibDispellable, LDVer = GetLib('LibDispellable-1.0')
 
 	local HELPFUL = LibPlayerSpells.constants.HELPFUL
-	for spell, flags, _, _, _, category in LibPlayerSpells:IterateSpells("DISPEL", playerClass) do
+	for spell, flags, _, _, _, category in LibPlayerSpells:IterateSpells("DISPEL", PLAYER_CLASS) do
 		local offensive = band(flags, HELPFUL) == 0
 		local spell, token = spell, offensive and "enemy" or "ally"
 		tinsert(rules, Configure {
@@ -337,7 +313,7 @@ AdiButtonAuras:RegisterRules(function(addon)
 			(offensive
 				and BuildDesc(L["a buff you can dispel"], "good", "enemy")
 				or BuildDesc(L["a debuff you can dispel"], "bad", "ally")
-			)..format(" [LD-%d,%s]", LDVer, addon.DescribeLPSSource(category)),
+			)..format(" [LD-%d,%s]", LDVer, DescribeLPSSource(category)),
 			spell,
 			token,
 			"UNIT_AURA",
@@ -360,15 +336,15 @@ AdiButtonAuras:RegisterRules(function(addon)
 	-- Use LibPlayerSpells
 
 	local interrupts = {}
-	for spell, _, _, _, _, category in LibPlayerSpells:IterateSpells("INTERRUPT", playerClass) do
+	for spell, _, _, _, _, category in LibPlayerSpells:IterateSpells("INTERRUPT", PLAYER_CLASS) do
 		tinsert(interrupts, spell)
 	end
-	local source = addon.DescribeLPSSource(playerClass)
+	local source = DescribeLPSSource(PLAYER_CLASS)
 	tinsert(rules, Configure {
 		"Interrupt",
 		format(L["%s when %s is casting/channeling a spell that you can interrupt."].." [%s]",
-			addon.DescribeHighlight("flash"),
-			addon.DescribeAllTokens("enemy"),
+			DescribeHighlight("flash"),
+			DescribeAllTokens("enemy"),
 			source
 		),
 		interrupts,

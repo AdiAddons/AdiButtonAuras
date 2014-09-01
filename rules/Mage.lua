@@ -23,14 +23,7 @@ if select(2, UnitClass("player")) ~= "MAGE" then return end
 
 local addonName, addon = ...
 
--- Globals: AddRuleFor Configure SimpleAuras UnitBuffs
--- Globals: PassiveModifier SimpleDebuffs SharedSimpleDebuffs SimpleBuffs
--- Globals: LongestDebuffOf SelfBuffs PetBuffs BuffAliases DebuffAliases
--- Globals: SelfBuffAliases SharedBuffs ShowPower SharedSimpleBuffs
--- Globals: BuildAuraHandler_Longest ImportPlayerSpells bit BuildAuraHandler_Single
--- Globals: math
-
-AdiButtonAuras:RegisterRules(function(addon)
-	addon.Debug('Rules', 'Adding mage rules')
+AdiButtonAuras:RegisterRules(function()
+	Debug('Adding mage rules')
 	return ImportPlayerSpells { "MAGE" }
 end)

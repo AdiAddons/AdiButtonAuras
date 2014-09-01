@@ -597,13 +597,41 @@ local function WrapTableArgFunc(func)
 	end
 end
 
-local RULES_ENV = setmetatable({
+local allowedLibraries = {
+	["LibDispellable-1.0"] = true,
+	["LibPlayerSpells-1.0"] = true,
+	["DRData-1.0"] = true,
+	["LibSpellbook-1.0"] = true,
+}
+
+local rules_G = {
+	-- Common functions
+	L      = L,
+	Debug  = Debug,
+	GetLib = function(major)
+		if not allowedLibraries[major] then
+			error(format("Library '%s' is not allowed", major), 2)
+		end
+		return addon.GetLib(major)
+	end,
+
+	-- Constants
+	PLAYER_CLASS = select(2, UnitClass("player")),
 
 	-- Intended to be used un Lua
-	AddRuleFor = AddRuleFor,
-	BuildAuraHandler_Single = BuildAuraHandler_Single,
+	AddRuleFor               = AddRuleFor,
+	BuildAuraHandler_Single  = BuildAuraHandler_Single,
 	BuildAuraHandler_Longest = BuildAuraHandler_Longest,
 	BuildAuraHandler_FirstOf = BuildAuraHandler_FirstOf,
+
+	-- Description helpers
+	BuildDesc         = BuildDesc,
+	BuildKey          = BuildKey,
+	DescribeHighlight = DescribeHighlight,
+	DescribeFilter    = DescribeFilter,
+	DescribeAllTokens = DescribeAllTokens,
+	DescribeAllSpells = DescribeAllSpells,
+	DescribeLPSSource = DescribeLPSSource,
 
 	-- Basic functions
 	Configure = WrapTableArgFunc(Configure),
@@ -612,7 +640,6 @@ local RULES_ENV = setmetatable({
 	ImportPlayerSpells = WrapTableArgFunc(ImportPlayerSpells),
 
 	-- High-level functions
-
 	SimpleDebuffs = function(spells)
 		return Auras("HARMFUL PLAYER", "bad", "enemy", spells)
 	end,
@@ -654,8 +681,34 @@ local RULES_ENV = setmetatable({
 	SelfBuffAliases = function(args)
 		return AuraAliases("HELPFUL PLAYER", "good", "player", unpack(args))
 	end,
+}
 
-}, { __index = _G })
+for i, name in pairs{
+	"bit", "ceil", "floor", "format", "GetComboPoints", "GetEclipseDirection", "GetNumGroupMembers",
+	"GetShapeshiftFormID", "GetSpellBonusHealing", "GetSpellInfo", "GetTime", "GetTotemInfo", "ipairs",
+	"math", "min", "pairs", "pairs", "select", "SPELL_POWER_MANA", "string", "table", "tinsert",
+	"UnitAura", "UnitAura", "UnitBuff", "UnitBuff", "UnitCanAttack", "UnitCastingInfo",
+	"UnitChannelInfo", "UnitClass", "UnitDebuff", "UnitDebuff", "UnitHealth", "UnitHealth",
+	"UnitHealthMax", "UnitPower", "UnitPower", "UnitPowerMax", "UnitPowerMax", "UnitStagger",
+	"STAGGER_YELLOW_TRANSITION", "UnitIsDeadOrGhost"
+} do
+	rules_G[name] = _G[name]
+end
+
+-- Custom error message
+setmetatable(rules_G, {
+	__index = function(_, name)
+		error(format("'%s' is forbidden in rule snippets.", name), 2)
+	end
+})
+
+local RULES_ENV = setmetatable({}, {
+	__metatable = false,
+	__index = rules_G,
+	__newindex = function(_, name)
+		error(format("Changing global '%s' of role snipped is forbidden.", name), 2)
+	end,
+})
 
 ------------------------------------------------------------------------------
 -- Rule loading and updating
@@ -696,7 +749,7 @@ end
 
 function addon.api:RegisterRules(builder)
 	setfenv(builder, RULES_ENV)
-	tinsert(ruleBuilders, function() return builder(addon) end)
+	tinsert(ruleBuilders, builder)
 	if rules then
 		Debug('Rebuilding rules')
 		rules = nil

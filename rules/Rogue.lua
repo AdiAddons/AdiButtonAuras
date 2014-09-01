@@ -23,25 +23,17 @@ if select(2, UnitClass("player")) ~= "ROGUE" then return end
 
 local addonName, addon = ...
 
--- Globals: AddRuleFor Configure SimpleAuras UnitBuffs
--- Globals: PassiveModifier SimpleDebuffs SharedSimpleDebuffs SimpleBuffs
--- Globals: LongestDebuffOf SelfBuffs PetBuffs BuffAliases DebuffAliases
--- Globals: SelfBuffAliases SharedBuffs ShowPower SharedSimpleBuffs
--- Globals: BuildAuraHandler_Longest ImportPlayerSpells bit BuildAuraHandler_Single
--- Globals: math
-
-AdiButtonAuras:RegisterRules(function(addon)
-	addon.Debug('Rules', 'Adding rogue rules')
-		local L = addon.L
+AdiButtonAuras:RegisterRules(function()
+	Debug('Adding rogue rules')
 
 	return {
 		ImportPlayerSpells { "ROGUE" },
 		Configure {
 			"ComboPoints",
 			format(
-				addon.L["Show %s and %s when it reaches its maximum."],
-				addon.L["combo points"],
-				addon.DescribeHighlight("flash")
+				L["Show %s and %s when it reaches its maximum."],
+				L["combo points"],
+				DescribeHighlight("flash")
 			),
 			{
 				 32645, -- Envenom
