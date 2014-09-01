@@ -140,7 +140,7 @@ AdiButtonAuras:RegisterRules(function()
 			16864, -- Omen of Clarity
 			{
 				5221, -- Shred
-                5185, -- Healing Touch
+				5185, -- Healing Touch
 			},
 			135700, -- Clearcasting
 			"player",
