@@ -94,10 +94,10 @@ h3. What do some rules ending with some obscure characters between brackets, lik
 
 These are references to the libraries AdiButtonAuras used to create the rule.
 
-* LPS-<class>-<patch>-<revision>: data from "LibPlayerSpells-1.0":https://github.com/Adirelle/LibPlayerSpells-1.0 for <class>, patch <patch>, <revision>th revision. E.g. "[LPS-DRUID-5.4.1-7]" stands for "rule created accordingly to LibPlayerSpells-1.0 data for druid, patch 5.4.1, 7th revision."
-* DR-<minor>: "DRData-1.0":https://github.com/Adirelle/DRData-1.0, <minor>th revision.
-* LSB-<minor>: "LibSpellbook-1.0":https://github.com/Adirelle/LibSpellbook-1.0, <minor>th revision.
-* LD-<minor>: "LibDispellable-1.0":https://github.com/Adirelle/LibDispellable-1.0/, <minor>th revision.
+* LPS-_class_-_patch_-_revision_: data from "LibPlayerSpells-1.0":https://github.com/Adirelle/LibPlayerSpells-1.0 for _class_, patch _patch_, _revision_th revision. E.g. "[LPS-DRUID-5.4.1-7]" stands for "rule created accordingly to LibPlayerSpells-1.0 data for druid, patch 5.4.1, 7th revision."
+* DR-_minor_: "DRData-1.0":https://github.com/Adirelle/DRData-1.0, _minor_th revision.
+* LSB-_minor_: "LibSpellbook-1.0":https://github.com/Adirelle/LibSpellbook-1.0, _minor_th revision.
+* LD-_minor_: "LibDispellable-1.0":https://github.com/Adirelle/LibDispellable-1.0/, _minor_th revision.
 
 h3. Are you going to support button skinning, e.g. Masque ?
 
