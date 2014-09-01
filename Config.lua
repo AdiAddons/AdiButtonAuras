@@ -323,8 +323,8 @@ AdiButtonAuras:CreateConfig(function(addonName, addon)
 						noFlashOnCooldown = {
 							name = L['No flash on cooldown'],
 							desc = format("%s\n|cffff0000%s|r",
-								L['Check so actions on cooldown do not flash.'],
-								L['THIS DOES NOT AFFECT BLIZZARD FLASHS.']
+								L['When checked, actions on cooldown do not flash.'],
+								L['THIS DOES NOT AFFECT BLIZZARD FLASHES.']
 							),
 							type = 'toggle',
 							order = 10,
@@ -332,25 +332,25 @@ AdiButtonAuras:CreateConfig(function(addonName, addon)
 						noFlashOutOfCombat = {
 							name = L['No flash out of combat'],
 							desc = format("%s\n|cffff0000%s|r",
-								L['Check to disable flashs out of combat.'],
-								L['THIS DOES NOT AFFECT BLIZZARD FLASHS.']
+								L['When checked, flashes are disabled while out of combat.'],
+								L['THIS DOES NOT AFFECT BLIZZARD FLASHES.']
 							),
 							type = 'toggle',
 							order = 15,
 						},
 						hints = {
-							name = L['Suggestion display'],
-							desc = L['AdiButtonAuras has special rules to suggest using a spell. How would like it to be display ?'],
+							name = L['Spell Hints'],
+							desc = L['AdiButtonAuras provides custom rules to suggest the use of some spells. Choose how these hints are displayed below.'],
 							type = 'select',
 							order = 20,
 							values = {
-								show  = L['Rotary star'],
-								flash = L['Flashing border'],
-								hide  = L['Nothing'],
+								show  = L['Rotary Star'],
+								flash = L['Flashing Border'],
+								hide  = L['Disabled'],
 							},
 						},
 						countdownThresholds = {
-							name = L["Countdown thresholds"],
+							name = L["Countdown Thresholds"],
 							type = "group",
 							inline = true,
 							order = -2,
@@ -368,7 +368,7 @@ AdiButtonAuras:CreateConfig(function(addonName, addon)
 								},
 								minMinutes = {
 									name = L['Minimum duration for the "2m" format'],
-									desc = L['Duration above this threshold will use this format.'],
+									desc = L['Durations above this threshold will use this format.'],
 									type = 'range',
 									width = 'full',
 									order = 20,
@@ -379,7 +379,7 @@ AdiButtonAuras:CreateConfig(function(addonName, addon)
 								},
 								minMinuteSecs = {
 									name = L['Minimum duration for the "4:58" format'],
-									desc = L['Duration above this threshold will use this format.'],
+									desc = L['Durations above this threshold will use this format.'],
 									type = 'range',
 									width = 'full',
 									order = 30,
@@ -390,7 +390,7 @@ AdiButtonAuras:CreateConfig(function(addonName, addon)
 								},
 								maxTenth = {
 									name = L['Maximum duration for the "2.7" format'],
-									desc = L['Duration below this threshold will show decimals. Set to 0 to disable it.'],
+									desc = L['Durations below this threshold will show decimals. Set to 0 to disable.'],
 									type = 'range',
 									width = 'full',
 									order = 40,
@@ -452,13 +452,13 @@ AdiButtonAuras:CreateConfig(function(addonName, addon)
 				},
 				spells = {
 					name = L['Spells & items'],
-					desc = L['Configure spells and items individually.'],
+					desc = L['Configure spells and items.'],
 					type = 'group',
 					order = 20,
 					disabled = function(info) return info[#info] ~= "spells" and not selectedKey end,
 					args = {
 						_help = {
-							name = L["Select a spell or item by clicking on a green or blue button. Darkened buttons indicate spells and items unknown to AdiButtonAuras."],
+							name = L["- Select a spell or item by clicking a highlighted button from your actionbars. \n- Green buttons have recognized settings and are enabled. Red buttons are recognized but disabled. \n- Darkened buttons indicate spells and items unknown to AdiButtonAuras."],
 							type = 'description',
 							order = 1,
 						},
@@ -494,8 +494,8 @@ AdiButtonAuras:CreateConfig(function(addonName, addon)
 							end
 						},
 						flashPromotion = {
-							name = L['Flash instead of border'],
-							desc = L['Check to flash instead of displaying a border.'],
+							name = L['Show flash instead'],
+							desc = L['Check to show a flash instead of a colored border.'],
 							order = 40,
 							type = 'toggle',
 							width = 'double',
