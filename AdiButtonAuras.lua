@@ -270,11 +270,18 @@ end
 -- Handle load-on-demand configuration
 ------------------------------------------------------------------------------
 
+local hasBlizzBugsSuck = select(4, GetAddOnInfo('BlizzBugsSuck'))
+
 -- Create a fake configuration panel
 local configLoaderPanel = CreateFrame("Frame")
 configLoaderPanel.name = addonName
 configLoaderPanel:Hide()
-configLoaderPanel:SetScript('OnShow', function() return addon:OpenConfiguration() end)
+configLoaderPanel:SetScript('OnShow', function()
+	if not hasBlizzBugsSuck then
+		CloseAllWindows()
+	end
+	return addon:OpenConfiguration()
+end)
 InterfaceOptions_AddCategory(configLoaderPanel)
 
 -- The loading handler
@@ -299,6 +306,12 @@ function addon:OpenConfiguration(args)
 
 	-- Load the configuration addon
 	loaded, why = LoadAddOn(addonName..'_Config')
+
+	-- No BlizzBugsSuck => open twice
+	if loaded and not hasBlizzBugsSuck then
+		CloseAllWindows()
+		addon:OpenConfiguration(args)
+	end
 
 	-- Forward the arguments
 	return addon:OpenConfiguration(args)
