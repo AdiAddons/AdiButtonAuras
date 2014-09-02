@@ -697,7 +697,7 @@ for i, name in pairs{
 	"UnitAura", "UnitAura", "UnitBuff", "UnitBuff", "UnitCanAttack", "UnitCastingInfo",
 	"UnitChannelInfo", "UnitClass", "UnitDebuff", "UnitDebuff", "UnitHealth", "UnitHealth",
 	"UnitHealthMax", "UnitPower", "UnitPower", "UnitPowerMax", "UnitPowerMax", "UnitStagger",
-	"STAGGER_YELLOW_TRANSITION", "UnitIsDeadOrGhost"
+	"STAGGER_YELLOW_TRANSITION", "UnitIsDeadOrGhost", "UnitIsPlayer"
 } do
 	rules_G[name] = _G[name]
 end

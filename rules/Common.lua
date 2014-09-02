@@ -276,16 +276,13 @@ AdiButtonAuras:RegisterRules(function()
 			function(units, model)
 				local missing, minExpiration = 0
 				for unit in pairs(units.group) do
-					if not UnitIsDeadOrGhost(unit) then
+					if UnitIsPlayer(unit) or not UnitIsDeadOrGhost(unit) then
 						local found, expiration = CheckUnitBuffs(unit)
-						Debug('Raidbuff', buffMask, unit, found, expiration)
 						if not found then
 							missing = missing + 1
 						elseif not minExpiration or expiration < minExpiration then
 							minExpiration = expiration
 						end
-					else
-						Debug('Raidbuff', unit, "dead or ghost")
 					end
 				end
 				if minExpiration then
