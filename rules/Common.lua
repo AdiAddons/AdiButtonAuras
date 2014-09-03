@@ -253,7 +253,6 @@ AdiButtonAuras:RegisterRules(function()
 				local name, _, _, _, _, _, expiration, _, _, _, spellId = UnitAura(unit, i, "HELPFUL")
 				if name then
 					local buffProvided = band(buffsMasks[spellId] or 0, buffMask)
-					Debug('Raidbuff', unit, i, name, expiration, buffsMasks[spellId], buffProvided)
 					if buffProvided ~= 0 then
 						found = bor(found, buffProvided)
 						if not minExpiration or expiration < minExpiration then
