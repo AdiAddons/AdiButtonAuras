@@ -102,7 +102,6 @@ end
 setmetatable(items, { __index = function(t, itemId)
 	local rule = false
 	if itemId then
-		itemId = tonumber(itemId)
 		rule = BuildItemRuleForBuffIds(itemId, LibItemBuffs:GetItemBuffs(itemId))
 			or BuildItemRuleForBuffName(itemId, GetItemSpell(itemId))
 			or false

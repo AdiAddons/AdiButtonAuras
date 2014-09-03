@@ -255,6 +255,7 @@ function addon:GetActionConfiguration(actionType, actionId)
 		key = actionType..':'..actionId
 	else
 		key, actionType, actionId = actionType, strmatch(actionType, "^(%a+):(%d+)$")
+		actionId = tonumber(actionId)
 	end
 	if not key then return end
 	local conf = self.spells[key] or (actionType == "item" and self.items[actionId])
