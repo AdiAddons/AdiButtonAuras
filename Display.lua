@@ -180,14 +180,23 @@ function overlayPrototype:SetHighlight(highlight)
 end
 
 function overlayPrototype:ApplyHighlight()
-	local highlight = self.highlight
+	self:ApplyFlash()
+	self:ApplyColoredBorder()
+end
 
-	if highlight == "flash" and not (addon.db.profile.noFlashOnCooldown and self.inCooldown) and (not addon.db.profile.noFlashOutOfCombat or self.inCombat) then
-		self:ShowFlash()
-	else
-		self:HideFlash()
+function overlayPrototype:ApplyFlash()
+	if self:ShouldShowFlash() or self:ShouldShowHint("flash") then
+		return self:ShowFlash()
 	end
+	self:HideFlash()
+end
 
+function overlayPrototype:ShouldShowFlash()
+	return self.highlight == "flash" and not (addon.db.profile.noFlashOnCooldown and self.inCooldown) and (not addon.db.profile.noFlashOutOfCombat or self.inCombat)
+end
+
+function overlayPrototype:ApplyColoredBorder()
+	local highlight = self.highlight
 	local border = self.Border
 	if highlight == "darken" or highlight == "lighten" then
 		if border:GetTexture() ~= "Color-666666ff" then
@@ -195,17 +204,17 @@ function overlayPrototype:ApplyHighlight()
 			border:SetVertexColor(1, 1, 1, 1)
 		end
 		border:SetBlendMode(highlight == "darken" and "MOD" or "ADD")
-		border:Show()
-	elseif highlight == "good" or highlight == "bad" then
+		return border:Show()
+	end
+	if highlight == "good" or highlight == "bad" then
 		if border:GetTexture() ~= [[Interface\AddOns\AdiButtonAuras\media\Border]] then
 			border:SetTexture([[Interface\AddOns\AdiButtonAuras\media\Border]])
 			border:SetBlendMode("BLEND")
 		end
 		border:SetVertexColor(unpack(addon.db.profile.colors[highlight], 1, 4))
-		border:Show()
-	else
-		border:Hide()
+		return border:Show()
 	end
+	border:Hide()
 end
 
 function overlayPrototype:SetHint(hint)
@@ -217,11 +226,18 @@ function overlayPrototype:SetHint(hint)
 end
 
 function overlayPrototype:ApplyHint()
-	if self.hint and not self.inCooldown and self.inCombat then
-		self:ShowHint()
-	else
-		self:HideHint()
+	if addon.db.profile.hints == "flash" then
+		self:ApplyFlash()
+		return self:HideHint()
 	end
+	if self:ShouldShowHint("show")  then
+		return self:ShowHint()
+	end
+	self:HideHint()
+end
+
+function overlayPrototype:ShouldShowHint(expectedSetting)
+	return self.hint and not self.inCooldown and self.inCombat and addon.db.profile.hints == expectedSetting
 end
 
 function overlayPrototype:UpdateDisplay(event)
