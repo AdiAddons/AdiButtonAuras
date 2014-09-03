@@ -276,7 +276,7 @@ AdiButtonAuras:RegisterRules(function()
 			function(units, model)
 				local missing, minExpiration = 0
 				for unit in pairs(units.group) do
-					if UnitIsPlayer(unit) or not UnitIsDeadOrGhost(unit) then
+					if UnitIsPlayer(unit) and not UnitIsDeadOrGhost(unit) then
 						local found, expiration = CheckUnitBuffs(unit)
 						if not found then
 							missing = missing + 1
