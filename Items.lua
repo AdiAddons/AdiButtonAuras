@@ -30,7 +30,7 @@ local select = _G.select
 local setmetatable = _G.setmetatable
 local UnitAura = _G.UnitAura
 
-local LibItemBuffs = addon.GetLib('LibItemBuffs-1.0')
+local LibItemBuffs, LIBVer = addon.GetLib('LibItemBuffs-1.0')
 
 local BuildKey = addon.BuildKey
 local BuildDesc = addon.BuildDesc
@@ -92,7 +92,7 @@ local function BuildItemRule(itemId, buffName, ...)
 		for i = 1, select('#', ...) do
 			local buffId = select(i, ...)
 			local key = BuildKey('item', itemId, token, filter, highlight, buffId)
-			local desc = BuildDesc(filter, highlight, token, buffId)
+			local desc = BuildDesc(filter, highlight, token, buffId) .. format(" [LIB-%d-%s]", LIBVer, LibItemBuffs.__databaseVersion)
 			itemDescs[key] = desc
 			tinsert(rule.keys, key)
 			tinsert(rule.handlers, BuildBuffIdHandler(key, token, filter, highlight, buffId))
