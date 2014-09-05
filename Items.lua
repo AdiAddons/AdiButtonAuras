@@ -32,80 +32,84 @@ local UnitAura = _G.UnitAura
 
 local LibItemBuffs = addon.GetLib('LibItemBuffs-1.0')
 
-local items = {}
+local BuildKey = addon.BuildKey
+local BuildDesc = addon.BuildDesc
+
+local items, itemDescs = {}, {}
 addon.items = items
+addon.itemDescs = itemDescs
 
 local function GetItemTargetFilterAndHighlight(itemId)
 	if IsHarmfulItem(itemId) then
-		return "enemy", "PLAYER HARMFUL", "bad"
+		return "enemy", "HARMFUL PLAYER", "bad"
 	else
-		return IsHelpfulItem(itemId) and "ally" or "player", "PLAYER HELPFUL", "good"
+		return IsHelpfulItem(itemId) and "ally" or "player", "HELPFUL PLAYER", "good"
 	end
 end
 
-local function BuildItemRuleForBuffName(itemId, buffName)
-	if not buffName then return end
-	local _, link = GetItemInfo(itemId)
-	local token, filter, highlight = GetItemTargetFilterAndHighlight(itemId)
-	local _, link = GetItemInfo(itemId)
-	addon:Debug(link, 'token=', token, 'filter=', filter, 'highlight=', highlight, 'buff=', buffName)
-	return {
-		units = { [token] = true },
-		events = { UNIT_AURA = true },
-		handlers = {
-			function(units, model)
-				if not units[token] then return end
-				local name, _, _, count, _, _, expiration, _, _, _, spellId = UnitAura(units[token], buffName, nil, filter)
-				if name then
-					model.highlight, model.expiration = highlight, expiration
-					return true
-				end
+local function BuildBuffIdHandler(key, token, filter, highlight, buffId)
+	return function(units, model)
+		if not addon.db.profile.rules[key] then return end
+		local unit = units[token]
+		if not unit then return end
+		for i = 1, math.huge do
+			local name, _, _, count, _, _, expiration, _, _, _, spellId = UnitAura(unit, i, filter)
+			if not name then
+				return
 			end
-		}
-	}
+			if spellId == buffId then
+				model.highlight, model.count, model.expiration = highlight, count, expiration
+				return true
+			end
+		end
+	end
 end
 
-local function BuildItemRuleForBuffIds(itemId, ...)
-	local numBuffs = select('#', ...)
-	if numBuffs == 0 or not ... then return false end
-	local buffs = {}
-	for i = 1, numBuffs do
-		local spellId = select(i, ...)
-		buffs[spellId] = true
+local function BuildBuffNameHandler(key, token, filter, highlight, buffName)
+	return function(units, model)
+		if not units[token] or not addon.db.profile.rules[key] then return end
+		local name, _, _, count, _, _, expiration = UnitAura(units[token], buffName, nil, filter)
+		if name then
+			model.highlight, model.count, model.expiration = highlight, count, expiration
+			return true
+		end
 	end
+end
+
+local function BuildItemRule(itemId, buffName, ...)
+	if not buffName and not ... then return end
+
 	local token, filter, highlight = GetItemTargetFilterAndHighlight(itemId)
-	local _, link = GetItemInfo(itemId)
-	addon:Debug(link, 'token=', token, 'filter=', filter, 'highlight=', highlight, 'buffs=', ...)
-	return {
+
+	local rule = {
 		units = { [token] = true },
 		events = { UNIT_AURA = true },
-		handlers = {
-			function(units, model)
-				local unit = units[token]
-				if not unit then return end
-				for i = 1, math.huge do
-					local name, _, _, count, _, _, expiration, _, _, _, spellId = UnitAura(unit, i, filter)
-					if name then
-						if buffs[spellId] then
-							model.highlight, model.expiration = highlight, expiration
-							return true
-						end
-					else
-						break
-					end
-				end
-			end
-		}
+		handlers = {},
+		keys = {}
 	}
+
+	if ... then
+		for i = 1, select('#', ...) do
+			local buffId = select(i, ...)
+			local key = BuildKey('item', itemId, token, filter, highlight, buffId)
+			local desc = BuildDesc(filter, highlight, token, buffId)
+			itemDescs[key] = desc
+			tinsert(rule.keys, key)
+			tinsert(rule.handlers, BuildBuffIdHandler(key, token, filter, highlight, buffId))
+		end
+	elseif buffName then
+		local key = BuildKey('item', itemId, token, filter, highlight, buffName)
+		local desc = BuildDesc(filter, highlight, token, buffName)
+		itemDescs[key] = desc
+		tinsert(rule.keys, key)
+		tinsert(rule.handlers, BuildBuffIdHandler(key, token, filter, highlight, buffName))
+	end
+
+	return rule
 end
 
 setmetatable(items, { __index = function(t, itemId)
-	local rule = false
-	if itemId then
-		rule = BuildItemRuleForBuffIds(itemId, LibItemBuffs:GetItemBuffs(itemId))
-			or BuildItemRuleForBuffName(itemId, GetItemSpell(itemId))
-			or false
-	end
+	local rule = itemId and BuildItemRule(itemId, GetItemSpell(itemId), LibItemBuffs:GetItemBuffs(itemId)) or false
 	t[itemId] = rule
 	return rule
 end})
