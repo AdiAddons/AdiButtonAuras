@@ -199,7 +199,8 @@ AdiButtonAuras:CreateConfig(function(addonName, addon)
 				--@end-debug@
 			else
 				GameTooltip:AddDoubleLine(L['Status'], UNKNOWN, nil, nil, nil, 0.5, 0.5, 0.5)
-				GameTooltip:AddLine(L['AdiButtonAuras has no rule for this spell/item.'])
+				GameTooltip:AddLine(format(L['AdiButtonAuras has no rules for this %s.'], L[self.type]), 0.5, 0.5, 0.5)
+				GameTooltip:AddDoubleLine(L["Action 'key' for reference"], self.key, nil, nil, nil, 1, 1, 1)
 			end
 			GameTooltip:Show()
 		end
