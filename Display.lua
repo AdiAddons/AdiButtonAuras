@@ -401,20 +401,6 @@ overlayPrototype.ShowHint, overlayPrototype.HideHint = CreateOverlayFactory(
 
 		animRotate:Play()
 
-		--[[
-		local animScale = overlay:CreateAnimationGroup()
-		animScale:SetLooping("BOUNCE")
-
-		local scaling = animScale:CreateAnimation("Scale")
-		scaling:SetOrder(1)
-		scaling:SetDuration(0.5)
-		scaling:SetScale(1.2, 1.2)
-		scaling:SetOrigin("CENTER", 0, 0)
-		scaling:SetSmoothing('IN_OUT')
-
-		animScale:Play()
-		--]]
-
 		return overlay
 	end,
 	-- onAcquire
