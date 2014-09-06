@@ -611,7 +611,7 @@ AdiButtonAuras:CreateConfig(function(addonName, addon)
 	AceConfig:RegisterOptionsTable(addonName, GetOptions)
 
 	local panels = {
-		main     = AceConfigDialog:AddToBlizOptions(addonName, addonName, nil, "global")
+		main     = AceConfigDialog:AddToBlizOptions(addonName, addonName, nil, "global"),
 		spells   = AceConfigDialog:AddToBlizOptions(addonName, L['Spells & items'], addonName, "spells"),
 		theme    = AceConfigDialog:AddToBlizOptions(addonName, L['Theme'], addonName, "theme"),
 		profiles = AceConfigDialog:AddToBlizOptions(addonName, L['Profiles'], addonName, "profiles"),
