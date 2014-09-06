@@ -76,6 +76,7 @@ addon.DEFAULT_SETTINGS = {
 		noFlashOnCooldown = false,
 		noFlashOutOfCombat = false,
 		hints = "show",
+		fontSize = 13,
 	}
 }
 
@@ -90,6 +91,24 @@ local function GetLib(major, silent)
 	return lib, minor
 end
 addon.libraries, addon.GetLib = libraries, GetLib
+
+------------------------------------------------------------------------------
+-- Fetch default font
+------------------------------------------------------------------------------
+
+do
+	local LSM = GetLib('LibSharedMedia-3.0')
+	addon.DEFAULT_SETTINGS.profile.fontName = LSM:GetDefault(LSM.MediaType.FONT)
+
+	local wantedFile = _G.NumberFontNormalSmall:GetFont()
+	for name, file in pairs(LSM:HashTable(LSM.MediaType.FONT)) do
+		if file == wantedFile then
+			addon.DEFAULT_SETTINGS.profile.fontName = name
+			break
+		end
+	end
+
+end
 
 ------------------------------------------------------------------------------
 -- Stuff to embed
@@ -163,7 +182,9 @@ local function UpdateHandler(event, button)
 
 end
 local CONFIG_CHANGED = addonName..'_Config_Changed'
+local THEME_CHANGED = addonName..'_Theme_Changed'
 addon.CONFIG_CHANGED = CONFIG_CHANGED
+addon.THEME_CHANGED = THEME_CHANGED
 
 function addon:ADDON_LOADED(event, name)
 	-- Initialization

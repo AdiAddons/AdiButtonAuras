@@ -37,6 +37,7 @@ local type = _G.type
 local unpack = _G.unpack
 
 local AceTimer = addon.GetLib('AceTimer-3.0')
+local LSM = addon.GetLib('LibSharedMedia-3.0')
 
 local fontFile, fontSize, fontFlag = [[Fonts\ARIALN.TTF]], 13, "OUTLINE"
 
@@ -101,7 +102,7 @@ function overlayPrototype:InitializeDisplay()
 	self:SetFrameLevel(self.button.cooldown:GetFrameLevel()+1)
 	self.parentCount = _G[self.button:GetName().."Count"]
 
-	local border = self:CreateTexture(self:GetName().."Border", "BACKGROUND", NumberFontNormalSmall)
+	local border = self:CreateTexture(self:GetName().."Border", "BACKGROUND")
 	border:SetAllPoints(self)
 	border:Hide()
 	self.Border = border
@@ -151,9 +152,18 @@ function overlayPrototype:SetExpiration(expiration)
 	end
 end
 
+function overlayPrototype:ApplyFont(fontString)
+	local currentFile, currentSize = fontString:GetFont()
+	local file, size = LSM:Fetch(LSM.MediaType.FONT, addon.db.profile.fontName), addon.db.profile.fontSize
+	if currentFile ~= file or currentSize ~= size then
+		fontString:SetFont(file, size, fontFlag)
+	end
+end
+
 function overlayPrototype:ApplyExpiration()
 	local expiration = self.expiration
 	self.Timer.expiration = expiration
+	self:ApplyFont(self.Timer)
 	self.Timer:Update()
 end
 
@@ -167,6 +177,7 @@ end
 
 function overlayPrototype:ApplyCount()
 	local count = self.count
+	self:ApplyFont(self.Count)
 	self.Count:SetShown(count)
 	if count then
 		self.Count:SetFormattedText("%d", count)

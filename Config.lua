@@ -403,54 +403,6 @@ AdiButtonAuras:CreateConfig(function(addonName, addon)
 								},
 							}
 						},
-						colors = {
-							name = "Colors",
-							type = "group",
-							inline = true,
-							order = -1,
-							get = function(info)
-								return unpack(addon.db.profile.colors[info[#info]], 1, 4)
-							end,
-							set = function(info, ...)
-								local c = addon.db.profile.colors[info[#info]]
-								c[1], c[2], c[3], c[4] = ...
-								addon:SendMessage(addon.CONFIG_CHANGED)
-							end,
-							args = {
-								good = {
-									name = L['"Good" border'],
-									desc = L['The color used for good things, usually buffs.'],
-									type = 'color',
-									hasAlpha = true,
-									order = 10,
-								},
-								bad = {
-									name = L['"Bad" border'],
-									desc = L['The color used for bad things, usually debuffs.'],
-									type = 'color',
-									hasAlpha = true,
-									order = 20,
-								},
-								countdownLow = {
-									name = L['Countdown around 0'],
-									desc = L['Color of the countdown text for values around 0.'],
-									type = 'color',
-									order = 30,
-								},
-								countdownMedium = {
-									name = L['Countdown around 3'],
-									desc = L['Color of the countdown text for values around 3.'],
-									type = 'color',
-									order = 40,
-								},
-								countdownHigh = {
-									name = L['Countdown above 10'],
-									desc = L['Color of the countdown text for values above 3.'],
-									type = 'color',
-									order = 50,
-								},
-							},
-						}
 					},
 				},
 				spells = {
@@ -534,6 +486,94 @@ AdiButtonAuras:CreateConfig(function(addonName, addon)
 						},
 					},
 				},
+				theme = {
+					name = L['Theme'],
+					type = 'group',
+					order = 30,
+					get = function(info)
+						return addon.db.profile[info[#info]]
+					end,
+					set = function(info, value)
+						addon.db.profile[info[#info]] = value
+						addon:SendMessage(addon.THEME_CHANGED)
+					end,
+					args = {
+						texts = {
+							name = L['Texts'],
+							type = 'group',
+							inline = true,
+							order = 10,
+							args = {
+								fontName = {
+									name = L['Font'],
+									desc = L['Select the font to be used to display both countdown and application count.'],
+									type = 'select',
+									dialogControl = 'LSM30_Font',
+									-- GLOBALS: AceGUIWidgetLSMlists
+									values = AceGUIWidgetLSMlists.font,
+									order = 10,
+								},
+								fontSize = {
+									name = L['Size'],
+									desc = L['Adjust the font size of countdown and application count texts.'],
+									type = 'range',
+									min = 5,
+									max = 30,
+									step = 1,
+									order = 20,
+								},
+							},
+						},
+						colors = {
+							name = "Colors",
+							type = "group",
+							inline = true,
+							order = 20,
+							get = function(info)
+								return unpack(addon.db.profile.colors[info[#info]], 1, 4)
+							end,
+							set = function(info, ...)
+								local c = addon.db.profile.colors[info[#info]]
+								c[1], c[2], c[3], c[4] = ...
+								addon:SendMessage(addon.THEME_CHANGED)
+							end,
+							args = {
+								good = {
+									name = L['"Good" border'],
+									desc = L['The color used for good things, usually buffs.'],
+									type = 'color',
+									hasAlpha = true,
+									order = 10,
+								},
+								bad = {
+									name = L['"Bad" border'],
+									desc = L['The color used for bad things, usually debuffs.'],
+									type = 'color',
+									hasAlpha = true,
+									order = 20,
+								},
+								countdownLow = {
+									name = L['Countdown around 0'],
+									desc = L['Color of the countdown text for values around 0.'],
+									type = 'color',
+									order = 30,
+								},
+								countdownMedium = {
+									name = L['Countdown around 3'],
+									desc = L['Color of the countdown text for values around 3.'],
+									type = 'color',
+									order = 40,
+								},
+								countdownHigh = {
+									name = L['Countdown above 10'],
+									desc = L['Color of the countdown text for values above 3.'],
+									type = 'color',
+									order = 50,
+								},
+							},
+						}
+					},
+				},
 				--@debug@
 				debug = {
 					name = 'Debug information',
@@ -562,14 +602,22 @@ AdiButtonAuras:CreateConfig(function(addonName, addon)
 
 	AceConfig:RegisterOptionsTable(addonName, GetOptions)
 
-	local mainPanel = AceConfigDialog:AddToBlizOptions(addonName, addonName, nil, "global")
-	local spellPanel = AceConfigDialog:AddToBlizOptions(addonName, L['Spells & items'], addonName, "spells")
-	local profilePanel = AceConfigDialog:AddToBlizOptions(addonName, L['Profiles'], addonName, "profiles")
-	--@debug@
-	AceConfigDialog:AddToBlizOptions(addonName, "Debug", addonName, "debug")
-	--@end-debug@
+	local panels = {
+		main     = AceConfigDialog:AddToBlizOptions(addonName, addonName, nil, "global")
+		spells   = AceConfigDialog:AddToBlizOptions(addonName, L['Spells & items'], addonName, "spells"),
+		theme    = AceConfigDialog:AddToBlizOptions(addonName, L['Theme'], addonName, "theme"),
+		profiles = AceConfigDialog:AddToBlizOptions(addonName, L['Profiles'], addonName, "profiles"),
+		--@debug@
+		debug    = AceConfigDialog:AddToBlizOptions(addonName, "Debug", addonName, "debug"),
+		--@end-debug@
+	}
 
-	spellPanel:HookScript('OnShow', function(self)
+	-- Aliases
+	panels.spell = panels.spells
+	panels[""] = panels.main
+	panels.profile = panels.profiles
+
+	panels.spells:HookScript('OnShow', function(self)
 		selectedKey, selectedName, selectedConf = nil, nil, nil
 		if not configParent then
 			BuildConfigParent(self)
@@ -581,29 +629,26 @@ AdiButtonAuras:CreateConfig(function(addonName, addon)
 	-- Override addon OpenConfiguration
 	function addon:OpenConfiguration(what)
 		what = (what or ""):trim():lower()
-		if what == 'spell' or what == 'spells' then
-			return InterfaceOptionsFrame_OpenToCategory(spellPanel)
-		elseif what == 'profile' or what == 'profiles' then
-			return InterfaceOptionsFrame_OpenToCategory(profilePanel)
+
+		if panels[what] then
+			return InterfaceOptionsFrame_OpenToCategory(panels[what])
 		end
-		if what then
-			local _type, id = strmatch(what, '([si][pt]e[lm]l?):(%d+)')
-			if not id then
-				id = LibSpellbook:Resolve(what)
-				if id then
-					_type = 'spell'
-				end
-			end
-			local key = (_type == 'spell' or _type == 'item') and id and _type..':'..id
-			if key and addon.spells[key] then
-				local name = _type == 'spell' and GetSpellInfo(id) or GetItemInfo(id)
-				InterfaceOptionsFrame_OpenToCategory(spellPanel)
-				selectedKey, selectedName, selectedConf = key, name, addon.spells[key]
-				AceConfigRegistry:NotifyChange(addonName)
-				return
+
+		local _type, id = strmatch(what, '([si][pt]e[lm]l?):(%d+)')
+		if not id then
+			id = LibSpellbook:Resolve(what)
+			if id then
+				_type = 'spell'
 			end
 		end
-		InterfaceOptionsFrame_OpenToCategory(mainPanel)
+		local key = (_type == 'spell' or _type == 'item') and id and _type..':'..id
+		if key and addon.spells[key] then
+			local name = _type == 'spell' and GetSpellInfo(id) or GetItemInfo(id)
+			InterfaceOptionsFrame_OpenToCategory(spellPanel)
+			selectedKey, selectedName, selectedConf = key, name, addon.spells[key]
+			AceConfigRegistry:NotifyChange(addonName)
+			return
+		end
 	end
 
 end)

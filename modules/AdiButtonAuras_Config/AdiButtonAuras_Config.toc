@@ -1,5 +1,5 @@
 # AdiButtonAuras - Mistweaver plugin - Enhanced displays for Renewing Mist.
-# Copyright 2013 Adirelle (adirelle@gmail.com)
+# Copyright 2013-2014 Adirelle (adirelle@gmail.com)
 # All rights reserved.
 #
 # This file is part of AdiButtonAuras.
@@ -28,12 +28,14 @@
 ## X-eMail: adirelle@gmail.com
 
 ## Dependencies: AdiButtonAuras
+## OptionalDeps: AceGUI-3.0-SharedMediaWidgets
 ## LoadOnDemand: 1
 
 #@no-lib-strip@
 ..\AdiButtonAuras\libs\AceDBOptions-3.0\AceDBOptions-3.0.xml
 ..\AdiButtonAuras\libs\AceGUI-3.0\AceGUI-3.0.xml
 ..\AdiButtonAuras\libs\AceConfig-3.0\AceConfig-3.0.xml
+..\AdiButtonAuras\libs\AceGUI-3.0-SharedMediaWidgets\widget.xml
 #@end-no-lib-strip@
 
 ..\AdiButtonAuras\Config.lua

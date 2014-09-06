@@ -206,6 +206,7 @@ function overlayPrototype:Initialize(button)
 	self.RegisterMessage(name, addon.RULES_UPDATED, ForceUpdate)
 	self.RegisterMessage(name, addon.DYNAMIC_UNIT_CONDITONALS_CHANGED, ForceUpdate)
 	self.RegisterMessage(name, addon.CONFIG_CHANGED, function(...) return self:OnConfigChanged(...) end)
+	self.RegisterMessage(name, addon.THEME_CHANGED, function(...) return self:UpdateDisplay(...) end)
 
 	self:Show()
 end
