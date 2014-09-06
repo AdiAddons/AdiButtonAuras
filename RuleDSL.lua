@@ -49,105 +49,21 @@ local unpack = _G.unpack
 local wipe = _G.wipe
 local xpcall = _G.xpcall
 
-local getkeys = addon.getkeys
-local ucfirst = addon.ucfirst
+local getkeys      = addon.getkeys
+local ucfirst      = addon.ucfirst
+local errorhandler = addon.errorhandler
+local Do           = addon.Do
+local ConcatLists  = addon.ConcatLists
+local FlattenList  = addon.FlattenList
+local AsList       = addon.AsList
+local AsSet        = addon.AsSet
+local MergeSets    = addon.MergeSets
+local BuildKey     = addon.BuildKey
 
 local LibPlayerSpells = addon.GetLib('LibPlayerSpells-1.0')
 
 -- Local debug with dedicated prefix
 local function Debug(...) return addon.Debug('|cffffff00Rules:|r', ...) end
-
-------------------------------------------------------------------------------
--- Generic list and set tools
-------------------------------------------------------------------------------
-
-local function errorhandler(msg)
-	Debug('|cffff0000'..tostring(msg)..'|r')
-	return geterrorhandler()(msg)
-end
-
-
-local function Do(funcs)
-	for j, func in ipairs(funcs) do
-		xpcall(func, errorhandler)
-	end
-end
-
-local function ConcatLists(a, b)
-	for i, v in ipairs(b) do
-		tinsert(a, v)
-	end
-	return a
-end
-
-local FlattenList
-do
-	local function Flatten0(a, b)
-		for i, v in ipairs(b) do
-			if type(v) == "table" then
-				Flatten0(a, v)
-			else
-				tinsert(a, v)
-			end
-		end
-		return a
-	end
-
-	function FlattenList(l) return Flatten0({}, l) end
-end
-
-local function AsList(value, checkType, callLevel)
-	if type(value) == "table" then
-		value = FlattenList(value)
-		if checkType then
-			for i, v in ipairs(value) do
-				if type(v) ~= checkType then
-					error(format("Invalid value type, expected %s, got %s", checkType, type(v)), callLevel+1)
-				end
-			end
-		end
-		return value
-	elseif checkType == nil or type(value) == checkType then
-		return { value }
-	else
-		error(format("Invalid value type, expected %s, got %s", checkType, type(value)), callLevel+1)
-	end
-end
-
-local function AsSet(value, checkType, callLevel)
-	local set = {}
-	local size = 0
-	for i, value in ipairs(AsList(value, checkType, callLevel+1)) do
-		if not set[value] then
-			set[value] = true
-			size = size + 1
-		end
-	end
-	return set, size
-end
-
-local function MergeSets(a, b)
-	for k in pairs(b) do
-		a[k] = true
-	end
-	return a
-end
-
-local BuildKey
-do
-	local function BuildKey0(value, ...)
-		if type(value) == "table" then
-			return BuildKey(unpack(value)), BuildKey0(...)
-		elseif value then
-			return tostring(value), BuildKey0(...)
-		end
-	end
-
-	function BuildKey(...)
-		return strjoin(':', BuildKey0(...))
-	end
-end
-addon.BuildKey = BuildKey
 
 ------------------------------------------------------------------------------
 -- Rule creation

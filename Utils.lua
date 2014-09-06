@@ -28,7 +28,10 @@ local tostring = _G.tostring
 local max = _G.max
 local min = _G.min
 
+------------------------------------------------------------------------------
 -- Create a memoization table
+------------------------------------------------------------------------------
+
 local function Memoize(func)
 	return setmetatable({}, {__index = function(self, key)
 		if key == nil then return nil end
@@ -39,7 +42,10 @@ local function Memoize(func)
 end
 addon.Memoize = Memoize
 
--- Recursively returns the keys of the table t
+------------------------------------------------------------------------------
+-- simple table functions
+------------------------------------------------------------------------------
+
 local function getkeys(t, prevKey)
 	local key = next(t, prevKey)
 	if key then
@@ -48,11 +54,34 @@ local function getkeys(t, prevKey)
 end
 addon.getkeys = getkeys
 
--- Returns
+------------------------------------------------------------------------------
+-- String functions
+------------------------------------------------------------------------------
+
 local function ucfirst(s)
 	return s:sub(0,1):upper()..s:sub(2)
 end
 addon.ucfirst = ucfirst
+
+local BuildKey
+do
+	local function BuildKey0(value, ...)
+		if type(value) == "table" then
+			return BuildKey(unpack(value)), BuildKey0(...)
+		elseif value then
+			return tostring(value), BuildKey0(...)
+		end
+	end
+
+	function BuildKey(...)
+		return strjoin(':', BuildKey0(...))
+	end
+end
+addon.BuildKey = BuildKey
+
+------------------------------------------------------------------------------
+-- Color manipulation functions
+------------------------------------------------------------------------------
 
 -- Code to calculate HCY color gradients
 local function GetY(r, g, b)
@@ -130,5 +159,86 @@ function addon.ColorGradient(...)
 	else
 		return HCYtoRGB(h1 or h2, c, y)
 	end
-
 end
+
+local function errorhandler(msg)
+	Debug('|cffff0000'..tostring(msg)..'|r')
+	return geterrorhandler()(msg)
+end
+addon.errorhandler = errorhandler
+
+------------------------------------------------------------------------------
+-- List & set helpers
+------------------------------------------------------------------------------
+
+local function Do(funcs)
+	for j, func in ipairs(funcs) do
+		xpcall(func, errorhandler)
+	end
+end
+addon.Do = Do
+
+local function ConcatLists(a, b)
+	for i, v in ipairs(b) do
+		tinsert(a, v)
+	end
+	return a
+end
+addon.ConcatLists = ConcatLists
+
+local FlattenList
+do
+	local function Flatten0(a, b)
+		for i, v in ipairs(b) do
+			if type(v) == "table" then
+				Flatten0(a, v)
+			else
+				tinsert(a, v)
+			end
+		end
+		return a
+	end
+
+	function FlattenList(l) return Flatten0({}, l) end
+end
+addon.FlattenList = FlattenList
+
+local function AsList(value, checkType, callLevel)
+	if type(value) == "table" then
+		value = FlattenList(value)
+		if checkType then
+			for i, v in ipairs(value) do
+				if type(v) ~= checkType then
+					error(format("Invalid value type, expected %s, got %s", checkType, type(v)), callLevel+1)
+				end
+			end
+		end
+		return value
+	elseif checkType == nil or type(value) == checkType then
+		return { value }
+	else
+		error(format("Invalid value type, expected %s, got %s", checkType, type(value)), callLevel+1)
+	end
+end
+addon.AsList = AsList
+
+local function AsSet(value, checkType, callLevel)
+	local set = {}
+	local size = 0
+	for i, value in ipairs(AsList(value, checkType, callLevel+1)) do
+		if not set[value] then
+			set[value] = true
+			size = size + 1
+		end
+	end
+	return set, size
+end
+addon.AsSet = AsSet
+
+local function MergeSets(a, b)
+	for k in pairs(b) do
+		a[k] = true
+	end
+	return a
+end
+addon.MergeSets = MergeSets
