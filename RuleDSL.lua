@@ -599,12 +599,10 @@ local RULES_ENV = addon.BuildSafeEnv(
 	-- Allowed globals
 	{
 		"bit", "ceil", "floor", "format", "GetComboPoints", "GetEclipseDirection", "GetNumGroupMembers",
-		"GetShapeshiftFormID", "GetSpellBonusHealing", "GetSpellInfo", "GetTime", "GetTotemInfo", "ipairs",
-		"math", "min", "pairs", "pairs", "select", "string", "table", "tinsert",
-		"UnitAura", "UnitAura", "UnitBuff", "UnitBuff", "UnitCanAttack", "UnitCastingInfo",
-		"UnitChannelInfo", "UnitClass", "UnitDebuff", "UnitDebuff", "UnitHealth", "UnitHealth",
-		"UnitHealthMax", "UnitPower", "UnitPower", "UnitPowerMax", "UnitPowerMax", "UnitStagger",
-		"UnitIsDeadOrGhost", "UnitIsPlayer"
+		"GetShapeshiftFormID", "GetSpellBonusHealing", "GetSpellInfo", "GetTime", "GetTotemInfo",
+		"ipairs", "math", "min", "pairs", "select", "string", "table", "tinsert", "UnitIsPlayer",
+		"UnitCanAttack", "UnitCastingInfo", "UnitChannelInfo", "UnitClass","UnitHealth", "UnitAura",
+		"UnitHealthMax", "UnitPower",  "UnitPowerMax",  "UnitStagger", "UnitIsDeadOrGhost",
 	}
 )
 

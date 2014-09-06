@@ -92,7 +92,7 @@ AdiButtonAuras:RegisterRules(function()
 			(function()
 				local healingElixirs = GetSpellInfo(134563) -- Healing Elixirs (buff)
 				return function(units, model)
-					if UnitBuff("player", healingElixirs) then
+					if UnitAura("player", healingElixirs) then
 						model.highlight = "good"
 					end
 				end
