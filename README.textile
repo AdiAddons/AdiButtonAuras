@@ -113,7 +113,7 @@ Not in the way InlineAura did it. At best will it support custom rules written i
 
 h2. Acknowledgment
 
-Thanks to the following people for testing and contributions to AdiButtonAuras and related libraries.
+Thanks to the following people for testing and contributing to AdiButtonAuras and related libraries.
 
 Contributors (in alphabetical order):
 
@@ -122,6 +122,8 @@ Contributors (in alphabetical order):
 * "dafzor":https://github.com/dafzor
 * "mjmurray88":https://github.com/mjmurray88
 * "Rainrider":https://github.com/Rainrider
+
+The alternative border textures are courtesy of "arcadepro":https://github.com/arcadepro.
 
 h2. License
 

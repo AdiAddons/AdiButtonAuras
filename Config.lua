@@ -571,7 +571,15 @@ AdiButtonAuras:CreateConfig(function(addonName, addon)
 									order = 50,
 								},
 							},
-						}
+						},
+						highlightTexture = {
+							name = L['Highlight texture'],
+							desc = L['Select the texture used to highlight buttons.'],
+							type = 'select',
+							dialogControl = 'LSM30_Background',
+							values = addon.GetLib('LibSharedMedia-3.0'):HashTable(addon.HIGHLIGHT_MEDIATYPE),
+							order = 30,
+						},
 					},
 				},
 				--@debug@

@@ -218,8 +218,9 @@ function overlayPrototype:ApplyColoredBorder()
 		return border:Show()
 	end
 	if highlight == "good" or highlight == "bad" then
-		if border:GetTexture() ~= [[Interface\AddOns\AdiButtonAuras\media\Border]] then
-			border:SetTexture([[Interface\AddOns\AdiButtonAuras\media\Border]])
+		local texture = LSM:Fetch(addon.HIGHLIGHT_MEDIATYPE, addon.db.profile.highlightTexture)
+		if border:GetTexture() ~= texture then
+			border:SetTexture(texture)
 			border:SetBlendMode("BLEND")
 		end
 		border:SetVertexColor(unpack(addon.db.profile.colors[highlight], 1, 4))

@@ -77,6 +77,7 @@ addon.DEFAULT_SETTINGS = {
 		noFlashOutOfCombat = false,
 		hints = "show",
 		fontSize = 13,
+		highlightTexture = "default",
 	}
 }
 
@@ -91,24 +92,6 @@ local function GetLib(major, silent)
 	return lib, minor
 end
 addon.libraries, addon.GetLib = libraries, GetLib
-
-------------------------------------------------------------------------------
--- Fetch default font
-------------------------------------------------------------------------------
-
-do
-	local LSM = GetLib('LibSharedMedia-3.0')
-	addon.DEFAULT_SETTINGS.profile.fontName = LSM:GetDefault(LSM.MediaType.FONT)
-
-	local wantedFile = _G.NumberFontNormalSmall:GetFont()
-	for name, file in pairs(LSM:HashTable(LSM.MediaType.FONT)) do
-		if file == wantedFile then
-			addon.DEFAULT_SETTINGS.profile.fontName = name
-			break
-		end
-	end
-
-end
 
 ------------------------------------------------------------------------------
 -- Stuff to embed
@@ -156,6 +139,37 @@ end
 for name, func in pairs(mixins) do
 	addon[name] = func
 	api[name] = func
+end
+
+------------------------------------------------------------------------------
+-- LibSharedMedia-3.0 stuff
+------------------------------------------------------------------------------
+
+do
+	local LSM = GetLib('LibSharedMedia-3.0')
+
+	-- Initialize the default font
+	addon.DEFAULT_SETTINGS.profile.fontName = LSM:GetDefault(LSM.MediaType.FONT)
+	local wantedFile = _G.NumberFontNormalSmall:GetFont()
+	for name, file in pairs(LSM:HashTable(LSM.MediaType.FONT)) do
+		if file == wantedFile then
+			addon.DEFAULT_SETTINGS.profile.fontName = name
+			break
+		end
+	end
+
+	-- Register alternative highlights
+	local HIGHLIGHT_MEDIATYPE = addonName:lower().."_border"
+	local texturePath = [[Interface\AddOns\]]..addonName..[[\media\highlight\]]
+
+	LSM:Register(HIGHLIGHT_MEDIATYPE, "default", texturePath.."default")
+	for i = 1, 10 do
+		local key =" another"..i
+		LSM:Register(HIGHLIGHT_MEDIATYPE, key, texturePath..key)
+	end
+
+	LSM:SetDefault(HIGHLIGHT_MEDIATYPE, "default")
+	addon.HIGHLIGHT_MEDIATYPE = HIGHLIGHT_MEDIATYPE
 end
 
 ------------------------------------------------------------------------------
