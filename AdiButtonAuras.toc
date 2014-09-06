@@ -48,6 +48,7 @@ libs\LibItemBuffs-1.0\LibItemBuffs-1.0.lua
 Localization.lua
 AdiButtonAuras.lua
 Utils.lua
+SafeEnv.lua
 RuleDSL.lua
 Items.lua
 Overlays.lua
