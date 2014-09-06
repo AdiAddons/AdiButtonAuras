@@ -579,6 +579,7 @@ AdiButtonAuras:CreateConfig(function(addonName, addon)
 							dialogControl = 'LSM30_Background',
 							values = addon.GetLib('LibSharedMedia-3.0'):HashTable(addon.HIGHLIGHT_MEDIATYPE),
 							order = 30,
+							width = 'double',
 						},
 					},
 				},

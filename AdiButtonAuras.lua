@@ -161,14 +161,21 @@ do
 	-- Register alternative highlights
 	local HIGHLIGHT_MEDIATYPE = addonName:lower().."_border"
 	local texturePath = [[Interface\AddOns\]]..addonName..[[\media\highlight\]]
-
-	LSM:Register(HIGHLIGHT_MEDIATYPE, "default", texturePath.."default")
-	for i = 1, 10 do
-		local key =" another"..i
-		LSM:Register(HIGHLIGHT_MEDIATYPE, key, texturePath..key)
+	for file, label in pairs {
+		["bottom-top-gradient"]      = L["Bottom to top gradient"],
+		["corners"]                  = L["Square corners"],
+		["default-border"]           = L["Default border"],
+		["left-right-gradient"]      = L["Left to right gradient"],
+		["right-left-gradient"]      = L["Right to left gradient"],
+		["top-bottom-gradient"]      = L["Top to bottom gradient"],
+		["top-left-gradient"]        = L["Top left corner gradient"],
+		["top-left-half-gradient"]   = L["Top left half gradient"],
+		["x"]                        = L["X-shaped border"],
+		["y"]                        = L["Y-shaped border"],
+	} do
+		LSM:Register(HIGHLIGHT_MEDIATYPE, label, texturePath..file)
 	end
-
-	LSM:SetDefault(HIGHLIGHT_MEDIATYPE, "default")
+	LSM:SetDefault(HIGHLIGHT_MEDIATYPE, L["Default border"])
 	addon.HIGHLIGHT_MEDIATYPE = HIGHLIGHT_MEDIATYPE
 end
 
