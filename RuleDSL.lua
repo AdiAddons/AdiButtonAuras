@@ -22,29 +22,29 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 local addonName, addon = ...
 
 local _G = _G
+local bit = _G.bit
+local error = _G.error
+local floor = _G.floor
+local format = _G.format
 local GetItemInfo = _G.GetItemInfo
 local GetSpellInfo = _G.GetSpellInfo
 local GetSpellLink = _G.GetSpellLink
-local UnitAura = _G.UnitAura
-local UnitClass = _G.UnitClass
-local UnitPower = _G.UnitPower
-local UnitPowerMax = _G.UnitPowerMax
-local assert = _G.assert
-local error = _G.error
-local format = _G.format
-local geterrorhandler = _G.geterrorhandler
+local gsub = _G.gsub
 local ipairs = _G.ipairs
+local math = _G.math
 local next = _G.next
-local pairs = _G.pairs
 local select = _G.select
 local setfenv = _G.setfenv
-local setmetatable = _G.setmetatable
 local strjoin = _G.strjoin
 local strmatch = _G.strmatch
 local tinsert = _G.tinsert
 local tonumber = _G.tonumber
 local tostring = _G.tostring
 local type = _G.type
+local UnitAura = _G.UnitAura
+local UnitClass = _G.UnitClass
+local UnitPower = _G.UnitPower
+local UnitPowerMax = _G.UnitPowerMax
 local unpack = _G.unpack
 local wipe = _G.wipe
 local xpcall = _G.xpcall
@@ -346,7 +346,7 @@ end
 local function Auras(filter, highlight, unit, spells)
 	local funcs = {}
 	local key = BuildKey('Auras', filter, highlight, unit)
-	local desc = BuildDesc(filter, highlight, token, '@NAME')
+	local desc = BuildDesc(filter, highlight, unit, '@NAME')
 	for i, spell in ipairs(AsList(spells, "number", 2)) do
 		tinsert(funcs, Configure(key, desc, spell, unit,  "UNIT_AURA",  BuildAuraHandler_Single(filter, highlight, unit, spell, 2), 2))
 	end
