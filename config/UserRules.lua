@@ -21,7 +21,7 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 
 local _, private = ...
 
-function private.GetUserRulesOptions(addon)
+function private.GetUserRulesOptions(addon, addonName)
 
 	local _G = _G
 	local date = _G.date
@@ -36,7 +36,13 @@ function private.GetUserRulesOptions(addon)
 
 	local L = addon.L
 
-	local fullPlayerName = GetUnitName("player", false).. ' - '..GetRealmName()
+	local ADDON_VERSION = tostring(GetAddOnMetadata(addonName, "Version"))
+	local PLAYER_NAME = GetUnitName("player", false).. '-'..GetRealmName()
+	local PATCH_NUMBER = GetBuildInfo()
+	--@debug@
+	ADDON_VERSION = 'dev'
+	--@end-debug@
+
 	local userRuleHandler = {
 		current = next(addon.db.global.userRules),
 		select = function(self, key)
@@ -47,12 +53,8 @@ function private.GetUserRulesOptions(addon)
 			local rule = addon.db.global.userRules[key]
 			rule.title = format(L['User rule #%d'], key)
 			rule.code = ""
-			rule.patch = GetBuildInfo()
 			rule.revision = 0
-			rule.createdBy = fullPlayerName
-			rule.createdAt = time()
-			rule.lastModifiedBy = fullPlayerName
-			rule.lastModifiedAt = time()
+			rule.created = self:GetHistoryPoint()
 			self:select(key)
 		end,
 		delete = function(self)
@@ -72,9 +74,7 @@ function private.GetUserRulesOptions(addon)
 			if not rule or rule[property] == value then return end
 			if property ~= "enabled" then
 				rule.revision = rule.revision + 1
-				rule.lastModifiedAt = time()
-				rule.lastModifiedBy= fullPlayerName
-				rule.patch = GetBuildInfo()
+				rule.updated = self:GetHistoryPoint()
 			end
 			rule[property] = value
 			return addon:LibSpellbook_Spells_Changed('UserRuleChanged')
@@ -84,6 +84,15 @@ function private.GetUserRulesOptions(addon)
 		end,
 		_set = function(self, info, ...)
 			return self:set(info[#info], ...)
+		end,
+		GetHistoryPoint = function()
+			return { PLAYER_NAME, time(), PATCH_NUMBER, ADDON_VERSION }
+		end,
+		FormatHistoryPoint = function(self, property)
+			local point = self:get(property)
+			if type(point) ~= "table" then return "???" end
+			local name, timestamp, patch, addonVersion = unpack(point)
+			return format(L["%s, %s, patch %s, v.%s"], name, date("%Y-%m-%d %H:%M", timestamp), patch, addonVersion)
 		end,
 	}
 
@@ -138,29 +147,27 @@ function private.GetUserRulesOptions(addon)
 						width = 'full',
 						order = 10,
 					},
-					_created = {
+					created = {
 						name = function()
-							return format(
-								L["Created by %s at %s for patch %s"],
-								userRuleHandler:get('createdBy'),
-								date("%x %X", userRuleHandler:get('createdAt')),
-								userRuleHandler:get('patch')
-							)
+							return format(L["Created by %s"], userRuleHandler:FormatHistoryPoint('created'))
 						end,
 						type = 'description',
 						order = 11,
+						fontSize = 'medium',
+						hidden = function() return type(userRuleHandler:get('created')) ~= 'table' end,
 					},
-					_updated = {
+					updated = {
 						name = function()
 							return format(
-								L["Last modified by %s at %s, revision #%d"],
-								userRuleHandler:get('lastModifiedBy'),
-								date("%x %X", userRuleHandler:get('lastModifiedAt')),
+								L["Updated by %s, revision #%d"],
+								userRuleHandler:FormatHistoryPoint('updated'),
 								userRuleHandler:get('revision')
 							)
 						end,
 						type = 'description',
 						order = 12,
+						fontSize = 'medium',
+						hidden = function() return type(userRuleHandler:get('updated')) ~= 'table' end,
 					},
 					enabled = {
 						name = L['Enabled'],
@@ -171,13 +178,15 @@ function private.GetUserRulesOptions(addon)
 					_validation = {
 						name = function()
 							local msg = userRuleHandler:get('error')
-							return msg and ('|cffff0000'..msg..'|r') or 'OK'
+							return msg and ('|cffff0000Error '..msg:gsub('^[^:]+:(%d+:)', 'line %1')..'|r') or 'OK'
 						end,
+						type = 'description',
 						hidden = function()
 							return not userRuleHandler:get('error')
 						end,
-						type = 'description',
+						width = 'full',
 						order = 29,
+						fontSize = 'large',
 					},
 					code = {
 						name = L['Code'],
