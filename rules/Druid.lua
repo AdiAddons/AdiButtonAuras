@@ -98,14 +98,11 @@ AdiButtonAuras:RegisterRules(function()
 			},
 			"player",
 			"UNIT_AURA",
-			(function()
-				local harmonyBuff = GetSpellInfo(100977) -- Harmony
-				return function(_, model)
-					if not UnitAura("player", harmonyBuff, nil, "HELPFUL PLAYER") then
-						model.hint = true
-					end
+			function(_, model)
+				if not GetPlayerBuff("player", 100977) then
+					model.hint = true
 				end
-			end)(),
+			end,
 			77495, -- Provided by: Mastery: Harmony
 		},
 		Configure {
@@ -169,14 +166,11 @@ AdiButtonAuras:RegisterRules(function()
 			  774, -- Rejuvenation
 			"player",
 			"UNIT_AURA",
-			(function()
-				local buffName = GetSpellInfo(96206) -- Glyph of Rejuvenation
-				return function(units, model)
-					if not UnitAura("player", buffName, nil, "HELPFUL PLAYER") then
-						model.hint = true
-					end
+			function(_, model)
+				if not GetPlayerBuff("player", 96206) then -- Glyph of Rejuvenation buff
+					model.hint = true
 				end
-			end)(),
+			end,
 			17076, -- Glyph of Rejuvenation
 		},
 	}

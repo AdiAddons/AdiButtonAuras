@@ -49,6 +49,7 @@ Localization.lua
 AdiButtonAuras.lua
 Utils.lua
 SafeEnv.lua
+AuraTools.lua
 RuleDSL.lua
 Items.lua
 Overlays.lua

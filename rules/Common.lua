@@ -249,18 +249,13 @@ AdiButtonAuras:RegisterRules(function()
 
 		local function CheckUnitBuffs(unit)
 			local found, minExpiration = 0
-			for i = 1, math.huge do
-				local name, _, _, _, _, _, expiration, _, _, _, spellId = UnitAura(unit, i, "HELPFUL")
-				if name then
-					local buffProvided = band(buffsMasks[spellId] or 0, buffMask)
-					if buffProvided ~= 0 then
-						found = bor(found, buffProvided)
-						if not minExpiration or expiration < minExpiration then
-							minExpiration = expiration
-						end
+			for i, id, _, expiration in IterateBuffs(unit) do
+				local buffProvided = band(buffsMasks[id] or 0, buffMask)
+				if buffProvided ~= 0 then
+					found = bor(found, buffProvided)
+					if not minExpiration or expiration < minExpiration then
+						minExpiration = expiration
 					end
-				else
-					break
 				end
 			end
 			return found == buffMask, minExpiration

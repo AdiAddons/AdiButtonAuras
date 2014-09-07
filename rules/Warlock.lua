@@ -53,15 +53,12 @@ AdiButtonAuras:RegisterRules(function()
 			116858, -- Chaos Bolt
 			"player",
 			"UNIT_AURA",
-			(function()
-				local backdraft = GetSpellInfo(117828)
-				return function(_, model)
-					local name, _, _, count = UnitAura("player", backdraft, nil, "PLAYER HELPFUL")
-					if name and count >= 3 then
-						model.highlight = "good"
-					end
+			function(_, model)
+				local found, count = GetPlayerBuff("player", 117828)
+				if name and count >= 3 then
+					model.highlight = "good"
 				end
-			end)(),
+			end,
 			123686, -- Provided by: Pyroclasm
 		},
 		Configure {

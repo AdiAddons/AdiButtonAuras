@@ -33,6 +33,7 @@ local gsub = _G.gsub
 local ipairs = _G.ipairs
 local math = _G.math
 local next = _G.next
+local pairs = _G.pairs
 local select = _G.select
 local setfenv = _G.setfenv
 local strjoin = _G.strjoin
@@ -41,7 +42,6 @@ local tinsert = _G.tinsert
 local tonumber = _G.tonumber
 local tostring = _G.tostring
 local type = _G.type
-local UnitAura = _G.UnitAura
 local UnitClass = _G.UnitClass
 local UnitPower = _G.UnitPower
 local UnitPowerMax = _G.UnitPowerMax
@@ -267,19 +267,12 @@ addon.DescribeLPSSource = DescribeLPSSource
 ------------------------------------------------------------------------------
 
 local function BuildAuraHandler_Single(filter, highlight, token, buff, callLevel)
+	local GetAura = addon.GetAuraGetter(filter)
 	return function(units, model)
-		local unit = units[token]
-		if not unit then return end
-		for i = 1, math.huge do
-			local name, _, _, count, _, _, expiration, _, _, _, spellId = UnitAura(unit, i, filter)
-			if name then
-				if spellId == buff then
-					model.highlight, model.count, model.expiration = highlight, count, expiration
-					return true
-				end
-			else
-				break
-			end
+		local found, count, expiration = GetAura(units[token], buff)
+		if found then
+			model.highlight, model.count, model.expiration = highlight, count, expiration
+			return true
 		end
 	end
 end
@@ -291,21 +284,16 @@ local function BuildAuraHandler_Longest(filter, highlight, token, buffs, callLev
 	if numBuffs == 1 then
 		return BuildAuraHandler_Single(filter, highlight, token, next(buffs), callLevel+1)
 	end
+	local IterateAuras = addon.GetAuraIterator(filter)
 	return function(units, model)
-		local unit, longest = units[token], -1
-		if not unit then return end
-		for i = 1, math.huge do
-			local name, _, _, count, _, _, expiration, _, _, _, spellId = UnitAura(unit, i, filter)
-			if name then
-				if buffs[spellId] and expiration > longest then
-					longest = expiration
-					if highlight == "flash" or model.highlight ~= "flash" then
-						model.highlight = highlight
-					end
-					model.count, model.expiration = count, expiration
+		local longest = -1
+		for i, id, count, expiration in IterateAuras(units[token]) do
+			if buffs[id] and expiration > longest then
+				longest = expiration
+				if highlight == "flash" or model.highlight ~= "flash" then
+					model.highlight = highlight
 				end
-			else
-				break
+				model.count, model.expiration = count, expiration
 			end
 		end
 		return longest > -1
@@ -319,21 +307,15 @@ local function BuildAuraHandler_FirstOf(filter, highlight, token, buffs, callLev
 	if numBuffs == 1 then
 		return BuildAuraHandler_Single(filter, highlight, token, next(buffs), callLevel+1)
 	end
+	local IterateAuras = addon.GetAuraIterator(filter)
 	return function(units, model)
-		local unit = units[token]
-		if not unit then return end
-		for i = 1, math.huge do
-			local name, _, _, count, _, _, expiration, _, _, _, spellId = UnitAura(unit, i, filter)
-			if name then
-				if buffs[spellId] then
-					if highlight == "flash" or model.highlight ~= "flash" then
-						model.highlight = highlight
-					end
-					model.count, model.expiration = count, expiration
-					return true
+		for i, id, count, expiration in IterateAuras(units[token]) do
+			if buffs[id] then
+				if highlight == "flash" or model.highlight ~= "flash" then
+					model.highlight = highlight
 				end
-			else
-				return
+				model.count, model.expiration = count, expiration
+				return true
 			end
 		end
 	end
@@ -520,78 +502,83 @@ local function WrapTableArgFunc(func)
 	end
 end
 
+-- Base "globals"
+local baseEnv = {
+	-- Common functions and constatns
+	L            = L,
+	Debug        = Debug,
+	PLAYER_CLASS = select(2, UnitClass("player")),
+
+	-- Intended to be used un Lua
+	AddRuleFor               = AddRuleFor,
+	BuildAuraHandler_Single  = BuildAuraHandler_Single,
+	BuildAuraHandler_Longest = BuildAuraHandler_Longest,
+	BuildAuraHandler_FirstOf = BuildAuraHandler_FirstOf,
+
+	-- Description helpers
+	BuildDesc         = BuildDesc,
+	BuildKey          = BuildKey,
+	DescribeHighlight = DescribeHighlight,
+	DescribeFilter    = DescribeFilter,
+	DescribeAllTokens = DescribeAllTokens,
+	DescribeAllSpells = DescribeAllSpells,
+	DescribeLPSSource = DescribeLPSSource,
+
+	-- Basic functions
+	Configure = WrapTableArgFunc(Configure),
+	ShowPower = WrapTableArgFunc(ShowPower),
+	PassiveModifier = WrapTableArgFunc(PassiveModifier),
+	ImportPlayerSpells = WrapTableArgFunc(ImportPlayerSpells),
+
+	-- High-level functions
+	SimpleDebuffs = function(spells)
+		return Auras("HARMFUL PLAYER", "bad", "enemy", spells)
+	end,
+
+	SharedSimpleDebuffs = function(spells)
+		return Auras("HARMFUL", "bad", "enemy", spells)
+	end,
+
+	SimpleBuffs = function(spells)
+		return Auras("HELPFUL PLAYER", "good", "ally", spells)
+	end,
+
+	SharedSimpleBuffs = function(spells)
+		return Auras("HELPFUL", "good", "ally", spells)
+	end,
+
+	LongestDebuffOf = function(spells, buffs)
+		local key = BuildKey('LongestDebuffOf', spells, buffs)
+		local desc =  BuildDesc("HARMFUL", "bad", "enemy", buffs)
+		return Configure(key, desc, spells, "enemy", "UNIT_AURA", BuildAuraHandler_Longest("HARMFUL", "bad", "enemy", buffs or spells, 2), nil, 2)
+	end,
+
+	SelfBuffs = function(spells)
+		return Auras("HELPFUL PLAYER", "good", "player", spells)
+	end,
+
+	PetBuffs = function(spells)
+		return Auras("HELPFUL PLAYER", "good", "pet", spells)
+	end,
+
+	BuffAliases = function(args)
+		return AuraAliases("HELPFUL PLAYER", "good", "ally", unpack(args))
+	end,
+
+	DebuffAliases = function(args)
+		return AuraAliases("HARMFUL PLAYER", "bad", "enemy", unpack(args))
+	end,
+
+	SelfBuffAliases = function(args)
+		return AuraAliases("HELPFUL PLAYER", "good", "player", unpack(args))
+	end,
+}
+for name, func in pairs(addon.AuraTools) do
+	baseEnv[name] = func
+end
+
 local RULES_ENV = addon.BuildSafeEnv(
-	-- Base "globals"
-	{
-		-- Common functions and constatns
-		L            = L,
-		Debug        = Debug,
-		PLAYER_CLASS = select(2, UnitClass("player")),
-
-		-- Intended to be used un Lua
-		AddRuleFor               = AddRuleFor,
-		BuildAuraHandler_Single  = BuildAuraHandler_Single,
-		BuildAuraHandler_Longest = BuildAuraHandler_Longest,
-		BuildAuraHandler_FirstOf = BuildAuraHandler_FirstOf,
-
-		-- Description helpers
-		BuildDesc         = BuildDesc,
-		BuildKey          = BuildKey,
-		DescribeHighlight = DescribeHighlight,
-		DescribeFilter    = DescribeFilter,
-		DescribeAllTokens = DescribeAllTokens,
-		DescribeAllSpells = DescribeAllSpells,
-		DescribeLPSSource = DescribeLPSSource,
-
-		-- Basic functions
-		Configure = WrapTableArgFunc(Configure),
-		ShowPower = WrapTableArgFunc(ShowPower),
-		PassiveModifier = WrapTableArgFunc(PassiveModifier),
-		ImportPlayerSpells = WrapTableArgFunc(ImportPlayerSpells),
-
-		-- High-level functions
-		SimpleDebuffs = function(spells)
-			return Auras("HARMFUL PLAYER", "bad", "enemy", spells)
-		end,
-
-		SharedSimpleDebuffs = function(spells)
-			return Auras("HARMFUL", "bad", "enemy", spells)
-		end,
-
-		SimpleBuffs = function(spells)
-			return Auras("HELPFUL PLAYER", "good", "ally", spells)
-		end,
-
-		SharedSimpleBuffs = function(spells)
-			return Auras("HELPFUL", "good", "ally", spells)
-		end,
-
-		LongestDebuffOf = function(spells, buffs)
-			local key = BuildKey('LongestDebuffOf', spells, buffs)
-			local desc =  BuildDesc("HARMFUL", "bad", "enemy", buffs)
-			return Configure(key, desc, spells, "enemy", "UNIT_AURA", BuildAuraHandler_Longest("HARMFUL", "bad", "enemy", buffs or spells, 2), nil, 2)
-		end,
-
-		SelfBuffs = function(spells)
-			return Auras("HELPFUL PLAYER", "good", "player", spells)
-		end,
-
-		PetBuffs = function(spells)
-			return Auras("HELPFUL PLAYER", "good", "pet", spells)
-		end,
-
-		BuffAliases = function(args)
-			return AuraAliases("HELPFUL PLAYER", "good", "ally", unpack(args))
-		end,
-
-		DebuffAliases = function(args)
-			return AuraAliases("HARMFUL PLAYER", "bad", "enemy", unpack(args))
-		end,
-
-		SelfBuffAliases = function(args)
-			return AuraAliases("HELPFUL PLAYER", "good", "player", unpack(args))
-		end,
-	},
+	baseEnv,
 	-- Allowed Libraries
 	{
 		"LibDispellable-1.0", "LibPlayerSpells-1.0", "DRData-1.0", "LibSpellbook-1.0", "LibItemBuffs-1.0"
@@ -601,7 +588,7 @@ local RULES_ENV = addon.BuildSafeEnv(
 		"bit", "ceil", "floor", "format", "GetComboPoints", "GetEclipseDirection", "GetNumGroupMembers",
 		"GetShapeshiftFormID", "GetSpellBonusHealing", "GetSpellInfo", "GetTime", "GetTotemInfo",
 		"ipairs", "math", "min", "pairs", "select", "string", "table", "tinsert", "UnitIsPlayer",
-		"UnitCanAttack", "UnitCastingInfo", "UnitChannelInfo", "UnitClass","UnitHealth", "UnitAura",
+		"UnitCanAttack", "UnitCastingInfo", "UnitChannelInfo", "UnitClass","UnitHealth",
 		"UnitHealthMax", "UnitPower",  "UnitPowerMax",  "UnitStagger", "UnitIsDeadOrGhost",
 	}
 )

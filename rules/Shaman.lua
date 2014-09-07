@@ -37,7 +37,7 @@ AdiButtonAuras:RegisterRules(function()
 			"player",
 			"UNIT_AURA",
 			function(_, model)
-				local found, _, _, count = UnitAura("player", lightningShield, nil, "HELPFUL PLAYER")
+				local found, count = GetPlayerBuff("player", 324)
 				if found then
 					model.count = count
 				end

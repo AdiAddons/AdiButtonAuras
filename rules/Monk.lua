@@ -27,7 +27,6 @@ AdiButtonAuras:RegisterRules(function()
 	Debug('Adding monk rules')
 
 	-- Mistweaver constants
-	local renewingMist = GetSpellInfo(115151) -- Renewing Mist
 	local TFT_COUNT    = 4 -- Minimum number of Renewing Mist to highlight Thunder Focus Tea
 	local TFT_DURATION = 6 -- Duration threshold to highlight Thunder Focus Tea
 	local UPLIFT_THRESHOLD = 3 -- Heal multiplier to highlight Uplight
@@ -89,14 +88,11 @@ AdiButtonAuras:RegisterRules(function()
 			},
 			"player",
 			"UNIT_AURA",
-			(function()
-				local healingElixirs = GetSpellInfo(134563) -- Healing Elixirs (buff)
-				return function(units, model)
-					if UnitAura("player", healingElixirs) then
-						model.highlight = "good"
-					end
+			function(units, model)
+				if GetPlayerBuff("player", 134563) then -- Healing Elixirs (buff)
+					model.highlight = "good"
 				end
-			end)(),
+			end,
 			122280, -- Provided by: healing Elixirs (passive)
 		},
 		Configure {
@@ -126,18 +122,15 @@ AdiButtonAuras:RegisterRules(function()
 			123761, -- Mana Tea (glyphed)
 			"player",
 			{ "UNIT_AURA", "UNIT_POWER", "UNIT_POWER_MAX" },
-			(function()
-				local manaTea = GetSpellInfo(115867) -- Mana Tea (stacking buff)
-				return function(_, model)
-					local name, _, _, count, _, _, expiration = UnitAura("player", manaTea, nil, "HELPFUL PLAYER")
-					if name then
-						model.expiration = expiration
-						if count >= 2 and UnitPower("player", SPELL_POWER_MANA) / UnitPowerMax("player", SPELL_POWER_MANA) <= 0.92 then
-							model.hint = true
-						end
+			function(_, model)
+				local found, count, expiration = GetPlayerBuff("player", 115867) -- Mana Tea (stacking buff)
+				if found then
+					model.expiration = expiration
+					if count >= 2 and UnitPower("player", SPELL_POWER_MANA) / UnitPowerMax("player", SPELL_POWER_MANA) <= 0.92 then
+						model.hint = true
 					end
 				end
-			end)()
+			end
 		},
 		Configure {
 			"RenewingMist",
@@ -148,8 +141,8 @@ AdiButtonAuras:RegisterRules(function()
 			function(units, model)
 				local count, minExpiration = 0, math.huge
 				for unit in pairs(units.group) do
-					local name, _, _, _, _, _, expiration = UnitAura(unit, renewingMist, nil, "HELPFUL PLAYER")
-					if name then
+					local found, _, expiration = GetPlayerBuff(unit, 115151)
+					if found then
 						count, minExpiration = count + 1, min(minExpiration, expiration)
 					end
 				end
@@ -163,15 +156,15 @@ AdiButtonAuras:RegisterRules(function()
 		},
 		Configure {
 			"ThunderFocusTea",
-			format(L["Suggest when at least %s %s are running and one of them is below %s seconds."], TFT_COUNT, renewingMist, TFT_DURATION),
+			format(L["Suggest when at least %s %s are running and one of them is below %s seconds."], TFT_COUNT, GetSpellInfo(115151), TFT_DURATION),
 			116680, -- Thunder Focus Tea
 			"group",
 			"UNIT_AURA",
 			function(units, model)
 				local count, minExpiration = 0, math.huge
 				for unit in pairs(units.group) do
-					local name, _, _, _, _, _, expiration = UnitAura(unit, renewingMist, nil, "HELPFUL PLAYER")
-					if name then
+					local found, _, expiration = GetPlayerBuff(unit, 115151)
+					if found then
 						count, minExpiration = count + 1, min(minExpiration, expiration)
 					end
 				end
@@ -191,7 +184,7 @@ AdiButtonAuras:RegisterRules(function()
 				local heal = 1.2 * ((7210+8379)/2 + 0.68 * GetSpellBonusHealing())
 				local totalHeal = 0
 				for unit in pairs(units.group) do
-					if UnitAura(unit, renewingMist, nil, "HELPFUL PLAYER") then
+					if GetPlayerBuff(unit, 115151) then -- Renewing Mist
 						totalHeal = totalHeal + min(heal, UnitHealthMax(unit) - UnitHealth(unit))
 					end
 				end
@@ -238,16 +231,10 @@ AdiButtonAuras:RegisterRules(function()
 			"player",
 			"UNIT_AURA",
 			function(_, model)
-				for i = 1, math.huge do
-					local name, _, _, count, _, _, _, _, _, _, spellId = UnitAura("player", i, "HELPFUL PLAYER")
-					if name and spellId == 128939 then -- Elusive Brew (stacking buff)
-						if count >= 10 then
-							model.hint = true
-						end
-						return true
-					elseif not name then
-						return false
-					end
+				local found, count = GetPlayerBuff("player", 128939) -- Elusive Brew (stacking buff)
+				if found and count >= 10 then
+					model.hint = true
+					return true
 				end
 			end,
 		},

@@ -35,8 +35,7 @@ local LibItemBuffs, LIBVer = addon.GetLib('LibItemBuffs-1.0')
 local BuildKey = addon.BuildKey
 local BuildDesc = addon.BuildDesc
 
-local items, itemDescs = {}, {}
-addon.items = items
+local itemDescs = {}
 addon.itemDescs = itemDescs
 
 local function GetItemTargetFilterAndHighlight(itemId)
@@ -48,19 +47,13 @@ local function GetItemTargetFilterAndHighlight(itemId)
 end
 
 local function BuildBuffIdHandler(key, token, filter, highlight, buffId)
+	local GetAura = addon.GetAuraGetter(filter)
 	return function(units, model)
 		if not addon.db.profile.rules[key] then return end
-		local unit = units[token]
-		if not unit then return end
-		for i = 1, math.huge do
-			local name, _, _, count, _, _, expiration, _, _, _, spellId = UnitAura(unit, i, filter)
-			if not name then
-				return
-			end
-			if spellId == buffId then
-				model.highlight, model.count, model.expiration = highlight, count, expiration
-				return true
-			end
+		local found, count, expiration = GetAura(units[token], buffId)
+		if found then
+			model.highlight, model.count, model.expiration = highlight, count, expiration
+			return true
 		end
 	end
 end
@@ -77,7 +70,7 @@ local function BuildBuffNameHandler(key, token, filter, highlight, buffName)
 end
 
 local function BuildItemRule(itemId, buffName, ...)
-	if not buffName and not ... then return end
+	if not buffName and not ... then return false end
 
 	local token, filter, highlight = GetItemTargetFilterAndHighlight(itemId)
 
@@ -108,8 +101,6 @@ local function BuildItemRule(itemId, buffName, ...)
 	return rule
 end
 
-setmetatable(items, { __index = function(t, itemId)
-	local rule = itemId and BuildItemRule(itemId, GetItemSpell(itemId), LibItemBuffs:GetItemBuffs(itemId)) or false
-	t[itemId] = rule
-	return rule
-end})
+addon.items = addon.Memoize(function(itemId)
+	return BuildItemRule(itemId, GetItemSpell(itemId), LibItemBuffs:GetItemBuffs(itemId))
+end)
