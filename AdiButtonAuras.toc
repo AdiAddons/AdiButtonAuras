@@ -46,14 +46,6 @@ libs\LibSpellbook-1.0\LibSpellbook-1.0.lua
 libs\LibItemBuffs-1.0\LibItemBuffs-1.0.lua
 
 Localization.lua
-AdiButtonAuras.lua
-Utils.lua
-SafeEnv.lua
-AuraTools.lua
-RuleDSL.lua
-Items.lua
-Overlays.lua
-Display.lua
 
-UserRules.lua
+core\core.xml
 rules\rules.xml

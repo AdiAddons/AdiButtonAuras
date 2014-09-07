@@ -38,4 +38,4 @@
 ..\AdiButtonAuras\libs\AceGUI-3.0-SharedMediaWidgets\widget.xml
 #@end-no-lib-strip@
 
-..\AdiButtonAuras\Config.lua
+..\AdiButtonAuras\config\config.xml
