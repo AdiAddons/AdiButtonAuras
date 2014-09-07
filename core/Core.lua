@@ -22,28 +22,42 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 local addonName, addon = ...
 
 local _G = _G
+local CloseAllWindows = _G.CloseAllWindows
 local CreateFrame = _G.CreateFrame
+local error = _G.error
+local format = _G.format
 local GetAddOnInfo = _G.GetAddOnInfo
 local GetCVarBool = _G.GetCVarBool
+local geterrorhandler = _G.geterrorhandler
 local GetModifiedClick = _G.GetModifiedClick
 local gsub = _G.gsub
 local hooksecurefunc = _G.hooksecurefunc
+local InterfaceOptionsFrame_OpenToCategory = _G.InterfaceOptionsFrame_OpenToCategory
+local InterfaceOptions_AddCategory = _G.InterfaceOptions_AddCategory
+local INTERFACEOPTIONS_ADDONCATEGORIES = _G.INTERFACEOPTIONS_ADDONCATEGORIES
+local ipairs = _G.ipairs
 local IsAddOnLoaded = _G.IsAddOnLoaded
 local IsInGroup = _G.IsInGroup
 local IsInRaid = _G.IsInRaid
+local LoadAddOn = _G.LoadAddOn
 local next = _G.next
 local NUM_ACTIONBAR_BUTTONS = _G.NUM_ACTIONBAR_BUTTONS
 local NUM_PET_ACTION_SLOTS = _G.NUM_PET_ACTION_SLOTS
 local NUM_STANCE_SLOTS = _G.NUM_STANCE_SLOTS
 local pairs = _G.pairs
+local print = _G.print
 local select = _G.select
 local strmatch = _G.strmatch
 local tinsert = _G.tinsert
+local tonumber = _G.tonumber
+local tostring = _G.tostring
+local tremove = _G.tremove
 local type = _G.type
 local UnitExists = _G.UnitExists
 local UnitGUID = _G.UnitGUID
 local UnitIsUnit = _G.UnitIsUnit
 local wipe = _G.wipe
+local xpcall = _G.xpcall
 
 local L = addon.L
 
@@ -212,8 +226,12 @@ local function UpdateHandler(event, button)
 	end
 
 end
+
 local CONFIG_CHANGED = addonName..'_Config_Changed'
 local THEME_CHANGED = addonName..'_Theme_Changed'
+local RULES_UPDATED = addonName..'_Rules_Updated'
+
+addon.RULES_UPDATED = RULES_UPDATED
 addon.CONFIG_CHANGED = CONFIG_CHANGED
 addon.THEME_CHANGED = THEME_CHANGED
 
@@ -300,6 +318,60 @@ function addon:OnProfileChanged()
 	self:SendMessage(CONFIG_CHANGED)
 end
 
+------------------------------------------------------------------------------
+-- Rule loading and updating
+------------------------------------------------------------------------------
+
+local builders
+local initializers = {}
+
+local rules, descriptions = {}, {}
+addon.rules = rules
+addon.descriptions = descriptions
+
+local function errorhandler(msg)
+	addon:Debug('|cffff0000'..tostring(msg)..'|r')
+	return geterrorhandler()(msg)
+end
+
+local function GetBuilders(event)
+	if not builders then
+		addon:Debug('Initializing rules', event)
+		if #initializers == 0 then
+			error("No rules registered !", 2)
+		end
+		local t = {}
+		for i, initializer in ipairs(initializers) do
+			local ok, result = xpcall(initializer, errorhandler)
+			if ok and result then
+				tinsert(t, result)
+			end
+		end
+		builders = addon.AsList(t, "function")
+		addon:Debug(#builders, 'builders found')
+	end
+	return builders
+end
+
+function addon:LibSpellbook_Spells_Changed(event)
+	self:Debug(event)
+	wipe(rules)
+	wipe(descriptions)
+	for _, builder in ipairs(GetBuilders(event)) do
+		xpcall(builder, errorhandler)
+	end
+	self:SendMessage(RULES_UPDATED)
+end
+
+function addon.api:RegisterRules(initializer)
+	tinsert(initializers, addon.Restricted(initializer))
+	if builders then
+		addon:Debug('Rebuilding rules')
+		builders = nil
+		return addon:LibSpellbook_Spells_Changed('RegisterRules')
+	end
+end
+
 function addon:GetActionConfiguration(actionType, actionId)
 	if type(actionType) ~= "string" then return end
 	local key
@@ -310,13 +382,12 @@ function addon:GetActionConfiguration(actionType, actionId)
 		actionId = tonumber(actionId)
 	end
 	if not key then return end
-	local conf = self.spells[key] or (actionType == "item" and self.items[actionId])
-	if conf then
-		return conf, self.db.profile.enabled[key], key, actionType, actionId
+	local rule = rules[key]
+	if rule then
+		return rule, self.db.profile.enabled[key], key, actionType, actionId
 	else
 		return nil, false, key, actionType, actionId
 	end
-
 end
 
 ------------------------------------------------------------------------------

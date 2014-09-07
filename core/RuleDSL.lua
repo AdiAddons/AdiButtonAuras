@@ -61,7 +61,13 @@ local AsSet        = addon.AsSet
 local MergeSets    = addon.MergeSets
 local BuildKey     = addon.BuildKey
 
+local rules        = addon.rules
+local descriptions = addon.descriptions
+
 local LibPlayerSpells = addon.GetLib('LibPlayerSpells-1.0')
+local LibSpellbook = addon.GetLib('LibSpellbook-1.0')
+
+local PLAYER_CLASS = select(2, UnitClass("player"))
 
 -- Local debug with dedicated prefix
 local function Debug(...) return addon.Debug('|cffffff00Rules:|r', ...) end
@@ -69,14 +75,6 @@ local function Debug(...) return addon.Debug('|cffffff00Rules:|r', ...) end
 ------------------------------------------------------------------------------
 -- Rule creation
 ------------------------------------------------------------------------------
-
-local LibSpellbook = addon.GetLib('LibSpellbook-1.0')
-
-local playerClass = select(2, UnitClass("player"))
-local rules = {}
-local ruleDescs = {}
-addon.spells = rules
-addon.ruleDescs = ruleDescs
 
 local function SpellOrItemId(value, callLevel)
 	local spellId = tonumber(type(value) == "string" and strmatch(value, "spell:(%d+)") or value)
@@ -118,7 +116,7 @@ local function _AddRuleFor(key, desc, spell, units, events, handlers, providers,
 	if key then
 		key = id..':'..key
 		desc = gsub(desc or "", "@NAME", name)
-		ruleDescs[key] = ucfirst(desc)
+		descriptions[key] = ucfirst(desc)
 	end
 	Debug("Adding rule for", info,
 		"key:", key,
@@ -130,7 +128,7 @@ local function _AddRuleFor(key, desc, spell, units, events, handlers, providers,
 	)
 	local rule = rules[id]
 	if not rule then
-		rule = { units = {}, events = {}, handlers = {}, keys = {} }
+		rule = { name = name, units = {}, events = {}, handlers = {}, keys = {} }
 		rules[id] = rule
 	end
 	if key then
@@ -240,13 +238,13 @@ end
 local function BuildDesc(filter, highlight, token, spell)
 	local tokens = type(token) == "table" and DescribeAllTokens(unpack(token)) or DescribeAllTokens(token)
 	local spells = type(spell) == "table" and DescribeAllSpells(unpack(spell)) or DescribeAllSpells(spell)
-	return gsub(format(
+	return ucfirst(gsub(format(
 		L["%s when %s %s is found on %s."],
 		DescribeHighlight(highlight),
 		DescribeFilter(filter),
 		spells or "",
 		tokens or "?"
-	), "%s+", " ")
+	), "%s+", " "))
 end
 
 local function DescribeLPSSource(category)
@@ -508,7 +506,7 @@ local baseEnv = {
 	-- Common functions and constatns
 	L            = L,
 	Debug        = Debug,
-	PLAYER_CLASS = select(2, UnitClass("player")),
+	PLAYER_CLASS = PLAYER_CLASS,
 
 	-- Intended to be used un Lua
 	AddRuleFor               = AddRuleFor,
@@ -594,60 +592,6 @@ local RULES_ENV = addon.BuildSafeEnv(
 	}
 )
 
-local function Restricted(func)
+function addon.Restricted(func)
 	return setfenv(func, RULES_ENV)
-end
-addon.Restricted = Restricted
-
-------------------------------------------------------------------------------
--- Rule loading and updating
-------------------------------------------------------------------------------
-
-local builders
-local initializers = {}
-
-local function errorhandler(msg)
-	Debug('|cffff0000'..tostring(msg)..'|r')
-	return geterrorhandler()(msg)
-end
-
-local function GetBuilders(event)
-	if not builders then
-		Debug('Building rules', event)
-		if #initializers == 0 then
-			error("No rules registered !", 2)
-		end
-		local t = {}
-		for i, initializer in ipairs(initializers) do
-			local ok, result = xpcall(initializer, errorhandler)
-			if ok and result then
-				tinsert(t, result)
-			end
-		end
-		builders = AsList(t, "function")
-		Debug(#builders, 'builders found')
-	end
-	return builders
-end
-
-local RULES_UPDATED = addonName..'_Rules_Updated'
-addon.RULES_UPDATED = RULES_UPDATED
-
-function addon:LibSpellbook_Spells_Changed(event)
-	addon:Debug(event)
-	wipe(rules)
-	wipe(ruleDescs)
-	for _, builder in ipairs(GetBuilders(event)) do
-		xpcall(builder, errorhandler)
-	end
-	self:SendMessage(RULES_UPDATED)
-end
-
-function addon.api:RegisterRules(initializer)
-	tinsert(initializers, Restricted(initializer))
-	if builders then
-		Debug('Rebuilding rules')
-		builders = nil
-		return addon:LibSpellbook_Spells_Changed('RegisterRules')
-	end
 end

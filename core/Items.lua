@@ -35,8 +35,7 @@ local LibItemBuffs, LIBVer = addon.GetLib('LibItemBuffs-1.0')
 local BuildKey = addon.BuildKey
 local BuildDesc = addon.BuildDesc
 
-local itemDescs = {}
-addon.itemDescs = itemDescs
+local descriptions = {}
 
 local function GetItemTargetFilterAndHighlight(itemId)
 	if IsHarmfulItem(itemId) then
@@ -78,7 +77,8 @@ local function BuildItemRule(itemId, buffName, ...)
 		units = { [token] = true },
 		events = { UNIT_AURA = true },
 		handlers = {},
-		keys = {}
+		keys = {},
+		name = GetItemInfo(itemId)
 	}
 
 	if ... then
@@ -86,14 +86,14 @@ local function BuildItemRule(itemId, buffName, ...)
 			local buffId = select(i, ...)
 			local key = BuildKey('item', itemId, token, filter, highlight, buffId)
 			local desc = BuildDesc(filter, highlight, token, buffId) .. format(" [LIB-%d-%s]", LIBVer, LibItemBuffs.__databaseVersion)
-			itemDescs[key] = desc
+			descriptions[key] = desc
 			tinsert(rule.keys, key)
 			tinsert(rule.handlers, BuildBuffIdHandler(key, token, filter, highlight, buffId))
 		end
 	elseif buffName then
 		local key = BuildKey('item', itemId, token, filter, highlight, buffName)
 		local desc = BuildDesc(filter, highlight, token, buffName)
-		itemDescs[key] = desc
+		descriptions[key] = desc
 		tinsert(rule.keys, key)
 		tinsert(rule.handlers, BuildBuffIdHandler(key, token, filter, highlight, buffName))
 	end
@@ -101,6 +101,10 @@ local function BuildItemRule(itemId, buffName, ...)
 	return rule
 end
 
-addon.items = addon.Memoize(function(itemId)
-	return BuildItemRule(itemId, GetItemSpell(itemId), LibItemBuffs:GetItemBuffs(itemId))
+local items = addon.Memoize(function(key)
+	local id = tonumber(key:match('^item:(%d+)$'))
+	return id and BuildItemRule(id, GetItemSpell(id), LibItemBuffs:GetItemBuffs(id)) or false
 end)
+
+setmetatable(addon.rules, { __index = items })
+setmetatable(addon.descriptions, {  __index = descriptions })
