@@ -55,4 +55,5 @@ Items.lua
 Overlays.lua
 Display.lua
 
+UserRules.lua
 rules\rules.xml

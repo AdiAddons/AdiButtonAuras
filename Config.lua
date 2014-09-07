@@ -297,6 +297,58 @@ AdiButtonAuras:CreateConfig(function(addonName, addon)
 		profiles.order = -10
 		profiles.disabled = false
 
+		local fullPlayerName = GetUnitName("player", false).. ' - '..GetRealmName()
+		local userRuleHandler = {
+			current = next(addon.db.global.userRules),
+			select = function(self, key)
+				self.current = key
+			end,
+			create = function(self)
+				local key = #addon.db.global.userRules + 1
+				local rule = addon.db.global.userRules[key]
+				rule.title = format(L['User rule #%d'], key)
+				rule.code = ""
+				rule.patch = GetBuildInfo()
+				rule.revision = 0
+				rule.createdBy = fullPlayerName
+				rule.createdAt = time()
+				rule.lastModifiedBy = fullPlayerName
+				rule.lastModifiedAt = time()
+				self:select(key)
+			end,
+			delete = function(self)
+				addon.db.global.userRules[self.current] = nil
+				self:select(nil)
+			end,
+			rule = function(self)
+				return addon.db.global.userRules[self.current]
+			end,
+			get = function(self, property)
+				local rule = self:rule()
+				if not rule then return end
+				return rule[property]
+			end,
+			set = function(self, property, value)
+				local rule = self:rule()
+				if not rule or rule[property] == value then return end
+				if property ~= "enabled" then
+					rule.revision = rule.revision + 1
+					rule.lastModifiedAt = time()
+					rule.lastModifiedBy= fullPlayerName
+					rule.patch = GetBuildInfo()
+				end
+				rule[property] = value
+				return addon:LibSpellbook_Spells_Changed('UserRuleChanged')
+			end,
+			_get = function(self, info)
+				return self:get(info[#info])
+			end,
+			_set = function(self, info, ...)
+				return self:set(info[#info], ...)
+			end,
+		}
+
+
 		local tmpRuleList = {}
 
 		options = {
@@ -583,6 +635,116 @@ AdiButtonAuras:CreateConfig(function(addonName, addon)
 						},
 					},
 				},
+				userRules = {
+					name = L['User Rules'],
+					desc = L['Allow to add user-defined rules using Lua snippets.'],
+					type = 'group',
+					order = 30,
+					args = {
+						selectedRule = {
+							name = L['Selected rule'],
+							type = 'select',
+							order = 10,
+							get = function() return userRuleHandler.current end,
+							set = function(_, key) return userRuleHandler:select(key) end,
+							values = function()
+								local t = {}
+								for key, rule in pairs(addon.db.global.userRules) do
+									local title = rule.title
+									if rule.error then
+										title = title..' |cffff0000('..L['error']..')|r'
+									elseif not rule.enabled then
+										title = title..' |cff7f7f7f('..L['disabled']..')|r'
+									end
+									t[key] = title
+								end
+								return t
+							end,
+						},
+						newRule = {
+							name = L['New rule'],
+							type = 'execute',
+							order = 20,
+							func = function() return userRuleHandler:create() end,
+						},
+						rule = {
+							name = L['Edit rule'],
+							type = 'group',
+							inline = true,
+							order = 30,
+							hidden = function() return not userRuleHandler.current end,
+							handler = userRuleHandler,
+							get = '_get',
+							set = '_set',
+							args = {
+								title = {
+									name = L['Title'],
+									desc = L['The rule title, to be used in spell panel.'],
+									type = 'input',
+									width = 'full',
+									order = 10,
+								},
+								_created = {
+									name = function()
+										return format(
+											L["Created by %s at %s for patch %s"],
+											userRuleHandler:get('createdBy'),
+											date("%x %X", userRuleHandler:get('createdAt')),
+											userRuleHandler:get('patch')
+										)
+									end,
+									type = 'description',
+									order = 11,
+								},
+								_updated = {
+									name = function()
+										return format(
+											L["Last modified by %s at %s, revision #%d"],
+											userRuleHandler:get('lastModifiedBy'),
+											date("%x %X", userRuleHandler:get('lastModifiedAt')),
+											userRuleHandler:get('revision')
+										)
+									end,
+									type = 'description',
+									order = 12,
+								},
+								enabled = {
+									name = L['Enabled'],
+									desc = L['Uncheck to disable this rule globally.'],
+									type = 'toggle',
+									order = 20,
+								},
+								_validation = {
+									name = function()
+										local msg = userRuleHandler:get('error')
+										return msg and ('|cffff0000'..msg..'|r') or 'OK'
+									end,
+									hidden = function()
+										return not userRuleHandler:get('error')
+									end,
+									type = 'description',
+									order = 29,
+								},
+								code = {
+									name = L['Code'],
+									desc = L['The code snippet defining the rule.'],
+									type = 'input',
+									width = 'full',
+									multiline = 15,
+									order = 30,
+								},
+								delete = {
+									name = L['Delete'],
+									type = 'execute',
+									confirm = true,
+									confirmText = L['Do you really want to definitively delete this rule ?'],
+									order = -1,
+									func = 'delete',
+								},
+							},
+						},
+					},
+				},
 				--@debug@
 				debug = {
 					name = 'Debug information',
@@ -612,12 +774,13 @@ AdiButtonAuras:CreateConfig(function(addonName, addon)
 	AceConfig:RegisterOptionsTable(addonName, GetOptions)
 
 	local panels = {
-		main     = AceConfigDialog:AddToBlizOptions(addonName, addonName, nil, "global"),
-		spells   = AceConfigDialog:AddToBlizOptions(addonName, L['Spells & items'], addonName, "spells"),
-		theme    = AceConfigDialog:AddToBlizOptions(addonName, L['Theme'], addonName, "theme"),
-		profiles = AceConfigDialog:AddToBlizOptions(addonName, L['Profiles'], addonName, "profiles"),
+		main      = AceConfigDialog:AddToBlizOptions(addonName, addonName, nil, "global"),
+		spells    = AceConfigDialog:AddToBlizOptions(addonName, L['Spells & items'], addonName, "spells"),
+		theme     = AceConfigDialog:AddToBlizOptions(addonName, L['Theme'], addonName, "theme"),
+		userRules = AceConfigDialog:AddToBlizOptions(addonName, L['User rules'], addonName, "userRules"),
+		profiles  = AceConfigDialog:AddToBlizOptions(addonName, L['Profiles'], addonName, "profiles"),
 		--@debug@
-		debug    = AceConfigDialog:AddToBlizOptions(addonName, "Debug", addonName, "debug"),
+		debug     = AceConfigDialog:AddToBlizOptions(addonName, "Debug", addonName, "debug"),
 		--@end-debug@
 	}
 

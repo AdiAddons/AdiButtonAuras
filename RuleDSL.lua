@@ -48,6 +48,7 @@ local UnitPowerMax = _G.UnitPowerMax
 local unpack = _G.unpack
 local wipe = _G.wipe
 local xpcall = _G.xpcall
+local geterrorhandler = _G.geterrorhandler
 
 local getkeys      = addon.getkeys
 local ucfirst      = addon.ucfirst
@@ -72,9 +73,9 @@ local function Debug(...) return addon.Debug('|cffffff00Rules:|r', ...) end
 local LibSpellbook = addon.GetLib('LibSpellbook-1.0')
 
 local playerClass = select(2, UnitClass("player"))
-local spellConfs = {}
+local rules = {}
 local ruleDescs = {}
-addon.spells = spellConfs
+addon.spells = rules
 addon.ruleDescs = ruleDescs
 
 local function SpellOrItemId(value, callLevel)
@@ -127,10 +128,10 @@ local function _AddRuleFor(key, desc, spell, units, events, handlers, providers,
 		"handlers:", handlers,
 		"providers:", providers and strjoin(",", unpack(providers)) or "-"
 	)
-	local rule = spellConfs[id]
+	local rule = rules[id]
 	if not rule then
 		rule = { units = {}, events = {}, handlers = {}, keys = {} }
-		spellConfs[id] = rule
+		rules[id] = rule
 	end
 	if key then
 		tinsert(rule.keys, key)
@@ -178,14 +179,14 @@ local function Configure(key, desc, spells, units, events, handlers, providers, 
 		error("Empty spell list", callLevel+1)
 	end
 	units, events, handlers, providers = CheckRuleArgs(units, events, handlers, providers, callLevel+1)
-	local rules = {}
+	local builders = {}
 	for i, spell in ipairs(spells) do
 		local spell = spell
-		tinsert(rules, function()
+		tinsert(builders, function()
 			_AddRuleFor(key, desc, spell, units, events, handlers, providers, callLevel+1)
 		end)
 	end
-	return #rules == 1 and rules[1] or rules
+	return #builders == 1 and builders[1] or builders
 end
 
 ------------------------------------------------------------------------------
@@ -451,7 +452,7 @@ do
 
 	function ImportPlayerSpells(filter, ...)
 		local exceptions = AsSet({...}, "number", 3)
-		local rules = {}
+		local builders = {}
 		for buff, flags, provider, modified, _, category in LibPlayerSpells:IterateSpells(filter, "AURA", "RAIDBUFF") do
 			local providers = provider ~= buff and FilterOut(AsList(provider, "number"), exceptions)
 			local spells = FilterOut(AsList(modified, "number"), exceptions)
@@ -477,10 +478,10 @@ do
 				local key = BuildKey('LibPlayerSpell', provider, modified, filter, highlight, token, buff)
 				local desc = BuildDesc(filter, highlight, token, buff).." ["..DescribeLPSSource(category).."]"
 				local handler = BuildAuraHandler_Longest(filter, highlight, token, buff, 3)
-				tinsert(rules, Configure(key, desc, spells, token, "UNIT_AURA", handler, provider, 3))
+				tinsert(builders, Configure(key, desc, spells, token, "UNIT_AURA", handler, provider, 3))
 			end
 		end
-		return (#rules > 1) and rules or rules[1]
+		return (#builders > 1) and builders or builders[1]
 	end
 end
 
@@ -593,30 +594,40 @@ local RULES_ENV = addon.BuildSafeEnv(
 	}
 )
 
+local function Restricted(func)
+	return setfenv(func, RULES_ENV)
+end
+addon.Restricted = Restricted
+
 ------------------------------------------------------------------------------
 -- Rule loading and updating
 ------------------------------------------------------------------------------
 
-local rules
-local ruleBuilders = {}
+local builders
+local initializers = {}
 
-function addon:BuildRules(event)
-	if not rules then
+local function errorhandler(msg)
+	Debug('|cffff0000'..tostring(msg)..'|r')
+	return geterrorhandler()(msg)
+end
+
+local function GetBuilders(event)
+	if not builders then
 		Debug('Building rules', event)
-		if #ruleBuilders == 0 then
+		if #initializers == 0 then
 			error("No rules registered !", 2)
 		end
 		local t = {}
-		for i, builder in ipairs(ruleBuilders) do
-			local ok, funcs = xpcall(builder, errorhandler)
-			if ok and funcs then
-				tinsert(t, funcs)
+		for i, initializer in ipairs(initializers) do
+			local ok, result = xpcall(initializer, errorhandler)
+			if ok and result then
+				tinsert(t, result)
 			end
 		end
-		rules = AsList(t, "function")
-		Debug(#rules, 'rules found')
+		builders = AsList(t, "function")
+		Debug(#builders, 'builders found')
 	end
-	return rules
+	return builders
 end
 
 local RULES_UPDATED = addonName..'_Rules_Updated'
@@ -624,18 +635,19 @@ addon.RULES_UPDATED = RULES_UPDATED
 
 function addon:LibSpellbook_Spells_Changed(event)
 	addon:Debug(event)
-	wipe(spellConfs)
+	wipe(rules)
 	wipe(ruleDescs)
-	Do(self:BuildRules())
+	for _, builder in ipairs(GetBuilders(event)) do
+		xpcall(builder, errorhandler)
+	end
 	self:SendMessage(RULES_UPDATED)
 end
 
-function addon.api:RegisterRules(builder)
-	setfenv(builder, RULES_ENV)
-	tinsert(ruleBuilders, builder)
-	if rules then
+function addon.api:RegisterRules(initializer)
+	tinsert(initializers, Restricted(initializer))
+	if builders then
 		Debug('Rebuilding rules')
-		rules = nil
+		builders = nil
 		return addon:LibSpellbook_Spells_Changed('RegisterRules')
 	end
 end

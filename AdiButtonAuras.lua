@@ -78,7 +78,17 @@ addon.DEFAULT_SETTINGS = {
 		hints = "show",
 		fontSize = 13,
 		highlightTexture = "default",
-	}
+	},
+	global = {
+		userRules = {
+			['**'] = {
+				enabled = true,
+				scope = "ALL",
+				title = "",
+				code = "",
+			}
+		},
+	},
 }
 
 ------------------------------------------------------------------------------

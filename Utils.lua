@@ -161,22 +161,9 @@ function addon.ColorGradient(...)
 	end
 end
 
-local function errorhandler(msg)
-	Debug('|cffff0000'..tostring(msg)..'|r')
-	return geterrorhandler()(msg)
-end
-addon.errorhandler = errorhandler
-
 ------------------------------------------------------------------------------
 -- List & set helpers
 ------------------------------------------------------------------------------
-
-local function Do(funcs)
-	for j, func in ipairs(funcs) do
-		xpcall(func, errorhandler)
-	end
-end
-addon.Do = Do
 
 local function ConcatLists(a, b)
 	for i, v in ipairs(b) do
