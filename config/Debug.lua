@@ -52,66 +52,82 @@ function private.GetDebugOptions(addon, addonName)
 		end
 	end
 
-	local GetVersionInfo
-	do
-		local t = {}
-		local p = function(...) tinsert(t, strjoin(" ", tostringall(...))) end
-		function GetVersionInfo()
-			wipe(t)
+	local t = {}
+	local p = function(...) tinsert(t, strjoin(" ", tostringall(...))) end
 
-			p("\nVersion", "|cffffffff"..tostring(GetAddOnMetadata(addonName, "Version")).."|r")
+	local function GetMainDebug()
+		p("\nVersion", "|cffffffff"..tostring(GetAddOnMetadata(addonName, "Version")).."|r")
 
-			p("\nLibraries:")
-			for major, minor in pairs(addon.libraries) do
-				if minor then
-					p("- "..major..": |cffffffff"..tostring(minor).."|r")
-				else
-					p("- "..major..": |cffff0000NOT FOUND|r")
-				end
+		local errorHandler
+		if addon.BugGrabber then
+			errorHandler = 'Embedded BugGrabber'
+			p("\nError grabber:", "|cffffffff", errorHandler, "|r")
+		elseif IsAddOnLoaded("!BugGrabber") or _G.BugGrabber then
+			errorHandler = "BugGrabber"
+		elseif IsAddOnLoaded("!Swatter") or _G.Swatter then
+			errorHandler = "Swatter"
+		elseif IsAddOnLoaded("!ImprovedErrorFrame") then
+			errorHandler = "ImprovedErrorFrame"
+		elseif GetCVarBool('scriptErrors') then
+			errorHandler = "Blizzard Lua display"
+		end
+		p("\nError handler:", errorHandler and ("|cffffffff"..errorHandler.."|r") or "|cffff0000NONE|r")
+	end
+
+	local function GetLibraryVersions()
+		for major, minor in pairs(addon.libraries) do
+			if minor then
+				p("- "..major..": |cffffffff"..tostring(minor).."|r")
+			else
+				p("- "..major..": |cffff0000NOT FOUND|r")
 			end
-
-			local bugGrabber
-			if addon.BugGrabber then
-				bugGrabber = 'Embedded BugGrabber'
-				p("\nError grabber:", "|cffffffff", bugGrabber, "|r")
-			elseif IsAddOnLoaded("!BugGrabber") or _G.BugGrabber then
-				bugGrabber = "BugGrabber"
-			elseif IsAddOnLoaded("!Swatter") or _G.Swatter then
-				bugGrabber = "Swatter"
-			elseif IsAddOnLoaded("!ImprovedErrorFrame") then
-				bugGrabber = "ImprovedErrorFrame"
-			elseif GetCVarBool('scriptErrors') then
-				bugGrabber = "Blizzard Lua display"
-			end
-			p("\nError handler:", bugGrabber and ("|cffffffff"..bugGrabber.."|r") or "|cffff0000NONE|r")
-
-			p("\nLibPlayerSpells-1.0 database versions:")
-			local lps = LibStub('LibPlayerSpells-1.0')
-			for cat in lps:IterateCategories() do
-				local _, patch, rev = lps:GetVersionInfo(cat)
-				local maj, min = floor(patch/10000), floor(patch/100) % 100
-				p(format("- %s: %d.%d, v%d", _G[cat] or cat, maj, min, rev))
-			end
-
-			p("\nConfigured spells (spells that are both in your spellbook and", addonName, "rules:")
-
-			p("|cffffffff", strjoin(", ", IdToLink(addon.getkeys(addon.rules))), "|r")
-
-			return tconcat(t, "\n")
 		end
 	end
 
+	local function GetLPS()
+		local lps = LibStub('LibPlayerSpells-1.0')
+		for cat in lps:IterateCategories() do
+			local _, patch, rev = lps:GetVersionInfo(cat)
+			local maj, min = floor(patch/10000), floor(patch/100) % 100
+			p(format("- %s: %d.%d, v%d", _G[cat] or cat, maj, min, rev))
+		end
+	end
+
+	local function GetKnownSpells()
+		p("\nConfigured spells (spells that are both in your spellbook and", addonName, "rules:")
+		p("|cffffffff", strjoin("\n", IdToLink(addon.getkeys(addon.rules))), "|r")
+	end
+
+	local function CreatePanel(name, order, func)
+		return {
+			name = name,
+			type = "group",
+			order = order,
+			args = {
+				text = {
+					name = function()
+						wipe(t)
+						func()
+						return tconcat(t, "\n")
+					end,
+					type = "description",
+					width = 'full',
+					fontSize = 'medium',
+				},
+			}
+		}
+	end
+
 	return {
-		name = 'Debug information',
+		name = 'Debug',
 		type = 'group',
 		order = -1,
+		childGroups  = 'tab',
 		args = {
-			_text = {
-				name = GetVersionInfo,
-				type = "description",
-				width = 'full',
-				fontSize = 'medium',
-			},
+			general   = CreatePanel('General', 10, GetMainDebug),
+			libraries = CreatePanel('Libraries', 20, GetLibraryVersions),
+			lps       = CreatePanel('LibPlayerSpells-1.0', 30, GetLPS),
+			spells    = CreatePanel('Spells', 40, GetKnownSpells),
 		},
 	}
 
