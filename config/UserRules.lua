@@ -21,6 +21,41 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 
 local _, private = ...
 
+local SAMPLE_RULE = [===[
+-- Sample rule using Configure
+-- See https://github.com/Adirelle/AdiButtonAuras/blob/master/doc/Rules.textile for more details
+
+return Configure {
+
+    -- Unique Id
+    "SoulReaper",
+
+    -- Description
+    "Shows Hint when target is below 35% health.",
+
+    -- Spells to modify
+    {
+        114866, -- Soul Reaper (Blood)
+        130735, -- Soul Reaper (Frost)
+        130736, -- Soul Reaper (Unholly)
+    },
+
+    -- Unit(s) to watch
+    "enemy",
+
+    -- Event(s) to watch
+    { "UNIT_HEALTH", "UNIT_HEALTH_MAX" },
+
+    -- Callback
+    function(units, model)
+        if UnitHealth(units.enemy) / UnitHealthMax(units.enemy) < 0.35 then
+            model.hint = true
+        end
+    end
+
+	}
+]===]
+
 function private.GetUserRulesOptions(addon, addonName)
 
 	local _G = _G
@@ -43,102 +78,118 @@ function private.GetUserRulesOptions(addon, addonName)
 	ADDON_VERSION = 'dev'
 	--@end-debug@
 
-	local userRuleHandler = {
-		current = next(addon.db.global.userRules),
-		select = function(self, key)
-			self.current = key
-		end,
-		create = function(self)
-			local key = #addon.db.global.userRules + 1
-			local rule = addon.db.global.userRules[key]
-			rule.title = format(L['User rule #%d'], key)
-			rule.code = ""
-			rule.revision = 0
-			rule.created = self:GetHistoryPoint()
-			self:select(key)
-		end,
-		delete = function(self)
-			addon.db.global.userRules[self.current] = nil
-			self:select(nil)
-		end,
-		rule = function(self)
-			return addon.db.global.userRules[self.current]
-		end,
-		get = function(self, property)
-			local rule = self:rule()
-			if not rule then return end
-			return rule[property]
-		end,
-		set = function(self, property, value)
-			local rule = self:rule()
-			if not rule or rule[property] == value then return end
-			if property ~= "enabled" then
-				rule.revision = rule.revision + 1
-				rule.updated = self:GetHistoryPoint()
-			end
-			rule[property] = value
-			return addon:LibSpellbook_Spells_Changed('UserRuleChanged')
-		end,
-		_get = function(self, info)
-			return self:get(info[#info])
-		end,
-		_set = function(self, info, ...)
-			return self:set(info[#info], ...)
-		end,
-		GetHistoryPoint = function()
-			return { PLAYER_NAME, time(), PATCH_NUMBER, ADDON_VERSION }
-		end,
-		FormatHistoryPoint = function(self, property)
-			local point = self:get(property)
-			if type(point) ~= "table" then return "???" end
-			local name, timestamp, patch, addonVersion = unpack(point)
-			return format(L["%s, %s, patch %s, v.%s"], name, date("%Y-%m-%d %H:%M", timestamp), patch, addonVersion)
-		end,
+	local handler = {
+		current = next(addon.db.global.userRules)
 	}
 
-	local tmpRuleList = {}
+	function handler:Select(key)
+		self.current = key
+	end
+
+	function handler:GetSelected()
+		return self.current
+	end
+
+	function handler:HasNotSelection()
+		return self.current == nil
+	end
+
+	function handler:Create()
+		local key = #addon.db.global.userRules + 1
+		local rule = addon.db.global.userRules[key]
+		rule.title = format(L['User rule #%d'], key)
+		rule.code = SAMPLE_RULE
+		rule.revision = 0
+		rule.created = self:GetHistoryPoint()
+		self:Select(key)
+	end
+
+	function handler:Delete()
+		addon.db.global.userRules[self.current] = nil
+		self:Select(next(addon.db.global.userRules))
+	end
+
+	function handler:Rule()
+		return addon.db.global.userRules[self.current]
+	end
+
+	function handler:Get(property)
+		local rule = self:Rule()
+		if not rule then return end
+		return rule[property]
+	end
+
+	function handler:Set(property, value)
+		local rule = self:Rule()
+		if not rule or rule[property] == value then return end
+		if property ~= "enabled" then
+			rule.revision = rule.revision + 1
+			rule.updated = self:GetHistoryPoint()
+		end
+		rule[property] = value
+		return addon:LibSpellbook_Spells_Changed('UserRuleChanged')
+	end
+
+	function handler:GetHistoryPoint()
+		return { PLAYER_NAME, time(), PATCH_NUMBER, ADDON_VERSION }
+	end
+
+	function handler:FormatHistoryPoint(property)
+		local point = self:Get(property)
+		if type(point) ~= "table" then return "???" end
+		local name, timestamp, patch, addonVersion = unpack(point)
+		return format(L["%s, %s, patch %s, v.%s"], name, date("%Y-%m-%d %H:%M", timestamp), patch, addonVersion)
+	end
+
+	local t = {}
+	function handler:GetRuleList()
+		wipe(t)
+		for key, rule in pairs(addon.db.global.userRules) do
+			local title = rule.title
+			if rule.error then
+				title = title..' |cffff0000('..L['error']..')|r'
+			elseif not rule.enabled then
+				title = title..' |cff7f7f7f('..L['disabled']..')|r'
+			end
+			t[key] = title
+		end
+		return t
+	end
+
+	function handler:HasNoRules()
+		return not next(addon.db.global.userRules)
+	end
 
 	return {
 		name = L['User Rules'],
 		desc = L['Allow to add user-defined rules using Lua snippets.'],
 		type = 'group',
 		order = 30,
+		handler = handler,
 		args = {
 			selectedRule = {
 				name = L['Selected rule'],
 				type = 'select',
 				order = 10,
-				get = function() return userRuleHandler.current end,
-				set = function(_, key) return userRuleHandler:select(key) end,
-				values = function()
-					wipe(tmpRuleList)
-					for key, rule in pairs(addon.db.global.userRules) do
-						local title = rule.title
-						if rule.error then
-							title = title..' |cffff0000('..L['error']..')|r'
-						elseif not rule.enabled then
-							title = title..' |cff7f7f7f('..L['disabled']..')|r'
-						end
-						tmpRuleList[key] = title
-					end
-					return tmpRuleList
-				end,
+				get = 'GetSelected',
+				set = function(_, key) return handler:Select(key) end,
+				values = 'GetRuleList',
+				hidden = 'HasNoRules',
 			},
 			newRule = {
 				name = L['New rule'],
 				type = 'execute',
 				order = 20,
-				func = function() return userRuleHandler:create() end,
+				func = 'Create',
 			},
 			rule = {
 				name = L['Edit rule'],
 				type = 'group',
 				inline = true,
 				order = 30,
-				hidden = function() return not userRuleHandler.current end,
-				handler = userRuleHandler,
-				get = '_get',
-				set = '_set',
+				hidden = 'HasNotSelection',
+				get = function(info) return handler:Get(info[#info]) end,
+				set = function(info, ...) return handler:Set(info[#info], ...) end,
 				args = {
 					title = {
 						name = L['Title'],
@@ -149,25 +200,25 @@ function private.GetUserRulesOptions(addon, addonName)
 					},
 					created = {
 						name = function()
-							return format(L["Created by %s"], userRuleHandler:FormatHistoryPoint('created'))
+							return format(L["Created by %s"], handler:FormatHistoryPoint('created'))
 						end,
 						type = 'description',
 						order = 11,
 						fontSize = 'medium',
-						hidden = function() return type(userRuleHandler:get('created')) ~= 'table' end,
+						hidden = function() return type(handler:Get('created')) ~= 'table' end,
 					},
 					updated = {
 						name = function()
 							return format(
 								L["Updated by %s, revision #%d"],
-								userRuleHandler:FormatHistoryPoint('updated'),
-								userRuleHandler:get('revision')
+								handler:FormatHistoryPoint('updated'),
+								handler:Get('revision')
 							)
 						end,
 						type = 'description',
 						order = 12,
 						fontSize = 'medium',
-						hidden = function() return type(userRuleHandler:get('updated')) ~= 'table' end,
+						hidden = function() return type(handler:Get('updated')) ~= 'table' end,
 					},
 					enabled = {
 						name = L['Enabled'],
@@ -177,12 +228,12 @@ function private.GetUserRulesOptions(addon, addonName)
 					},
 					_validation = {
 						name = function()
-							local msg = userRuleHandler:get('error')
+							local msg = handler:Get('error')
 							return msg and ('|cffff0000Error '..msg:gsub('^[^:]+:(%d+:)', 'line %1')..'|r') or 'OK'
 						end,
 						type = 'description',
 						hidden = function()
-							return not userRuleHandler:get('error')
+							return not handler:Get('error')
 						end,
 						width = 'full',
 						order = 29,
@@ -202,7 +253,7 @@ function private.GetUserRulesOptions(addon, addonName)
 						confirm = true,
 						confirmText = L['Do you really want to definitively delete this rule ?'],
 						order = -1,
-						func = 'delete',
+						func = 'Delete',
 					},
 				},
 			},
