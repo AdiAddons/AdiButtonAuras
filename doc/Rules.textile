@@ -59,3 +59,74 @@ The handlers are functions called to refresh the data. Their signature is @funct
 * @.highlight@: an effect to apply to the button, amongst @"good"@ (green border), @"bad"@ (red border), @"flash"@ (glowing animation). Any other value means "no highlight".
 
 In several handlers, possibly from from differents rules, apply to the same spell, they are called in order of definition. Latter handlers could see the results of previous ones in @model@. No assumptions is made about how they handle existing values. Most of the time they just overwrite them.
+
+h2. Restricted Lua environment
+
+The rule-defining functions only have access to a restricted set of WoW API functions. There are all "read-only" functions. The exact list of allowed functions are availabe in "RuleDSL.lua":../RuleDSL.lua#L580.
+
+However, a set of addtionnal functions are available to help writing the rules.
+
+A set of helpers is available to create new rules for minimum efforts, see "RulesRef.md":RulesRef.md.
+
+The other constants and functions are useful only if you have to write your own customized rules using "RulesRef.md":RulesRef.md#Configure.
+
+h3. Constants
+
+- @L@ := the localization table, e.g. @L["flash]"@
+- @PLAYER_CLASS@ := english class name of the player.
+
+h3. Functions
+
+h4. Debug(...)
+
+h4. DescribeHighlight(highlight)
+
+Returns a localized description of highlight.
+
+e.g. DescribeHighlight("good") => "show the "good" border"
+
+h4. DescribeFilter(filter)
+
+Returns a localized description of UnitAura filter.
+
+e.g. DescribeFilter("HELPFUL PLAYER") => "your buff" (assuming an english client)
+
+h4. DescribeAllTokens(unit1, ..., unitN)
+
+Returns a localized description of the unit ids.
+
+e.g. DescribeAllTokens('player', 'pet') => "yourself", "your pet" (assuming an english client)
+
+h4. DescribeAllSpells(spellId1, ..., spellId2)
+
+Returns the localized names of the spells.
+
+h4. DescribeLPSSource(category)
+
+Returns a source tag for LibPlayerSpell-1.0 category, including patch number and data revision.
+
+h4. BuildDesc(filter, highlight, tokens, spells)
+
+Returns a localized description using the given arguments.
+
+h4. BuildKey(...)
+
+Returns a string suitable as the key argument of Configure.
+
+h4. BuildAuraHandler_Single(filter, highlight, unit, buff)
+
+Returns a function suitable as rule handler, that will @highlight@ the button if @buff@ is found on @unit@, restricted by @filter@.
+
+This function returns @true@ if @buff@ has been found.
+
+h4. BuildAuraHandler_Longest(filter, highlight, unit, buffs)
+
+Returns a function suitable as rule handler, that will @highlight@ the button with the longest of @buffs@ found on @unit@ restricted by @filter@.
+
+This function returns @true@ if one of @buffs@ has been found.
+
+h4. BuildAuraHandler_FirstOf(filter, highlight, unit, buffs)
+
+Returns a function suitable as rule handler, that will @highlight@ the button with the first of @buffs@ found on @unit@ restricted by @filter@.
+
+This function returns @true@ if one of @buffs@ ahs been found.

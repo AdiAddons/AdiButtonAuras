@@ -17,80 +17,81 @@
   1. [Configure](#Configure)
 
 ### General Format:
+<a name="general-format"></a>
 `RuleName { arg1, arg2, ..., argN }`
 * `arg#` - required argument (_type_)
 * (`arg#`) - optional argument (_type_)
 
 ### Specific Rules:
 <a name="ImportPlayerSpells"></a>
-**`ImportPlayerSpells { arg1, arg2, ..., argN }`**
->Imports the spells for the specified class from LibPlayerSpells and builds the rules for them
-* `arg1` - english class name of the class to be imported (_string_)
-* `arg2` ... `argN` - spell ids to be excluded from the import, so that the rules for them can be defined in AdiButtonAuras (_number_)
+**`ImportPlayerSpells { class, excludeSpell1, ..., excludeSpellN }`**
+>Imports the spells for the specified class from LibPlayerSpells and builds the rules for them.
+* `class` - english class name of the class to be imported (_string_)
+* `excludeSpell1` ... `excludeSpellN` - spell ids to be excluded from the import, so that the rules for them can be defined in AdiButtonAuras (_number_)
 
 ***
 
 <a name="SimpleBuffs"></a>
-**`SimpleBuffs { arg1, ..., argN }`**
->List of buffs cast by the player on any ally
-* `arg1` ... `argN` - buff id (_number_)  
+**`SimpleBuffs { buff1, ..., buffN }`**
+>List of buffs cast by the player on any ally.
+* `buff1` ... `buffN` - buff id (_number_)  
     The provider spell ids are the same as the buff ids.
 
 ***
 
 <a name="SimpleDebuffs"></a>
-**`SimpleDebuffs { arg1, ..., argN }`**
->List of debuffs cast by the player on any enemy
-* `arg1` ... `argN` - debuff id (_number_)  
+**`SimpleDebuffs { debuff1, ..., debuffN }`**
+>List of debuffs cast by the player on any enemy.
+* `debuff1` ... `debuffN` - debuff id (_number_)  
     The provider spell ids are the same as the debuff ids.
 
 ***
 
 <a name="SharedSimpleBuffs"></a>
-**`SharedSimpleBuffs { arg1, ..., argN }`**
+**`SharedSimpleBuffs { buff1, ..., buffN }`**
 >List of buffs cast by anyone on any ally, where only one of that kind is possible (i.e. Soulstone)
-* `arg1` ... `argN` - buff id (_number_)  
+* `buff1` ... `buffN` - buff id (_number_)  
     The provider spell ids are the same as the buff ids.
 
 ***
 
 <a name="SharedSimpleDebuffs"></a>
-**`SharedSimpleDebuffs { arg1, ..., argN }`**
+**`SharedSimpleDebuffs { debuff1, ..., debuffN }`**
 >List of debuffs cast by anyone on any enemy, where only one of that kind is possible (i.e. Hunter's Mark)
-* `arg1` ... `argN` - debuff id (_number_)  
+* `debuff1` ... `debuffN` - debuff id (_number_)  
     The provider spell ids are the same as the debuff ids.
 
 ***
 
 <a name="SelfBuffs"></a>
-**`SelfBuffs { arg1, ..., argN }`**
+**`SelfBuffs { buff1, ..., buffN }`**
 >List of buffs cast by the player on the player
-* `arg1` ... `argN` - buff id (_number_)  
+* `buff1` ... `buffN` - buff id (_number_)  
     The provider spell ids are the same as the buff ids.
 
 ***
 
 <a name="PetBuffs"></a>
-**`PetBuffs { arg1, ..., argN }`**
+**`PetBuffs { buff1, ..., buffN }`**
 >List of buffs cast by the player on his/her pet
-* `arg1` ... `argN` - buff id (_number_)  
+* `buff1` ... `buffN` - buff id (_number_)  
     The provider spell ids are the same as the buff ids.
 
 ***
 
 <a name="BuffAliases"></a>
-**`BuffAliases { arg1, arg2 }`**
->Maps the buff in `arg2` to the spells in `arg1` so that it's duration is shown on them
-* `arg1` - spell id (_number_ or _table_)
-* `arg2` - buff id (_number_)
+**`BuffAliases { spells, buffs }`**
+>Show any of player's `buffs` on all of `spells`.
+* `spells` - spell id (_number_ or _table_)
+* `buffs` - buff id (_number_ or _table_)
 
 ***
 
 <a name="DebuffAliases"></a>
-**`DebuffAliases { arg1, arg2 }`**
->Maps the debuff in `arg2` to the spells in `arg1` so that it's duration is shown on them
-* `arg1` - spell id (_number_ or _table_)
-* `arg2` - debuff id (_number_)
+**`DebuffAliases { spells, debuff }`**
+>Show any of player's `debuffs` on all of `spells`.
+* `spells` - spell id (_number_ or _table_)
+* `debuffs` - debuff id (_number_ or _table_)
 
 >Example:
 ```
@@ -107,50 +108,50 @@ DebuffAliases {
 ***
 
 <a name="SelfBuffAliases"></a>
-**`SelfBuffAliases { arg1, arg2 }`**
->Maps the buff in `arg2` to the spells in `arg1` so that it's duration is shown on them.
-* `arg1` - spell id (_number_)
-* `arg2` - buff id (_number_)
+**`SelfBuffAliases { spells, buffs }`**
+>Show any of player's `buffs` on the player on all of `spells`.
+* `spells` - spell id (_number_ or _table_)
+* `buffs` - buff id (_number_ or _table_)
 
 ***
 
 <a name="LongestDebuffOf"></a>
-**`LongestDebuffOf { arg1, arg2 }`**
->Displays the duration of the longest debuff in `arg2` on the spells in `arg1`.
-* `arg1` - spell id (_number_ or _table_)
-* `arg2` - buff id (_number_ or _table_)
+**`LongestDebuffOf { spells, buffs }`**
+>Show the longuest of player's `buffs` on all of `spells`.
+* `spells` - spell id (_number_ or _table_)
+* `buffs` - buff id (_number_ or _table_)
 
 ***
 
 <a name="PassiveModifier"></a>
-**`PassiveModifier { arg1, arg2, arg3, arg4, arg5 }`**
->Maps the buff in `arg3` if applied to the unit in `arg4` to the spell(s) in `arg2` if the spell in `arg1` is known by the player.
-* `arg1` - passive spell id (_number_)
-* `arg2` - spell id (_number_ or _table_)
-* `arg3` - buff id (_number_)
-* (`arg4`) - unit id (_string_)  
+**`PassiveModifier { passive, spell, buff, unit, highlight }`**
+>If `passive` is in player spellbook, highlight `spell` with `highlight` when `buff` is found on `unit`.
+* `passive` - passive spell id (_number_)
+* `spell` - spell id (_number_ or _table_)
+* `buff` - buff id (_number_)
+* (`unit`) - [unit id](#unit-id) (_string_)  
     default value: "player"
-* (`arg5`) - [highlight type](#highlight-type) (_string_)  
+* (`highlight`) - [highlight type](#highlight-type) (_string_)  
     default value: "good"
 
 ***
 
 <a name="ShowPower"></a>
-**`ShowPower { arg1, arg2, arg3, arg4, arg5 }`**
->Display power on the specified spell (i.e. number of Soul shard
-* `arg1` - spell id of spells on which to display the power value (_number_ or _table_)
-* `arg2` - power type (_string_)  
+**`ShowPower { spells, power, handlerOrThreshold, highlight, description }`**
+>Display power on the specified spell (i.e. number of Soul shard).
+* `spells` - spell id of spells on which to display the power value (_number_ or _table_)
+* `power` - power type (_string_)  
     One of the possible suffixes of `SPELL_POWER_` (i.e. "ENERGY")
-* (`arg3`) - handler (_function_ or _number_)
+* (`handlerOrThreshold`) - handler (_function_ or _number_)
     - if a _number_ is provided, it is interpreted as follow :
         - numbers in the [-1.0;1.0] range indicate a fraction of the maximum, e.g. 0.5 for 50%, else they are taken as is.
         - positive numbers indicates a minimum threshold, e.g. 50 triggers when the power is equal or greater than 50.
         - negative numbers indicates a maximum threshold, e.g. -50 triggers when the power is equal or less than 50.
     - default value: a _function_ that displays the current power value and highlights when it reaches it's maximum
-* (`arg4`) - [highlight type](#highlight-type) (_string_)  
+* (`highlight`) - [highlight type](#highlight-type) (_string_)  
     default value: "flash"
-* (`arg5`) - description for the config panel (_string_)  
-    default value: nothing if the user supplied a _function_ in `arg3`, else a meaningful description
+* (`description`) - description for the option panel (_string_)  
+    default value: nothing if the user supplied a _function_ in `handlerOrThreshold`, else a dmeaningful description
 
 >Example:
 ```
@@ -166,15 +167,16 @@ ShowPower {
 ***
 
 <a name="Configure"></a>
-**`Configure { arg1, arg2, arg3, arg4, arg5, arg6, arg7 }`**
->All of the above are shorthands for this
-* `arg1` - unique name (_string_)
-* `arg2` - description for the options panel (_string_)
-* `arg3` - spell id(s) (_number_ or _table_)
-* `arg4` - unit id(s) (_string_ or _table_)
-* `arg5` - event(s) (_string_ or _table_)
-* `arg6` - handler (_function_ or _table_)
-* (`arg7`) - provider spell id (_number_ or _table_)
+**`Configure { key, description, spells, units, events, handlers, providers }`**
+>This allows to create a highly customized rule, that affects `spells`, if any of `providers` is in the player spellbook.
+* `key` - unique string, used to disable the rule (_string_)
+* `description` - description for the option panel (_string_)
+* `spells` - spell id(s) (_number_ or _table_)
+* `units` - [unit id(s)](#unit-id) (_string_ or _table_)
+* `events` - event(s) (_string_ or _table_)
+* `handlers` -  handler (_function_ or a _table_ of _functions_)
+* (`providers`) - provider spell id (_number_ or _table_)
+	default value: `spells`
 
 ***
 
@@ -182,8 +184,15 @@ ShowPower {
 <a name="highlight-type"></a>
 **highlight type**
 >One of the following:
-* "flash" (active overlay)
-* "good" (green border)
-* "bad" (red border)
-* "darken" (darker border)
-* "lighten" (lighter border)
+* `"flash"` (active overlay)
+* `"good"` (green border)
+* `"bad"` (red border)
+* `"darken"` (darker border)
+* `"lighten"` (lighter border)
+
+<a name="unit-id"></a>
+**unit id**
+>One of the following:
+* one of the [standard unit ids](http://wowpedia.org/World_of_Warcraft_API_Unit_IDs): player, target, pet, focus, raid1, ...
+* `"ally"` dynamically-resolved ally, depending on button macros, modifier keys, and auto-targetting settings.
+* `"enemy"` dynamically-resolved enemy, depending on button macros, modifier keys, and auto-targetting settings.
