@@ -227,10 +227,13 @@ eventFrame:RegisterEvent('PLAYER_REGEN_ENABLED')
 ------------------------------------------------------------------------------
 
 local function auraIterator(auras, index)
-	local nextIndex, aura = next(auras, index)
-	if nextIndex then
-		return nextIndex, aura.id, aura.count, aura.expiration
-	end
+	local nextIndex, aura
+	repeat
+		nextIndex, aura = next(auras, index)
+		if type(nextIndex) == "number" then
+			return nextIndex, aura.id, aura.count, aura.expiration
+		end
+	until not nextIndex
 end
 local function NOP() end
 
