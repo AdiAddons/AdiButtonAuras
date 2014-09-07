@@ -47,10 +47,10 @@ AdiButtonAuras:RegisterRules(function()
 				130735, -- Soul Reaper (Frost)
 				130736, -- Soul Reaper (Unholly)
 			}, 
-			"target",
+			"enemy",
 			{ "UNIT_HEALTH", "UNIT_HEALTH_MAX" },
-			function(_, model)
-				if UnitHealth("target") / UnitHealthMax("target") < 0.35 then
+			function(units, model)
+				if UnitHealth(units.enemy) / UnitHealthMax(units.enemy) < 0.35 then
 					model.hint = true
 				end
 			end,
