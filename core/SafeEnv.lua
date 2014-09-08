@@ -70,6 +70,11 @@ function addon.BuildSafeEnv(baseEnv, allowedLibraries, allowedGlobals)
 		return addon.GetLib(major)
 	end
 
+	baseEnv.SafeGetGlobal = function(name)
+		local value = _G[name]
+		return isSafe(value) and value or nil
+	end
+
 	for i, name in pairs(allowedGlobals) do
 		baseEnv[name] = _G[name]
 	end
