@@ -2,7 +2,7 @@ h1. AdiButtonAuras
 
 Display auras, and more, on action buttons.
 
-AdiButtonAuras is a rewrite of Inline Aura, but with different design decisions based on my experience on the latter.
+AdiButtonAuras is a rewrite of Inline Aura, but with different "design decisions":https://github.com/Adirelle/AdiButtonAuras/blob/master/doc/Design.textile based on my experience on the latter.
 
 AdiButtonAuras uses a set of rules that apply to one or more spells. Each rule can track an aura on one or more unit and changes the display of the spell accordingly.
 
@@ -17,16 +17,20 @@ h3. Global options
 * do not show flashing border for actions on cooldown (do not affect Blizzard flash),
 * do not show flashing border for actions out of combat (do not affect Blizzard flash),
 * select how suggestions are displayed (hidden, rotary star or flashing border),
-* change the colors of "good" and "bad" borders,
-* tweak the format of the countdown text,
-* change colors of the countdown text.
+* customizable texts: font, format, size and colors.
+* change the colors of "good" and "bad" highlights,
+* select the highlight amongst 10 textures,
 
 h3. Spell/item options
 
 * disable the spell,
-* "promote to flash": replace any border with the flashing animation,
+* "promote to flash": replace any highlight with the flashing border animation,
 * inverted highlight: highlight the spell when it is missing,
 * select which rules should apply.
+
+h3. User-defined rules
+
+AdiButtonAuras allows you to enter and save your own rules, with full access to "its API":https://github.com/Adirelle/AdiButtonAuras/blob/master/doc/Rules.textile. Easy sharing of those rules is planned.
 
 h2. Supported classes and specializations
 
@@ -39,50 +43,6 @@ Most of the simple buffs are supported through the librarires:
 Special cases and hints are handled using customized rules, see below.
 
 There is also a default rule for *items* not supported by LibItemBuffs-1.0.
-
-h2. Design decisions
-
-h3. Separate button overlays
-
-A separate button overlay is created for each button, with border texture, texts and glowing animation.
-
-*Pro*: avoid tainting the action buttons, which could cause ADDON_BLOCKED errors. This also reduces complexity, i.e. possibility of bugs.
-
-*Con*: this does not support skinning (Masque) or custom third-party action buttons (ElvUI). However, AdiButtonAuras fully support Dominos and Bartender4, and should support any addon using the stock action buttons (like Dominos) or LibActionButton-1.0 (like Bartender4).
-
-h3. Hard-coded rules
-
-The rules are hard-coded using a pretty simple "Domain Specific Language":https://en.wikipedia.org/wiki/Domain_specific_language built on top of Lua.
-
-Each rules specifies the spells to modify, the units and events to watch and one or more handlers. Several rules about the same spell are merged together, or thrown if the character doesn't know the spell.
-
-Each time one of the event is triggered for one of the unit, the handlers are called to update the state of the associated button.
-
-A set of convenient functions are provided to easily configure most spells. If a more specific task is needed, Lua can be used (see interrupt spells).
-
-*Pro*: far more powerful than the Inline Aura engine. This allows to show data from one unit merged with the stat of another one, if need be.
-
-*Con*: there is no way to configure this using a GUI.
-
-h3. No spell auto-discovery
-
-AdiButtonAuras only shows data for existing rules. It does not try to guess what to show.
-
-*Pro*: avoid showing wrong data.
-
-*Con*: all spells for all class should be listed.
-
-h3. Using spell ids instead of spell names
-
-AdiButtonAuras uses the spell numerical identifiers, instead of its name, to search for the applicable rules.
-
-*Pro*: avoid showing information on a wrong spell that as the same name as the intended one.
-
-*Con*: spells ids are sometimes different depending on shapeshift forms, glyphs or talents. All of them should be listed.
-
-h2. Embedded BugGrabber
-
-"BugGrabber":http://www.curse.com/addons/wow/bug-grabber is shipped with AdiButtonAuras. You can install "BugSack":http://www.curse.com/addons/wow/bugsack to have a more user-friendly display of errors.
 
 h2. FAQ
 
