@@ -52,12 +52,15 @@ local initialLoading = true
 local function BuildUserRules()
 	Debug('Compiling rules')
 	local rules = {}
+	local ph = getprinthandler()
 	for key, rule in pairs(addon.db.global.userRules) do
 		local err = nil
 		if rule.enabled and isClass(rule.scope) then
-			local builder, msg = CompileUserRule(rule.code, rule.title)
+			local builder, msg = CompileUserRule(rule.code)
 			if builder then
+				setprinthandler(function(...) ph(format('[%s "%s"]:', addonName, rule.title), ...) end)
 				local ok, result = pcall(builder, errorhandler)
+				setprinthandler(ph)
 				if ok and result then
 					tinsert(rules, result)
 				else
