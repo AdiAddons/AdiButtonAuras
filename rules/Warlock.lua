@@ -55,7 +55,7 @@ AdiButtonAuras:RegisterRules(function()
 			"UNIT_AURA",
 			function(_, model)
 				local found, count = GetPlayerBuff("player", 117828)
-				if name and count >= 3 then
+				if found and count >= 3 then
 					model.highlight = "good"
 				end
 			end,
