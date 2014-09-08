@@ -390,6 +390,13 @@ function addon:GetActionConfiguration(actionType, actionId)
 	end
 end
 
+function addon.isClass(class)
+	return class == 'ALL' or class == select(2, UnitClass("player"))
+	--@debug@
+		or true
+	--@end-debug@
+end
+
 ------------------------------------------------------------------------------
 -- Handle load-on-demand configuration
 ------------------------------------------------------------------------------

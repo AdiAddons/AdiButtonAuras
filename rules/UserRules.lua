@@ -31,6 +31,7 @@ local tostring = _G.tostring
 local xpcall = _G.xpcall
 
 local Restricted = addon.Restricted
+local isClass = addon.isClass
 
 local function Debug(...) return addon.Debug('User rules', ...) end
 
@@ -53,7 +54,7 @@ local function BuildUserRules()
 	local rules = {}
 	for key, rule in pairs(addon.db.global.userRules) do
 		local err = nil
-		if rule.enabled then
+		if rule.enabled and isClass(rule.scope) then
 			local builder, msg = CompileUserRule(rule.code, rule.title)
 			if builder then
 				local ok, result = pcall(builder, errorhandler)

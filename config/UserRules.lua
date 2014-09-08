@@ -150,6 +150,8 @@ function private.GetUserRulesOptions(addon, addonName)
 				title = title..' |cffff0000('..L['error']..')|r'
 			elseif not rule.enabled then
 				title = title..' |cff7f7f7f('..L['disabled']..')|r'
+			elseif not addon.isClass(rule.scope) then
+				title = title..' |cff7f7f7f('..L['inactive']..')|r'
 			end
 			t[key] = title
 		end
@@ -226,6 +228,34 @@ function private.GetUserRulesOptions(addon, addonName)
 						type = 'toggle',
 						order = 20,
 					},
+					scope = {
+						name = L['Class restriction'],
+						desc = L['For which class should this rule be active ?'],
+						type = 'select',
+						order = 25,
+						values = {
+							ALL = L['None'],
+							WARRIOR = L['WARRIOR'],
+							DEATHKNIGHT = L['DEATHKNIGHT'],
+							PALADIN = L['PALADIN'],
+							MONK = L['MONK'],
+							PRIEST = L['PRIEST'],
+							SHAMAN = L['SHAMAN'],
+							DRUID = L['DRUID'],
+							ROGUE = L['ROGUE'],
+							MAGE = L['MAGE'],
+							WARLOCK = L['WARLOCK'],
+							HUNTER = L['HUNTER'],
+						},
+					},
+					delete = {
+						name = L['Delete'],
+						type = 'execute',
+						confirm = true,
+						confirmText = L['Do you really want to definitively delete this rule ?'],
+						order = 26,
+						func = 'Delete',
+					},
 					_validation = {
 						name = function()
 							local msg = handler:Get('error')
@@ -246,14 +276,6 @@ function private.GetUserRulesOptions(addon, addonName)
 						width = 'full',
 						multiline = 15,
 						order = 30,
-					},
-					delete = {
-						name = L['Delete'],
-						type = 'execute',
-						confirm = true,
-						confirmText = L['Do you really want to definitively delete this rule ?'],
-						order = -1,
-						func = 'Delete',
 					},
 				},
 			},
