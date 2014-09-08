@@ -75,14 +75,21 @@ AdiButtonAuras:RegisterRules(function()
 				local selfHavoc = BuildAuraHandler_Single("HELPFUL PLAYER", "good", "player", 80240)
 				local enemyHavoc = BuildAuraHandler_Single("HARMFUL PLAYER", "bad", "enemy", 80240)
 				return function(units, model)
-					if selfHavoc(units, model) then
-						enemyHavoc(units, model)
-						return true
-					else
-						model.hint = true
-					end
+					return selfHavoc(units, model) and enemyHavoc(units, model)
 				end
 			end)()
+		},
+		Configure {
+			"HavocHint",
+			L["Suggest using Havoc when it is available."],
+			80240,
+			"player",
+			"UNIT_AURA",
+			function(_, model)
+				if not GetPlayerAura("player", 80240) then
+					model.hint = true
+				end
+			end
 		},
 	}
 
