@@ -74,12 +74,14 @@ function addon.BuildSafeEnv(baseEnv, allowedLibraries, allowedGlobals)
 		baseEnv[name] = _G[name]
 	end
 
-	-- Custom error message
+	-- Automatically import constants, send custom error messages otherwise
 	setmetatable(baseEnv, {
 		__index = function(t, name)
 			local value = _G[name]
-			if value ~= nil and not isSafe(value, {}) then
-				error(format("'%s' is forbidden.", name), 2)
+			if value == nil then
+				error(format("Unknown symbol '%s'.", name), 2)
+			elseif not isSafe(value, {}) then
+				error(format("Using '%s' is forbidden.", name), 2)
 			end
 			t[name] = value
 			return value
@@ -90,7 +92,7 @@ function addon.BuildSafeEnv(baseEnv, allowedLibraries, allowedGlobals)
 		__metatable = false,
 		__index = baseEnv,
 		__newindex = function(_, name)
-			error(format("Changing global '%s' is forbidden.", name), 2)
+			error(format("Setting '%s' is forbidden; use local variables.", name), 2)
 		end,
 	})
 end
