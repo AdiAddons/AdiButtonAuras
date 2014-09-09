@@ -63,7 +63,6 @@ end
 local serial = 0
 
 local function UpdateAuras(self)
-	Debug('Update', self.__unit, self.__filter)
 	self.__guid = UnitGUID(self.__unit)
 	if not self.__guid then
 		for k, v in pairs(self) do
@@ -243,12 +242,15 @@ local iterators = {}
 for key in pairs(mts) do
 	local key = key
 	getters[key] = function(unit, id)
-		if UnitExists(unit or "") then
-			return cache[unit][key]:GetById(id)
+		if unit and UnitExists(unit) then
+			local aura = cache[unit][key]:GetById(id)
+			if aura then
+				return id, aura.count, aura.expiration
+			end
 		end
 	end
 	iterators[key] = function(unit)
-		if not UnitExists(unit or "") then return NOP end
+		if not unit or not UnitExists(unit) then return NOP end
 		return auraIterator, cache[unit][key]
 	end
 end
