@@ -40,3 +40,7 @@ externals:
 
 move-folders:
   AdiButtonAuras/modules/AdiButtonAuras_Config: AdiButtonAuras_Config
+
+ignore:
+  - tests
+  - doc
