@@ -99,6 +99,16 @@ function tests:test_serialize_error_coroutine()
 	assertEquals(pcall(addon.serialize, coroutine.create(bla)), false)
 end
 
+function tests:test_serialize_references()
+	local a = { 5 }
+	local b = { 8, a }
+	local c = {}
+	a[2] = b
+	a[3] = c
+	a[4] = c
+	assertEquals(addon.serialize(a), "T152T182r0z3e4r2z")
+end
+
 function tests:test_deserialize(expected, input)
 	assertEquals(addon.deserialize(input), expected)
 end
@@ -136,5 +146,14 @@ dataprovider('test_deserialize_error',
 	{ "~FooBar~:" }
 )
 
+function tests:test_deserialize_references()
+	local a = addon.deserialize("T152T182r0z3e4r2z")
+	assertEquals(a[1], 5)
+	local b = a[2]
+	assertEquals(b[1], 8)
+	local c = a[3]
+	assertEquals(b[2] == a, true)
+	assertEquals(a[4] == c, true)
+end
 
 os.exit(LuaUnit:Run())

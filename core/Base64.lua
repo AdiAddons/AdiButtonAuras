@@ -101,6 +101,8 @@ local function escape(raw)
 	return assert(escapeTable[raw], format("serialize: do not know how to escape '%s' !", raw))
 end
 
+local refs, numRefs = {}
+
 -- Values serialized using one character
 local serializeConstants = {
 	[false] = "f",
@@ -112,9 +114,9 @@ for integer = 0, 9 do
 end
 
 -- Required for table recursion
-local _serialize
+local _serialize, serializerByType
 
-local serializerByType = {
+serializerByType = {
 	["number"] = function(position, num)
 		local str = tostring(num)
 		if tonumber(str) == num then
@@ -131,6 +133,11 @@ local serializerByType = {
 		return numSubs > 0 and "~" or "s", position + 1
 	end,
 	["table"] = function(position, table_)
+		if refs[table_] then
+			return "r", _serialize(position, refs[table_])
+		end
+		refs[table_] = numRefs
+		numRefs = numRefs + 1
 		if not next(table_) then
 			return "e", position
 		end
@@ -164,7 +171,9 @@ end
 
 -- Initialize position, serialize the value and return the concatenated result
 function addon.serialize(value)
+	numRefs = 0
 	local length = _serialize(1, value)
+	wipe(refs)
 	return tconcat(t, "", 1, length-1)
 end
 
@@ -195,7 +204,10 @@ deserializerByCode = {
 		return nil, position
 	end,
 	e = function(data, position)
-		return {}, position
+		local t = {}
+		refs[numRefs] = t
+		numRefs = numRefs + 1
+		return t, position
 	end,
 	s = function(data, position, what)
 		assert(position < strlen(data), "deserialize: unterminated serialized data")
@@ -223,12 +235,19 @@ deserializerByCode = {
 	end,
 	T = function(data, position)
 		local t, key = {}
+		refs[numRefs] = t
+		numRefs = numRefs + 1
 		key, position = _deserialize(data, position)
 		while key ~= nil do
 			t[key], position = _deserialize(data, position)
 			key, position = _deserialize(data, position)
 		end
 		return t, position
+	end,
+	r = function(data, position)
+		local idx, position = _deserialize(data, position)
+		assert(idx <= numRefs, format("deserialize: reference out of bound: %d", idx))
+		return refs[idx], position
 	end,
 }
 
@@ -247,7 +266,9 @@ end
 function addon.deserialize(str)
 	assert(type(str) == "string", format("deserialize: attempt to deserialize a %s", type(str)))
 	assert(str ~= "", "deserialize: attempt to deserialize an empty string")
+	numRefs = 0
 	local value, position = _deserialize(str, 1)
+	wipe(refs)
 	assert(position == 1+strlen(str), format("deserialize: garbage at position %d", position))
 	return value
 end
