@@ -108,15 +108,6 @@ for integer = 0, 9 do
 	serializeConstants[integer] = tostring(integer)
 end
 
--- Put the values in t and increase position accordingly
-local function put(position, ...)
-	local n = select('#', ...)
-	for i = 1, n do
-		t[position+i-1] = select(i, ...)
-	end
-	return position + n
-end
-
 -- Required for table recursion
 local _serialize
 
@@ -144,7 +135,7 @@ local serializerByType = {
 			position = _serialize(
 				_serialize(position, key),
 				value
-			) + 1
+			)
 		end
 		t[position] = "z"
 		return "T", position + 1
@@ -171,7 +162,7 @@ end
 -- Initialize position, serialize the value and return the concatenated result
 function addon.serialize(value)
 	local length = _serialize(1, value)
-	return tconcat("", t, 1, length-1)
+	return tconcat(t, "", 1, length-1)
 end
 
 ------------------------------------------------------------------------------
@@ -191,9 +182,9 @@ for raw, escaped in pairs(escape) do
 end
 
 -- Required for table recursion
-local _deserialize
+local _deserialize, deserializerByCode
 
-local deserializerByCode = {
+deserializerByCode = {
 	z = function(data, position)
 		return nil, position
 	end,
@@ -208,25 +199,25 @@ local deserializerByCode = {
 	end,
 	['~'] = function(data, position)
 		local str
-		str, position = byCode.s(data, position)
+		str, position = deserializerByCode.s(data, position)
 		return gsub(str, '~.', unescape), position
 	end,
 	n = function(data, position, what)
 		local str
-		str, position = byCode.s(data, position, what or "number")
+		str, position = deserializerByCode.s(data, position, what or "number")
 		local value = tonumber(str)
 		assert(value, format("deserialize: invalid %s starting at position %d", what or "number", position))
 		return value, position
 	end,
 	d = function(data, position)
 		local m, e
-		m, position = byCode.n(data, position, "mantissa")
-		e, position = byCode.n(data, position, "exponent")
+		m, position = deserializerByCode.n(data, position, "mantissa")
+		e, position = deserializerByCode.n(data, position, "exponent")
 		return m*(2^e), position
 	end,
 	T = function(data, position)
 		local t, key = {}
-		key, position = {}, _deserialize(data, position)
+		key, position = _deserialize(data, position)
 		while key ~= nil do
 			t[key], position = _deserialize(data, position)
 			key, position = _deserialize(data, position)
@@ -248,7 +239,9 @@ function _deserialize(data, position)
 end
 
 function addon.deserialize(str)
+	assert(type(str) == "string", format("deserialize: attempt to deserialize a %s", type(str)))
+	assert(str ~= "", "deserialize: attempt to deserialize an empty string")
 	local value, position = _deserialize(str, 1)
-	assert(position == 1+strlen(data), format("deserialize: garbage at position %d", position))
+	assert(position == 1+strlen(str), format("deserialize: garbage at position %d", position))
 	return value
 end

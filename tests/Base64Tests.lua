@@ -69,4 +69,60 @@ dataprovider('test_base64_decode',
 	{ "FooBar !", "Rm9vQmFyICE=" }
 )
 
+function tests:test_serialize(input, expected)
+	assertEquals(addon.serialize(input), expected)
+end
+
+dataprovider('test_serialize',
+	{ 0, "0" },
+	{ true, "t" },
+	{ false, "f" },
+	{ {}, "e" },
+	{ nil, "z" },
+	{ 45, "n45:" },
+	{ 1/3, "d6004799503160661:-54:" },
+	{ "FooBar", "sFooBar:" },
+	{ "Foo Bar !", "~Foo~`Bar~`!:" },
+	{ "a:b", "~a~3b:" },
+	{ { a = 5, "b" }, "T1sb:sa:5z" },
+	{ { { b = 8 } }, "T1Tsb:8zz" }
+)
+
+function tests:test_serialize_error()
+	assertEquals(pcall(addon.serialize, function() end), false)
+end
+
+function tests:test_deserialize(expected, input)
+	assertEquals(addon.deserialize(input), expected)
+end
+
+dataprovider('test_deserialize',
+	{ 0, "0" },
+	{ true, "t" },
+	{ false, "f" },
+	{ {}, "e" },
+	{ nil, "z" },
+	{ 45, "n45:" },
+	{ 1/3, "d6004799503160661:-54:" },
+	{ "FooBar", "sFooBar:" },
+	{ "Foo Bar !", "~Foo~`Bar~`!:" },
+	{ "a:b", "~a~3b:" },
+	{ { a = 5, "b" }, "T1sb:sa:5z" },
+	{ { { b = 8 } }, "T1Tsb:8zz" }
+)
+
+function tests:test_deserialize_error(input)
+	assertEquals(pcall(addon.deserialize, input), false)
+end
+
+dataprovider('test_deserialize_error',
+	{ "" },
+	{ "zz" },
+	{ 5 },
+	{ "n48" },
+	{ "s575997" },
+	{ "s575:7898" }
+)
+
+
 os.exit(LuaUnit:Run())
