@@ -83,13 +83,20 @@ dataprovider('test_serialize',
 	{ 1/3, "d6004799503160661:-54:" },
 	{ "FooBar", "sFooBar:" },
 	{ "Foo Bar !", "~Foo~`Bar~`!:" },
+	{ "FooBar~", "~FooBar~0:", },
 	{ "a:b", "~a~3b:" },
 	{ { a = 5, "b" }, "T1sb:sa:5z" },
 	{ { { b = 8 } }, "T1Tsb:8zz" }
 )
 
-function tests:test_serialize_error()
+function tests:test_serialize_error_function()
 	assertEquals(pcall(addon.serialize, function() end), false)
+end
+
+function tests:test_serialize_error_coroutine()
+	local function bla()
+	end
+	assertEquals(pcall(addon.serialize, coroutine.create(bla)), false)
 end
 
 function tests:test_deserialize(expected, input)
@@ -106,6 +113,7 @@ dataprovider('test_deserialize',
 	{ 1/3, "d6004799503160661:-54:" },
 	{ "FooBar", "sFooBar:" },
 	{ "Foo Bar !", "~Foo~`Bar~`!:" },
+	{ "FooBar~", "~FooBar~0:", },
 	{ "a:b", "~a~3b:" },
 	{ { a = 5, "b" }, "T1sb:sa:5z" },
 	{ { { b = 8 } }, "T1Tsb:8zz" }
@@ -118,10 +126,14 @@ end
 dataprovider('test_deserialize_error',
 	{ "" },
 	{ "zz" },
+	{ "w" },
 	{ 5 },
 	{ "n48" },
 	{ "s575997" },
-	{ "s575:7898" }
+	{ "s575:7898" },
+	{ "T0102" },
+	{ "~Foo~5ar:" },
+	{ "~FooBar~:" }
 )
 
 

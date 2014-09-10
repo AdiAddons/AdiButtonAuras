@@ -88,14 +88,17 @@ Escaped string: non-printable characters, space, tilde, colon and pipe are encod
 --]=]
 
 -- String escaping table
-local escape = {
+local escapeTable = {
 	['~'] = '~0',
 	["\127"] = '~1',
 	['|'] = '~2',
 	[':'] = '~3'
 }
 for ascii = 0, 32 do
-	escape[strchar(ascii)] = '~'..strchar(64+ascii)
+	escapeTable[strchar(ascii)] = '~'..strchar(64+ascii)
+end
+local function escape(raw)
+	return assert(escapeTable[raw], format("serialize: do not know how to escape '%s' !", raw))
 end
 
 -- Values serialized using one character
@@ -176,9 +179,12 @@ for value, serialized in pairs(serializeConstants) do
 end
 
 -- String unescaping
-local unescape = {}
-for raw, escaped in pairs(escape) do
-	unescape[escaped] = raw
+local unescapeTable = {}
+for raw, escaped in pairs(escapeTable) do
+	unescapeTable[escaped] = raw
+end
+local function unescape(escaped)
+	return assert(unescapeTable[escaped], format("deserialize: invalid escape sequence: '%s'", escaped))
 end
 
 -- Required for table recursion
@@ -200,7 +206,7 @@ deserializerByCode = {
 	['~'] = function(data, position)
 		local str
 		str, position = deserializerByCode.s(data, position)
-		return gsub(str, '~.', unescape), position
+		return gsub(str, '~.?', unescape), position
 	end,
 	n = function(data, position, what)
 		local str
