@@ -1,0 +1,15 @@
+language: erlang
+
+env:
+  - LUA="lua5.1" LUAC="luac5.1"
+
+install:
+  - sudo apt-get install $LUA
+
+script:
+  - $LUAC -p $(find . -name "*.lua")
+
+notifications:
+  email:
+    on_failure: always
+    on_success: change
