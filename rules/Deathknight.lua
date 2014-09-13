@@ -46,7 +46,7 @@ AdiButtonAuras:RegisterRules(function()
 				114866, -- Soul Reaper (Blood)
 				130735, -- Soul Reaper (Frost)
 				130736, -- Soul Reaper (Unholly)
-			}, 
+			},
 			"enemy",
 			{ "UNIT_HEALTH", "UNIT_HEALTH_MAX" },
 			function(units, model)

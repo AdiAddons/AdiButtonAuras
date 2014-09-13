@@ -31,9 +31,9 @@ AdiButtonAuras:CreateConfig(function(addonName, addon)
 	local AceConfig = addon.GetLib('AceConfig-3.0')
 	local AceConfigDialog = addon.GetLib('AceConfigDialog-3.0')
 	local LibSpellbook = addon.GetLib('LibSpellbook-1.0')
-	
+
 	local L = addon.L
-	
+
 	local profiles = addon.GetLib('AceDBOptions-3.0'):GetOptionsTable(addon.db)
 	addon.GetLib('LibDualSpec-1.0'):EnhanceOptions(profiles, addon.db)
 	profiles.order = -10

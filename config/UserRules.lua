@@ -53,7 +53,7 @@ return Configure {
         end
     end
 
-	}
+}
 ]===]
 
 function private.GetUserRulesOptions(addon, addonName)

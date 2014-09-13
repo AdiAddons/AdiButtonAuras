@@ -4,7 +4,7 @@
 	<Script file="Spells.lua"/>
 	<Script file="Theme.lua"/>
 	<Script file="UserRules.lua"/>
-	<!--@debug@--> 
+	<!--@debug@-->
 	<Script file="Debug.lua"/>
 	<!--@end-debug@-->
 	<Script file="Config.lua"/>

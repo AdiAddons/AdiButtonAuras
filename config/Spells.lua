@@ -47,11 +47,11 @@ function private.GetSpellOptions(addon, addonName)
 		self.current = key
 		AceConfigRegistry:NotifyChange(addonName)
 	end
-	
+
 	function handler:GetRule()
 		return self.current and rules[self.current]
 	end
-	
+
 	function handler:GetCurrentName()
 		local rule = self:GetRule()
 		return rule and rule.name or L['No selection']
@@ -61,7 +61,7 @@ function private.GetSpellOptions(addon, addonName)
 		local property = info[#info]
 		return addon.db.profile[property][self.current]
 	end
-	
+
 	function handler:Set(info, value)
 		local property = info[#info]
 		addon.db.profile[property][self.current] = value
@@ -76,7 +76,7 @@ function private.GetSpellOptions(addon, addonName)
 		local rule = self:GetRule()
 		return addon.db.profile.rules[rule.keys[index]]
 	end
-	
+
 	function handler:SetRuleState(_, index, flag)
 		local rule = self:GetRule()
 		addon.db.profile.rules[rule.keys[index]] = flag
@@ -217,9 +217,9 @@ function private.GetSpellOptions(addon, addonName)
 	------------------------------------------------------------------------------
 	-- The frame containing the parent overlays
 	------------------------------------------------------------------------------
-	
+
 	local overlayParent = CreateFrame("Frame", addonName.."ConfigOverlayParent")
-	
+
 	local overlays = setmetatable({}, { __index = function(self, overlay)
 		local conf = setmetatable(CreateFrame("Button", overlay:GetName().."Config", overlayParent), overlayMeta)
 		conf:Initialize(overlay)
@@ -233,7 +233,7 @@ function private.GetSpellOptions(addon, addonName)
 		end
 		handler:Select(nil)
 	end)
-	
+
 	------------------------------------------------------------------------------
 	-- "API"
 	------------------------------------------------------------------------------
@@ -241,7 +241,7 @@ function private.GetSpellOptions(addon, addonName)
 	function private.SetOverlayParent(parent)
 		overlayParent:SetParent(parent)
 	end
-	
+
 	function private.SelectSpell(key)
 		return handler:Select(key)
 	end
