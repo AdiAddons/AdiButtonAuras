@@ -86,7 +86,7 @@ AdiButtonAuras:RegisterRules(function()
 			"player",
 			"UNIT_AURA",
 			function(_, model)
-				if not GetPlayerAura("player", 80240) then
+				if not GetPlayerBuff("player", 80240) then
 					model.hint = true
 				end
 			end
