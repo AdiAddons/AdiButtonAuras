@@ -44,3 +44,4 @@ move-folders:
 ignore:
   - tests
   - doc
+  - libs/*/tests
