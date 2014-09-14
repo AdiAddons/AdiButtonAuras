@@ -21,15 +21,6 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 
 local addonName, addon = ...
 
-local _G = _G
-local GetItemInfo = _G.GetItemInfo
-local GetItemSpell = _G.GetItemSpell
-local IsHarmfulItem = _G.IsHarmfulItem
-local IsHelpfulItem = _G.IsHelpfulItem
-local select = _G.select
-local setmetatable = _G.setmetatable
-local UnitAura = _G.UnitAura
-
 local LibItemBuffs, LIBVer = addon.GetLib('LibItemBuffs-1.0')
 
 local BuildKey = addon.BuildKey

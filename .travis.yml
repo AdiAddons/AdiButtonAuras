@@ -4,11 +4,16 @@ env:
   - LUA="lua5.1" LUAC="luac5.1"
 
 install:
-  - sudo apt-get install $LUA
+  - sudo apt-get install $LUA luarocks
+  - sudo luarocks install luaunit
+  - sudo luarocks install mockagne
+  - sudo luarocks install luabitop
 
 script:
-  - tests/lualint.sh
-  - tests/cs.sh
+  - cd tests
+  - ./lualint.sh
+  - ./cs.sh
+  - $LUA Items.lua
 
 notifications:
   email:
