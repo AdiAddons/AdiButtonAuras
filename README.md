@@ -19,26 +19,26 @@ Before heading straigth into a raid and/or playing with the options, you may wan
 Options
 -------
 
-### Global options
+#### Global options
 
  * do not show flashing border for actions on cooldown (do not affect Blizzard flash),
  * do not show flashing border for actions out of combat (do not affect Blizzard flash),
  * select how suggestions are displayed (hidden, rotary star or flashing border),
 
-### Spell/item options
+#### Spell/item options
 
  * disable the spell,
  * "promote to flash": replace any highlight with the flashing border animation,
  * inverted highlight: highlight the spell when it is missing,
  * select which rules should apply.
 
-### Theme options
+#### Theme options
 
  * customizable texts: font, format, size and colors.
  * change the colors of "good" and "bad" highlights,
  * select the highlight amongst 10 textures,
  
-### User-defined rules
+#### User-defined rules
 
 AdiButtonAuras allows you to enter and save your own rules, with full access to [its API](https://github.com/Adirelle/AdiButtonAuras/blob/master/doc/Rules.textile). Easy sharing of those rules is planned.
 
@@ -59,11 +59,11 @@ There is also a default rule for *items* not supported by LibItemBuffs-1.0.
 FAQ
 ---
 
-### When I try to configure a spell, the button is dimmed and I cannot chose it. Why ?
+#### When I try to configure a spell, the button is dimmed and I cannot chose it. Why ?
 
-AdiButtons has no rule about this spell. Consider filing an issue.
+AdiButtons has no rule about this spell. Consider [filling an issue](https://github.com/Adirelle/AdiButtonAuras/issues).
 
-### What do some rules ending with some obscure characters between brackets, like [LPS-DRUID-5.4.1-7] ?
+#### What do some rules ending with some obscure characters between brackets, like [LPS-DRUID-5.4.1-7] ?
 
 These are references to the libraries AdiButtonAuras used to create the rule.
 
@@ -72,15 +72,15 @@ These are references to the libraries AdiButtonAuras used to create the rule.
  * LSB-N: [LibSpellbook-1.0](https://github.com/Adirelle/LibSpellbook-1.0), Nth revision.
  * LD-N: [LibDispellable-1.0](https://github.com/Adirelle/LibDispellable-1.0/), Nth revision.
 
-### Are you going to support button skinning, e.g. Masque ?
+#### Are you going to support button skinning, e.g. Masque ?
 
 No, unless Masque supports to skin partial buttons.
 
-### Are you going to support ElvUI ?
+#### Are you going to support ElvUI ?
 
 AdiButtonAuras should work with ElvUI. I am not going to support its skin though.
 
-### Are you going to add a configuration panel to create custom rules ?
+#### Are you going to add a configuration panel to create custom rules ?
 
 Not in the way InlineAura did it. At best will it support custom rules written in Lua using the DSL (and I make no promise).
 
