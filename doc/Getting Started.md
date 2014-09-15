@@ -41,6 +41,9 @@ AdiButtonAuras comes with prebuilt rules so it is ready to go without additional
 
 AdiButtonAuras needs to know about the spell before it puts an aura on its button and unfortunatly there is still a lot of spells that have not been added to the list, if you see one which is not there but should please get in touch on [Github issue tracker](https://github.com/Adirelle/AdiButtonAuras/issues) so it can be added.
 
+Other options
+-------------
+
 Additionally there is also there is also several display options, from how long a buff/debuff has to be to show a timer to theme settings which allow you to personalize the look of the text and colors in you have trouble seeing the default ones:
 ![Spell options](media/theme_options.png)
 
