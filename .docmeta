@@ -1,7 +1,12 @@
 -
-    type: textile
-    input-file: README.textile
+    type: markdown
+    input-file: README.md
     output-page: Main
+
+-
+    type: markdown
+    input-file: doc/GettingStarted.md
+    output-page: "Getting started"
 
 -
     type: textile
@@ -10,5 +15,10 @@
 
 -
     type: markdown
-    input-file: doc/Rules.md
+    input-file: doc/RulesRef.md
     output-page: "Rule Reference"
+
+-
+    type: markdown
+    input-file: doc/Design.md
+    output-page: "Design decisions"
