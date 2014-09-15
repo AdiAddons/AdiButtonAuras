@@ -10,7 +10,7 @@ What does it all mean?
 
 As a general rule:
 
-  * Red border (known as "bad" highlight) means a dot on your target with the text giving you the dot's duration ![example of a dot](media/dot.png) 
+  * Red border (known as "bad" highlight) means a dot on your target with the text giving you the dot's duration ![example of a dot](media/dot.png)
   * Green border (known as "good" highlight) means a beneficial effect on yourself or a friendly target with the number meaning duration ![example of a buff with duration](media/buff_duration.png) or number of stacks ![example of a buff with stacks](media/buff_stacks.png). If the spell has both, duration will be on the left while stacks will be on the right ![Spell with stacks and duration](media/duration_stacks.png).
 
 **However, there are special cases!**
@@ -21,7 +21,7 @@ Some spells like Warlocks' Havoc have custom rules, e.g. red when you the target
 
 Other classes have custom rules as well.
 
-**AdiBUttonAuras will also show special events.** 
+**AdiBUttonAuras will also show special events.**
 
 By making your buttons sparkle, much like the default UI does, only better!
 
@@ -31,9 +31,9 @@ By making your buttons sparkle, much like the default UI does, only better!
   * Or show you there is a debuff that you can dispell and its duration ![dispell](media/dispell.png)
 
 Setting up
-==========	
+==========
 
-AdiButtonAuras comes with prebuilt rules so it is ready to go without additional messing around, but if there is an aura you do not like you can open the options using /adibuttonauras and change the aura settings for the recognized buttons which will be highlighted in green (note in this screenshot [dominos bar addon](http://www.curse.com/addons/wow/dominos) are being used and put on top of the options): 
+AdiButtonAuras comes with prebuilt rules so it is ready to go without additional messing around, but if there is an aura you do not like you can open the options using /adibuttonauras and change the aura settings for the recognized buttons which will be highlighted in green (note in this screenshot [dominos bar addon](http://www.curse.com/addons/wow/dominos) are being used and put on top of the options):
 
 ![Spell options](media/spell_options.png)
 

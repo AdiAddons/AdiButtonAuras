@@ -1,6 +1,8 @@
-h1. Design decisions
+Design decisions
+================
 
-h2. Separate button overlays
+Separate button overlays
+------------------------
 
 A separate button overlay is created for each button, with border texture, texts and glowing animation.
 
@@ -8,7 +10,8 @@ A separate button overlay is created for each button, with border texture, texts
 
 *Con*: this does not support skinning (Masque) or custom third-party action buttons (ElvUI). However, AdiButtonAuras fully support Dominos and Bartender4, and should support any addon using the stock action buttons (like Dominos) or LibActionButton-1.0 (like Bartender4).
 
-h2. Hard-coded rules
+Hard-coded rules
+----------------
 
 The rules are hard-coded using a pretty simple "Domain Specific Language":https://en.wikipedia.org/wiki/Domain_specific_language built on top of Lua.
 
@@ -22,7 +25,8 @@ A set of convenient functions are provided to easily configure most spells. If a
 
 *Con*: there is no way to configure this using a GUI.
 
-h2. No spell auto-discovery
+No spell auto-discovery
+-----------------------
 
 AdiButtonAuras only shows data for existing rules. It does not try to guess what to show.
 
@@ -30,7 +34,8 @@ AdiButtonAuras only shows data for existing rules. It does not try to guess what
 
 *Con*: all spells for all class should be listed.
 
-h2. Using spell ids instead of spell names
+Using spell ids instead of spell names
+--------------------------------------
 
 AdiButtonAuras uses the spell numerical identifiers, instead of its name, to search for the applicable rules.
 
@@ -38,6 +43,7 @@ AdiButtonAuras uses the spell numerical identifiers, instead of its name, to sea
 
 *Con*: spells ids are sometimes different depending on shapeshift forms, glyphs or talents. All of them should be listed.
 
-h2. Embedded BugGrabber
+Embedded BugGrabber
+-------------------
 
-"BugGrabber":http://www.curse.com/addons/wow/bug-grabber is shipped with AdiButtonAuras. You can install "BugSack":http://www.curse.com/addons/wow/bugsack to have a more user-friendly display of errors.
+[BugGrabber](http://www.curse.com/addons/wow/bug-grabber) is shipped with AdiButtonAuras. You can install [BugSack](http://www.curse.com/addons/wow/bugsack) to have a more user-friendly display of errors.
