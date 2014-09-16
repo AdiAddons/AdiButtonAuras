@@ -131,6 +131,12 @@ function private.GetSpellOptions(addon, addonName)
 		overlay:HookScript('OnShow', function() self:Show() end)
 		overlay:HookScript('OnHide', function() self:Hide() end)
 
+		hooksecurefunc(overlay, "SetAction", function()
+			if self:IsVisible() then
+				return self:Update()
+			end
+		end)
+
 		addon.RegisterMessage(self, addon.CONFIG_CHANGED, "Update")
 	end
 
