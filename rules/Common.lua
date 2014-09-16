@@ -34,6 +34,8 @@ AdiButtonAuras:RegisterRules(function()
 		LongestDebuffOf {
 			{ -- Spells to alter
 				 82654, -- Widow Venom (hunter)
+				 12294, -- Mortal Strike (warrior)
+				100130, -- Wild Strike (warrior)
 			},
 			{ -- Debuffs to look for
 				  8679, -- Wound Poison (rogue)
@@ -144,7 +146,8 @@ AdiButtonAuras:RegisterRules(function()
 				 18223, -- Curse of Exhaustion (warlock)
 				 17962, -- Conflagrate (warlock)
 				  1715, -- Piercing Howl (warrior)
-				 12323  -- Hamstring (warrior)
+				 12323, -- Hamstring (warrior)
+				137637, -- Warbringer (warrior)
 			}
 		}, -- Snares and anti-snares
 
@@ -173,9 +176,10 @@ AdiButtonAuras:RegisterRules(function()
 					146555, -- Drums of Rage
 				})
 				local isSated = BuildAuraHandler_Longest("HARMFUL", "bad", "ally", {
-					 57724, -- Sated (Bloodlst/Heroism debuff),
+					 57723, -- Exhaustion (Drums of Rage debuff)
+					 57724, -- Sated (Bloodlst/Heroism debuff)
 					 80354, -- Temporal Displacement (Time Warp debuff)
-					 95809  -- Insanity (Ancient Hysteria debuff)
+					 95809, -- Insanity (Ancient Hysteria debuff)
 				})
 				return function(units, model)
 					return hasBloodlust(units, model) or isSated(units, model)
