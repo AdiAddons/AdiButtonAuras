@@ -43,7 +43,7 @@ libs\LibPlayerSpells-1.0\lib.xml
 libs\LibSharedMedia-3.0\lib.xml
 #@end-no-lib-strip@
 libs\LibSpellbook-1.0\LibSpellbook-1.0.lua
-libs\LibItemBuffs-1.0\LibItemBuffs-1.0.lua
+libs\LibItemBuffs-1.0\LibItemBuffs-1.0.xml
 
 Localization.lua
 
