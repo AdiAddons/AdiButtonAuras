@@ -131,15 +131,22 @@ function private.GetSpellOptions(addon, addonName)
 		overlay:HookScript('OnShow', function() self:Show() end)
 		overlay:HookScript('OnHide', function() self:Hide() end)
 
+		hooksecurefunc(overlay, "SetAction", function()
+			if self:IsVisible() then
+				return self:Update()
+			end
+		end)
+
 		addon.RegisterMessage(self, addon.CONFIG_CHANGED, "Update")
 	end
 
 	function overlayPrototype:Update()
-		self.conf, self.enabled, self.key, self.type, self.id = addon:GetActionConfiguration(self.overlay.spellId)
-		if self.type == "spell" then
-			self.name = GetSpellInfo(self.id)
-		elseif self.type == "item" then
-			self.name = GetItemInfo(self.id)
+		local type_, id = self.overlay.actionType, self.overlay.actionId
+		self.conf, self.enabled, self.key = addon:GetActionConfiguration(type_, id)
+		if type_ == "spell" then
+			self.name = GetSpellInfo(id)
+		elseif type_ == "item" then
+			type_ = GetItemInfo(id)
 		end
 		if self.conf then
 			if self.enabled then
@@ -147,6 +154,8 @@ function private.GetSpellOptions(addon, addonName)
 			else
 				self:SetBackdropColor(1, 0, 0, 0.8)
 			end
+		elseif type_ == "unsupported" then
+			self:SetBackdropColor(1, 0.8, 0.4, 0)
 		else
 			self:SetBackdropColor(0, 0, 0, 0.8)
 		end
@@ -168,8 +177,9 @@ function private.GetSpellOptions(addon, addonName)
 	end
 
 	function overlayPrototype:OnEnter()
+		local type_, id = self.overlay.actionType, self.overlay.actionId
 		GameTooltip_SetDefaultAnchor(GameTooltip, self)
-		GameTooltip:AddDoubleLine(self.name, self.type and L[self.type]) -- L['item'] L['spell']
+		GameTooltip:AddDoubleLine(self.name or "???", type_ and L[type_]) -- L['item'] L['spell'] L['unsupported']
 		if self.conf then
 			if self.enabled then
 				GameTooltip:AddDoubleLine(L['Status'], L['Enabled'], nil, nil, nil, 0, 1, 0)
@@ -200,10 +210,15 @@ function private.GetSpellOptions(addon, addonName)
 			end
 			GameTooltip:AddDoubleLine('Handlers', #(self.conf.handlers), nil, nil, nil, 1, 1, 1)
 			--@end-debug@
+		elseif type_ == 'unsupported' then
+			GameTooltip:AddDoubleLine(L['Status'], L['unsupported'], nil, nil, nil, 0.8, 0.4, 0.0)
+			GameTooltip:AddLine(L['AdiButtonAuras cannot handle this button.'], 0.8, 0.4, 0.0)
 		else
 			GameTooltip:AddDoubleLine(L['Status'], UNKNOWN, nil, nil, nil, 0.5, 0.5, 0.5)
-			GameTooltip:AddLine(format(L['AdiButtonAuras has no rules for this %s.'], self.type and L[self.type] or L["button"]), 0.5, 0.5, 0.5)
-			GameTooltip:AddDoubleLine(L["Action 'key' for reference"], self.key, nil, nil, nil, 1, 1, 1)
+			GameTooltip:AddLine(format(L['AdiButtonAuras has no rules for this %s.'], type_ and L[type_] or L["button"]), 0.5, 0.5, 0.5)
+			if self.key then
+				GameTooltip:AddDoubleLine(L["Action 'key' for reference"], self.key, nil, nil, nil, 1, 1, 1)
+			end
 		end
 		GameTooltip:Show()
 	end

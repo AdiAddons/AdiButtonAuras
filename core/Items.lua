@@ -76,7 +76,7 @@ local function BuildItemRule(itemId, buffName, ...)
 		for i = 1, select('#', ...) do
 			local buffId = select(i, ...)
 			local key = BuildKey('item', itemId, token, filter, highlight, buffId)
-			local desc = BuildDesc(filter, highlight, token, buffId) .. format(" [LIB-%d-%s]", LIBVer, LibItemBuffs.__databaseVersion)
+			local desc = BuildDesc(filter, highlight, token, buffId) .. format(" [LIB-%d-%s]", LIBVer, LibItemBuffs:GetDatabaseVersion())
 			descriptions[key] = desc
 			tinsert(rule.keys, key)
 			tinsert(rule.handlers, BuildBuffIdHandler(key, token, filter, highlight, buffId))
