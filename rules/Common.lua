@@ -366,5 +366,12 @@ AdiButtonAuras:RegisterRules(function()
 		end
 	})
 
+	--------------------------------------------------------------------------
+	-- Racials & tradeskills
+	--------------------------------------------------------------------------
+
+	tinsert(rules, ImportPlayerSpells { "RACIAL" })
+	tinsert(rules, ImportPlayerSpells { "TRADESKILL" })
+
 	return rules
 end)
