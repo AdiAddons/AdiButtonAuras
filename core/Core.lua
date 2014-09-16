@@ -373,20 +373,16 @@ function addon.api:RegisterRules(initializer)
 end
 
 function addon:GetActionConfiguration(actionType, actionId)
-	if type(actionType) ~= "string" then return end
-	local key
-	if type(actionId) == "number" then
-		key = actionType..':'..actionId
-	else
-		key, actionType, actionId = actionType, strmatch(actionType, "^(%a+):(%d+)$")
-		actionId = tonumber(actionId)
+	if actionType == "empty" or actionType == "unsupported" or actionType == "hidden" then
+		return nil, false, nil
 	end
-	if not key then return end
+	assert(actionType == "item" or actionType == "spell", format("Invalid action type: %q", tostring(actionType)))
+	local key = actionType..':'..actionId
 	local rule = rules[key]
 	if rule then
-		return rule, self.db.profile.enabled[key], key, actionType, actionId
+		return rule, self.db.profile.enabled[key], key
 	else
-		return nil, false, key, actionType, actionId
+		return nil, false, key
 	end
 end
 

@@ -151,6 +151,8 @@ end
 ------------------------------------------------------------------------------
 
 local function GetActionSpell(actionType, actionId)
+	if not actionType or not actionId then return "empty" end
+
 	-- Resolve macros
 	local macroConditionals
 	if actionType == "macro" then
@@ -164,6 +166,8 @@ local function GetActionSpell(actionType, actionId)
 	elseif actionType == "spell" or actionType == "companion" then
 		return "spell", actionId, macroConditionals
 	end
+
+	return "unsupported"
 end
 
 ------------------------------------------------------------------------------
@@ -222,7 +226,7 @@ function overlayPrototype:OnShow()
 end
 
 function overlayPrototype:OnHide()
-	self:SetAction('OnHide')
+	self:SetAction('OnHide', 'hidden')
 end
 
 function overlayPrototype:OnConfigChanged(event)
@@ -253,6 +257,7 @@ function overlayPrototype:SetAction(event, actionType, actionId, macroConditiona
 	end
 
 	if self.spellId == spellId and self.conf == conf and self.macroConditionals == macroConditionals then return end
+	self.actionType, self.actionId = actionType, actionId
 	self.spellId, self.conf, self.macroConditionals = spellId, conf, macroConditionals
 
 	local hasDynamicUnits = false
