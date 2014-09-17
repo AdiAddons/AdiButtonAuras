@@ -29,10 +29,12 @@ AdiButtonAuras:RegisterRules(function()
 		ImportPlayerSpells { "WARRIOR" },
 		-- Flash Shield Barrier Button at 60 rage
 		ShowPower {
-		112048, -- Shield Barrier
-		"RAGE",
-		60,
-		"flash"
+			{
+				112048, -- Shield Barrier
+			},
+			"RAGE",
+			60,
+			"flash"
 		},
-}
+	}
 end)
