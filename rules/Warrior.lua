@@ -25,5 +25,54 @@ if not addon.isClass("WARRIOR") then return end
 
 AdiButtonAuras:RegisterRules(function()
 	Debug('Adding warrior rules')
-	return ImportPlayerSpells { "WARRIOR" }
+
+	return  {
+		ImportPlayerSpells { "WARRIOR" },
+
+		-- flash at 60 rage
+		ShowPower {
+		112048, -- Shield Barrier
+		"RAGE",
+		60,
+		"flash"
+		},
+		-- flash at 120 rage
+		ShowPower {
+		112048, -- Shield Barrier
+		"RAGE",
+		120,
+		"flash"
+		},
+
+		-- Configure {
+			-- "Execute",
+			-- L["Show a hint when the target is below 20% health."],
+			-- {
+				-- 5308, -- Execute
+			-- },
+			-- "enemy",
+			-- { "UNIT_HEALTH", "UNIT_HEALTH_MAX" },
+			-- function(units, model)
+				-- if UnitHealth(units.enemy) / UnitHealthMax(units.enemy) <= 0.20 then
+					-- model.hint = true
+				-- end
+			-- end,
+		-- },
+
+		Configure {
+			"Enrage",
+			L['Suggest when to use Enraged Regeneration.'],
+			{
+				 55694, -- Enraged Regeneration
+			},
+			"player",
+			"UNIT_AURA",
+			function(_, model)
+				if not GetPlayerBuff("player", 12880) then
+					model.highlight = "darken"
+				end
+			end,
+			55694, -- Provided by: Enraged Regeneration
+		},
+}
 end)

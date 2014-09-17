@@ -252,7 +252,7 @@ function private.GetUserRulesOptions(addon, addonName)
 						name = L['Delete'],
 						type = 'execute',
 						confirm = true,
-						confirmText = L['Do you really want to definitively delete this rule ?'],
+						confirmText = L['Permanently delete this rule ?'],
 						order = 26,
 						func = 'Delete',
 					},
