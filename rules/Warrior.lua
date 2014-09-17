@@ -29,36 +29,37 @@ AdiButtonAuras:RegisterRules(function()
 	return  {
 		ImportPlayerSpells { "WARRIOR" },
 
-		-- flash at 60 rage
+		-- Flash Shield Barrier Button at 60 rage
 		ShowPower {
 		112048, -- Shield Barrier
 		"RAGE",
 		60,
 		"flash"
 		},
-		-- flash at 120 rage
+
+		-- Show Rage on Shield Barrier Button
 		ShowPower {
 		112048, -- Shield Barrier
 		"RAGE",
-		120,
-		"flash"
 		},
 
-		-- Configure {
-			-- "Execute",
-			-- L["Show a hint when the target is below 20% health."],
-			-- {
-				-- 5308, -- Execute
-			-- },
-			-- "enemy",
-			-- { "UNIT_HEALTH", "UNIT_HEALTH_MAX" },
-			-- function(units, model)
-				-- if UnitHealth(units.enemy) / UnitHealthMax(units.enemy) <= 0.20 then
-					-- model.hint = true
-				-- end
-			-- end,
-		-- },
+		-- Execute hint example
+		Configure {
+			"Execute",
+			L["Show a hint when the target is below 20% health."],
+			{
+				5308, -- Execute
+			},
+			"enemy",
+			{ "UNIT_HEALTH", "UNIT_HEALTH_MAX" },
+			function(units, model)
+				if UnitHealth(units.enemy) / UnitHealthMax(units.enemy) <= 0.20 then
+					model.hint = true
+				end
+			end,
+		},
 
+		-- Leave Enraged Regeneration dimmed unless enraged
 		Configure {
 			"Enrage",
 			L['Suggest when to use Enraged Regeneration.'],
@@ -72,7 +73,7 @@ AdiButtonAuras:RegisterRules(function()
 					model.highlight = "darken"
 				end
 			end,
-			55694, -- Provided by: Enraged Regeneration
+			55694,
 		},
 }
 end)
