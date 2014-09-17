@@ -102,6 +102,8 @@ for i, data in pairs {
 	local harmful, helpful, token, filter, highlight = unpack(data)
 	testItems['testLibItemBuffs'..i] = function(self)
 
+		when(LibItemBuffs:GetDatabaseVersion()).thenAnswer(8)
+
 		when(G.GetItemSpell(456)).thenAnswer(nil)
 		when(LibItemBuffs:GetItemBuffs(456)).thenAnswer(500)
 		when(G.GetItemInfo(456)).thenAnswer("LeItem")
