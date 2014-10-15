@@ -186,6 +186,7 @@ do
 	local HIGHLIGHT_MEDIATYPE = addonName:lower().."_border"
 	local texturePath = [[Interface\AddOns\]]..addonName..[[\media\highlight\]]
 	for file, label in pairs {
+		["blank"]                    = L["No border"],
 		["bottom-top-gradient"]      = L["Bottom to top gradient"],
 		["corners"]                  = L["Square corners"],
 		["default-border"]           = L["Default border"],
