@@ -31,7 +31,6 @@ AdiButtonAuras:RegisterRules(function()
 			-- Import all spells for ...
 			"DRUID",
 			-- ... but ...
-			 50464, -- Nourish
 			145518, -- Genesis
 			 16870, -- Clearcasting
 			114108, -- Soul of the Forest (restoration)
@@ -71,7 +70,6 @@ AdiButtonAuras:RegisterRules(function()
 				 22568, -- Ferocious Bite
 				 22570, -- Maim
 				 52610, -- Savage Roar
-				127538, -- Savage Roar (glyphed)
 			},
 			{ "enemy", "player" },
 			"UNIT_COMBO_POINTS",
@@ -94,7 +92,6 @@ AdiButtonAuras:RegisterRules(function()
 				 5185, -- Healing Touch
 				 8936, -- Regrowth
 				18562, -- Swiftmend
-				50464, -- Nourish
 			},
 			"player",
 			"UNIT_AURA",
@@ -147,7 +144,6 @@ AdiButtonAuras:RegisterRules(function()
 			16974, -- Predatory Swiftness (passive)
 			{
 				 5185, -- Healing Touch
-				 2637, -- Hibernate
 				20484, -- Rebirth
 			},
 			69369, -- Predatory Swiftness (buff)

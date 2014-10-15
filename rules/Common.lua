@@ -24,91 +24,6 @@ AdiButtonAuras:RegisterRules(function()
 
 	local rules = {
 	--------------------------------------------------------------------------
-	-- Shared debuffs
-	--------------------------------------------------------------------------
-	-- Only show them on spells that requires the player to specifically cast them
-
-		-- Physical Vulnerability is applied passively or automatically, don't bother showing it
-
-		-- Mortal Wounds
-		LongestDebuffOf {
-			{ -- Spells to alter
-				 82654, -- Widow Venom (hunter)
-				 12294, -- Mortal Strike (warrior)
-				100130, -- Wild Strike (warrior)
-			},
-			{ -- Debuffs to look for
-				  8679, -- Wound Poison (rogue)
-				 30213, -- Legion Strike (warlock pet)
-				 54680, -- Monstrous Bite (hunter exotic pet ability)
-				 82654, -- Widow Venom (hunter)
-				115804, -- Mortal Wounds (main effect)
-			},
-		}, -- Mortal Wounds
-
-		-- Weakened Armor
-		LongestDebuffOf {
-			{ -- Spells to alter
-				   770, -- Faerie Fire (druid)
-				  7386, -- Sunder Armor (warrior)
-				  8647, -- Expose Armor (rogue)
-				 20243, -- Devastate (warrior)
-				102355, -- Faerie Swarm (druid)
-			},
-			{ -- Debuffs to look for
-				113746, -- Weakened Armor (main effect)
-			}
-		}, -- Weakened Armor
-
-		-- +5% spell damage taken
-		LongestDebuffOf {
-			{ -- Spells to alter
-				  1490, -- Curse of the Elements (warlock)
-				104225, -- Curse of the Elements (warlock, Fire and Brimstone)
-			},
-			{ -- Debuffs to look for
-				  1490, -- Curse of the Elements (warlock)
-				 24844, -- Lightning Breath (hunter pet ability)
-				 34889, -- Fire Breath (hunter pet ability)
-				 58410, -- Master Poisoner (rogue)
-				104225, -- Curse of the Elements (warlock, Fire and Brimstone)
-				116202, -- Aura of the Elements (warlock)
-			}
-		}, -- +5% spell damage taken
-
-		-- Increasing Casting Time
-		LongestDebuffOf {
-			{ -- Spells to alter
-				 73975, -- Necrotic Strike (death knight)
-				109466, -- Curse of Enfeeblement (warlock)
-			},
-			{ -- Debuffs to look for
-				 50274, -- Spore Cloud (hunter pet ability)
-				 58604, -- Lava Breath (hunter pet ability)
-				 73975, -- Necrotic Strike (death knight)
-				 90314, -- Tailspin (hunter pet ability)
-				109466, -- Curse of Enfeeblement (warlock)
-				116198, -- Aura of Enfeeblement (warlock)
-				126402, -- Trample (hunter pet ability)
-			}
-		}, -- Increasing Casting Time
-
-		-- Weakened Blows
-		LongestDebuffOf {
-			{ -- Spells to alter
-				  6343, -- Thunder Clap (warrior)
-				-- 81132, -- Scarlet Fever (deathknight), this is a passive that modifies Blood Boil
-				  8042, -- Earth Shock (shaman)
-				 53595, -- Hammer of the Righteous (paladin)
-			},
-			{ -- Debuffs to look for
-				115798, -- Weakened Blows (main effect)
-				 50256, -- Demoralizing Roar (hunter pet ability)
-				 24423, -- Demoralizing Screech (hunter pet ability)
-			}
-		}, -- Weakened Blows
-
-	--------------------------------------------------------------------------
 	-- Snares and anti-snares
 	--------------------------------------------------------------------------
 	-- Note that some of these are talent procs or passive effects.
@@ -123,9 +38,7 @@ AdiButtonAuras:RegisterRules(function()
 				 61391, -- Typhoon (druid)
 				  5116, -- Concussive Shot (hunter)
 				 13810, -- Ice Trap (hunter)
-				 35101, -- Concussive Barrage (hunter, passive)
 				 35346, -- Time Warp (hunter, warp Stalker)
-				 50433, -- Ankle Crack (hunter, crocolisk)
 				 54644, -- Frost Breath (hunter, chimaera)
 				 61394, -- Frozen Wake (hunter, glyph)
 				 31589, -- Slow (mage)
@@ -134,19 +47,15 @@ AdiButtonAuras:RegisterRules(function()
 				   120, -- Cone of Cold (mage)
 				  6136, -- Chilled (mage)
 				  7321, -- Chilled (mage, bis)
-				 11113, -- Blast Wave (mage)
 				116095, -- Disable (monk, 1 stack)
 				  1044, -- Hand of Freedom (paladin)
 				  3409, -- Crippling Poison (rogue)
 				 26679, -- Deadly Throw (rogue)
 				  3600, -- Earthbind (shaman)
-				  8034, -- Frostbrand Attack (shaman)
 				  8056, -- Frost Shock (shaman)
 				  8178, -- Grounding Totem Effect (shaman)
-				 18223, -- Curse of Exhaustion (warlock)
 				 17962, -- Conflagrate (warlock)
 				  1715, -- Piercing Howl (warrior)
-				137637, -- Warbringer (warrior)
 				 12323  -- Hamstring (warrior)
 			}
 		}, -- Snares and anti-snares

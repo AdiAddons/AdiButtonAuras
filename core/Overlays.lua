@@ -23,6 +23,7 @@ local addonName, addon = ...
 
 local _G = _G
 local assert = _G.assert
+local C_Timer = _G.C_Timer
 local CreateFrame = _G.CreateFrame
 local GetActionCooldown = _G.GetActionCooldown
 local GetActionInfo = _G.GetActionInfo
@@ -52,7 +53,6 @@ local UnitIsUnit = _G.UnitIsUnit
 local wipe = _G.wipe
 
 local LibSpellbook = addon.GetLib('LibSpellbook-1.0')
-local AceTimer = addon.GetLib('AceTimer-3.0')
 
 local MOUSEOVER_CHANGED = addon.MOUSEOVER_CHANGED
 local MOUSEOVER_TICK = addon.MOUSEOVER_TICK
@@ -367,13 +367,9 @@ function overlayPrototype:UpdateCooldown(event)
 	end
 	if self.cooldownStart ~= start or self.cooldownDuration ~= duration then
 		self:Debug('cooldownStart=', start, 'cooldownDuration=', duration)
-		if self.cooldownTimer then
-			AceTimer:CancelTimer(self.cooldownTimer)
-			self.cooldownTimer = nil
-		end
 		self.cooldownStart, self.cooldownDuration = start, duration
 		if inCooldown then
-			self.cooldownTimer = AceTimer.ScheduleTimer(self, "UpdateCooldown", (start+duration+0.1)-GetTime())
+			C_Timer.After((start+duration+0.1)-GetTime(), function() return self.UpdateCooldown(self) end)
 		end
 	end
 	if self.inCooldown ~= inCooldown then
