@@ -56,8 +56,8 @@ AdiButtonAuras:RegisterRules(function()
 				end
 			end,
 		},
-
-		-- Leave Enraged Regeneration dimmed unless enraged
+--[[ 
+		-- Leave Enraged Regeneration dimmed unless enraged -- unused but left as example
 		Configure {
 			"Enrage",
 			L['Suggest when to use Enraged Regeneration.'],
@@ -70,6 +70,6 @@ AdiButtonAuras:RegisterRules(function()
 				end
 			end,
 			55694,
-		},
+		}, --]]
 }
 end)
