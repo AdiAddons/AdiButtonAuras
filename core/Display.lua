@@ -38,7 +38,6 @@ local type = _G.type
 local unpack = _G.unpack
 local max = _G.max
 
-local AceTimer = addon.GetLib('AceTimer-3.0')
 local LSM = addon.GetLib('LibSharedMedia-3.0')
 
 local fontFile, fontSize, fontFlag = [[Fonts\ARIALN.TTF]], 13, "OUTLINE"
