@@ -77,7 +77,7 @@ AdiButtonAuras:RegisterRules(function()
 		Configure {
 			"WaterTotems",
 			format(L["Show %s duration."], L["water totems"]),
-			{16190, 108280, 5394}, -- Mana Tide, Healing Tide, Healing Stream Totem
+			{108280, 5394}, -- Healing Tide, Healing Stream Totem
 			"player",
 			"PLAYER_TOTEM_UPDATE",
 			function(units, model)
@@ -87,12 +87,12 @@ AdiButtonAuras:RegisterRules(function()
 					model.expiration = startTime + duration
 				end
 			end,
-			{16190, 108280, 5394},
+			{108280, 5394},
 		},
 		Configure {
 			"AirTotems",
 			format(L["Show %s duration."], L["air totems"]),
-			{98008, 120668, 108269, 8177, 108273}, -- Spirit Link, Stormlash, Capacitator, Grounding, Windwalk Totem
+			{98008, 108269, 8177, 108273}, -- Spirit Link, Capacitator, Grounding, Windwalk Totem
 			"player",
 			"PLAYER_TOTEM_UPDATE",
 			function(units, model)
@@ -102,7 +102,7 @@ AdiButtonAuras:RegisterRules(function()
 					model.expiration = startTime + duration
 				end
 			end,
-			{98008, 120668, 108269, 8177, 108273},
+			{98008, 108269, 8177, 108273},
 		},
 	}
 end)
