@@ -243,41 +243,43 @@ AdiButtonAuras:RegisterRules(function()
 	for spell, _, _, _, _, category in LibPlayerSpells:IterateSpells("INTERRUPT", PLAYER_CLASS) do
 		tinsert(interrupts, spell)
 	end
-	local source = DescribeLPSSource(PLAYER_CLASS)
-	tinsert(rules, Configure {
-		"Interrupt",
-		format(L["%s when %s is casting/channelling a spell that you can interrupt."].." [%s]",
-			DescribeHighlight("flash"),
-			DescribeAllTokens("enemy"),
-			source
-		),
-		interrupts,
-		"enemy",
-		{ -- Events
-			"UNIT_SPELLCAST_CHANNEL_START",
-			"UNIT_SPELLCAST_CHANNEL_STOP",
-			"UNIT_SPELLCAST_CHANNEL_UPDATE",
-			"UNIT_SPELLCAST_DELAYED",
-			"UNIT_SPELLCAST_INTERRUPTIBLE",
-			"UNIT_SPELLCAST_NOT_INTERRUPTIBLE",
-			"UNIT_SPELLCAST_START",
-			"UNIT_SPELLCAST_STOP",
-		},
-		-- Handler
-		function(units, model)
-			local unit = units.enemy
-			if unit and UnitCanAttack("player", unit) then
-				local name, _, _, _, _, endTime, _, _, notInterruptible = UnitCastingInfo(unit)
-				if name and not notInterruptible then
-					model.highlight, model.expiration = "flash", endTime / 1000
-				end
-				name, _, _, _, _, endTime, _, notInterruptible = UnitChannelInfo(unit)
-				if name and not notInterruptible then
-					model.highlight, model.expiration = "flash", endTime / 1000
+	if #interrupts > 0 then
+		local source = DescribeLPSSource(PLAYER_CLASS)
+		tinsert(rules, Configure {
+			"Interrupt",
+			format(L["%s when %s is casting/channelling a spell that you can interrupt."].." [%s]",
+				DescribeHighlight("flash"),
+				DescribeAllTokens("enemy"),
+				source
+			),
+			interrupts,
+			"enemy",
+			{ -- Events
+				"UNIT_SPELLCAST_CHANNEL_START",
+				"UNIT_SPELLCAST_CHANNEL_STOP",
+				"UNIT_SPELLCAST_CHANNEL_UPDATE",
+				"UNIT_SPELLCAST_DELAYED",
+				"UNIT_SPELLCAST_INTERRUPTIBLE",
+				"UNIT_SPELLCAST_NOT_INTERRUPTIBLE",
+				"UNIT_SPELLCAST_START",
+				"UNIT_SPELLCAST_STOP",
+			},
+			-- Handler
+			function(units, model)
+				local unit = units.enemy
+				if unit and UnitCanAttack("player", unit) then
+					local name, _, _, _, _, endTime, _, _, notInterruptible = UnitCastingInfo(unit)
+					if name and not notInterruptible then
+						model.highlight, model.expiration = "flash", endTime / 1000
+					end
+					name, _, _, _, _, endTime, _, notInterruptible = UnitChannelInfo(unit)
+					if name and not notInterruptible then
+						model.highlight, model.expiration = "flash", endTime / 1000
+					end
 				end
 			end
-		end
-	})
+		})
+	end
 
 	--------------------------------------------------------------------------
 	-- Racials & tradeskills
