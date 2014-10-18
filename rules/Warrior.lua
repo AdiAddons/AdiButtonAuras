@@ -56,20 +56,5 @@ AdiButtonAuras:RegisterRules(function()
 				end
 			end,
 		},
-
-		-- Leave Enraged Regeneration dimmed unless enraged
-		Configure {
-			"Enrage",
-			L['Suggest when to use Enraged Regeneration.'],
-			55694, -- Enraged Regeneration
-			"player",
-			"UNIT_AURA",
-			function(_, model)
-				if not GetPlayerBuff("player", 12880) then
-					model.highlight = "darken"
-				end
-			end,
-			55694,
-		},
 }
 end)
