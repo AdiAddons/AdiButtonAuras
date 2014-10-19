@@ -30,14 +30,28 @@ AdiButtonAuras:RegisterRules(function()
 		-- Import all spells for ...
 			"DEATHKNIGHT",
 		-- ... but ...
-			115635, -- Death Barrier
 			114851, -- Blood Charge
-			 50421, -- Scent of Blood
-			 81141, -- Crimson Scourge
-			 51124, -- Killing Machine
 			 59052, -- Freezing Fog
-			 81340, -- Sudden Doom
+			 51124, -- Killing Machine
 			 91342, -- Shadow Infusion
+			 81340, -- Sudden Doom
+			--  81141, -- Crimson Scourge
+			-- 115635, -- Death Barrier
+			--  50421, -- Scent of Blood
+		},
+		Configure {
+			"Blood Charge",
+			format(L["%s when you have 5 or more stacks of %s."], DescribeHighlight("flash"), GetSpellInfo(114851)),
+			45529, -- Blood Tap
+			"player",
+			"UNIT_AURA",
+			function(_, model)
+				local found, count = GetPlayerBuff("player", 114851) -- Blood Charge
+				if found and count >= 5 then
+					model.highlight = "flash"
+				end
+			end,
+			45529, -- Provided by: Blood Tap
 		},
 		Configure {
 			"Soul Reaper",
@@ -45,7 +59,7 @@ AdiButtonAuras:RegisterRules(function()
 			{
 				114866, -- Soul Reaper (Blood)
 				130735, -- Soul Reaper (Frost)
-				130736, -- Soul Reaper (Unholly)
+				130736, -- Soul Reaper (Unholy)
 			},
 			"enemy",
 			{ "UNIT_HEALTH", "UNIT_HEALTH_MAX" },
