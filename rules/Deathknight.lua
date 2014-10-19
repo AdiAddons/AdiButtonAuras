@@ -41,7 +41,7 @@ AdiButtonAuras:RegisterRules(function()
 		},
 		Configure {
 			"Blood Charge",
-			format(L["%s when you have 6 or more stacks of %s."], DescribeHighlight("flash"), GetSpellInfo(114851)),
+			format(L["%s when you have 5 or more stacks of %s."], DescribeHighlight("flash"), GetSpellInfo(114851)),
 			45529, -- Blood Tap
 			"player",
 			"UNIT_AURA",
