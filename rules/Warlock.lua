@@ -33,6 +33,9 @@ AdiButtonAuras:RegisterRules(function()
 			-- ... but ...
 			 80240, -- Havoc
 			116858, -- Chaos Bolt
+			6353,   -- Soul Fire
+			104027, -- Soul Fire (metamorphosis)
+			103958, -- Metamorphosis
 		},
 		ShowPower {
 			{
@@ -46,6 +49,10 @@ AdiButtonAuras:RegisterRules(function()
 		ShowPower {
 			74434, -- Soulburn
 			"SOUL_SHARDS",
+		},
+		ShowPower {
+			103958, -- Metamorphosis
+			"DEMONIC_FURY",
 		},
 		Configure {
 			"Pyroclasm",
@@ -90,6 +97,23 @@ AdiButtonAuras:RegisterRules(function()
 					model.hint = true
 				end
 			end
+		},
+		Configure {
+			"MoltenCore",
+			L["Show Molten Core expiry on Soul Fire, hint on 5+ stacks"],
+			{6353, 104027},
+			"player",
+			"UNIT_AURA",
+			(function()
+				local hasMoltenCore = BuildAuraHandler_Single("HELPFUL PLAYER", nil, "player", 122355)
+				return function(units, model)
+					if hasMoltenCore(units, model) then
+						if model.count >= 5 then
+							model.hint = true
+						end
+					end
+				end
+			end)()
 		},
 	}
 
