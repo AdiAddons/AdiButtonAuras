@@ -203,6 +203,7 @@ function overlayPrototype:Initialize(button)
 	self.units = {}
 	self.events = {}
 	self.handlers = nil
+	self.actionType = "empty"
 
 	-- Do not register these events to ourself so UnregisterAllMessages doesn't unregister them
 	local name = self:GetName()
