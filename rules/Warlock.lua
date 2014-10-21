@@ -32,8 +32,7 @@ AdiButtonAuras:RegisterRules(function()
 			"WARLOCK",
 			-- ... but ...
 			 80240, -- Havoc
-			116858, -- Chaos Bolt
-			6353,   -- Soul Fire
+			  6353, -- Soul Fire
 			104027, -- Soul Fire (metamorphosis)
 			103958, -- Metamorphosis
 		},
@@ -114,6 +113,22 @@ AdiButtonAuras:RegisterRules(function()
 					end
 				end
 			end)()
+		},
+		Configure {
+			"Chaos Bolt",
+			L["Highlight Chaos Bolt when at 3+ Burning Embers, hint at max"],
+			116858,
+			"player",
+			"UNIT_POWER",
+			function(_, model)
+				local embers = UnitPower("player", SPELL_POWER_BURNING_EMBERS)
+				if embers >= 3 then
+					model.highlight = "flash"
+				end
+				if embers >= 4 then
+					model.hint = true
+				end
+			end
 		},
 	}
 
