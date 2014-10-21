@@ -105,7 +105,7 @@ AdiButtonAuras:RegisterRules(function()
 			"player",
 			"UNIT_AURA",
 			(function()
-				local hasMoltenCore = BuildAuraHandler_Single("HELPFUL PLAYER", nil, "player", 122355)
+				local hasMoltenCore = BuildAuraHandler_FirstOf("HELPFUL PLAYER", nil, "player", {122355, 140074})
 				return function(units, model)
 					if hasMoltenCore(units, model) then
 						if model.count >= 5 then
