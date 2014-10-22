@@ -32,7 +32,9 @@ AdiButtonAuras:RegisterRules(function()
 			"WARLOCK",
 			-- ... but ...
 			 80240, -- Havoc
-			116858, -- Chaos Bolt
+			  6353, -- Soul Fire
+			104027, -- Soul Fire (metamorphosis)
+			103958, -- Metamorphosis
 		},
 		ShowPower {
 			{
@@ -46,6 +48,10 @@ AdiButtonAuras:RegisterRules(function()
 		ShowPower {
 			74434, -- Soulburn
 			"SOUL_SHARDS",
+		},
+		ShowPower {
+			103958, -- Metamorphosis
+			"DEMONIC_FURY",
 		},
 		Configure {
 			"Pyroclasm",
@@ -87,6 +93,39 @@ AdiButtonAuras:RegisterRules(function()
 			"UNIT_AURA",
 			function(_, model)
 				if not GetPlayerBuff("player", 80240) then
+					model.hint = true
+				end
+			end
+		},
+		Configure {
+			"MoltenCore",
+			L["Show Molten Core expiry on Soul Fire, hint on 5+ stacks"],
+			{6353, 104027},
+			"player",
+			"UNIT_AURA",
+			(function()
+				local hasMoltenCore = BuildAuraHandler_FirstOf("HELPFUL PLAYER", nil, "player", {122355, 140074})
+				return function(units, model)
+					if hasMoltenCore(units, model) then
+						if model.count >= 5 then
+							model.hint = true
+						end
+					end
+				end
+			end)()
+		},
+		Configure {
+			"Chaos Bolt",
+			L["Highlight Chaos Bolt when at 3+ Burning Embers, hint at max"],
+			116858,
+			"player",
+			"UNIT_POWER",
+			function(_, model)
+				local embers = UnitPower("player", SPELL_POWER_BURNING_EMBERS)
+				if embers >= 3 then
+					model.highlight = "flash"
+				end
+				if embers >= 4 then
 					model.hint = true
 				end
 			end
