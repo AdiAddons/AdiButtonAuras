@@ -182,6 +182,19 @@ local function ConcatLists(a, b)
 end
 addon.ConcatLists = ConcatLists
 
+local function SubtractLists(a, b)
+	for ib, vb in ipairs(b) do
+		for ia, va in ipairs(a) do
+			if( va == vb ) then
+				tremove( a, ia )
+				break
+			end
+		end
+	end
+	return a
+end
+addon.SubtractLists = SubtractLists
+
 local FlattenList
 do
 	local function Flatten0(a, b)
