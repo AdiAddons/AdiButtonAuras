@@ -76,7 +76,9 @@ local function BuildUserRules()
 		end
 	end
 	initialLoading = false
-	return rules
+	for _, builder in ipairs(rules) do
+		xpcall(builder, errorhandler)
+	end
 end
 
 AdiButtonAuras:RegisterRules(function() return BuildUserRules end)
