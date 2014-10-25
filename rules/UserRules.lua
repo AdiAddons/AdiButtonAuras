@@ -76,7 +76,7 @@ local function BuildUserRules()
 		end
 	end
 	initialLoading = false
-	
+
 	--Sub-builders for every user rule created. This parent builder can now run them.
 	for _, builder in ipairs(rules) do
 		xpcall(builder, errorhandler)
