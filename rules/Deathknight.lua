@@ -55,7 +55,7 @@ AdiButtonAuras:RegisterRules(function()
 		},
 		Configure {
 			"Soul Reaper",
-			L["Shows Hint when target is below 35% health."],
+			L["Shows a hint when the target is below 35% health."],
 			{
 				114866, -- Soul Reaper (Blood)
 				130735, -- Soul Reaper (Frost)
@@ -68,6 +68,22 @@ AdiButtonAuras:RegisterRules(function()
 					model.hint = true
 				end
 			end,
-		}
+			{ 114866, 130735, 130736, },
+		},
+		Configure {
+			"Improved Soul Reaper",
+			L["Shows a hint when the target is below 45% health. (Unholy Perk)"],
+			{
+				130736, -- Soul Reaper (Unholy)
+			},
+			"enemy",
+			{ "UNIT_HEALTH", "UNIT_HEALTH_MAX" },
+			function(units, model)
+				if UnitHealth(units.enemy) / UnitHealthMax(units.enemy) < 0.45 then
+					model.hint = true
+				end
+			end,
+			157342, -- Improved Soul Reaper
+		},		
 	}
 end)

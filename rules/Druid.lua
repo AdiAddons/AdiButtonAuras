@@ -31,6 +31,7 @@ AdiButtonAuras:RegisterRules(function()
 			-- Import all spells for ...
 			"DRUID",
 			-- ... but ...
+			  5217, -- Tiger's Fury
 			145518, -- Genesis
 			 16870, -- Clearcasting
 			114108, -- Soul of the Forest (restoration)
@@ -155,6 +156,10 @@ AdiButtonAuras:RegisterRules(function()
 			"ENERGY",
 			35,
 			"darken"
+		},
+		BuffAliases { -- Always show Tiger's Fury Buff even when 'darkened'
+			5217, 
+			5217, 
 		},
 		Configure {
 			"GlyphOfRejuvenation",
