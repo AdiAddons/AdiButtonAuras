@@ -158,8 +158,8 @@ AdiButtonAuras:RegisterRules(function()
 			"darken"
 		},
 		BuffAliases { -- Always show Tiger's Fury Buff even when 'darkened'
-			5217, 
-			5217, 
+			5217,
+			5217,
 		},
 		Configure {
 			"GlyphOfRejuvenation",

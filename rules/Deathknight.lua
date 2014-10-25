@@ -84,6 +84,6 @@ AdiButtonAuras:RegisterRules(function()
 				end
 			end,
 			157342, -- Improved Soul Reaper
-		},		
+		},
 	}
 end)
