@@ -60,8 +60,6 @@ end
 -- Prototypes
 ------------------------------------------------------------------------------
 
-local serial = 0
-
 local function UpdateAuras(self)
 	self.__guid = UnitGUID(self.__unit)
 	if not self.__guid then
@@ -75,18 +73,19 @@ local function UpdateAuras(self)
 	return self:_Update(self.__unit, self.__filter)
 end
 
-local function GetAuraById(self, id)
+local function CheckGUID(self)
 	if self.__guid ~= UnitGUID(self.__unit) then
 		self:Update()
 	end
-	return self:_GetById(id)
+	return self
 end
 
 local playerAurasMetatable = {
 	__index = {
 		Update = UpdateAuras,
-		GetById = GetAuraById,
+		CheckGUID = CheckGUID,
 		_Update = function(self, unit, filter)
+			local serial = GetTime()
 			for index = 1, math.huge do
 				local name, _, _, count, _, _, expiration, _, _, _, id = UnitAura(unit, index, filter)
 				if not name then
@@ -107,8 +106,9 @@ local playerAurasMetatable = {
 					self[id] = del(aura)
 				end
 			end
+			return self
 		end,
-		_GetById = function(self, id)
+		GetById = function(self, id)
 			return rawget(self, id)
 		end,
 	}
@@ -117,7 +117,7 @@ local playerAurasMetatable = {
 local allAurasMetatable = {
 	__index = {
 		Update = UpdateAuras,
-		GetById = GetAuraById,
+		CheckGUID = CheckGUID,
 		_Update = function(self, unit, filter)
 			for index = 1, math.huge do
 				local name, _, _, count, _, _, expiration, _, _, _, id = UnitAura(unit, index, filter)
@@ -136,8 +136,9 @@ local allAurasMetatable = {
 				aura.expiration = expiration
 				aura.id = id
 			end
+			return self
 		end,
-		_GetById = function(self, id)
+		GetById = function(self, id)
 			for i, aura in ipairs(self) do
 				if aura.id == id then
 					return aura
@@ -211,7 +212,6 @@ local eventFrame = CreateFrame("Frame")
 eventFrame:SetScript('OnEvent', function(self, event, unit)
 	if event == 'UNIT_AURA' then
 		if rawget(cache, unit) then
-			serial = serial + 1
 			cache[unit]:Update()
 		end
 	elseif event == 'PLAYER_REGEN_ENABLED' then
@@ -243,7 +243,7 @@ for key in pairs(mts) do
 	local key = key
 	getters[key] = function(unit, id)
 		if unit and UnitExists(unit) then
-			local aura = cache[unit][key]:GetById(id)
+			local aura = cache[unit][key]:CheckGUID():GetById(id)
 			if aura then
 				return id, aura.count, aura.expiration
 			end
@@ -251,7 +251,7 @@ for key in pairs(mts) do
 	end
 	iterators[key] = function(unit)
 		if not unit or not UnitExists(unit) then return NOP end
-		return auraIterator, cache[unit][key]
+		return auraIterator, cache[unit][key]:CheckGUID()
 	end
 end
 
