@@ -25,6 +25,9 @@ if not addon.isClass("DEATHKNIGHT") then return end
 
 AdiButtonAuras:RegisterRules(function()
 	Debug('Adding deathknight rules')
+
+	local BloodCharge = GetSpellInfo(114851)
+
 	return {
 		ImportPlayerSpells {
 		-- Import all spells for ...
@@ -41,14 +44,29 @@ AdiButtonAuras:RegisterRules(function()
 		},
 		Configure {
 			"Blood Charge",
-			format(L["%s when you have 5 or more stacks of %s."], DescribeHighlight("flash"), GetSpellInfo(114851)),
+			format(L["%s when you have 5 or more stacks of %s."], DescribeHighlight("hint"), BloodCharge),
 			45529, -- Blood Tap
 			"player",
 			"UNIT_AURA",
 			function(_, model)
 				local found, count = GetPlayerBuff("player", 114851) -- Blood Charge
 				if found and count >= 5 then
+					model.hint = true
+				end
+			end,
+			45529, -- Provided by: Blood Tap
+		},
+			Configure {
+			"Blood Charge Capping",
+			format(L["%s when you have 10 or more stacks of %s."], DescribeHighlight("flash"), BloodCharge),
+			45529, -- Blood Tap
+			"player",
+			"UNIT_AURA",
+			function(_, model)
+				local found, count = GetPlayerBuff("player", 114851) -- Blood Charge
+				if found and count >= 10 then
 					model.highlight = "flash"
+					model.hint = false
 				end
 			end,
 			45529, -- Provided by: Blood Tap
