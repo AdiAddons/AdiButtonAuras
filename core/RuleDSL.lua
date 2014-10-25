@@ -55,6 +55,7 @@ local ucfirst      = addon.ucfirst
 local errorhandler = addon.errorhandler
 local Do           = addon.Do
 local ConcatLists  = addon.ConcatLists
+local SubtractLists= addon.SubtractLists
 local FlattenList  = addon.FlattenList
 local AsList       = addon.AsList
 local AsSet        = addon.AsSet
@@ -132,6 +133,16 @@ local function _AddRuleFor(key, desc, spell, units, events, handlers, providers,
 		rules[id] = rule
 	end
 	if key then
+		if( _type == "item" ) then		--Some item rules survive wipes due to metatable shenanigans: Manually avoid duplication.
+			if( not rule.itemHandlers ) then rule.itemHandlers = {} end
+			if( rule.itemHandlers[key] ) then
+				SubtractLists(rule.keys, {key})		--remove duplicate key: it needs to be re-added after the wipe(), to appear in custom rules list
+				SubtractLists(rule.handlers, rule.itemHandlers[key])	--remove the old handlers that were added with this key
+			end
+
+			rule.itemHandlers[key] = handlers	--remember this key's handlers, so we can remove them next time
+		end
+
 		tinsert(rule.keys, key)
 		if not addon.db.profile.rules[key] then
 			return
