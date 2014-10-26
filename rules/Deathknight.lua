@@ -33,14 +33,12 @@ AdiButtonAuras:RegisterRules(function()
 		-- Import all spells for ...
 			"DEATHKNIGHT",
 		-- ... but ...
-			114851, -- Blood Charge
-			 59052, -- Freezing Fog
+			 46584, -- Raise Dead (Unholy)
 			 51124, -- Killing Machine
-			 91342, -- Shadow Infusion
+			 59052, -- Freezing Fog
 			 81340, -- Sudden Doom
-			--  81141, -- Crimson Scourge
-			-- 115635, -- Death Barrier
-			--  50421, -- Scent of Blood
+			 91342, -- Shadow Infusion
+			114851, -- Blood Charge
 		},
 		Configure {
 			"Blood Charge",
@@ -102,6 +100,21 @@ AdiButtonAuras:RegisterRules(function()
 				end
 			end,
 			157342, -- Improved Soul Reaper
+		},
+		Configure {
+			"Raise Dead",
+			L['Suggests summoning your pet'],
+			46584, -- Raise Dead
+			"player",
+			"UNIT_PET",
+			function(units, model)
+				if not HasPetSpells() then
+					model.hint = "true"
+				else
+					model.highlight = "good"
+				end
+			end,
+			46584, -- Raise Dead
 		},
 	}
 end)
