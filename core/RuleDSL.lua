@@ -579,9 +579,9 @@ local RULES_ENV = addon.BuildSafeEnv(
 	{
 		"bit", "ceil", "floor", "format", "GetComboPoints", "GetEclipseDirection", "GetNumGroupMembers",
 		"GetShapeshiftFormID", "GetSpellBonusHealing", "GetSpellInfo", "GetTime", "GetTotemInfo",
-		"ipairs", "math", "min", "pairs", "select", "string", "table", "tinsert", "UnitIsPlayer",
-		"UnitCanAttack", "UnitCastingInfo", "UnitChannelInfo", "UnitClass","UnitHealth", "print",
-		"UnitHealthMax", "UnitPower",  "UnitPowerMax",  "UnitStagger", "UnitIsDeadOrGhost",
+		"HasPetSpells", "ipairs", "math", "min", "pairs", "select", "string", "table", "tinsert",
+		"UnitIsPlayer", "UnitCanAttack", "UnitCastingInfo", "UnitChannelInfo", "UnitClass","UnitHealth",
+		"print", "UnitHealthMax", "UnitPower", "UnitPowerMax", "UnitStagger", "UnitIsDeadOrGhost",
 	}
 )
 

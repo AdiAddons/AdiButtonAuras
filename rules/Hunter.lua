@@ -25,5 +25,29 @@ if not addon.isClass("HUNTER") then return end
 
 AdiButtonAuras:RegisterRules(function()
 	Debug('Adding hunter rules')
-	return ImportPlayerSpells { "HUNTER" }
+
+	return {
+		ImportPlayerSpells { "HUNTER" },
+			Configure {
+				"Call Pet",
+				L['Suggests summoning your pet'],
+				{
+					883,      -- Call Pet 1
+					-- 83242, -- Call Pet 2
+					-- 83243, -- Call Pet 3
+					-- 83244, -- Call Pet 4
+					-- 83245, -- Call Pet 5
+				},
+				"player",
+				"UNIT_PET",
+				function(units, model)
+					if not HasPetSpells() then
+						model.hint = "true"
+					else
+						model.highlight = "good"
+					end
+				end,
+				883, -- Requires Call Pet
+			},
+	}
 end)
