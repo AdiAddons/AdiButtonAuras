@@ -61,8 +61,12 @@ local AsSet        = addon.AsSet
 local MergeSets    = addon.MergeSets
 local BuildKey     = addon.BuildKey
 
-local rules        = addon.rules
-local descriptions = addon.descriptions
+local DescribeHighlight = addon.DescribeHighlight
+local DescribeFilter    = addon.DescribeFilter
+local DescribeAllTokens = addon.DescribeAllTokens
+local DescribeAllSpells = addon.DescribeAllSpells
+local BuildDesc         = addon.BuildDesc
+local DescribeLPSSource = addon.DescribeLPSSource
 
 local LibPlayerSpells = addon.GetLib('LibPlayerSpells-1.0')
 local LibSpellbook = addon.GetLib('LibSpellbook-1.0')
@@ -186,80 +190,6 @@ local function Configure(key, desc, spells, units, events, handlers, providers, 
 	end
 	return #builders == 1 and builders[1] or builders
 end
-
-------------------------------------------------------------------------------
--- Rule description
-------------------------------------------------------------------------------
-
-local L = addon.L
-local filterDescs = {
-	["HELPFUL"] = L['the buff'],
-	["HARMFUL"] = L['the debuff'],
-	["HELPFUL PLAYER"] = L['your buff'],
-	["HARMFUL PLAYER"] = L['your debuff'],
-}
-local tokenDescs = {
-	player = L['yourself'],
-	pet    = L['your pet'],
-	ally   = L['the targeted ally'],
-	enemy  = L['the targeted enemy'],
-	group  = L['the group members'],
-}
-local highlightDescs = {
-	flash   = L['flash'],
-	good    = L['show the "good" border'],
-	bad     = L['show the "bad" border'],
-	lighten = L['lighten'],
-	darken  = L['darken'],
-	hint    = L['suggest'], -- Not really an highlight but who cares ?
-}
-
-local function DescribeHighlight(highlight)
-	return highlight and highlightDescs[highlight] or L["show duration and/or stack count"]
-end
-
-local function DescribeFilter(filter)
-	return filter and (filterDescs[filter] or tostring(filter)) or ""
-end
-
-local function DescribeAllTokens(token, ...)
-	if token ~= nil then
-		return tokenDescs[token] or token, DescribeAllTokens(...)
-	end
-end
-
-local function DescribeAllSpells(id, ...)
-	if id ~= nil then
-		local name = type(id) == "number" and GetSpellInfo(id) or tostring(id)
-		return name, DescribeAllSpells(...)
-	end
-end
-
-local function BuildDesc(filter, highlight, token, spell)
-	local tokens = type(token) == "table" and DescribeAllTokens(unpack(token)) or DescribeAllTokens(token)
-	local spells = type(spell) == "table" and DescribeAllSpells(unpack(spell)) or DescribeAllSpells(spell)
-	return ucfirst(gsub(format(
-		L["%s when %s %s is found on %s."],
-		DescribeHighlight(highlight),
-		DescribeFilter(filter),
-		spells or "",
-		tokens or "?"
-	), "%s+", " "))
-end
-
-local function DescribeLPSSource(category)
-	if category then
-		local _, interface, rev = LibPlayerSpells:GetVersionInfo(category)
-		return format("LPS-%s-%d.%d.%d-%d", category, interface/10000, (interface/100)%100, interface%100, rev)
-	end
-end
-
-addon.DescribeHighlight = DescribeHighlight
-addon.DescribeFilter = DescribeFilter
-addon.DescribeAllTokens = DescribeAllTokens
-addon.DescribeAllSpells = DescribeAllSpells
-addon.BuildDesc = BuildDesc
-addon.DescribeLPSSource = DescribeLPSSource
 
 ------------------------------------------------------------------------------
 -- Handler builders
