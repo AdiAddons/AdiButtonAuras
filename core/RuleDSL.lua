@@ -68,6 +68,8 @@ local DescribeAllSpells = addon.DescribeAllSpells
 local BuildDesc         = addon.BuildDesc
 local DescribeLPSSource = addon.DescribeLPSSource
 
+local L = addon.L
+
 local LibPlayerSpells = addon.GetLib('LibPlayerSpells-1.0')
 local LibSpellbook = addon.GetLib('LibSpellbook-1.0')
 
@@ -312,7 +314,7 @@ local function ShowPower(spells, powerType, handler, highlight, desc)
 			end
 			desc = format(L["Show %s and %s when %s."],
 				powerLoc,
-				highlightDescs[highlight],
+				addon.DescribeHighlight(highlight),
 				format(
 					sign < 0 and L["it is below %s"] or L["it is above %s"],
 					floor(100 * sign * handler)..'%'
@@ -328,7 +330,7 @@ local function ShowPower(spells, powerType, handler, highlight, desc)
 			end
 			desc = format(L["Show %s and %s when %s."],
 				powerLoc,
-				highlightDescs[highlight],
+				addon.DescribeHighlight(highlight),
 				format(
 					sign < 0 and L["it is below %s"] or L["it is above %s"],
 					sign * handler
@@ -347,7 +349,7 @@ local function ShowPower(spells, powerType, handler, highlight, desc)
 			end
 		end
 		if highlight then
-			desc = format(L["Show %s and %s when it reaches its maximum."], powerLoc, highlightDescs[highlight])
+			desc = format(L["Show %s and %s when it reaches its maximum."], powerLoc, addon.DescribeHighlight(highlight))
 		else
 			desc = format(L["Show %s."], powerLoc)
 		end
@@ -427,7 +429,7 @@ end
 -- Base "globals"
 local baseEnv = {
 	-- Common functions and constatns
-	L            = L,
+	L            = addon.L,
 	Debug        = Debug,
 	PLAYER_CLASS = PLAYER_CLASS,
 
@@ -438,13 +440,13 @@ local baseEnv = {
 	BuildAuraHandler_FirstOf = BuildAuraHandler_FirstOf,
 
 	-- Description helpers
-	BuildDesc         = BuildDesc,
-	BuildKey          = BuildKey,
-	DescribeHighlight = DescribeHighlight,
-	DescribeFilter    = DescribeFilter,
-	DescribeAllTokens = DescribeAllTokens,
-	DescribeAllSpells = DescribeAllSpells,
-	DescribeLPSSource = DescribeLPSSource,
+	BuildDesc         = addon.BuildDesc,
+	BuildKey          = addon.BuildKey,
+	DescribeHighlight = addon.DescribeHighlight,
+	DescribeFilter    = addon.DescribeFilter,
+	DescribeAllTokens = addon.DescribeAllTokens,
+	DescribeAllSpells = addon.DescribeAllSpells,
+	DescribeLPSSource = addon.DescribeLPSSource,
 
 	-- Basic functions
 	Configure = WrapTableArgFunc(Configure),

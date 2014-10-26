@@ -21,7 +21,12 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 
 local addonName, addon = ...
 
-local L = addon.L
+local L            = addon.L
+local getkeys      = addon.getkeys
+local ucfirst      = addon.ucfirst
+
+local LibPlayerSpells = addon.GetLib('LibPlayerSpells-1.0')
+
 local filterDescs = {
 	["HELPFUL"] = L['the buff'],
 	["HARMFUL"] = L['the debuff'],
