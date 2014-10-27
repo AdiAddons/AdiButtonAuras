@@ -78,6 +78,9 @@ local PLAYER_CLASS = select(2, UnitClass("player"))
 -- Local debug with dedicated prefix
 local function Debug(...) return addon.Debug('|cffffff00Rules:|r', ...) end
 
+local rules = addon.rules
+local descriptions = addon.descriptions
+
 ------------------------------------------------------------------------------
 -- Rule creation
 ------------------------------------------------------------------------------
