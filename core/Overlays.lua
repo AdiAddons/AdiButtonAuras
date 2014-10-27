@@ -51,6 +51,7 @@ local tonumber = _G.tonumber
 local UnitGUID = _G.UnitGUID
 local UnitIsUnit = _G.UnitIsUnit
 local wipe = _G.wipe
+local GetTime = _G.GetTime
 
 local LibSpellbook = addon.GetLib('LibSpellbook-1.0')
 

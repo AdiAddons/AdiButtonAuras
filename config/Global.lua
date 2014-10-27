@@ -21,9 +21,10 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 
 local _, private = ...
 
+local _G = _G
+
 function private.GetGlobalOptions(addon)
 
-	local _G = _G
 	local format = _G.format
 
 	local L = addon.L

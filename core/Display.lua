@@ -37,6 +37,8 @@ local tremove = _G.tremove
 local type = _G.type
 local unpack = _G.unpack
 local max = _G.max
+local ceil = _G.ceil
+local InCombatLockdown = _G.InCombatLockdown
 
 local LSM = addon.GetLib('LibSharedMedia-3.0')
 

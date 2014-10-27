@@ -21,6 +21,14 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 
 local addonName, addon = ...
 
+local _G = _G
+local format = _G.format
+local GetSpellInfo = _G.GetSpellInfo
+local gsub = _G.gsub
+local tostring = _G.tostring
+local type = _G.type
+local unpack = _G.unpack
+
 local L            = addon.L
 local getkeys      = addon.getkeys
 local ucfirst      = addon.ucfirst

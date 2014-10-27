@@ -21,9 +21,12 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 
 local _, private = ...
 
+local _G = _G
+
+-- GLOBALS: LibStub
+
 function private.GetDebugOptions(addon, addonName)
 
-	local _G = _G
 	local floor = _G.floor
 	local format = _G.format
 	local GetAddOnMetadata = _G.GetAddOnMetadata

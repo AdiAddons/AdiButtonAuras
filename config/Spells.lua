@@ -21,7 +21,23 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 
 local _, private = ...
 
+local _G = _G
+
 function private.GetSpellOptions(addon, addonName)
+
+	local CreateFrame = _G.CreateFrame
+	local format = _G.format
+	local GameTooltip = _G.GameTooltip
+	local GameTooltip_SetDefaultAnchor = _G.GameTooltip_SetDefaultAnchor
+	local GetItemInfo = _G.GetItemInfo
+	local GetSpellInfo = _G.GetSpellInfo
+	local hooksecurefunc = _G.hooksecurefunc
+	local ipairs = _G.ipairs
+	local IsShiftKeyDown = _G.IsShiftKeyDown
+	local pairs = _G.pairs
+	local setmetatable = _G.setmetatable
+	local UNKNOWN = _G.UNKNOWN
+	local wipe = _G.wipe
 
 	local L = addon.L
 

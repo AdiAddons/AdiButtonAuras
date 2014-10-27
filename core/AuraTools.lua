@@ -31,6 +31,10 @@ local setmetatable = _G.setmetatable
 local UnitAura = _G.UnitAura
 local wipe = _G.wipe
 local math = _G.math
+local GetTime = _G.GetTime
+local type = _G.type
+local UnitExists = _G.UnitExists
+local UnitGUID = _G.UnitGUID
 
 local Debug = function(...) addon.Debug('AuraTools', ...) end
 

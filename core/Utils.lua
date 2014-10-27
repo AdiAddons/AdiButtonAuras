@@ -36,6 +36,7 @@ local tinsert = _G.tinsert
 local tostring = _G.tostring
 local type = _G.type
 local unpack = _G.unpack
+local math = _G.math
 
 ------------------------------------------------------------------------------
 -- Create a memoization table

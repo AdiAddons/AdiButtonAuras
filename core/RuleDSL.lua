@@ -52,7 +52,6 @@ local geterrorhandler = _G.geterrorhandler
 
 local getkeys      = addon.getkeys
 local ucfirst      = addon.ucfirst
-local errorhandler = addon.errorhandler
 local Do           = addon.Do
 local ConcatLists  = addon.ConcatLists
 local FlattenList  = addon.FlattenList

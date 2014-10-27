@@ -26,6 +26,8 @@ if not addon.isClass("MONK") then return end
 AdiButtonAuras:RegisterRules(function()
 	Debug('Adding monk rules')
 
+	-- GLOBALS: STAGGER_YELLOW_TRANSITION SPELL_POWER_MANA
+
 	-- Mistweaver constants
 	local TFT_COUNT    = 4 -- Minimum number of Renewing Mist to highlight Thunder Focus Tea
 	local TFT_DURATION = 6 -- Duration threshold to highlight Thunder Focus Tea
@@ -241,3 +243,16 @@ AdiButtonAuras:RegisterRules(function()
 	}
 
 end)
+
+-- GLOBALS: AddRuleFor BuffAliases BuildAuraHandler_FirstOf BuildAuraHandler_Longest
+-- GLOBALS: BuildAuraHandler_Single BuildDesc BuildKey Configure DebuffAliases Debug
+-- GLOBALS: DescribeAllSpells DescribeAllTokens DescribeFilter DescribeHighlight
+-- GLOBALS: DescribeLPSSource GetComboPoints GetEclipseDirection GetNumGroupMembers
+-- GLOBALS: GetShapeshiftFormID GetSpellBonusHealing GetSpellInfo GetTime
+-- GLOBALS: GetTotemInfo HasPetSpells ImportPlayerSpells L LongestDebuffOf
+-- GLOBALS: PLAYER_CLASS PassiveModifier PetBuffs SelfBuffAliases SelfBuffs
+-- GLOBALS: SharedSimpleBuffs SharedSimpleDebuffs ShowPower SimpleBuffs
+-- GLOBALS: SimpleDebuffs UnitCanAttack UnitCastingInfo UnitChannelInfo UnitClass
+-- GLOBALS: UnitHealth UnitHealthMax UnitIsDeadOrGhost UnitIsPlayer UnitPower
+-- GLOBALS: UnitPowerMax UnitStagger bit ceil floor format ipairs math min pairs
+-- GLOBALS: print select string table tinsert GetPlayerBuff

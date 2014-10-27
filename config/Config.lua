@@ -21,9 +21,11 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 
 local _, private = ...
 
+local _G = _G
+
+-- GLOBALS: AdiButtonAuras
 AdiButtonAuras:CreateConfig(function(addonName, addon)
 
-	local _G = _G
 	local GetItemInfo = _G.GetItemInfo
 	local GetSpellInfo = _G.GetSpellInfo
 	local strmatch = _G.strmatch
@@ -84,7 +86,7 @@ AdiButtonAuras:CreateConfig(function(addonName, addon)
 		what = (what or ""):trim():lower()
 
 		if panels[what] then
-			return InterfaceOptionsFrame_OpenToCategory(panels[what])
+			return _G.InterfaceOptionsFrame_OpenToCategory(panels[what])
 		end
 
 		local _type, id = strmatch(what, '([si][pt]e[lm]l?):(%d+)')
@@ -96,7 +98,7 @@ AdiButtonAuras:CreateConfig(function(addonName, addon)
 		end
 		local key = (_type == 'spell' or _type == 'item') and id and _type..':'..id
 		if key and addon.spells[key] then
-			InterfaceOptionsFrame_OpenToCategory(spellPanel)
+			_G.InterfaceOptionsFrame_OpenToCategory(panels.spells)
 			private.SelectSpell(key)
 		end
 	end

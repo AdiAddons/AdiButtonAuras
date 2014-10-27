@@ -21,9 +21,10 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 
 local _, private = ...
 
+local _G = _G
+
 function private.GetThemeOptions(addon)
 
-	local _G = _G
 	local unpack = _G.unpack
 	local L = addon.L
 

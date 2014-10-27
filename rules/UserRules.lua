@@ -29,6 +29,9 @@ local setmetatable = _G.setmetatable
 local tinsert = _G.tinsert
 local tostring = _G.tostring
 local xpcall = _G.xpcall
+local getprinthandler = _G.getprinthandler
+local pcall = _G.pcall
+local setprinthandler = _G.setprinthandler
 
 local Restricted = addon.Restricted
 local isClass = addon.isClass
@@ -59,7 +62,7 @@ local function BuildUserRules()
 			local builder, msg = CompileUserRule(rule.code)
 			if builder then
 				setprinthandler(function(...) ph(format('[%s "%s"]:', addonName, rule.title), ...) end)
-				local ok, result = pcall(builder, errorhandler)
+				local ok, result = pcall(builder)
 				setprinthandler(ph)
 				if ok and result then
 					tinsert(rules, result)
@@ -77,8 +80,21 @@ local function BuildUserRules()
 	end
 	initialLoading = false
 	for _, builder in ipairs(rules) do
-		xpcall(builder, errorhandler)
+		xpcall(builder)
 	end
 end
 
 AdiButtonAuras:RegisterRules(function() return BuildUserRules end)
+
+-- GLOBALS: AddRuleFor BuffAliases BuildAuraHandler_FirstOf BuildAuraHandler_Longest
+-- GLOBALS: BuildAuraHandler_Single BuildDesc BuildKey Configure DebuffAliases Debug
+-- GLOBALS: DescribeAllSpells DescribeAllTokens DescribeFilter DescribeHighlight
+-- GLOBALS: DescribeLPSSource GetComboPoints GetEclipseDirection GetNumGroupMembers
+-- GLOBALS: GetShapeshiftFormID GetSpellBonusHealing GetSpellInfo GetTime
+-- GLOBALS: GetTotemInfo HasPetSpells ImportPlayerSpells L LongestDebuffOf
+-- GLOBALS: PLAYER_CLASS PassiveModifier PetBuffs SelfBuffAliases SelfBuffs
+-- GLOBALS: SharedSimpleBuffs SharedSimpleDebuffs ShowPower SimpleBuffs
+-- GLOBALS: SimpleDebuffs UnitCanAttack UnitCastingInfo UnitChannelInfo UnitClass
+-- GLOBALS: UnitHealth UnitHealthMax UnitIsDeadOrGhost UnitIsPlayer UnitPower
+-- GLOBALS: UnitPowerMax UnitStagger bit ceil floor format ipairs math min pairs
+-- GLOBALS: print select string table tinsert GetPlayerBuff

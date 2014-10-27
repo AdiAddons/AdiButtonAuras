@@ -56,9 +56,10 @@ return Configure {
 }
 ]===]
 
+local _G = _G
+
 function private.GetUserRulesOptions(addon, addonName)
 
-	local _G = _G
 	local date = _G.date
 	local format = _G.format
 	local GetBuildInfo = _G.GetBuildInfo
@@ -68,6 +69,10 @@ function private.GetUserRulesOptions(addon, addonName)
 	local pairs = _G.pairs
 	local time = _G.time
 	local wipe = _G.wipe
+	local GetAddOnMetadata = _G.GetAddOnMetadata
+	local tostring = _G.tostring
+	local type = _G.type
+	local unpack = _G.unpack
 
 	local L = addon.L
 
