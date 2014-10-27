@@ -1,6 +1,8 @@
 AdiButtonAuras
 ==============
 
+[![Build Status](https://travis-ci.org/Adirelle/AdiButtonAuras.svg?branch=1.8.1)](https://travis-ci.org/Adirelle/AdiButtonAuras)
+
 Display auras, and more, on action buttons.
 
 AdiButtonAuras is a rewrite of Inline Aura, but with different [design decisions](https://github.com/Adirelle/AdiButtonAuras/blob/master/doc/Design.md) based on my experience on the latter.
