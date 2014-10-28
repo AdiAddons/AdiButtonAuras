@@ -1,17 +1,17 @@
 AdiButtonAuras
 ==============
 
-[![Build Status](https://travis-ci.org/Adirelle/AdiButtonAuras.svg?branch=1.8.1)](https://travis-ci.org/Adirelle/AdiButtonAuras)
-
-Display auras, and more, on action buttons.
+*Display auras, and more, on action buttons.*
 
 AdiButtonAuras is a rewrite of Inline Aura, but with different [design decisions](https://github.com/Adirelle/AdiButtonAuras/blob/master/doc/Design.md) based on my experience on the latter.
 
 AdiButtonAuras uses a set of rules that apply to one or more spells. Each rule can track an aura on one or more unit and changes the display of the spell accordingly.
 
-AdiButtonAuras has several custom rules to suggest using spells at meaningful times. By default, these suggestions are displayed using a rotary, shinning star on the buttons.
+AdiButtonAuras has several custom rules to suggest using spells at meaningful times. By default, these suggestions are displayed using a rotary, shinning star on the buttons. These can be disabled.
 
 AdiButtonAuras smartly track raid/group buffs: it shows the number of *missing* buffs and the duration of the shortest one, taking into account equivalent buffs.
+
+Development version build status: [![Build Status](https://travis-ci.org/Adirelle/AdiButtonAuras.svg?branch=1.8.1)](https://travis-ci.org/Adirelle/AdiButtonAuras)
 
 Getting started
 ---------------
@@ -84,7 +84,12 @@ AdiButtonAuras should work with ElvUI. I am not going to support its skin though
 
 #### Are you going to add a configuration panel to create custom rules ?
 
-Not in the way InlineAura did it. At best will it support custom rules written in Lua using the DSL (and I make no promise).
+Not in the way InlineAura did it. However you can create custom rules in game using the Lua API.
+
+Contributions & feedback
+------------------------
+
+The project is open-source and [hosted on github.com](https://github.com/Adirelle/AdiButtonAura). You can report issues there. Pull request are also welcome. Adirelle often hands around on the freenode IRC network, in the #wowace channel.
 
 Acknowledgment
 --------------
@@ -96,6 +101,7 @@ Contributors (in alphabetical order):
 * [arcadepro](https://github.com/arcadepro),
 * [ckaotik](https://github.com/ckaotik),
 * [dafzor](https://github.com/dafzor),
+* [nomoon](https://github.com/nomoon),
 * [mjmurray88](https://github.com/mjmurray88),
 * [Rainrider](https://github.com/Rainrider).
 
