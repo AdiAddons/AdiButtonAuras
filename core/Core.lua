@@ -196,6 +196,7 @@ do
 		["default-border"]           = L["Default border"],
 		["left-right-gradient"]      = L["Left to right gradient"],
 		["right-left-gradient"]      = L["Right to left gradient"],
+		["thin-border"]              = L["Thin border"],
 		["top-bottom-gradient"]      = L["Top to bottom gradient"],
 		["top-left-gradient"]        = L["Top left corner gradient"],
 		["top-left-half-gradient"]   = L["Top left half gradient"],
