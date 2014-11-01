@@ -102,10 +102,16 @@ function overlayPrototype:InitializeDisplay()
 	self:SetFrameLevel(self.button.cooldown:GetFrameLevel()+1)
 	self.parentCount = _G[self.button:GetName().."Count"]
 
-	local border = self:CreateTexture(self:GetName().."Border", "BACKGROUND")
-	border:SetAllPoints(self)
-	border:Hide()
-	self.Border = border
+	local highlight = self:CreateTexture(self:GetName().."Highlight", "BACKGROUND")
+	highlight:SetAllPoints(self)
+	highlight:Hide()
+	self.Highlight = highlight
+
+	local overlay = self:CreateTexture(self:GetName().."Overlay", "BACKGROUND")
+	overlay:SetTexture(0.4, 0.4, 0.4, 1)
+	overlay:SetAllPoints(self)
+	overlay:Hide()
+	self.Overlay = overlay
 
 	local timer = self:CreateFontString(self:GetName().."Timer", "OVERLAY")
 	timer:SetFont(fontFile, fontSize, fontFlag)
@@ -160,6 +166,12 @@ function overlayPrototype:ApplyFont(fontString)
 	end
 end
 
+function overlayPrototype:ApplyHighlightSkin()
+	local highlight = self.Highlight
+	local texture = LSM:Fetch(addon.HIGHLIGHT_MEDIATYPE, addon.db.profile.highlightTexture)
+	highlight:SetTexture(texture)
+end
+
 function overlayPrototype:ApplyExpiration()
 	local expiration = self.expiration
 	self.Timer.expiration = expiration
@@ -192,7 +204,7 @@ end
 
 function overlayPrototype:ApplyHighlight()
 	self:ApplyFlash()
-	self:ApplyColoredBorder()
+	self:ApplyColoredHighlight()
 end
 
 function overlayPrototype:ApplyFlash()
@@ -206,27 +218,21 @@ function overlayPrototype:ShouldShowFlash()
 	return self.highlight == "flash" and not (addon.db.profile.noFlashOnCooldown and self.inCooldown) and (not addon.db.profile.noFlashOutOfCombat or self.inCombat)
 end
 
-function overlayPrototype:ApplyColoredBorder()
-	local highlight = self.highlight
-	local border = self.Border
-	if highlight == "darken" or highlight == "lighten" then
-		if border:GetTexture() ~= "Color-666666ff" then
-			border:SetTexture(0.4, 0.4, 0.4, 1)
-			border:SetVertexColor(1, 1, 1, 1)
-		end
-		border:SetBlendMode(highlight == "darken" and "MOD" or "ADD")
-		return border:Show()
+function overlayPrototype:ApplyColoredHighlight()
+	local type, highlight, overlay = self.highlight, self.Highlight, self.Overlay
+	if type == "darken" or type == "lighten" then
+		overlay:SetBlendMode(type == "darken" and "MOD" or "ADD")
+		overlay:Show()
+	else
+		overlay:Hide()
 	end
-	if highlight == "good" or highlight == "bad" then
-		local texture = LSM:Fetch(addon.HIGHLIGHT_MEDIATYPE, addon.db.profile.highlightTexture)
-		if border:GetTexture() ~= texture then
-			border:SetTexture(texture)
-			border:SetBlendMode("BLEND")
-		end
-		border:SetVertexColor(unpack(addon.db.profile.colors[highlight], 1, 4))
-		return border:Show()
+	if type == "good" or type == "bad" then
+		self:ApplyHighlightSkin()
+		highlight:SetVertexColor(unpack(addon.db.profile.colors[type], 1, 4))
+		highlight:Show()
+	else
+		highlight:Hide()
 	end
-	border:Hide()
 end
 
 function overlayPrototype:SetHint(hint)
