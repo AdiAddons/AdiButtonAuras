@@ -133,6 +133,8 @@ function overlayPrototype:InitializeDisplay()
 	hooksecurefunc(count, "Show", Text_OnShowHide)
 	hooksecurefunc(count, "Hide", Text_OnShowHide)
 	self.Count = count
+
+	self:ApplySkin()
 end
 
 function overlayPrototype:LayoutTexts()
@@ -148,15 +150,9 @@ function overlayPrototype:LayoutTexts()
 	count:SetJustifyH(timer:IsShown() and "RIGHT" or "CENTER")
 end
 
-function overlayPrototype:SetExpiration(expiration)
-	if type(expiration) ~= "number" or expiration <= GetTime() then
-		expiration = nil
-	end
-	if self.expiration ~= expiration then
-		self.expiration = expiration
-		self:ApplyExpiration()
-	end
-end
+------------------------------------------------------------------------------
+-- Theme and skinning
+------------------------------------------------------------------------------
 
 function overlayPrototype:ApplyFont(fontString)
 	local currentFile, currentSize = fontString:GetFont()
@@ -172,11 +168,23 @@ function overlayPrototype:ApplyHighlightSkin()
 	highlight:SetTexture(texture)
 end
 
-function overlayPrototype:ApplyExpiration()
-	local expiration = self.expiration
-	self.Timer.expiration = expiration
+function overlayPrototype:ApplySkin()
+	self:ApplyHighlightSkin()
 	self:ApplyFont(self.Timer)
-	self.Timer:Update()
+	self:ApplyFont(self.Count)
+end
+
+------------------------------------------------------------------------------
+-- State setters
+------------------------------------------------------------------------------
+
+function overlayPrototype:SetExpiration(expiration)
+	if type(expiration) ~= "number" or expiration <= GetTime() then
+		expiration = nil
+	end
+	if self.expiration == expiration then return end
+	self.expiration = expiration
+	self:ApplyExpiration()
 end
 
 function overlayPrototype:SetCount(count)
@@ -187,19 +195,35 @@ function overlayPrototype:SetCount(count)
 	self:ApplyCount()
 end
 
-function overlayPrototype:ApplyCount()
-	local count = self.count
-	self:ApplyFont(self.Count)
-	self.Count:SetShown(count)
-	if count then
-		self.Count:SetFormattedText("%d", count)
-	end
-end
-
 function overlayPrototype:SetHighlight(highlight)
 	if self.highlight == highlight then return end
 	self.highlight = highlight
 	self:ApplyHighlight()
+end
+
+function overlayPrototype:SetHint(hint)
+	hint = not not hint
+	if self.hint == hint then return end
+	self.hint = hint
+	self:ApplyHint()
+end
+
+------------------------------------------------------------------------------
+-- Actual state feedback
+------------------------------------------------------------------------------
+
+function overlayPrototype:ApplyExpiration()
+	local expiration = self.expiration
+	self.Timer.expiration = expiration
+	self.Timer:Update()
+end
+
+function overlayPrototype:ApplyCount()
+	local count = self.count
+	self.Count:SetShown(count)
+	if count then
+		self.Count:SetFormattedText("%d", count)
+	end
 end
 
 function overlayPrototype:ApplyHighlight()
@@ -235,14 +259,6 @@ function overlayPrototype:ApplyColoredHighlight()
 	end
 end
 
-function overlayPrototype:SetHint(hint)
-	hint = not not hint
-	if self.hint ~= hint then
-		self.hint = hint
-		self:ApplyHint()
-	end
-end
-
 function overlayPrototype:ApplyHint()
 	if addon.db.profile.hints == "flash" then
 		self:ApplyFlash()
@@ -274,6 +290,10 @@ function overlayPrototype:PLAYER_REGEN_ENABLED(event)
 	self:ApplyHint()
 end
 overlayPrototype.PLAYER_REGEN_DISABLED = overlayPrototype.PLAYER_REGEN_ENABLED
+
+------------------------------------------------------------------------------
+-- Animations
+------------------------------------------------------------------------------
 
 -- Overlay factory
 local function CreateOverlayFactory(create, onAcquire, onRelease, onEnable, onDisable, onShow, onHide)
