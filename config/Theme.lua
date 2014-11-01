@@ -27,6 +27,7 @@ function private.GetThemeOptions(addon)
 
 	local unpack = _G.unpack
 	local L = addon.L
+	local Masque = addon.GetLib('Masque', false)
 
 	return {
 		name = L['Theme'],
@@ -114,12 +115,19 @@ function private.GetThemeOptions(addon)
 					},
 				},
 			},
+			masque = {
+				name = L['Use Masque'],
+				type = 'toggle',
+				order = 25,
+				hidden = not Masque
+			},
 			highlightTexture = {
 				name = L['Highlight texture'],
 				desc = L['Select the texture used to highlight buttons.'],
 				type = 'select',
 				dialogControl = 'LSM30_Background',
 				values = addon.GetLib('LibSharedMedia-3.0'):HashTable(addon.HIGHLIGHT_MEDIATYPE),
+				disabled = function() return Masque and addon.db.profile.masque end,
 				order = 30,
 				width = 'double',
 			},

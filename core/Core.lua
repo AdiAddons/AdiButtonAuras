@@ -95,6 +95,7 @@ addon.DEFAULT_SETTINGS = {
 		hints = "show",
 		fontSize = 13,
 		highlightTexture = "default",
+		masque = false,
 	},
 	global = {
 		userRules = {
@@ -284,6 +285,9 @@ function addon:ADDON_LOADED(event, name)
 		if LibSpellbook:HasSpells() then
 			addon:LibSpellbook_Spells_Changed('OnLoad')
 		end
+
+		self:SendMessage(CONFIG_CHANGED)
+		self:SendMessage(THEME_CHANGED)
 	end
 
 	-- Supported addons and libraries

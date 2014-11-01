@@ -175,6 +175,78 @@ function overlayPrototype:ApplySkin()
 end
 
 ------------------------------------------------------------------------------
+-- Masque support
+------------------------------------------------------------------------------
+
+local Masque, MasqueVersion = addon.GetLib('Masque', true)
+if Masque then
+	local Debug = function(...) return addon.Debug('Masque', ...) end
+
+	local baseApplySkin = overlayPrototype.ApplySkin
+
+	function overlayPrototype:ApplySkin()
+		self:ApplyFont(self.Timer)
+		self:ApplyFont(self.Count)
+		if not addon.db.profile.masque then
+			if self.masqued then
+				self:Unmasque()
+				self.masqued = false
+			end
+			return baseApplySkin(self)
+		end
+		if self.masqued then
+			return
+		end
+		self.masqued = true
+		self:Masque()
+		return
+	end
+
+	function overlayPrototype:Masque()
+		if not self.masqueData then
+			self.masqueData = {
+				Border = self.Highlight,
+				FloatingBG = false,
+				Icon = false,
+				Cooldown = false,
+				Flash = false,
+				Pushed = false,
+				Normal = false,
+				Disabled = false,
+				Checked = false,
+				AutoCastable = false,
+				Highlight = false,
+				HotKey = false,
+				Count = false,
+				Name = false,
+				Duration = false,
+				AutoCast = false,
+			}
+		end
+		Debug(self, 'Masquing')
+		Masque:Group(addonName):AddButton(self, self.masqueData)
+	end
+
+	function overlayPrototype:Unmasque()
+		Debug(self, 'Unmasquing')
+		Masque:Group(addonName):RemoveButton(self)
+		self.Highlight:ClearAllPoints()
+		self.Highlight:SetAllPoints(self)
+	end
+
+	Debug("Support enabled for version", MasqueVersion)
+	Masque:Register(addonName, function()
+		Debug('Masque callback')
+		--addon:SendMessage(addon.THEME_CHANGED)
+	end)
+	addon.RegisterMessage('Masque', addon.THEME_CHANGED, function()
+		if addon.db.profile.masque then
+			Masque:Group(addonName):ReSkin()
+		end
+	end)
+end
+
+------------------------------------------------------------------------------
 -- State setters
 ------------------------------------------------------------------------------
 
@@ -251,7 +323,6 @@ function overlayPrototype:ApplyColoredHighlight()
 		overlay:Hide()
 	end
 	if type == "good" or type == "bad" then
-		self:ApplyHighlightSkin()
 		highlight:SetVertexColor(unpack(addon.db.profile.colors[type], 1, 4))
 		highlight:Show()
 	else

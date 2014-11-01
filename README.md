@@ -74,10 +74,6 @@ These are references to the libraries AdiButtonAuras used to create the rule.
  * LSB-N: [LibSpellbook-1.0](https://github.com/Adirelle/LibSpellbook-1.0), Nth revision.
  * LD-N: [LibDispellable-1.0](https://github.com/Adirelle/LibDispellable-1.0/), Nth revision.
 
-#### Are you going to support button skinning, e.g. Masque ?
-
-No, unless Masque supports to skin partial buttons.
-
 #### Are you going to support ElvUI ?
 
 AdiButtonAuras should work with ElvUI. I am not going to support its skin though.
