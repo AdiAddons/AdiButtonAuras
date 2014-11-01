@@ -176,7 +176,7 @@ end
 ------------------------------------------------------------------------------
 
 local overlayPrototype = setmetatable({
-	Debug                 = addon.Debug,
+	Debug                 = function(self, ...) return addon.Debug('Buttons', self, ...) end,
 	RegisterMessage       = addon.RegisterMessage,
 	UnregisterMessage     = addon.UnregisterMessage,
 	UnregisterAllMessages = addon.UnregisterAllMessages,
