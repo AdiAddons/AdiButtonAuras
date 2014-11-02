@@ -27,7 +27,7 @@ function private.GetThemeOptions(addon)
 
 	local unpack = _G.unpack
 	local L = addon.L
-	local Masque = addon.GetLib('Masque', false)
+	local Masque = addon.GetLib('Masque', true)
 
 	return {
 		name = L['Theme'],
