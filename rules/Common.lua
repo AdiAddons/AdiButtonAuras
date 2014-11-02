@@ -31,37 +31,38 @@ AdiButtonAuras:RegisterRules(function()
 
 		LongestDebuffOf {
 			{
-				  1604, -- Dazed (common),
-				 45524, -- Chains of Ice (death knight)
-				 50259, -- Dazed (feral charge effect)
-				 58180, -- Infected Wounds (druid)
-				 61391, -- Typhoon (druid)
-				  5116, -- Concussive Shot (hunter)
-				 13810, -- Ice Trap (hunter)
-				 35346, -- Time Warp (hunter, warp Stalker)
-				 54644, -- Frost Breath (hunter, chimaera)
-				 61394, -- Frozen Wake (hunter, glyph)
-				 31589, -- Slow (mage)
-				 44614, -- Frostfire Bolt (mage)
 				   116, -- Frostbolt (mage)
 				   120, -- Cone of Cold (mage)
+				  1044, -- Hand of Freedom (paladin)
+				  1604, -- Dazed (common)
+				  1715, -- Piercing Howl (warrior)
+				  3409, -- Crippling Poison (rogue)
+				  3600, -- Earthbind (shaman)
+				  5116, -- Concussive Shot (hunter)
 				  6136, -- Chilled (mage)
 				  7321, -- Chilled (mage, bis)
-				116095, -- Disable (monk, 1 stack)
-				  1044, -- Hand of Freedom (paladin)
-				  3409, -- Crippling Poison (rogue)
-				 26679, -- Deadly Throw (rogue)
-				  3600, -- Earthbind (shaman)
 				  8056, -- Frost Shock (shaman)
 				  8178, -- Grounding Totem Effect (shaman)
+				 12323, -- Hamstring (warrior)
+				 13810, -- Ice Trap (hunter)
 				 17962, -- Conflagrate (warlock)
-				  1715, -- Piercing Howl (warrior)
-				 12323  -- Hamstring (warrior)
+				 26679, -- Deadly Throw (rogue)
+				 31589, -- Slow (mage)
+				 35346, -- Time Warp (hunter, warp Stalker)
+				 44614, -- Frostfire Bolt (mage)
+				 45524, -- Chains of Ice (death knight)
+				 50259, -- Dazed (feral charge effect)
+				 54644, -- Frost Breath (hunter, chimaera)
+				 58180, -- Infected Wounds (druid)
+				 61391, -- Typhoon (druid)
+				 61394, -- Frozen Wake (hunter, glyph)
+				116095, -- Disable (monk, 1 stack)
+				129923  -- Sluggish (warrior, hs glyph)
 			}
 		}, -- Snares and anti-snares
 
 	--------------------------------------------------------------------------
-	-- Bloodlust & al
+	-- Bloodlust
 	--------------------------------------------------------------------------
 
 		Configure {
@@ -282,7 +283,7 @@ AdiButtonAuras:RegisterRules(function()
 	end
 
 	--------------------------------------------------------------------------
-	-- Racials & tradeskills
+	-- Racials
 	--------------------------------------------------------------------------
 
 	tinsert(rules, ImportPlayerSpells { "RACIAL" })
