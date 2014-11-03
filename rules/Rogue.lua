@@ -29,12 +29,8 @@ AdiButtonAuras:RegisterRules(function()
 	return {
 		ImportPlayerSpells { "ROGUE" },
 		Configure {
-			"ComboPoints",
-			format(
-				L["Show %s and %s when it reaches its maximum."],
-				L["combo points"],
-				DescribeHighlight("flash")
-			),
+			"ComboPointsCount",
+			L["Show %combo points."],
 			{
 				 32645, -- Envenom
 				  2098, -- Eviscerate
@@ -54,10 +50,32 @@ AdiButtonAuras:RegisterRules(function()
 				local points = GetComboPoints("player", units.enemy)
 				if points and points > 0 then
 					model.count = points or 0
-					if points == 5 then
-						model.highlight = "flash"
-					end
 					return true
+				end
+			end,
+		},
+		Configure {
+			"ComboPointsFlash",
+			format(
+				L["%s at 5 combo points."],
+				DescribeHighlight("flash")
+			),
+			{
+				 32645, -- Envenom
+				  2098, -- Eviscerate
+				121411, -- Crimson Tempest
+				   408, -- Kidney Shot
+				 26679, -- Deadly Throw
+
+				-- 73981, -- Redirect
+			},
+			{ "enemy", "player" },
+			"UNIT_COMBO_POINTS",
+			function(units, model)
+				if not units.enemy then return end
+				local points = GetComboPoints("player", units.enemy)
+				if points == 5 then
+					model.highlight = "flash"
 				end
 			end,
 		},
