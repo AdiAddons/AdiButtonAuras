@@ -235,10 +235,6 @@ if Masque then
 	end
 
 	Debug("Support enabled for version", MasqueVersion)
-	Masque:Register(addonName, function()
-		Debug('Masque callback')
-		--addon:SendMessage(addon.THEME_CHANGED)
-	end)
 	addon.RegisterMessage('Masque', addon.THEME_CHANGED, function()
 		if addon.db.profile.masque then
 			Masque:Group(addonName):ReSkin()
