@@ -173,9 +173,8 @@ end
 -- LibSharedMedia-3.0 stuff
 ------------------------------------------------------------------------------
 
+local LSM = GetLib('LibSharedMedia-3.0')
 do
-	local LSM = GetLib('LibSharedMedia-3.0')
-
 	-- Initialize the default font
 	addon.DEFAULT_SETTINGS.profile.fontName = LSM:GetDefault(LSM.MediaType.FONT)
 	local wantedFile = _G.NumberFontNormalSmall:GetFont()
@@ -287,6 +286,9 @@ function addon:ADDON_LOADED(event, name)
 			addon:LibSpellbook_Spells_Changed('OnLoad')
 		end
 
+		LSM.RegisterCallback(self, "LibSharedMedia_SetGlobal", "OnMediaUpdate")
+		LSM.RegisterCallback(self, "LibSharedMedia_Registered", "OnMediaUpdate")
+
 		self:SendMessage(CONFIG_CHANGED)
 		self:SendMessage(THEME_CHANGED)
 	end
@@ -325,6 +327,12 @@ addon:RegisterEvent('ADDON_LOADED')
 
 function addon:OnProfileChanged()
 	self:SendMessage(CONFIG_CHANGED)
+end
+
+function addon:OnMediaUpdate(mediatype, key)
+	if mediatype == LSM.MediaType.FONT or mediatype == HIGHLIGHT_MEDIATYPE then
+		self:SendMessage(THEME_CHANGED)
+	end
 end
 
 ------------------------------------------------------------------------------
