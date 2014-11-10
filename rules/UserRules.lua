@@ -38,53 +38,74 @@ local isClass = addon.isClass
 
 local function Debug(...) return addon.Debug('User rules', ...) end
 
-local compiledSnippets = setmetatable({}, { __mode = 'v' })
+local compiledSnippets = {}
 
-local function CompileUserRule(code, title)
-	if not compiledSnippets[code] then
-		local func, err = loadstring(code, title)
-		if not func then
-			return nil, err
-		end
-		compiledSnippets[code] = Restricted(func)
+local function CompileCodeSnippet(code)
+	local funcOrError = compiledSnippets[code]
+	if type(funcOrError) == "function" then
+		return funcOrError
+	elseif funcOrError then
+		return nil, funcOrError
 	end
-	return compiledSnippets[code]
+	local func, errorMessage = loadstring(code)
+	compiledSnippets[code] = func and Restricted(func) or errorMessage
+	return compiledSnippets[code], errorMessage, true
 end
 
-local initialLoading = true
-local function BuildUserRules()
-	Debug('Compiling rules')
-	local rules = {}
-	local ph = getprinthandler()
-	for key, rule in pairs(addon.db.global.userRules) do
-		local err = nil
-		if rule.enabled and isClass(rule.scope) then
-			local builder, msg = CompileUserRule(rule.code)
-			if builder then
-				setprinthandler(function(...) ph(format('[%s "%s"]:', addonName, rule.title), ...) end)
-				local ok, result = pcall(builder)
-				setprinthandler(ph)
-				if ok and result then
-					tinsert(rules, result)
-				else
-					err = result
-				end
-			else
-				err = msg
-			end
-		end
-		rule.error = err
-		if err and initialLoading then
-			geterrorhandler()(format(addon.L["%s: error in user-defined rule: %s"], addonName, err))
-		end
+local function CompileUserRule(rule)
+	if not rule.enabled or not isClass(rule.scope) then
+		return
 	end
-	initialLoading = false
-	for _, builder in ipairs(rules) do
-		xpcall(builder)
+
+	local snippet, errorMessage = CompileCodeSnippet(rule.code)
+	if not snippet then
+		return nil, errorMessage
 	end
+
+	local success, rulesOrMessage = pcall(snippet)
+	if success then
+		return rulesOrMessage
+	end
+	return nil, rulesOrMessage
 end
 
-AdiButtonAuras:RegisterRules(function() return BuildUserRules end)
+local builders = {}
+
+function addon:CompileUserRules()
+	local changed = false
+	Debug('Compiling user rules')
+
+	local rules = addon.db.global.userRules
+
+	for key in pairs(builders) do
+		if not rules[key] then
+			builders[key] = nil
+			changed = true
+		end
+	end
+
+	for key, rule in pairs(rules) do
+		local builder, errorMessage, new = CompileUserRule(rule)
+		rule.error = errorMessage
+		if errorMessage and new then
+			geterrorhandler()(format('[%s "%s"]: %s', addonName, rule.title, errorMessage))
+		end
+		if builders[key] ~= builder then
+			Debug('Rule', rule.title, 'changed to', builder)
+			builders[key] = builder
+			changed = true
+		end
+	end
+
+	Debug('Compilation changed:', changed)
+	return changed
+end
+
+AdiButtonAuras:RegisterRules(function()
+	Debug('Calling user rules initializer')
+	addon:CompileUserRules()
+	return builders
+end)
 
 -- GLOBALS: AddRuleFor BuffAliases BuildAuraHandler_FirstOf BuildAuraHandler_Longest
 -- GLOBALS: BuildAuraHandler_Single BuildDesc BuildKey Configure DebuffAliases Debug

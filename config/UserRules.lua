@@ -132,7 +132,9 @@ function private.GetUserRulesOptions(addon, addonName)
 			rule.updated = self:GetHistoryPoint()
 		end
 		rule[property] = value
-		return addon:LibSpellbook_Spells_Changed('UserRuleChanged')
+		if addon:CompileUserRules() then
+			return addon:LibSpellbook_Spells_Changed('UserRuleChanged')
+		end
 	end
 
 	function handler:GetHistoryPoint()
