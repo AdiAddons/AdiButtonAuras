@@ -430,6 +430,29 @@ function overlayPrototype:ScheduleUpdate(event)
 end
 
 local model = {}
+
+local modelProxy = setmetatable({}, {
+	__index = model,
+	__newindex = function(_, key, value)
+		if key == "count" or key == "expiration" then
+			if type(value) ~= "number" then
+				return error(format("Invalid %s, should be a number, not %s", key, type(value)), 2)
+			end
+		elseif key == "highlight" then
+			if value ~= "flash" and value ~= "good" and value ~= "bad" and value ~= "darken" and value ~= "lighten" then
+				return error(format('Invalid %s, should be one of "flash", "good", "bad", "darken" of "lighten", not %q', key, tostring(value)), 2)
+			end
+		elseif key == "hint" then
+			if type(value) ~= "boolean" then
+				return error(format("Invalid %s, should be false or true, not %s", key, type(value)), 2)
+			end
+		else
+			return error(format('Unknown model property: %s, must be one of: count, expiration, highlight or hint', tostring(key)), 2)
+		end
+		model[key] = value
+	end,
+})
+
 function overlayPrototype:UpdateState(event)
 	self:SetScript('OnUpdate', nil)
 
@@ -440,7 +463,7 @@ function overlayPrototype:UpdateState(event)
 
 		local unitMap = self.unitMap
 		for i, handler in ipairs(self.handlers) do
-			handler(unitMap, model)
+			handler(unitMap, modelProxy)
 		end
 
 		if addon.db.profile.inverted[self.spellId] then
