@@ -28,6 +28,16 @@ AdiButtonAuras:RegisterRules(function()
 
 	local lightningShield = GetSpellInfo(324)
 
+	local function BuildTotemHandler(totemSlot)
+		return function(units, model)
+			local haveTotem, name, startTime, duration, icon = GetTotemInfo(totemSlot)
+			if haveTotem and name == GetSpellInfo(model.spellId) then
+				model.highlight = "good"
+				model.expiration = startTime + duration
+			end
+		end
+	end
+
 	return {
 		ImportPlayerSpells { "SHAMAN" },
 		Configure {
@@ -50,14 +60,8 @@ AdiButtonAuras:RegisterRules(function()
 			{3599, 8190, 2894}, -- Searing, Magma, Fire Elemental Totem
 			"player",
 			"PLAYER_TOTEM_UPDATE",
-			function(units, model)
-				-- GLOBALS: FIRE_TOTEM_SLOT
-				local haveTotem, name, startTime, duration, icon = GetTotemInfo(FIRE_TOTEM_SLOT)
-				if haveTotem then
-					model.highlight = "good"
-					model.expiration = startTime + duration
-				end
-			end,
+			-- GLOBALS: FIRE_TOTEM_SLOT
+			BuildTotemHandler(FIRE_TOTEM_SLOT),
 			{3599, 8190, 2894},
 		},
 		Configure {
@@ -66,14 +70,8 @@ AdiButtonAuras:RegisterRules(function()
 			{2484, 8143, 51485, 108270, 2062}, -- Earthbind, Tremor, Earthgrab, Stone Bulwark, Earth Elemental Totem
 			"player",
 			"PLAYER_TOTEM_UPDATE",
-			function(units, model)
-				-- GLOBALS: EARTH_TOTEM_SLOT
-				local haveTotem, name, startTime, duration, icon = GetTotemInfo(EARTH_TOTEM_SLOT)
-				if haveTotem then
-					model.highlight = "good"
-					model.expiration = startTime + duration
-				end
-			end,
+			-- GLOBALS: EARTH_TOTEM_SLOT
+			BuildTotemHandler(EARTH_TOTEM_SLOT),
 			{2484, 8143, 51485, 108270, 2062},
 		},
 		Configure {
@@ -82,14 +80,8 @@ AdiButtonAuras:RegisterRules(function()
 			{108280, 5394}, -- Healing Tide, Healing Stream Totem
 			"player",
 			"PLAYER_TOTEM_UPDATE",
-			function(units, model)
-				-- GLOBALS: WATER_TOTEM_SLOT
-				local haveTotem, name, startTime, duration, icon = GetTotemInfo(WATER_TOTEM_SLOT)
-				if haveTotem then
-					model.highlight = "good"
-					model.expiration = startTime + duration
-				end
-			end,
+			-- GLOBALS: WATER_TOTEM_SLOT
+			BuildTotemHandler(WATER_TOTEM_SLOT),
 			{108280, 5394},
 		},
 		Configure {
@@ -98,14 +90,8 @@ AdiButtonAuras:RegisterRules(function()
 			{98008, 108269, 8177, 108273}, -- Spirit Link, Capacitator, Grounding, Windwalk Totem
 			"player",
 			"PLAYER_TOTEM_UPDATE",
-			function(units, model)
-				-- GLOBALS: AIR_TOTEM_SLOT
-				local haveTotem, name, startTime, duration, icon = GetTotemInfo(AIR_TOTEM_SLOT)
-				if haveTotem then
-					model.highlight = "good"
-					model.expiration = startTime + duration
-				end
-			end,
+			-- GLOBALS: AIR_TOTEM_SLOT
+			BuildTotemHandler(AIR_TOTEM_SLOT),
 			{98008, 108269, 8177, 108273},
 		},
 	}
