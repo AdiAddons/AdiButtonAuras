@@ -174,6 +174,8 @@ end
 ------------------------------------------------------------------------------
 
 local LSM = GetLib('LibSharedMedia-3.0')
+local HIGHLIGHT_MEDIATYPE = addonName:lower().."_border"
+
 do
 	-- Initialize the default font
 	addon.DEFAULT_SETTINGS.profile.fontName = LSM:GetDefault(LSM.MediaType.FONT)
@@ -186,7 +188,6 @@ do
 	end
 
 	-- Register alternative highlights
-	local HIGHLIGHT_MEDIATYPE = addonName:lower().."_border"
 	local texturePath = [[Interface\AddOns\]]..addonName..[[\media\highlight\]]
 	for file, label in pairs {
 		["blank"]                    = L["No border"],
