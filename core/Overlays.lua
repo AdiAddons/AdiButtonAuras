@@ -38,7 +38,9 @@ local GetShapeshiftFormCooldown = _G.GetShapeshiftFormCooldown
 local GetShapeshiftFormInfo = _G.GetShapeshiftFormInfo
 local GetSpellLink = _G.GetSpellLink
 local GetTime = _G.GetTime
+local gsub = _G.gsub
 local ipairs = _G.ipairs
+local next = _G.next
 local pairs = _G.pairs
 local SecureCmdOptionParse = _G.SecureCmdOptionParse
 local select = _G.select
@@ -53,6 +55,7 @@ local tostring = _G.tostring
 local type = _G.type
 local UnitGUID = _G.UnitGUID
 local UnitIsUnit = _G.UnitIsUnit
+local wipe = _G.wipe
 
 local LibSpellbook = addon.GetLib('LibSpellbook-1.0')
 
