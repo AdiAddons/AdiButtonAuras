@@ -23,15 +23,16 @@ local addonName, addon = ...
 
 local _G = _G
 local geterrorhandler = _G.geterrorhandler
+local getprinthandler = _G.getprinthandler
 local loadstring = _G.loadstring
 local pairs = _G.pairs
+local pcall = _G.pcall
 local setmetatable = _G.setmetatable
+local setprinthandler = _G.setprinthandler
 local tinsert = _G.tinsert
 local tostring = _G.tostring
+local type = _G.type
 local xpcall = _G.xpcall
-local getprinthandler = _G.getprinthandler
-local pcall = _G.pcall
-local setprinthandler = _G.setprinthandler
 
 local Restricted = addon.Restricted
 local isClass = addon.isClass

@@ -23,8 +23,10 @@ local addonName, addon = ...
 
 local _G = _G
 local assert = _G.assert
-local C_Timer = _G.C_Timer
 local CreateFrame = _G.CreateFrame
+local C_Timer = _G.C_Timer
+local error = _G.error
+local format = _G.format
 local GetActionCooldown = _G.GetActionCooldown
 local GetActionInfo = _G.GetActionInfo
 local GetMacroBody = _G.GetMacroBody
@@ -35,9 +37,8 @@ local GetPetActionInfo = _G.GetPetActionInfo
 local GetShapeshiftFormCooldown = _G.GetShapeshiftFormCooldown
 local GetShapeshiftFormInfo = _G.GetShapeshiftFormInfo
 local GetSpellLink = _G.GetSpellLink
-local gsub = _G.gsub
+local GetTime = _G.GetTime
 local ipairs = _G.ipairs
-local next = _G.next
 local pairs = _G.pairs
 local SecureCmdOptionParse = _G.SecureCmdOptionParse
 local select = _G.select
@@ -48,10 +49,10 @@ local strmatch = _G.strmatch
 local strsplit = _G.strsplit
 local strtrim = _G.strtrim
 local tonumber = _G.tonumber
+local tostring = _G.tostring
+local type = _G.type
 local UnitGUID = _G.UnitGUID
 local UnitIsUnit = _G.UnitIsUnit
-local wipe = _G.wipe
-local GetTime = _G.GetTime
 
 local LibSpellbook = addon.GetLib('LibSpellbook-1.0')
 
