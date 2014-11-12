@@ -63,11 +63,7 @@ AdiButtonAuras:RegisterRules(function()
 		},
 		Configure {
 			"ComboPoints",
-			format(
-				L["Show %s and %s when it reaches its maximum."],
-				L["combo points"],
-				DescribeHighlight("flash")
-			),
+			L["Show combo points."],
 			{
 				  1079, -- Rip
 				 22568, -- Ferocious Bite
@@ -80,11 +76,25 @@ AdiButtonAuras:RegisterRules(function()
 				if not units.enemy then return end
 				local points = GetComboPoints("player", units.enemy)
 				if points and points > 0 then
-					model.count = points or 0
-					if points == 5 then
-						model.highlight = "flash"
-					end
+					model.count = points
 					return true
+				end
+			end,
+		},
+		Configure {
+			"ComboPointsFlash",
+			format(L["%s at 5 combo points."], DescribeHighlight("flash")),
+			{
+				  1079, -- Rip
+				 22568, -- Ferocious Bite
+				 22570, -- Maim
+				 52610, -- Savage Roar
+			},
+			{ "enemy", "player" },
+			"UNIT_COMBO_POINTS",
+			function(units, model)
+				if units.enemy and GetComboPoints("player", units.enemy) == 5 then
+					model.highlight = "flash"
 				end
 			end,
 		},
