@@ -443,8 +443,8 @@ local modelProxy = setmetatable({}, {
 				return error(format("Invalid %s, should be a number, not %s", key, type(value)), 2)
 			end
 		elseif key == "highlight" then
-			if value ~= "flash" and value ~= "good" and value ~= "bad" and value ~= "darken" and value ~= "lighten" then
-				return error(format('Invalid %s, should be one of "flash", "good", "bad", "darken" of "lighten", not %q', key, tostring(value)), 2)
+			if value ~= nil and value ~= "flash" and value ~= "good" and value ~= "bad" and value ~= "darken" and value ~= "lighten" then
+				return error(format('Invalid %s, should be one of "flash", "good", "bad", "darken", "lighten" or nil, not %s', key, tostring(value)), 2)
 			end
 		elseif key == "hint" then
 			if type(value) ~= "boolean" then
