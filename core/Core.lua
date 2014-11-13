@@ -330,7 +330,7 @@ function addon:OnProfileChanged()
 	self:SendMessage(CONFIG_CHANGED)
 end
 
-function addon:OnMediaUpdate(mediatype, key)
+function addon:OnMediaUpdate(event, mediatype)
 	if mediatype == LSM.MediaType.FONT or mediatype == HIGHLIGHT_MEDIATYPE then
 		self:SendMessage(THEME_CHANGED)
 	end
