@@ -463,7 +463,7 @@ function overlayPrototype:UpdateState(event)
 	model.count, model.expiration, model.highlight, model.hint  = 0, 0, nil, false
 
 	if self.handlers then
-		model.spellId = self.spellId
+		model.spellId, model.actionType, model.actionId = self.spellId, self.actionType, self.actionId
 
 		local unitMap = self.unitMap
 		for i, handler in ipairs(self.handlers) do

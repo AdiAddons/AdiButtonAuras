@@ -31,7 +31,7 @@ AdiButtonAuras:RegisterRules(function()
 	local function BuildTotemHandler(totemSlot)
 		return function(units, model)
 			local haveTotem, name, startTime, duration, icon = GetTotemInfo(totemSlot)
-			if haveTotem and name == GetSpellInfo(model.spellId) then
+			if haveTotem and name == GetSpellInfo(model.actionId) then
 				model.highlight = "good"
 				model.expiration = startTime + duration
 			end
