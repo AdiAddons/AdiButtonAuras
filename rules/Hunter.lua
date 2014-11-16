@@ -42,7 +42,7 @@ AdiButtonAuras:RegisterRules(function()
 				"UNIT_PET",
 				function(units, model)
 					if not HasPetSpells() then
-						model.hint = "true"
+						model.hint = true
 					else
 						model.highlight = "good"
 					end
