@@ -30,11 +30,13 @@ AdiButtonAuras:RegisterRules(function()
 		-- display current holy power on spenders and flash it maximum reached
 		ShowPower {
 			{
-				 85256, -- Templar's Verdict
-				114163, -- Eternal Flame
-				 85673, -- Word of Glory
-				 85222, -- Light of Dawn
+				 53385, -- Divine Storm
 				 53600, -- Shield of the Righteous
+				 85222, -- Light of Dawn
+				 85256, -- Templar's Verdict
+				 85673, -- Word of Glory
+				114163, -- Eternal Flame
+				157048, -- Final Verdict
 			},
 			"HOLY_POWER",
 			nil,
