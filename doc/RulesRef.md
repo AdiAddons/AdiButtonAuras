@@ -68,8 +68,9 @@ return {
 		"flash"
 	}
 }
+```
 
-### Documetntion format
+### Documentation format
 <a name="documentation-format"></a>
 
 `RuleName { arg1, arg2, ..., argN }`
