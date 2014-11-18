@@ -42,7 +42,7 @@ Options
  
 #### User-defined rules
 
-AdiButtonAuras allows you to enter and save your own rules, using a LUA-based language. Take a look at the [rule reference()] to see what is available.
+AdiButtonAuras allows you to enter and save your own rules, using a LUA-based language. Take a look at the [rule reference](https://github.com/Adirelle/AdiButtonAuras/blob/master/doc/RulesRef.md) to see what is available.
 
 TODOs
 -----
