@@ -58,6 +58,9 @@ AdiButtonAuras:RegisterRules(function()
 				115181, -- Breath of Fire
 				116670, -- Uplift
 				124682, -- Enveloping Mist
+				157675, -- Chi Explosion (Mistweaver)
+				157676, -- Chi Explosion (Brewmaster)
+				152174, -- Chi Explosion (Windwalker)
 			},
 			"CHI",
 			nil,
