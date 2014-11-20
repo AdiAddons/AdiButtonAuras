@@ -1,7 +1,8 @@
 ### Table of contents:
-1. [General Format](#general-format)
+1. [Concepts](#concepts)
+1. [User rules](#user-rules)
+1. [Documentation Format](#documentation-format)
 1. Specific Rules:
-  1. [ImportPlayerSpells](#ImportPlayerSpells)
   1. [SimpleBuffs](#SimpleBuffs)
   1. [SimpleDebuffs](#SimpleDebuffs)
   1. [SharedSimpleBuffs](#SharedSimpleBuffs)
@@ -16,26 +17,72 @@
   1. [ShowPower](#ShowPower)
   1. [Configure](#Configure)
 
-### General Format:
-<a name="general-format"></a>
+### Concepts
+
+World of Warcraft has a pretty complex system of buffs and effects.
+
+Every spell or ability is identified by an unique number, which is called the **spell identifier**, and which is often noted by an hash-number, e.g. #113043 for Omen of Clarity. Sites like wowhead.com and wowdb.com refer to the spells by their spell identifiers, e.g. : http://www.wowhead.com/spell=113043 or http://www.wowdb.com/spells/113043-omen-of-clarity.
+
+In most cases, the ability in the spellbook, the ability in the action bar and the buff or debuff (which are collectively called **aura**) are identicial.
+
+However, in some case, they differ. A passive ability can cause an ability to provide a buff that will in turn modify another ability. For example, in Mists of Pandaria (MoP), the passive ability Omen of Clarity causes Lifebloom to provide the buff Clearcasting, which modifies Regrowth, Wrath and Healing Touch. In AdiButtonAuras, Omen of Clarity is the **provider**, Clearcasting is the *modifier buff* and Regrowth, Wrath and Healing Touch are the *modified spells*.
+
+Finally, in some case, one given spell can have different spell identifiers depending on the character specialization and glyphs. For example, in Warlords of Draenor (WoD), Omen of Clarity is identified by #113043 for Restoration and by #16864 for Feral.
+
+For checking the spell identifiers, I recommend using the addon [SpellDevInfo](https://github.com/Adirelle/SpellDevInfo).
+
+### User Rules
+<a name="user-rules"></a>
+
+The user rule panel expects a snippet of code that returns one of several rules.
+
+An example (of MoP rule) returning one rule:
+
+```lua
+-- Display the buff from Glyph of Rejuvenation on the action Nourish.
+return BuffAliases {
+    50464, -- Nourish
+    96206, -- Glyph of Rejuvenation
+}
+```
+
+Returning several rules:
+
+```lua
+return {
+        -- Show Glyph of Rejuvenation buff on Nourish
+	BuffAliases {
+		50464, -- Nourish
+		96206, -- Glyph of Rejuvenation
+	},
+	-- Show Clearcasting buff on Regrowth, Wrath and Healing Touch if the character knows Omen of Clarity
+	PassiveModifier {
+		113043, -- Omen of Clarity
+		{
+			8936, -- Regrowth
+			5176, -- Wrath
+			5185, -- Healing Touch
+		},
+		16870, -- Clearcasting
+		"player",
+		"flash"
+	}
+}
+```
+
+### Documentation format
+<a name="documentation-format"></a>
+
 `RuleName { arg1, arg2, ..., argN }`
 * `arg#` - required argument (_type_)
 * (`arg#`) - optional argument (_type_)
 
-### Specific Rules:
-<a name="ImportPlayerSpells"></a>
-**`ImportPlayerSpells { class, excludeSpell1, ..., excludeSpellN }`**
->Imports the spells for the specified class from LibPlayerSpells and builds the rules for them.
-* `class` - english class name of the class to be imported (_string_)
-* `excludeSpell1` ... `excludeSpellN` - spell ids to be excluded from the import, so that the rules for them can be defined in AdiButtonAuras (_number_)
-
-***
+### Specific Rules
 
 <a name="SimpleBuffs"></a>
 **`SimpleBuffs { buff1, ..., buffN }`**
 >List of buffs cast by the player on any ally.
-* `buff1` ... `buffN` - buff id (_number_)  
-    The provider spell ids are the same as the buff ids.
+* `buff1` ... `buffN` - buff id (_number_)
 
 ***
 
@@ -43,7 +90,6 @@
 **`SimpleDebuffs { debuff1, ..., debuffN }`**
 >List of debuffs cast by the player on any enemy.
 * `debuff1` ... `debuffN` - debuff id (_number_)  
-    The provider spell ids are the same as the debuff ids.
 
 ***
 
@@ -51,7 +97,6 @@
 **`SharedSimpleBuffs { buff1, ..., buffN }`**
 >List of buffs cast by anyone on any ally, where only one of that kind is possible (i.e. Soulstone)
 * `buff1` ... `buffN` - buff id (_number_)  
-    The provider spell ids are the same as the buff ids.
 
 ***
 
@@ -59,7 +104,6 @@
 **`SharedSimpleDebuffs { debuff1, ..., debuffN }`**
 >List of debuffs cast by anyone on any enemy, where only one of that kind is possible (i.e. Hunter's Mark)
 * `debuff1` ... `debuffN` - debuff id (_number_)  
-    The provider spell ids are the same as the debuff ids.
 
 ***
 
@@ -67,7 +111,6 @@
 **`SelfBuffs { buff1, ..., buffN }`**
 >List of buffs cast by the player on the player
 * `buff1` ... `buffN` - buff id (_number_)  
-    The provider spell ids are the same as the buff ids.
 
 ***
 

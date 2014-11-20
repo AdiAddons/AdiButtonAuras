@@ -42,7 +42,13 @@ Options
  
 #### User-defined rules
 
-AdiButtonAuras allows you to enter and save your own rules, with full access to [its API](https://github.com/Adirelle/AdiButtonAuras/blob/master/doc/Rules.textile). Easy sharing of those rules is planned.
+AdiButtonAuras allows you to enter and save your own rules, using a LUA-based language. Take a look at the [rule reference](https://github.com/Adirelle/AdiButtonAuras/blob/master/doc/RulesRef.md) to see what is available.
+
+TODOs
+-----
+
+- sharing of custom rules, in-game using hyperlinks and out-of-game using copy-pastable strings,
+- a better documentation about custom rules, with more examples.
 
 Supported classes and specializations
 -------------------------------------
