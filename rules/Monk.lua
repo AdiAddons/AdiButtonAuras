@@ -210,7 +210,7 @@ AdiButtonAuras:RegisterRules(function()
 			function(units, model)
 				local found, _, startTime, duration = GetTotemInfo(1)
 				if found then
-					model.highlight, model.expires = "good", startTime + duration
+					model.highlight, model.expiration = "good", startTime + duration
 				else
 					model.hint = true
 				end
