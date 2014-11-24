@@ -51,7 +51,25 @@ AdiButtonAuras:RegisterRules(function()
 			end,
 			883, -- Requires Call Pet
 		},
+		Configure {
+			"Exotic Munitions",
+			L["Suggest using your exotic munitions."],
+			{
+				162536, -- Incendiary Ammo
+				162537, -- Poisoned Ammo
+				162539, -- Frozen Ammo
 			},
+			"player",
+			"UNIT_AURA",
+			function(units, model)
+				if not GetPlayerBuff("player", 162536) and
+					not GetPlayerBuff("player", 162537) and
+					not GetPlayerBuff("player", 162539)
+				then
+					model.hint = true
+				end
+			end
+		}
 	}
 end)
 
