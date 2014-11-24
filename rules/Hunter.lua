@@ -28,26 +28,29 @@ AdiButtonAuras:RegisterRules(function()
 
 	return {
 		ImportPlayerSpells { "HUNTER" },
-			Configure {
-				"Call Pet",
-				L['Suggests summoning your pet'],
-				{
-					883,      -- Call Pet 1
-					-- 83242, -- Call Pet 2
-					-- 83243, -- Call Pet 3
-					-- 83244, -- Call Pet 4
-					-- 83245, -- Call Pet 5
-				},
-				"player",
-				"UNIT_PET",
-				function(units, model)
-					if not HasPetSpells() then
+		Configure {
+			"Call Pet",
+			L['Suggests summoning a pet'],
+			{
+				883,      -- Call Pet 1
+				-- 83242, -- Call Pet 2
+				-- 83243, -- Call Pet 3
+				-- 83244, -- Call Pet 4
+				-- 83245, -- Call Pet 5
+			},
+			"player",
+			"UNIT_PET",
+			function(units, model)
+				if not HasPetSpells() then
+					if not IsPlayerSpell(155228) then -- Lone Wolf
 						model.hint = true
-					else
-						model.highlight = "good"
 					end
-				end,
-				883, -- Requires Call Pet
+				else
+					model.highlight = "good"
+				end
+			end,
+			883, -- Requires Call Pet
+		},
 			},
 	}
 end)
@@ -63,4 +66,4 @@ end)
 -- GLOBALS: SimpleDebuffs UnitCanAttack UnitCastingInfo UnitChannelInfo UnitClass
 -- GLOBALS: UnitHealth UnitHealthMax UnitIsDeadOrGhost UnitIsPlayer UnitPower
 -- GLOBALS: UnitPowerMax UnitStagger bit ceil floor format ipairs math min pairs
--- GLOBALS: print select string table tinsert GetPlayerBuff
+-- GLOBALS: print select string table tinsert GetPlayerBuff IsPlayerSpell
