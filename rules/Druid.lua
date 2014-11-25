@@ -115,34 +115,6 @@ AdiButtonAuras:RegisterRules(function()
 			end,
 			77495, -- Provided by: Mastery: Harmony
 		},
-		Configure {
-			"LunarEnergy",
-			format(L["Show %s."], L["lunar energy"]),
-			5176, -- Wrath
-			"player",
-			{ "UNIT_POWER_FREQUENT", "ECLIPSE_DIRECTION_CHANGE" },
-			function(units, model)
-				if GetEclipseDirection() == "moon" then
-					model.hint = true
-					model.count = -UnitPower("player", SPELL_POWER_ECLIPSE)
-				end
-			end,
-			79577, -- Provided by: Eclipse (passive)
-		},
-		Configure {
-			"SolarEnergy",
-			format(L["Show %s."], L["solar energy"]),
-			2912, -- Starfire
-			"player",
-			{ "UNIT_POWER_FREQUENT", "ECLIPSE_DIRECTION_CHANGE" },
-			function(units, model)
-				if GetEclipseDirection() == "sun" then
-					model.hint = true
-					model.count = UnitPower("player", SPELL_POWER_ECLIPSE)
-				end
-			end,
-			79577, -- Provided by: Eclipse (passive)
-		},
 		PassiveModifier {
 			16864, -- Omen of Clarity
 			{
