@@ -149,25 +149,6 @@ AdiButtonAuras:RegisterRules(function()
 			end
 		},
 		Configure {
-			"ThunderFocusTea",
-			format(L["Suggest when at least %s %s are running and one of them is below %s seconds."], TFT_COUNT, GetSpellInfo(115151), TFT_DURATION),
-			116680, -- Thunder Focus Tea
-			"group",
-			"UNIT_AURA",
-			function(units, model)
-				local count, minExpiration = 0, math.huge
-				for unit in pairs(units.group) do
-					local found, _, expiration = GetPlayerBuff(unit, 115151)
-					if found then
-						count, minExpiration = count + 1, min(minExpiration, expiration)
-					end
-				end
-				if count >= TFT_COUNT and minExpiration-GetTime() < TFT_DURATION then
-					model.hint, model.expiration = true, minExpiration
-				end
-			end
-		},
-		Configure {
 			"Uplift",
 			format(L["Suggest when total effective healing would be at least %d times the base healing."], UPLIFT_THRESHOLD),
 			116670, -- Uplift
