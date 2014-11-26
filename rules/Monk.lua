@@ -169,7 +169,7 @@ AdiButtonAuras:RegisterRules(function()
 			end
 		},
 		Configure {
-			"Statue",
+			"StatueTimer",
 			L["Show good border and remaining time of your summoned statue."],
 			{
 				115313, -- Summon Jade Serpent Statue
@@ -181,7 +181,20 @@ AdiButtonAuras:RegisterRules(function()
 				local found, _, startTime, duration = GetTotemInfo(1)
 				if found then
 					model.highlight, model.expiration = "good", startTime + duration
-				else
+				end
+			end,
+		},
+		Configure {
+			"StatueHint",
+			L["Suggests to summon your statue."],
+			{
+				115313, -- Summon Jade Serpent Statue
+				115315, -- Summon Black Ox Statue
+			},
+			"player",
+			"PLAYER_TOTEM_UPDATE",
+			function(units, model)
+				if not GetTotemInfo(1) then
 					model.hint = true
 				end
 			end,
