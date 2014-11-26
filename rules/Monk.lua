@@ -66,17 +66,6 @@ AdiButtonAuras:RegisterRules(function()
 			nil,
 			"flash"
 		},
-		DebuffAliases {
-			121253, -- Keg Smash
-			115180, -- Dizzying Haze
-		},
-		PassiveModifier {
-			116645, -- Teachings of the Monastery
-			123273, -- Surging Mist
-			118674, -- Vital Mists
-			"player",
-			"none"
-		},
 		Configure {
 			"HealingElixirs",
 			BuildDesc("HELPFUL PLAYER", "good", "player", 122280),
