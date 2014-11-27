@@ -120,11 +120,11 @@ AdiButtonAuras:RegisterRules(function()
 			format(L["Show %s."], L["lunar energy"]),
 			5176, -- Wrath
 			"player",
-			{ "UNIT_POWER_FREQUENT", "ECLIPSE_DIRECTION_CHANGE" },
+			"UNIT_POWER_FREQUENT",
 			function(units, model)
-				if GetEclipseDirection() == "moon" then
-					model.hint = true
-					model.count = -UnitPower("player", SPELL_POWER_ECLIPSE)
+				local power = UnitPower("player", SPELL_POWER_ECLIPSE)
+				if power > 0 then
+					model.count = power
 				end
 			end,
 			79577, -- Provided by: Eclipse (passive)
@@ -134,11 +134,11 @@ AdiButtonAuras:RegisterRules(function()
 			format(L["Show %s."], L["solar energy"]),
 			2912, -- Starfire
 			"player",
-			{ "UNIT_POWER_FREQUENT", "ECLIPSE_DIRECTION_CHANGE" },
+			"UNIT_POWER_FREQUENT",
 			function(units, model)
-				if GetEclipseDirection() == "sun" then
-					model.hint = true
-					model.count = UnitPower("player", SPELL_POWER_ECLIPSE)
+				local power = UnitPower("player", SPELL_POWER_ECLIPSE)
+				if power < 0 then
+					model.count = -power
 				end
 			end,
 			79577, -- Provided by: Eclipse (passive)
