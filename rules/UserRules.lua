@@ -58,19 +58,19 @@ local function CompileUserRule(rule)
 		return
 	end
 
-	local snippet, errorMessage = CompileCodeSnippet(rule.code)
+	local snippet, errorMessage, new = CompileCodeSnippet(rule.code)
 	if not snippet then
-		return nil, errorMessage
+		return nil, errorMessage, new
 	end
 
 	local success, rulesOrMessage = pcall(snippet)
 	if success then
 		return rulesOrMessage
 	end
-	return nil, rulesOrMessage
+	return nil, rulesOrMessage, new
 end
 
-local builders = {}
+local previous, builders = {}, {}
 
 function addon:CompileUserRules()
 	local changed = false
@@ -78,24 +78,33 @@ function addon:CompileUserRules()
 
 	local rules = addon.db.global.userRules
 
-	for key in pairs(builders) do
+	for key in pairs(previous) do
 		if not rules[key] then
-			builders[key] = nil
+			previous[key] = nil
 			changed = true
 		end
 	end
 
+	local count = 0
 	for key, rule in pairs(rules) do
 		local builder, errorMessage, new = CompileUserRule(rule)
 		rule.error = errorMessage
 		if errorMessage and new then
 			geterrorhandler()(format('[%s "%s"]: %s', addonName, rule.title, errorMessage))
 		end
-		if builders[key] ~= builder then
+		if previous[key] ~= builder then
 			Debug('Rule', rule.title, 'changed to', builder)
-			builders[key] = builder
+			previous[key] = builder
 			changed = true
 		end
+		if builder then
+			count = count + 1
+			builders[count] = builder
+		end
+	end
+
+	for i = count+1, #builders do
+		builders[i] = nil
 	end
 
 	Debug('Compilation changed:', changed)
