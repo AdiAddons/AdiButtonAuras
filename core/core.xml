@@ -9,4 +9,5 @@
 	<Script file="Items.lua"/>
 	<Script file="Overlays.lua"/>
 	<Script file="Display.lua"/>
+    <Script file="DebugTooltip.lua"/>
 </Ui>

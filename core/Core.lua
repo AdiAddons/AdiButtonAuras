@@ -96,6 +96,7 @@ addon.DEFAULT_SETTINGS = {
 		fontSize = 13,
 		highlightTexture = "default",
 		masque = false,
+		debuggingTooltip = false,
 	},
 	global = {
 		userRules = {

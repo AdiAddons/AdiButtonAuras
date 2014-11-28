@@ -70,6 +70,12 @@ function private.GetGlobalOptions(addon)
 					hide  = L['Disabled'],
 				},
 			},
+			debuggingTooltip = {
+				name = L['Debugging Tooltip'],
+				desc = L['Display spell and item identifiers in tooltips to help debugging AdiButtonAuras.'],
+				type = 'toggle',
+				order = 25,
+			},
 			countdownThresholds = {
 				name = L["Countdown Thresholds"],
 				type = "group",
