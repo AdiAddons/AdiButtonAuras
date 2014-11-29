@@ -34,6 +34,7 @@ externals:
   libs/LibDispellable-1.0: git://git.wowace.com/wow/libdispellable-1-0/mainline.git
   libs/DRData-1.0: git://git.wowace.com/wow/drdata-1-0/mainline.git
   libs/LibPlayerSpells-1.0: git://git.wowace.com/wow/libplayerspells-1-0/mainline.git
+  libs/SharedMedia_ButtonHighlight: https://github.com/Adirelle/SharedMedia_ButtonHighlight.git
 
 move-folders:
   AdiButtonAuras/modules/AdiButtonAuras_Config: AdiButtonAuras_Config

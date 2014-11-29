@@ -175,39 +175,21 @@ end
 ------------------------------------------------------------------------------
 
 local LSM = GetLib('LibSharedMedia-3.0')
-local HIGHLIGHT_MEDIATYPE = addonName:lower().."_border"
+addon.HIGHLIGHT_MEDIATYPE = LSM.MediaType.BUTTON_HIGHLIGHT
 
+-- Initialize the default font
 do
-	-- Initialize the default font
-	addon.DEFAULT_SETTINGS.profile.fontName = LSM:GetDefault(LSM.MediaType.FONT)
+	local default = LSM:GetDefault(LSM.MediaType.FONT)
+
 	local wantedFile = _G.NumberFontNormalSmall:GetFont()
 	for name, file in pairs(LSM:HashTable(LSM.MediaType.FONT)) do
 		if file == wantedFile then
-			addon.DEFAULT_SETTINGS.profile.fontName = name
+			default = name
 			break
 		end
 	end
-
-	-- Register alternative highlights
-	local texturePath = [[Interface\AddOns\]]..addonName..[[\media\highlight\]]
-	for file, label in pairs {
-		["blank"]                    = L["No border"],
-		["bottom-top-gradient"]      = L["Bottom to top gradient"],
-		["corners"]                  = L["Square corners"],
-		["default-border"]           = L["Default border"],
-		["left-right-gradient"]      = L["Left to right gradient"],
-		["right-left-gradient"]      = L["Right to left gradient"],
-		["thin-border"]              = L["Thin border"],
-		["top-bottom-gradient"]      = L["Top to bottom gradient"],
-		["top-left-gradient"]        = L["Top left corner gradient"],
-		["top-left-half-gradient"]   = L["Top left half gradient"],
-		["x"]                        = L["X-shaped border"],
-		["y"]                        = L["Y-shaped border"],
-	} do
-		LSM:Register(HIGHLIGHT_MEDIATYPE, label, texturePath..file)
-	end
-	LSM:SetDefault(HIGHLIGHT_MEDIATYPE, L["Default border"])
-	addon.HIGHLIGHT_MEDIATYPE = HIGHLIGHT_MEDIATYPE
+	
+	addon.DEFAULT_SETTINGS.profile.fontName = default
 end
 
 ------------------------------------------------------------------------------
@@ -408,7 +390,7 @@ end
 function addon.isClass(class)
 	return class == 'ALL' or class == select(2, UnitClass("player"))
 	--@debug@
-		or true
+	--	or true
 	--@end-debug@
 end
 
