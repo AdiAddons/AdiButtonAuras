@@ -43,7 +43,9 @@ libs\LibSharedMedia-3.0\lib.xml
 #@end-no-lib-strip@
 libs\LibSpellbook-1.0\LibSpellbook-1.0.lua
 libs\LibItemBuffs-1.0\LibItemBuffs-1.0.xml
-libs\SharedMedia_ButtonHighlight\lib.xml
+
+# Not in libs subfolder to shorten the path
+SMBH\lib.xml
 
 Localization.lua
 
