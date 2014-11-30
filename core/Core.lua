@@ -175,7 +175,8 @@ end
 ------------------------------------------------------------------------------
 
 local LSM = GetLib('LibSharedMedia-3.0')
-addon.HIGHLIGHT_MEDIATYPE = LSM.MediaType.BUTTON_HIGHLIGHT
+local HIGHLIGHT_MEDIATYPE = LSM.MediaType.BUTTON_HIGHLIGHT
+addon.HIGHLIGHT_MEDIATYPE = HIGHLIGHT_MEDIATYPE
 
 -- Initialize the default font
 do
