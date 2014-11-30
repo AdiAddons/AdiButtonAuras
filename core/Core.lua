@@ -189,7 +189,7 @@ do
 			break
 		end
 	end
-	
+
 	addon.DEFAULT_SETTINGS.profile.fontName = default
 end
 
