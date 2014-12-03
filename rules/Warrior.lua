@@ -51,16 +51,16 @@ AdiButtonAuras:RegisterRules(function()
 		Configure {
 			"RefreshRend",
 			format(
-			L["%s when %s should be refreshed on %s."],
-			DescribeHighlight("flash"), -- hint or flash
-			GetSpellInfo(772),          -- Rend
-			DescribeAllTokens("enemy")  -- enemy string
+				L["%s when your %s should be refreshed on %s."],
+				DescribeHighlight("flash"), -- hint or flash
+				GetSpellInfo(772),          -- Rend
+				DescribeAllTokens("enemy")  -- enemy string
 			),
 			772, -- Rend
 			"enemy",
 			{ "UNIT_AURA", "UNIT_COMBAT" }, -- fast enough to be usable
 			(function()
-				local hasRend = BuildAuraHandler_Single("HARMFUL", nil, "enemy", 772)
+				local hasRend = BuildAuraHandler_Single("HARMFUL PLAYER", nil, "enemy", 772)
 				return function(units, model)
 					if hasRend(units, model) then
 						local rendDuration = 18                              -- Rend lasts 18s
