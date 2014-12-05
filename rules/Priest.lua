@@ -74,6 +74,30 @@ AdiButtonAuras:RegisterRules(function()
 			end)(),
 			81662, -- Evangelism
 		},
+		Configure {
+			"Serendipity",
+			BuildDesc("HELPFUL PLAYER", nil, "player", 63735), -- Serendipity (buff)
+			{
+				   596, -- Prayer of Healing
+				  2060, -- Heal
+				155245, -- Clarity of Purpose
+			},
+			"player",
+			"UNIT_AURA",
+			(function()
+				local hasSerendipity = BuildAuraHandler_Single("HELPFUL PLAYER", nil, "player", 63735) -- Serendipity (buff)
+				local proxy = {} -- Local model
+				return function(units, model)
+					if hasSerendipity(units, proxy) then
+						model.count = proxy.count
+						if proxy.count == 2 then
+							model.hint = true
+						end
+					end
+				end
+			end)(),
+			63733, -- Serendipity
+		},
 	}
 end)
 
