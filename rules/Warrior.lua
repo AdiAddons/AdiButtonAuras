@@ -35,16 +35,16 @@ AdiButtonAuras:RegisterRules(function()
 			L['Suggest using Shield Barrier at 60 Rage or more. Flash at maximum Rage.'],
 			112048, -- Shield Barrier
 			"player",
-			"UNIT_POWER_FREQUENT",
+			{ "UNIT_POWER_FREQUENT", "UNIT_MAXPOWER" },
 			function(_, model)
-				if UnitPower("player") == UnitPowerMax("player") then -- UnitPower defaults to Rage for Warrior anyway
+				local power = UnitPower("player")
+				if power == UnitPowerMax("player") then
 					model.highlight = "flash"
-				elseif UnitPower("player") >= 60 then
-					-- model.highlight = "flash"
+				elseif power >= 60 then
 					model.hint = true
 				end
 			end,
-			112048, -- Show for Protection Only (Shield Barrier)
+			112048, -- Shield Barrier (Protection only)
 		},
 
 		-- Rend
@@ -70,18 +70,24 @@ AdiButtonAuras:RegisterRules(function()
 					end
 				end
 			end,
-			772, -- Rend, Arms Only
+			772, -- Rend (Arms only)
 		},
 
 		-- Execute
 		Configure {
 			"Execute",
-			L["Show a hint when the target is below 20% health."],
-			{ 5308, 163201, }, -- Execute
+			format(
+				L["%s when %s is below %s%% health."],
+				DescribeHighlight("flash"),
+				DescribeAllTokens("enemy"),
+				20
+			),
+			{ 5308, 163201 }, -- Execute
 			"enemy",
-			{ "UNIT_HEALTH", "UNIT_HEALTH_MAX" },
+			{ "UNIT_HEALTH", "UNIT_MAXHEALTH" },
 			function(units, model)
-				if UnitHealth(units.enemy) / UnitHealthMax(units.enemy) <= 0.20 then
+				local foe = units.enemy
+				if UnitHealth(foe) / UnitHealthMax(foe) <= 0.20 then
 					-- model.hint = true
 					model.highlight = "flash"
 				end
