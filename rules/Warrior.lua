@@ -51,7 +51,7 @@ AdiButtonAuras:RegisterRules(function()
 		Configure {
 			"RefreshRend",
 			format(
-				L["%s when your %s should be refreshed on %s."],
+				L["%s when your debuff %s should be refreshed on %s."],
 				DescribeHighlight("flash"), -- hint or flash
 				GetSpellInfo(772),          -- Rend
 				DescribeAllTokens("enemy")  -- enemy string
@@ -59,20 +59,17 @@ AdiButtonAuras:RegisterRules(function()
 			772, -- Rend
 			"enemy",
 			{ "UNIT_AURA", "UNIT_COMBAT" }, -- fast enough to be usable
-			(function()
-				local hasRend = BuildAuraHandler_Single("HARMFUL PLAYER", nil, "enemy", 772)
-				return function(units, model)
-					if hasRend(units, model) then
-						local rendDuration = 18                              -- Rend lasts 18s
-						local refreshWindow = rendDuration*0.3               -- New 30% rule for WoD ticks
-						model.highlight = "bad"                              -- add standard bad border
-						if model.expiration - GetTime() < refreshWindow then -- abuse sub 30% double tick mechanic :)
-							-- model.hint =  true                            -- hint
-							model.highlight = "flash"                        -- flash is better for this
-						end
+			function(units, model)
+				local _, _, expiration = GetPlayerDebuff(units.enemy, 772)
+				if expiration then
+					local rendDuration = 18                              -- Rend lasts 18s
+					local refreshWindow = rendDuration * 0.3             -- New 30% rule for WoD ticks
+					if expiration - GetTime() < refreshWindow then -- abuse sub 30% double tick mechanic :)
+						-- model.hint =  true                            -- hint
+						model.highlight = "flash"                        -- flash is better for this
 					end
 				end
-			end)(),
+			end,
 			772, -- Rend, Arms Only
 		},
 
@@ -104,4 +101,4 @@ end)
 -- GLOBALS: SimpleDebuffs UnitCanAttack UnitCastingInfo UnitChannelInfo UnitClass
 -- GLOBALS: UnitHealth UnitHealthMax UnitIsDeadOrGhost UnitIsPlayer UnitPower
 -- GLOBALS: UnitPowerMax UnitStagger bit ceil floor format ipairs math min pairs
--- GLOBALS: print select string table tinsert GetPlayerBuff
+-- GLOBALS: print select string table tinsert GetPlayerBuff GetPlayerDebuff
