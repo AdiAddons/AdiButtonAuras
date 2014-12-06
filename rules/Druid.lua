@@ -158,6 +158,20 @@ AdiButtonAuras:RegisterRules(function()
 			end,
 			17076, -- Glyph of Rejuvenation
 		},
+		Configure {
+			"RestoWildMushroom",
+			L["Shows duration for Wild Mushroom (Restoration)."],
+			145205, -- Wild Mushroom (Restoration)
+			"player",
+			"PLAYER_TOTEM_UPDATE",
+			function(_, model)
+				local hasShroom, _, startTime, duration = GetTotemInfo(1) -- only one shroom at a time
+				if hasShroom then
+					model.highlight = "good"
+					model.expiration = startTime + duration
+				end
+			end,
+		}
 	}
 
 end)
