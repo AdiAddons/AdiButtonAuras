@@ -163,7 +163,10 @@ AdiButtonAuras:RegisterRules(function()
 		Configure {
 			"RestoWildMushroom",
 			L["Shows duration for Wild Mushroom (Restoration)."],
-			145205, -- Wild Mushroom (Restoration)
+			{
+				145205, -- Wild Mushroom (Restoration)
+				147349, -- Wild Mushroom (Restoration) with Glyph of the Sprouting Mushroom (id:146654)
+			},
 			"player",
 			"PLAYER_TOTEM_UPDATE",
 			function(_, model)
@@ -173,6 +176,7 @@ AdiButtonAuras:RegisterRules(function()
 					model.expiration = startTime + duration
 				end
 			end,
+			145205 -- Wild Mushroom (Restoration)
 		},
 		Configure {
 			"Germination",
