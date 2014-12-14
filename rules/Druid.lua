@@ -33,11 +33,13 @@ AdiButtonAuras:RegisterRules(function()
 			-- Import all spells for ...
 			"DRUID",
 			-- ... but ...
+			   774, -- Rejuvenation
 			  5217, -- Tiger's Fury
 			145518, -- Genesis
 			 16870, -- Clearcasting
 			114108, -- Soul of the Forest (restoration)
 			 16974, -- Predatory Swiftness (passive)
+			155777, -- Rejuvenation (Germination)
 		},
 		BuffAliases {
 			145518, -- Genesis
@@ -171,7 +173,25 @@ AdiButtonAuras:RegisterRules(function()
 					model.expiration = startTime + duration
 				end
 			end,
-		}
+		},
+		Configure {
+			"Germination",
+			format(L["Show the shortest duration of %s and %s."], DescribeAllSpells(774, 155777)), -- Rejuvenation & Rejuvenation
+			774, -- Rejuvenation
+			"ally",
+			"UNIT_AURA",
+			function(units, model)
+				local rejuvFound, _, rejuvExpiration = GetPlayerBuff(units.ally, 774) -- Rejuvenation
+				local germFound, _, germExpiration = GetPlayerBuff(units.ally, 155777) -- Rejuvenation (Germination)
+				if rejuvFound and germFound then
+					model.highlight, model.count, model.expiration = "good", 2, math.min(rejuvExpiration, germExpiration)
+				elseif rejuvFound then
+					model.highlight, model.expiration = "good", rejuvExpiration
+				elseif germFound then
+					model.highlight, model.expiration = "good", germExpiration
+				end
+			end,
+		},
 	}
 
 end)
