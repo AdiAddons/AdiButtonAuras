@@ -198,7 +198,9 @@ function overlayPrototype:Initialize(button)
 	self:SetScript('OnShow', self.OnShow)
 	self:SetScript('OnHide', self.OnHide)
 
-	self:SetAllPoints(button)
+	local width, height = button:GetSize()
+	self:SetSize(width or 36, height or 36)
+	self:SetPoint("CENTER", button)
 
 	self:InitializeDisplay()
 
