@@ -169,7 +169,9 @@ function overlayPrototype:ApplyHighlightSkin()
 end
 
 function overlayPrototype:ApplySkin()
-	self:ApplyHighlightSkin()
+	if not self:Masque() then
+		self:ApplyHighlightSkin()
+	end
 	self:ApplyFont(self.Timer)
 	self:ApplyFont(self.Count)
 end
@@ -180,66 +182,24 @@ end
 
 local Masque, MasqueVersion = addon.GetLib('Masque', true)
 if Masque then
-	local Debug = function(...) return addon.Debug('Masque', ...) end
-
-	local baseApplySkin = overlayPrototype.ApplySkin
-
-	function overlayPrototype:ApplySkin()
-		self:ApplyFont(self.Timer)
-		self:ApplyFont(self.Count)
-		if not addon.db.profile.masque then
-			if self.masqued then
-				self:Unmasque()
-				self.masqued = false
-			end
-			return baseApplySkin(self)
-		end
-		if self.masqued then
-			return
-		end
-		self.masqued = true
-		self:Masque()
-		return
-	end
+	local group = Masque:Group(addonName)
 
 	function overlayPrototype:Masque()
 		if not self.masqueData then
 			self.masqueData = {
 				Border = self.Highlight,
-				FloatingBG = false,
-				Icon = false,
-				Cooldown = false,
-				Flash = false,
-				Pushed = false,
 				Normal = false,
-				Disabled = false,
-				Checked = false,
-				AutoCastable = false,
-				Highlight = false,
-				HotKey = false,
-				Count = false,
-				Name = false,
-				Duration = false,
-				AutoCast = false,
 			}
+			group:AddButton(self, self.masqueData)
 		end
-		Debug(self, 'Masquing')
-		Masque:Group(addonName):AddButton(self, self.masqueData)
+		return not group.db.Disabled
 	end
 
-	function overlayPrototype:Unmasque()
-		Debug(self, 'Unmasquing')
-		Masque:Group(addonName):RemoveButton(self)
-		self.Highlight:ClearAllPoints()
-		self.Highlight:SetAllPoints(self)
+	Masque.Register(addonName, function() addon:SendMessage(addon.THEME_CHANGED) end)
+else
+	function overlayPrototype:Masque()
+		return false
 	end
-
-	Debug("Support enabled for version", MasqueVersion)
-	addon.RegisterMessage('Masque', addon.THEME_CHANGED, function()
-		if addon.db.profile.masque then
-			Masque:Group(addonName):ReSkin()
-		end
-	end)
 end
 
 ------------------------------------------------------------------------------

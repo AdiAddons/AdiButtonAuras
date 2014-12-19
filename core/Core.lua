@@ -95,7 +95,6 @@ addon.DEFAULT_SETTINGS = {
 		hints = "show",
 		fontSize = 13,
 		highlightTexture = "default",
-		masque = false,
 		debuggingTooltip = false,
 	},
 	global = {

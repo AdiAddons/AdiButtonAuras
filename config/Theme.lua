@@ -23,11 +23,31 @@ local _, private = ...
 
 local _G = _G
 
-function private.GetThemeOptions(addon)
+function private.GetThemeOptions(addon, addonName)
 
 	local unpack = _G.unpack
 	local L = addon.L
 	local Masque = addon.GetLib('Masque', true)
+
+	local masqueOption
+	if Masque then
+		local group = Masque:Group(addonName)
+		masqueOption = {
+			name = L['Use Masque'],
+			type = 'toggle',
+			order = 25,
+			set = function(_, enabled)
+				if enabled then
+					group:Enable()
+				else
+					group:Disable()
+				end
+			end,
+			get = function()
+				return not group.db.Disabled
+			end,
+		}
+	end
 
 	return {
 		name = L['Theme'],
@@ -115,12 +135,7 @@ function private.GetThemeOptions(addon)
 					},
 				},
 			},
-			masque = {
-				name = L['Use Masque'],
-				type = 'toggle',
-				order = 25,
-				hidden = not Masque
-			},
+			masque = masqueOption,
 			highlightTexture = {
 				name = L['Highlight texture'],
 				desc = L['Select the texture used to highlight buttons.'],
