@@ -184,11 +184,16 @@ local Masque, MasqueVersion = addon.GetLib('Masque', true)
 if Masque then
 	local group = Masque:Group(addonName)
 
+	-- Provide a fake background to Masque, to avoid masking the underlying button
+	local NOOP = function() end
+	local fakeBackground = setmetatable({}, { __index = function() return NOOP end})
+
 	function overlayPrototype:Masque()
 		if not self.masqueData then
 			self.masqueData = {
 				Border = self.Highlight,
 				Normal = false,
+				FloatingBG = fakeBackground,
 			}
 			group:AddButton(self, self.masqueData)
 		end
