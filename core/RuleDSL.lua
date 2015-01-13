@@ -516,7 +516,7 @@ local RULES_ENV = addon.BuildSafeEnv(
 		"HasPetSpells", "ipairs", "math", "min", "pairs", "select", "string", "table", "tinsert",
 		"UnitIsPlayer", "UnitCanAttack", "UnitCastingInfo", "UnitChannelInfo", "UnitClass","UnitHealth",
 		"print", "UnitHealthMax", "UnitPower", "UnitPowerMax", "UnitStagger", "UnitIsDeadOrGhost",
-		"IsPlayerSpell"
+		"IsPlayerSpell", "GetSpellCharges"
 	}
 )
 
