@@ -39,7 +39,7 @@ AdiButtonAuras:RegisterRules(function()
 			function(_, model)
 				local power = UnitPower("player")
 				if power == UnitPowerMax("player") then
-					model.highlight = "flash"
+					model.flash = true
 				elseif power >= 60 then
 					model.hint = true
 				end
@@ -65,8 +65,7 @@ AdiButtonAuras:RegisterRules(function()
 					local rendDuration = 18                              -- Rend lasts 18s
 					local refreshWindow = rendDuration * 0.3             -- New 30% rule for WoD ticks
 					if expiration - GetTime() < refreshWindow then -- abuse sub 30% double tick mechanic :)
-						-- model.hint =  true                            -- hint
-						model.highlight = "flash"                        -- flash is better for this
+						model.flash = true                               -- flash is better for this
 					end
 				end
 			end,
@@ -88,8 +87,7 @@ AdiButtonAuras:RegisterRules(function()
 			function(units, model)
 				local foe = units.enemy
 				if UnitHealth(foe) / UnitHealthMax(foe) <= 0.20 then
-					-- model.hint = true
-					model.highlight = "flash"
+					model.flash = true
 				end
 			end,
 		},

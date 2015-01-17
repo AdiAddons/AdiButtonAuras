@@ -125,7 +125,7 @@ AdiButtonAuras:RegisterRules(function()
 			function(_, model)
 				local embers = UnitPower("player", SPELL_POWER_BURNING_EMBERS)
 				if embers >= 3 then
-					model.highlight = "flash"
+					model.flash = true
 				end
 				if embers >= 4 then
 					model.hint = true

@@ -235,6 +235,13 @@ function overlayPrototype:SetHighlight(highlight)
 	self:ApplyHighlight()
 end
 
+function overlayPrototype:SetFlash(flash)
+	flash = not not flash
+	if self.flash == flash then return end
+	self.flash = flash
+	self:ApplyFlash()
+end
+
 function overlayPrototype:SetHint(hint)
 	hint = not not hint
 	if self.hint == hint then return end
@@ -261,7 +268,6 @@ function overlayPrototype:ApplyCount()
 end
 
 function overlayPrototype:ApplyHighlight()
-	self:ApplyFlash()
 	self:ApplyColoredHighlight()
 end
 
@@ -273,7 +279,13 @@ function overlayPrototype:ApplyFlash()
 end
 
 function overlayPrototype:ShouldShowFlash()
-	return self.highlight == "flash" and not (addon.db.profile.noFlashOnCooldown and self.inCooldown) and (not addon.db.profile.noFlashOutOfCombat or self.inCombat)
+	if addon.db.profile.noFlashOnCooldown and self.inCooldown then
+		return false
+	end
+	if addon.db.profile.noFlashOutOfCombat and not self.inCombat then
+		return false
+	end
+	return self.flash
 end
 
 function overlayPrototype:ApplyColoredHighlight()
@@ -313,14 +325,15 @@ function overlayPrototype:UpdateDisplay(event)
 	self:ApplyExpiration()
 	self:ApplyCount()
 	self:ApplyHighlight()
+	self:ApplyFlash()
 	self:ApplyHint()
 	return true
 end
 
 function overlayPrototype:PLAYER_REGEN_ENABLED(event)
 	self.inCombat = (event == "PLAYER_REGEN_DISABLED")
-	self:ApplyHighlight()
 	self:ApplyHint()
+	self:ApplyFlash()
 end
 overlayPrototype.PLAYER_REGEN_DISABLED = overlayPrototype.PLAYER_REGEN_ENABLED
 

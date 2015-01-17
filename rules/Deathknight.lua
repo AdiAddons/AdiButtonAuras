@@ -63,8 +63,7 @@ AdiButtonAuras:RegisterRules(function()
 			function(_, model)
 				local found, count = GetPlayerBuff("player", 114851) -- Blood Charge
 				if found and count >= 10 then
-					model.highlight = "flash"
-					model.hint = false
+					model.flash, model.hint = true, false
 				end
 			end,
 			45529, -- Provided by: Blood Tap

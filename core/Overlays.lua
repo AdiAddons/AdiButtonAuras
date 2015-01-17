@@ -445,8 +445,14 @@ local modelProxy = setmetatable({}, {
 				return error(format("Invalid %s, should be a number, not %s", key, type(value)), 2)
 			end
 		elseif key == "highlight" then
-			if value ~= nil and value ~= "flash" and value ~= "good" and value ~= "bad" and value ~= "darken" and value ~= "lighten" then
+			if value == "flash" then
+				key, value = value, true
+			elseif value ~= nil and value ~= "good" and value ~= "bad" and value ~= "darken" and value ~= "lighten" then
 				return error(format('Invalid %s, should be one of "flash", "good", "bad", "darken", "lighten" or nil, not %s', key, tostring(value)), 2)
+			end
+		elseif key == "flash" then
+			if type(value) ~= "boolean" then
+				return error(format("Invalid %s, should be a false or true, not %s", key, type(value)), 2)
 			end
 		elseif key == "hint" then
 			if type(value) ~= "boolean" then
@@ -462,7 +468,7 @@ local modelProxy = setmetatable({}, {
 function overlayPrototype:UpdateState(event)
 	self:SetScript('OnUpdate', nil)
 
-	model.count, model.expiration, model.highlight, model.hint  = 0, 0, nil, false
+	model.count, model.expiration, model.highlight, model.hint, model.flash  = 0, 0, nil, false, false
 
 	if self.handlers then
 		model.spellId, model.actionType, model.actionId = self.spellId, self.actionType, self.actionId
@@ -474,23 +480,21 @@ function overlayPrototype:UpdateState(event)
 
 		if addon.db.profile.inverted[self.spellId] then
 			if model.highlight then
-				if model.highlight ~= "flash" then
-					model.highlight = nil
-				end
+				model.highlight = nil
 			else
 				model.highlight = self.units.enemy and "bad" or "good"
 			end
 		end
 
 		if addon.db.profile.flashPromotion[self.spellId] and (model.highlight == "good" or model.highlight == "bad") then
-			model.highlight = "flash"
+			model.highlight, model.flash = nil, true
 		end
 	end
 
-	--self:Debug("Scan =>", model.highlight, model.count, model.expiration, model.hint)
 	self:SetCount(model.count)
 	self:SetExpiration(model.expiration)
 	self:SetHighlight(model.highlight)
+	self:SetFlash(model.flash)
 	self:SetHint(model.hint)
 
 	return true

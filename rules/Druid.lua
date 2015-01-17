@@ -96,7 +96,7 @@ AdiButtonAuras:RegisterRules(function()
 			"UNIT_COMBO_POINTS",
 			function(units, model)
 				if units.enemy and GetComboPoints("player", units.enemy) == 5 then
-					model.highlight = "flash"
+					model.flash = true
 				end
 			end,
 		},

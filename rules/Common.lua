@@ -271,11 +271,11 @@ AdiButtonAuras:RegisterRules(function()
 				if unit and UnitCanAttack("player", unit) then
 					local name, _, _, _, _, endTime, _, _, notInterruptible = UnitCastingInfo(unit)
 					if name and not notInterruptible then
-						model.highlight, model.expiration = "flash", endTime / 1000
+						model.flash, model.expiration = true, endTime / 1000
 					end
 					name, _, _, _, _, endTime, _, notInterruptible = UnitChannelInfo(unit)
 					if name and not notInterruptible then
-						model.highlight, model.expiration = "flash", endTime / 1000
+						model.flash, model.expiration = true, endTime / 1000
 					end
 				end
 			end

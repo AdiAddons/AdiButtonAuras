@@ -204,7 +204,12 @@ local function BuildAuraHandler_Single(filter, highlight, token, buff, callLevel
 	return function(units, model)
 		local found, count, expiration = GetAura(units[token], buff)
 		if found then
-			model.highlight, model.count, model.expiration = highlight, count, expiration
+			if highlight == "flash" then
+				model.flash = true
+			else
+				model.highlight = highlight
+			end
+			model.count, model.expiration = count, expiration
 			return true
 		end
 	end
@@ -223,7 +228,9 @@ local function BuildAuraHandler_Longest(filter, highlight, token, buffs, callLev
 		for i, id, count, expiration in IterateAuras(units[token]) do
 			if buffs[id] and expiration > longest then
 				longest = expiration
-				if highlight == "flash" or model.highlight ~= "flash" then
+				if highlight == "flash" then
+					model.flash = true
+				else
 					model.highlight = highlight
 				end
 				model.count, model.expiration = count, expiration
@@ -244,7 +251,9 @@ local function BuildAuraHandler_FirstOf(filter, highlight, token, buffs, callLev
 	return function(units, model)
 		for i, id, count, expiration in IterateAuras(units[token]) do
 			if buffs[id] then
-				if highlight == "flash" or model.highlight ~= "flash" then
+				if highlight == "flash" then
+					model.flash = true
+				else
 					model.highlight = highlight
 				end
 				model.count, model.expiration = count, expiration
@@ -311,7 +320,11 @@ local function ShowPower(spells, powerType, handler, highlight, desc)
 			actualHandler = function(_, model)
 				local current, maxPower = UnitPower("player", powerIndex), UnitPowerMax("player", powerIndex)
 				if maxPower ~= 0 and sign * current / maxPower >= handler then
-					model.highlight = highlight
+					if highlight == "flash" then
+						model.flash = true
+					else
+						model.highlight = highlight
+					end
 				end
 			end
 			desc = format(L["Show %s and %s when %s."],
@@ -346,7 +359,11 @@ local function ShowPower(spells, powerType, handler, highlight, desc)
 			if current > 0 and maxPower > 0 then
 				model.count = current
 				if highlight and current == maxPower then
-					model.highlight = highlight
+					if highlight == "flash" then
+						model.flash = true
+					else
+						model.highlight = highlight
+					end
 				end
 			end
 		end
