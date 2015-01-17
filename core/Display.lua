@@ -41,6 +41,7 @@ local ceil = _G.ceil
 local InCombatLockdown = _G.InCombatLockdown
 
 local LSM = addon.GetLib('LibSharedMedia-3.0')
+local LBG = addon.GetLib('LibButtonGlow-1.0')
 
 local fontFile, fontSize, fontFlag = [[Fonts\ARIALN.TTF]], 13, "OUTLINE"
 
@@ -323,6 +324,10 @@ function overlayPrototype:PLAYER_REGEN_ENABLED(event)
 end
 overlayPrototype.PLAYER_REGEN_DISABLED = overlayPrototype.PLAYER_REGEN_ENABLED
 
+-- Use LibButtonGlow-1.0 for flashing animation
+overlayPrototype.ShowFlash = LBG.ShowOverlayGlow
+overlayPrototype.HideFlash = LBG.HideOverlayGlow
+
 ------------------------------------------------------------------------------
 -- Animations
 ------------------------------------------------------------------------------
@@ -379,62 +384,6 @@ local function CreateOverlayFactory(create, onAcquire, onRelease, onEnable, onDi
 
 	return Enable, Disable
 end
-
--- Use Blizzard template
-overlayPrototype.ShowFlash, overlayPrototype.HideFlash = CreateOverlayFactory(
-	-- create
-	-- create
-	function(serial)
-		local overlay = CreateFrame("Frame", addonName.."Flash"..serial, UIParent, "ActionBarButtonSpellActivationAlert")
-		overlay.animOut:SetScript("OnFinished", function() overlay:Release() end)
-		return overlay
-	end,
-	-- onAcquire
-	function(overlay)
-		local button = overlay.owner.button
-		local width, height = button:GetSize()
-		overlay:SetParent(button)
-		overlay:ClearAllPoints()
-		overlay:SetSize(width * 1.4, height * 1.4)
-		overlay:SetPoint("TOPLEFT", button, "TOPLEFT", -width * 0.2, height * 0.2)
-		overlay:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", width * 0.2, -height * 0.2)
-	end,
-	-- onRelease
-	function(overlay)
-		if overlay.animOut:IsPlaying() then
-			overlay.animOut:Stop()
-		end
-		if overlay.animIn:IsPlaying() then
-			overlay.animIn:Stop()
-		end
-	end,
-	-- onEnable
-	function(overlay)
-		if overlay.animOut:IsPlaying() then
-			overlay.animOut:Stop()
-			overlay.animIn:Play()
-		end
-	end,
-	-- onDisable
-	function(overlay)
-		if overlay.animIn:IsPlaying() then
-			overlay.animIn:Stop()
-		end
-		if overlay:IsVisible() then
-			overlay.animOut:Play()
-		else
-			overlay:Release()
-		end
-	end,
-	-- onShow
-	function(overlay)
-		overlay.animIn:Play()
-	end,
-	-- onHide
-	function(overlay)
-		overlay:Release()
-	end
-)
 
 -- Another overlay, for suggestion
 overlayPrototype.ShowHint, overlayPrototype.HideHint = CreateOverlayFactory(

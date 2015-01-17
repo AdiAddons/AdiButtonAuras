@@ -28,6 +28,9 @@ externals:
   libs/BugGrabber:
     url: svn://svn.wowace.com/wow/bug-grabber/mainline/trunk
     tag: latest
+  libs/LibButtonGlow-1.0:
+    url: git://git.wowace.com/wow/libbuttonglow-1-0/mainline.git
+    tag: latest
   libs/AceGUI-3.0-SharedMediaWidgets: svn://svn.wowace.com/wow/ace-gui-3-0-shared-media-widgets/mainline/trunk/AceGUI-3.0-SharedMediaWidgets
   libs/LibSpellbook-1.0: https://github.com/Adirelle/LibSpellbook-1.0.git
   libs/LibItemBuffs-1.0: https://github.com/Adirelle/LibItemBuffs-1.0.git
