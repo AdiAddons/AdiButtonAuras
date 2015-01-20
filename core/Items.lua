@@ -32,6 +32,8 @@ local setmetatable = _G.setmetatable
 local tonumber = _G.tonumber
 local UnitAura = _G.UnitAura
 local tinsert = _G.tinsert
+local pairs = _G.pairs
+local type = _G.type
 
 local LibItemBuffs, LIBVer = addon.GetLib('LibItemBuffs-1.0')
 
@@ -109,5 +111,23 @@ local items = addon.Memoize(function(key)
 	return id and BuildItemRule(id, GetItemSpell(id), LibItemBuffs:GetItemBuffs(id)) or false
 end)
 
-setmetatable(addon.rules, { __index = items })
+local function DeepCopy(t)
+	if type(t) ~= "table" then return t end
+	local n = {}
+	for k,v in pairs(t) do
+		if type(v) == "table" then
+			n[k] = DeepCopy(v)
+		else
+			n[k] = v
+		end
+	end
+	return n
+end
+
+setmetatable(addon.rules, { __index = function(self, key)
+	if not key or not items[key] then return end
+	local rule = DeepCopy(items[key])
+	self[key] = rule
+	return rule
+end })
 setmetatable(addon.descriptions, {  __index = descriptions })
