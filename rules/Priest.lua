@@ -98,6 +98,20 @@ AdiButtonAuras:RegisterRules(function()
 			end)(),
 			63733, -- Serendipity
 		},
+		Configure {
+			"WordOfMending",
+			33076, -- Prayer of Mending
+			BuildDesc("HELPFUL PLAYER", nil, "player", 155362), -- Word of Mending (buff)
+			"player",
+			"UNIT_AURA",
+			function(units, model)
+				local found, count = GetPlayerBuff(self, 155362)
+				if found and count < 10 then
+					model.count = count
+				end
+			end,
+			155362, -- Word of Mending (buff)
+		},
 	}
 end)
 
