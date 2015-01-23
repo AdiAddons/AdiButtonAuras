@@ -94,6 +94,19 @@ AdiButtonAuras:RegisterRules(function()
 			BuildTotemHandler(AIR_TOTEM_SLOT),
 			{98008, 108269, 8177, 108273},
 		},
+		Configure {
+			"LavaSurge",
+			BuildDesc("HELPFUL PLAYER", "hint", "player", 77762),
+			51505, -- Lava Burst
+			"player",
+			"UNIT_AURA",
+			function(units, model)
+				if GetPlayerBuff("player", 77762) then
+					model.hint = true
+				end
+			end,
+			77762, -- Lava Surge
+		},
 	}
 end)
 
