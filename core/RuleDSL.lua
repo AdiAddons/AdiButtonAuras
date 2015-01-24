@@ -199,17 +199,41 @@ end
 -- Handler builders
 ------------------------------------------------------------------------------
 
+local function GetHighlightHandler(highlight)
+	if highlight == "flash" then
+		return function(model, count) model.flash = true end
+	end
+	if highlight == "hint" then
+		return function(model) model.hint = true end
+	end
+	if highlight == "stacks" then
+		return function(model, count)
+			if count and count > 1 then
+				model.count = count
+			end
+		end
+	end
+	if highlight == "good" or highlight == "bad" or highlight == "darken" or highlight == "lighten" then
+		return function(model, count, expiration)
+			model.highlight = highlight
+			if count and count > 1 then
+				model.count = count
+			end
+			if expiration then
+				model.expiration = expiration
+			end
+		end
+	end
+	return function() end
+end
+
 local function BuildAuraHandler_Single(filter, highlight, token, buff, callLevel)
 	local GetAura = addon.GetAuraGetter(filter)
+	local Show = GetHighlightHandler(highlight)
 	return function(units, model)
 		local found, count, expiration = GetAura(units[token], buff)
 		if found then
-			if highlight == "flash" then
-				model.flash = true
-			else
-				model.highlight = highlight
-			end
-			model.count, model.expiration = count, expiration
+			Show(model, count, expiration)
 			return true
 		end
 	end
@@ -223,17 +247,13 @@ local function BuildAuraHandler_Longest(filter, highlight, token, buffs, callLev
 		return BuildAuraHandler_Single(filter, highlight, token, next(buffs), callLevel+1)
 	end
 	local IterateAuras = addon.GetAuraIterator(filter)
+	local Show = GetHighlightHandler(highlight)
 	return function(units, model)
 		local longest = -1
 		for i, id, count, expiration in IterateAuras(units[token]) do
 			if buffs[id] and expiration > longest then
 				longest = expiration
-				if highlight == "flash" then
-					model.flash = true
-				else
-					model.highlight = highlight
-				end
-				model.count, model.expiration = count, expiration
+				Show(model, count, expiration)
 			end
 		end
 		return longest > -1
@@ -248,15 +268,11 @@ local function BuildAuraHandler_FirstOf(filter, highlight, token, buffs, callLev
 		return BuildAuraHandler_Single(filter, highlight, token, next(buffs), callLevel+1)
 	end
 	local IterateAuras = addon.GetAuraIterator(filter)
+	local Show = GetHighlightHandler(highlight)
 	return function(units, model)
 		for i, id, count, expiration in IterateAuras(units[token]) do
 			if buffs[id] then
-				if highlight == "flash" then
-					model.flash = true
-				else
-					model.highlight = highlight
-				end
-				model.count, model.expiration = count, expiration
+				Show(model, count, expiration)
 				return true
 			end
 		end
@@ -311,20 +327,14 @@ local function ShowPower(spells, powerType, handler, highlight, desc)
 		end
 	elseif type(handler) == "number" then
 		-- A number
+		local Show = GetHighlightHandler(highlight or "flash")
 		local sign = handler < 0 and -1 or 1
-		if not highlight then
-			highlight = "flash"
-		end
 		if handler >= -1.0 and handler <= 1.0 then
 			-- Consider the handler as a percentage
 			actualHandler = function(_, model)
 				local current, maxPower = UnitPower("player", powerIndex), UnitPowerMax("player", powerIndex)
 				if maxPower ~= 0 and sign * current / maxPower >= handler then
-					if highlight == "flash" then
-						model.flash = true
-					else
-						model.highlight = highlight
-					end
+					Show(model)
 				end
 			end
 			desc = format(L["Show %s and %s when %s."],
@@ -340,7 +350,7 @@ local function ShowPower(spells, powerType, handler, highlight, desc)
 			actualHandler = function(_, model)
 				local current, maxPower = UnitPower("player", powerIndex)
 				if UnitPowerMax("player", powerIndex) ~= 0 and sign * current >= handler then
-					model.highlight = highlight
+					Show(model)
 				end
 			end
 			desc = format(L["Show %s and %s when %s."],
@@ -354,17 +364,14 @@ local function ShowPower(spells, powerType, handler, highlight, desc)
 		end
 	elseif not handler then
 		-- Provide a simple handler, that shows the current power value and highlights when it reaches the maximum
+		local Show = GetHighlightHandler(highlight)
 		actualHandler = function(_, model)
 			local current, maxPower = UnitPower("player", powerIndex), UnitPowerMax("player", powerIndex)
 			if current > 0 and maxPower > 0 then
-				model.count = current
-				if highlight and current == maxPower then
-					if highlight == "flash" then
-						model.flash = true
-					else
-						model.highlight = highlight
-					end
+				if current == maxPower then
+					Show(model)
 				end
+				model.count = current
 			end
 		end
 		if highlight then

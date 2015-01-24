@@ -55,6 +55,7 @@ local highlightDescs = {
 	lighten = L['lighten'],
 	darken  = L['darken'],
 	hint    = L['suggest'], -- Not really an highlight but who cares ?
+	stacks  = L['show the number of stacks'],
 }
 
 local function DescribeHighlight(highlight)
