@@ -57,6 +57,7 @@ AdiButtonAuras:RegisterRules(function()
 				 61391, -- Typhoon (druid)
 				 61394, -- Frozen Wake (hunter, glyph)
 				116095, -- Disable (monk, 1 stack)
+				127797, -- Ursol's Vortex
 				129923  -- Sluggish (warrior, hs glyph)
 			}
 		}, -- Snares and anti-snares
