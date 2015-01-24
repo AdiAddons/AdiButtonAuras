@@ -125,8 +125,8 @@ local function DeepCopy(t)
 end
 
 setmetatable(addon.rules, { __index = function(self, key)
-	if not key or not items[key] then return end
-	local rule = DeepCopy(items[key])
+	if key == nil then return end
+	local rule = items[key] and DeepCopy(items[key]) or false
 	self[key] = rule
 	return rule
 end })
