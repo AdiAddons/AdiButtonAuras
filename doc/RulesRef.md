@@ -90,35 +90,35 @@ return {
 <a name="SimpleDebuffs"></a>
 **`SimpleDebuffs { debuff1, ..., debuffN }`**
 >List of debuffs cast by the player on any enemy.
-* `debuff1` ... `debuffN` - debuff id (_number_)  
+* `debuff1` ... `debuffN` - debuff id (_number_)
 
 ***
 
 <a name="SharedSimpleBuffs"></a>
 **`SharedSimpleBuffs { buff1, ..., buffN }`**
 >List of buffs cast by anyone on any ally, where only one of that kind is possible (i.e. Soulstone)
-* `buff1` ... `buffN` - buff id (_number_)  
+* `buff1` ... `buffN` - buff id (_number_)
 
 ***
 
 <a name="SharedSimpleDebuffs"></a>
 **`SharedSimpleDebuffs { debuff1, ..., debuffN }`**
 >List of debuffs cast by anyone on any enemy, where only one of that kind is possible (i.e. Hunter's Mark)
-* `debuff1` ... `debuffN` - debuff id (_number_)  
+* `debuff1` ... `debuffN` - debuff id (_number_)
 
 ***
 
 <a name="SelfBuffs"></a>
 **`SelfBuffs { buff1, ..., buffN }`**
 >List of buffs cast by the player on the player
-* `buff1` ... `buffN` - buff id (_number_)  
+* `buff1` ... `buffN` - buff id (_number_)
 
 ***
 
 <a name="PetBuffs"></a>
 **`PetBuffs { buff1, ..., buffN }`**
 >List of buffs cast by the player on his/her pet
-* `buff1` ... `buffN` - buff id (_number_)  
+* `buff1` ... `buffN` - buff id (_number_)
     The provider spell ids are the same as the buff ids.
 
 ***
@@ -173,9 +173,9 @@ DebuffAliases {
 * `passive` - passive spell id (_number_)
 * `spell` - spell id (_number_ or _table_)
 * `buff` - buff id (_number_)
-* (`unit`) - [unit id](#unit-id) (_string_)  
+* (`unit`) - [unit id](#unit-id) (_string_)
     default value: "player"
-* (`highlight`) - [highlight type](#highlight-type) (_string_)  
+* (`highlight`) - [highlight type](#highlight-type) (_string_)
     default value: "good"
 
 ***
