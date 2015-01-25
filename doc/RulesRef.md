@@ -15,6 +15,7 @@
   1. [LongestDebuffOf](#LongestDebuffOf)
   1. [PassiveModifier](#PassiveModifier)
   1. [ShowPower](#ShowPower)
+  1. [ShowStacks](#ShowStacks)
   1. [Configure](#Configure)
 
 ### Concepts
@@ -181,20 +182,21 @@ DebuffAliases {
 
 <a name="ShowPower"></a>
 **`ShowPower { spells, power, handlerOrThreshold, highlight, description }`**
->Display power on the specified spell (i.e. number of Soul shard).
+>Display specified power on the specified spell(s) (e.g. the number of Soul Shards).
+>Also create a second rule to highlight the spell(s) depending on the value; highlight at maximum by default (e.g. handlerOrThreshold == 1.0).
 * `spells` - spell id of spells on which to display the power value (_number_ or _table_)
-* `power` - power type (_string_)  
-    One of the possible suffixes of `SPELL_POWER_` (i.e. "ENERGY")
+* `power` - power type (_string_)
+    One of the possible suffixes of `SPELL_POWER_` (i.e. "ENERGY") or `"COMBO"` for combo points.
 * (`handlerOrThreshold`) - handler (_function_ or _number_)
     - if a _number_ is provided, it is interpreted as follow :
         - numbers in the [-1.0;1.0] range indicate a fraction of the maximum, e.g. 0.5 for 50%, else they are taken as is.
         - positive numbers indicates a minimum threshold, e.g. 50 triggers when the power is equal or greater than 50.
         - negative numbers indicates a maximum threshold, e.g. -50 triggers when the power is equal or less than 50.
     - default value: a _function_ that displays the current power value and highlights when it reaches it's maximum
-* (`highlight`) - [highlight type](#highlight-type) (_string_)  
-    default value: "flash"
-* (`description`) - description for the option panel (_string_)  
-    default value: nothing if the user supplied a _function_ in `handlerOrThreshold`, else a dmeaningful description
+* (`highlight`) - [highlight type](#highlight-type) (_string_)
+    default value: "hint"
+* (`description`) - description for the option panel (_string_)
+    default value: nothing if the user supplied a _function_ in `handlerOrThreshold`, else a meaningful description
 
 >Example:
 ```
@@ -206,6 +208,41 @@ ShowPower {
 },
 ```
 >This darkens Tiger's Fury when the player has more than 35 energy.
+
+***
+
+<a name="ShowStacks"></a>
+**`ShowStacks { spells, buff, maxStacks, unit, handlerOrThreshold, highlight, providers, description }`**
+>Display the number of stacks of a given buff on the specified spell.
+>Can also highlight the action depending on the number of stacks; by default highlight whe reaching the maximum.
+* `spells` - spell id of spells on which to display the number of stacks (_number_ or _table_)
+* `buff` - spell id of the buff to look for (_number_).
+* `maxStacks` - maximum number of stacks to expect (_number_).
+* `unit` - the unit to scan for the buff.
+* (`handlerOrThreshold`) - handler (_function_ or _number_)
+    - if a _number_ is provided, it is interpreted as follow :
+        - numbers in the [-1.0;1.0] range indicate a fraction of the maximum, e.g. 0.5 for 50%, else they are taken as is.
+        - positive numbers indicates a minimum threshold, e.g. 50 triggers when the power is equal or greater than 50.
+        - negative numbers indicates a maximum threshold, e.g. -50 triggers when the power is equal or less than 50.
+    - default value: a _function_ that displays the current power value and highlights when it reaches it's maximum
+* (`highlight`) - [highlight type](#highlight-type) (_string_)
+    default value: "flash"
+* (`providers`) - (_number_ or _table_)
+    Spell(s) required to enable this rule; default to the spell(s) to highlight.
+* (`description`) - description for the option panel (_string_)
+    default value: nothing if the user supplied a _function_ in `handlerOrThreshold`, else a dmeaningful description
+
+>Example:
+```
+ShowStacks {
+    115308, -- Elusive Brew
+    128939, -- Elusive Brew (stacking buff)
+    20,
+    "player",
+    10
+},
+```
+>Show the number of Elusive Brew (buff) on the player on Elusive Brew. Highlight when it is equal or greater than 10.
 
 ***
 
@@ -227,11 +264,11 @@ ShowPower {
 <a name="highlight-type"></a>
 **highlight type**
 >One of the following:
-* `"flash"` (active overlay)
 * `"good"` (green border)
 * `"bad"` (red border)
 * `"darken"` (darker border)
 * `"lighten"` (lighter border)
+# `"stacks"` (not really an highlight: shows the number of buff stacks)
 
 <a name="unit-id"></a>
 **unit id**
