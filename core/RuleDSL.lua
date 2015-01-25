@@ -310,79 +310,82 @@ local function AuraAliases(filter, highlight, unit, spells, buffs)
 end
 
 local function ShowPower(spells, powerType, handler, highlight, desc)
-	if type(powerType) ~= "string" then
+	local events, powerLoc, powerIndex
+	if powerType == "COMBO" then
+		powerIndex, powerLoc, events = 4, _G.COMBO_POINTS, "UNIT_COMBO_POINTS"
+	elseif type(powerType) == "string" then
+		powerIndex = _G["SPELL_POWER_"..powerType]
+		if not powerIndex then
+			error("Unknown power "..powerType, 3)
+		end
+		powerLoc = _G[powerType]
+		events = { "UNIT_POWER", "UNIT_POWER_MAX" }
+	else
 		error("Invalid power type value, expected string, got "..type(powerType), 3)
 	end
-	local powerIndex = _G["SPELL_POWER_"..powerType]
-	if not powerIndex then
-		error("Unknown power "..powerType, 3)
-	end
+
 	local key = BuildKey("ShowPower", powerType, highlight)
-	local powerLoc = _G[powerType]
-	local actualHandler
+
 	if type(handler) == "function" then
 		-- User-supplied handler
-		actualHandler = function(_, model)
-			return handler(UnitPower("player", powerIndex), UnitPowerMax("player", powerIndex), model, highlight)
+		local wrappedHandler = function(_, model)
+			local maxi = UnitPowerMax("player", powerIndex)
+			if maxi == 0 then return end
+			return handler(UnitPower("player", powerIndex), maxi, model, highlight)
 		end
-	elseif type(handler) == "number" then
-		-- A number
-		local Show = GetHighlightHandler(highlight or "flash")
-		local sign = handler < 0 and -1 or 1
-		if handler >= -1.0 and handler <= 1.0 then
-			-- Consider the handler as a percentage
-			actualHandler = function(_, model)
-				local current, maxPower = UnitPower("player", powerIndex), UnitPowerMax("player", powerIndex)
-				if maxPower ~= 0 and sign * current / maxPower >= handler then
-					Show(model)
-				end
-			end
-			desc = format(L["Show %s and %s when %s."],
-				powerLoc,
-				addon.DescribeHighlight(highlight),
-				format(
-					sign < 0 and L["it is below %s"] or L["it is above %s"],
-					floor(100 * sign * handler)..'%'
-				)
-			)
-		else
-			-- Consider the handler as a an absolute value
-			actualHandler = function(_, model)
-				local current, maxPower = UnitPower("player", powerIndex)
-				if UnitPowerMax("player", powerIndex) ~= 0 and sign * current >= handler then
-					Show(model)
-				end
-			end
-			desc = format(L["Show %s and %s when %s."],
-				powerLoc,
-				addon.DescribeHighlight(highlight),
-				format(
-					sign < 0 and L["it is below %s"] or L["it is above %s"],
-					sign * handler
-				)
-			)
-		end
-	elseif not handler then
-		-- Provide a simple handler, that shows the current power value and highlights when it reaches the maximum
-		local Show = GetHighlightHandler(highlight)
-		actualHandler = function(_, model)
-			local current, maxPower = UnitPower("player", powerIndex), UnitPowerMax("player", powerIndex)
-			if current > 0 and maxPower > 0 then
-				if current == maxPower then
-					Show(model)
-				end
-				model.count = current
-			end
-		end
-		if highlight then
-			desc = format(L["Show %s and %s when it reaches its maximum."], powerLoc, addon.DescribeHighlight(highlight))
-		else
-			desc = format(L["Show %s."], powerLoc)
-		end
-	else
-		error("Invalid handler type, expected function, number or nil, got "..type(handler), 3)
+		return Configure(key, desc, spells, "player", events, wrappedHandler, nil, 3)
 	end
-	return Configure(key, desc, spells, "player", { "UNIT_POWER", "UNIT_POWER_MAX" }, actualHandler, nil, 3)
+
+	highlight = highlight or "hint"
+	local showHighlight = GetHighlightHandler(highlight)
+	local highlightDesc = DescribeHighlight(highlight)
+	local test
+
+	if handler == nil or handler == 1 then
+		desc = format(L["%s when your %s reachs its maximum."], highlightDesc, powerLoc)
+		test = function(current, maxi) return current >= maxi end
+
+	elseif handler == -1 then
+		desc = format(L["%s when your %s is less than its maximum."], highlightDesc, powerLoc)
+		test = function(current, maxi) return current < maxi end
+
+	elseif type(handler) ~= "number" then
+		error("Invalid handler type, expected function, number or nil, got "..type(handler), 3)
+
+	elseif handler < -1.0 then
+		desc = format(L["%s when your %s is below %s."], highlightDesc, powerLoc, handler)
+		test = function(current) return -current > handler end
+
+	elseif handler < 0 then
+		desc = format(L["%s when your %s is less than %s."], highlightDesc, powerLoc, floor(-100 * handler)..'%')
+		test = function(current, maxi) return -current / maxi > handler end
+
+	elseif handler < 1.0 then
+		desc = format(L["%s when your %s is greater than or equal to %s."], highlightDesc, powerLoc, floor(100 * handler)..'%')
+		test = function(current, maxi) return current / maxi >= handler end
+
+	else
+		desc = format(L["%s when your %s is greater than or equal to %s."], highlightDesc, powerLoc, handler)
+		test = function(current) return current >= handler end
+	end
+
+	local highlightHandler = function(_, model)
+		local maxi = UnitPowerMax("player", powerIndex)
+		if maxi == 0 or not test(UnitPower("player", powerIndex), maxi) then return end
+		showHighlight(model)
+		return true
+	end
+	local showHandler = function(_, model)
+		local count = UnitPower("player", powerIndex)
+		if count == 0 then return end
+		model.count = count
+		return true
+	end
+
+	return {
+		Configure(key..'Display', format(L["Show %s."], powerLoc), spells, "player", events, showHandler, nil, 3),
+		Configure(key..'Threshold', desc, spells, "player", events, highlightHandler, nil, 3)
+	}
 end
 
 local function FilterOut(spells, exclude)
