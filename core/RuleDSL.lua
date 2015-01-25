@@ -67,6 +67,8 @@ local DescribeAllSpells = addon.DescribeAllSpells
 local BuildDesc         = addon.BuildDesc
 local DescribeLPSSource = addon.DescribeLPSSource
 
+local GetPlayerBuff = addon.AuraTools.GetPlayerBuff
+
 local L = addon.L
 
 local LibPlayerSpells = addon.GetLib('LibPlayerSpells-1.0')
@@ -309,6 +311,79 @@ local function AuraAliases(filter, highlight, unit, spells, buffs)
 	return Configure(key, desc, spells, unit, "UNIT_AURA", BuildAuraHandler_FirstOf(filter, highlight, unit, buffs, 3), nil, 3)
 end
 
+local function ShowCountAndHighlight(key, spells, unit, events, handler, highlight, desc, descWhat, getValue, getMax, providers)
+	if type(handler) == "function" then
+		-- User-supplied handler
+		local wrappedHandler = function(units, model)
+			local actualUnit = units[unit]
+			if not actualUnit then return end
+			local maxi = getMax(actualUnit)
+			if maxi == 0 then return end
+			return handler(getValue(actualUnit), maxi, model, highlight)
+		end
+		return Configure(key, desc, spells, unit, events, wrappedHandler, providers, 4)
+	end
+
+	local showHandler = function(units, model)
+		local actualUnit = units[unit]
+		if not actualUnit then return end
+		local count = getValue(actualUnit)
+		if not count or count == 0 then return end
+		model.count = count
+		return true
+	end
+	local showRule = Configure(key..'Display', format(L["Show %s."], descWhat), spells, unit, events, showHandler, providers, 4)
+	if not handler or not highlight then
+		return showRule
+	end
+
+	local showHighlight = GetHighlightHandler(highlight)
+	local highlightDesc = DescribeHighlight(highlight)
+	local test
+
+	if handler == 1 then
+		desc = format(L["%s when your %s reachs its maximum."], highlightDesc, descWhat)
+		test = function(current, maxi) return current >= maxi end
+
+	elseif handler == -1 then
+		desc = format(L["%s when your %s is less than its maximum."], highlightDesc, descWhat)
+		test = function(current, maxi) return current < maxi end
+
+	elseif type(handler) ~= "number" then
+		error("Invalid handler type, expected function, number or nil, got "..type(handler), 4)
+
+	elseif handler < -1.0 then
+		desc = format(L["%s when your %s is below %s."], highlightDesc, descWhat, handler)
+		test = function(current) return -current > handler end
+
+	elseif handler < 0 then
+		desc = format(L["%s when your %s is less than %s."], highlightDesc, descWhat, floor(-100 * handler)..'%')
+		test = function(current, maxi) return -current / maxi > handler end
+
+	elseif handler < 1.0 then
+		desc = format(L["%s when your %s is greater than or equal to %s."], highlightDesc, descWhat, floor(100 * handler)..'%')
+		test = function(current, maxi) return current / maxi >= handler end
+
+	else
+		desc = format(L["%s when your %s is greater than or equal to %s."], highlightDesc, descWhat, handler)
+		test = function(current) return current >= handler end
+	end
+
+	local highlightHandler = function(units, model)
+		local actualUnit = units[unit]
+		if not actualUnit then return end
+		local maxi = getMax(actualUnit)
+		if maxi == 0 or not test(getValue(actualUnit), maxi) then return end
+		showHighlight(model)
+		return true
+	end
+
+	return {
+		showRule,
+		Configure(key..'Threshold', desc, spells, unit, events, highlightHandler, providers, 4)
+	}
+end
+
 local function ShowPower(spells, powerType, handler, highlight, desc)
 	local events, powerLoc, powerIndex
 	if powerType == "COMBO" then
@@ -326,66 +401,46 @@ local function ShowPower(spells, powerType, handler, highlight, desc)
 
 	local key = BuildKey("ShowPower", powerType, highlight)
 
-	if type(handler) == "function" then
-		-- User-supplied handler
-		local wrappedHandler = function(_, model)
-			local maxi = UnitPowerMax("player", powerIndex)
-			if maxi == 0 then return end
-			return handler(UnitPower("player", powerIndex), maxi, model, highlight)
-		end
-		return Configure(key, desc, spells, "player", events, wrappedHandler, nil, 3)
+	return ShowCountAndHighlight(
+		key,
+		spells,
+		"player",
+		events,
+		handler or 1,
+		highlight or "hint",
+		desc,
+		powerLoc,
+		function() return UnitPower("player", powerIndex) end,
+		function() return UnitPowerMax("player", powerIndex) end
+	)
+end
+
+local function ShowStacks(spells, buff, maxi, unit, handler, highlight, providers, desc)
+	unit = unit or "player"
+	local key = BuildKey("ShowStacks", buff, unit, highlight)
+
+	local getMax
+	if type(maxi) == "number" then
+		getMax = function() return maxi end
+	elseif type(maxi) == "function" then
+		getMax = maxi
+	elseif not maxi then
+		getMax = function() return math.huge end
 	end
 
-	highlight = highlight or "hint"
-	local showHighlight = GetHighlightHandler(highlight)
-	local highlightDesc = DescribeHighlight(highlight)
-	local test
-
-	if handler == nil or handler == 1 then
-		desc = format(L["%s when your %s reachs its maximum."], highlightDesc, powerLoc)
-		test = function(current, maxi) return current >= maxi end
-
-	elseif handler == -1 then
-		desc = format(L["%s when your %s is less than its maximum."], highlightDesc, powerLoc)
-		test = function(current, maxi) return current < maxi end
-
-	elseif type(handler) ~= "number" then
-		error("Invalid handler type, expected function, number or nil, got "..type(handler), 3)
-
-	elseif handler < -1.0 then
-		desc = format(L["%s when your %s is below %s."], highlightDesc, powerLoc, handler)
-		test = function(current) return -current > handler end
-
-	elseif handler < 0 then
-		desc = format(L["%s when your %s is less than %s."], highlightDesc, powerLoc, floor(-100 * handler)..'%')
-		test = function(current, maxi) return -current / maxi > handler end
-
-	elseif handler < 1.0 then
-		desc = format(L["%s when your %s is greater than or equal to %s."], highlightDesc, powerLoc, floor(100 * handler)..'%')
-		test = function(current, maxi) return current / maxi >= handler end
-
-	else
-		desc = format(L["%s when your %s is greater than or equal to %s."], highlightDesc, powerLoc, handler)
-		test = function(current) return current >= handler end
-	end
-
-	local highlightHandler = function(_, model)
-		local maxi = UnitPowerMax("player", powerIndex)
-		if maxi == 0 or not test(UnitPower("player", powerIndex), maxi) then return end
-		showHighlight(model)
-		return true
-	end
-	local showHandler = function(_, model)
-		local count = UnitPower("player", powerIndex)
-		if count == 0 then return end
-		model.count = count
-		return true
-	end
-
-	return {
-		Configure(key..'Display', format(L["Show %s."], powerLoc), spells, "player", events, showHandler, nil, 3),
-		Configure(key..'Threshold', desc, spells, "player", events, highlightHandler, nil, 3)
-	}
+	return ShowCountAndHighlight(
+		key,
+		spells,
+		unit,
+		"UNIT_AURA",
+		handler,
+		highlight or (handler and "hint"),
+		desc,
+		format(L["stacks of %s"], DescribeAllSpells(buff)),
+		function(unit) return select(2, GetPlayerBuff(unit, buff)) or 0 end,
+		getMax,
+		providers
+	)
 end
 
 local function FilterOut(spells, exclude)
@@ -480,6 +535,7 @@ local baseEnv = {
 	-- Basic functions
 	Configure = WrapTableArgFunc(Configure),
 	ShowPower = WrapTableArgFunc(ShowPower),
+	ShowStacks = WrapTableArgFunc(ShowStacks),
 	PassiveModifier = WrapTableArgFunc(PassiveModifier),
 	ImportPlayerSpells = WrapTableArgFunc(ImportPlayerSpells),
 
