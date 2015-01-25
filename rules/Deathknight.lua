@@ -54,7 +54,7 @@ AdiButtonAuras:RegisterRules(function()
 			end,
 			45529, -- Provided by: Blood Tap
 		},
-			Configure {
+		Configure {
 			"Blood Charge Capping",
 			format(L["%s when you have 10 or more stacks of %s."], DescribeHighlight("flash"), BloodCharge),
 			45529, -- Blood Tap
