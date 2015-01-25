@@ -62,9 +62,7 @@ AdiButtonAuras:RegisterRules(function()
 				157676, -- Chi Explosion (Brewmaster)
 				152174, -- Chi Explosion (Windwalker)
 			},
-			"CHI",
-			nil,
-			"flash"
+			"CHI"
 		},
 		Configure {
 			"HealingElixirs",
@@ -212,19 +210,12 @@ AdiButtonAuras:RegisterRules(function()
 			end,
 			126060, -- Desperate Measures
 		},
-		Configure {
-			"ElusiveBrewStacks",
-			format(L["Show %s count and suggest using it at 10 or more stacks."], GetSpellInfo(128939)),
+		ShowStacks {
 			115308, -- Elusive Brew
+			128939, -- Elusive Brew (stacking buff)
+			20, -- 20 stacks max
 			"player",
-			"UNIT_AURA",
-			function(_, model)
-				local found, count = GetPlayerBuff("player", 128939) -- Elusive Brew (stacking buff)
-				if found and count >= 10 then
-					model.hint = true
-					return true
-				end
-			end,
+			10 -- highlight at 10 stacks,
 		},
 	}
 
