@@ -116,21 +116,11 @@ AdiButtonAuras:RegisterRules(function()
 				end
 			end)()
 		},
-		Configure {
-			"Chaos Bolt",
-			L["Highlight Chaos Bolt when at 3+ Burning Embers, hint at max"],
-			116858,
-			"player",
-			"UNIT_POWER",
-			function(_, model)
-				local embers = UnitPower("player", SPELL_POWER_BURNING_EMBERS)
-				if embers >= 3 then
-					model.flash = true
-				end
-				if embers >= 4 then
-					model.hint = true
-				end
-			end
+		ShowPower {
+			116858, -- Chaos Bolt
+			"BURNING_EMBERS",
+			3,
+			"hint"
 		},
 	}
 
@@ -147,4 +137,4 @@ end)
 -- GLOBALS: SimpleDebuffs UnitCanAttack UnitCastingInfo UnitChannelInfo UnitClass
 -- GLOBALS: UnitHealth UnitHealthMax UnitIsDeadOrGhost UnitIsPlayer UnitPower
 -- GLOBALS: UnitPowerMax UnitStagger bit ceil floor format ipairs math min pairs
--- GLOBALS: print select string table tinsert GetPlayerBuff
+-- GLOBALS: print select string table tinsert GetPlayerBuff ShowStacks

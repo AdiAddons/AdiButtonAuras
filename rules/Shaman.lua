@@ -40,19 +40,14 @@ AdiButtonAuras:RegisterRules(function()
 
 	return {
 		ImportPlayerSpells { "SHAMAN" },
-		Configure {
-			lightningShield,
-			format(L['Show %s stacks.'], lightningShield),
-			8042, -- Earth Shock
+		ShowStacks {
+			8042,     -- Earth Shock
+			324,      -- Lightning Shield
+			20,       -- Max 20 stacks
 			"player",
-			"UNIT_AURA",
-			function(_, model)
-				local found, count = GetPlayerBuff("player", 324)
-				if found then
-					model.count = count
-				end
-			end,
-			88766, -- Provided by: Fulmination
+			nil,
+			nil,
+			88766,    -- Provided by: Fulmination
 		},
 		Configure {
 			"FireTotems",
@@ -94,19 +89,13 @@ AdiButtonAuras:RegisterRules(function()
 			BuildTotemHandler(AIR_TOTEM_SLOT),
 			{98008, 108269, 8177, 108273},
 		},
-		Configure {
-			"LavaSurge",
-			BuildDesc("HELPFUL PLAYER", "hint", "player", 77762),
-			51505, -- Lava Burst
-			"player",
-			"UNIT_AURA",
-			function(units, model)
-				if GetPlayerBuff("player", 77762) then
-					model.hint = true
-				end
-			end,
+		PassiveModifier {
 			77762, -- Lava Surge
-		},
+			51505, -- Lava Burst
+			77762, -- Lava Surge
+			"player",
+			"flash"
+		}
 	}
 end)
 
@@ -121,4 +110,4 @@ end)
 -- GLOBALS: SimpleDebuffs UnitCanAttack UnitCastingInfo UnitChannelInfo UnitClass
 -- GLOBALS: UnitHealth UnitHealthMax UnitIsDeadOrGhost UnitIsPlayer UnitPower
 -- GLOBALS: UnitPowerMax UnitStagger bit ceil floor format ipairs math min pairs
--- GLOBALS: print select string table tinsert GetPlayerBuff
+-- GLOBALS: print select string table tinsert GetPlayerBuff ShowStacks

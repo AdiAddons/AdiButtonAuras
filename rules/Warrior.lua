@@ -105,4 +105,4 @@ end)
 -- GLOBALS: SimpleDebuffs UnitCanAttack UnitCastingInfo UnitChannelInfo UnitClass
 -- GLOBALS: UnitHealth UnitHealthMax UnitIsDeadOrGhost UnitIsPlayer UnitPower
 -- GLOBALS: UnitPowerMax UnitStagger bit ceil floor format ipairs math min pairs
--- GLOBALS: print select string table tinsert GetPlayerBuff GetPlayerDebuff
+-- GLOBALS: print select string table tinsert GetPlayerBuff GetPlayerDebuff ShowStacks

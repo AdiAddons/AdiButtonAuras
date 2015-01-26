@@ -74,43 +74,23 @@ AdiButtonAuras:RegisterRules(function()
 			end)(),
 			81662, -- Evangelism
 		},
-		Configure {
-			"Serendipity",
-			BuildDesc("HELPFUL PLAYER", nil, "player", 63735), -- Serendipity (buff)
+		ShowStacks {
 			{
 				   596, -- Prayer of Healing
 				  2060, -- Heal
 				155245, -- Clarity of Purpose
 			},
+			63735,      -- Serendipity (buff)
+			2,          -- Max two stacks
 			"player",
-			"UNIT_AURA",
-			(function()
-				local hasSerendipity = BuildAuraHandler_Single("HELPFUL PLAYER", nil, "player", 63735) -- Serendipity (buff)
-				local proxy = {} -- Local model
-				return function(units, model)
-					if hasSerendipity(units, proxy) then
-						model.count = proxy.count
-						if proxy.count == 2 then
-							model.hint = true
-						end
-					end
-				end
-			end)(),
-			63733, -- Serendipity
+			2,          -- Hint at 2 stacks
+			"hint",
+			63733,      -- Serendipity (passive)
 		},
-		Configure {
-			"WordOfMending",
-			BuildDesc("HELPFUL PLAYER", nil, "player", 155362), -- Word of Mending (buff)
-			33076, -- Prayer of Mending
-			"player",
-			"UNIT_AURA",
-			function(units, model)
-				local found, count = GetPlayerBuff("player", 155362)
-				if found and count < 10 then
-					model.count = count
-				end
-			end,
+		ShowStacks {
+			33076,  -- Prayer of Mending
 			155362, -- Word of Mending (buff)
+			10,     -- Max 10 stacks
 		},
 	}
 end)
@@ -126,4 +106,4 @@ end)
 -- GLOBALS: SimpleDebuffs UnitCanAttack UnitCastingInfo UnitChannelInfo UnitClass
 -- GLOBALS: UnitHealth UnitHealthMax UnitIsDeadOrGhost UnitIsPlayer UnitPower
 -- GLOBALS: UnitPowerMax UnitStagger bit ceil floor format ipairs math min pairs
--- GLOBALS: print select string table tinsert GetPlayerBuff
+-- GLOBALS: print select string table tinsert GetPlayerBuff ShowStacks

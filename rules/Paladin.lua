@@ -38,9 +38,7 @@ AdiButtonAuras:RegisterRules(function()
 				114163, -- Eternal Flame
 				157048, -- Final Verdict
 			},
-			"HOLY_POWER",
-			nil,
-			"flash",
+			"HOLY_POWER"
 		},
 	}
 end)
@@ -56,4 +54,4 @@ end)
 -- GLOBALS: SimpleDebuffs UnitCanAttack UnitCastingInfo UnitChannelInfo UnitClass
 -- GLOBALS: UnitHealth UnitHealthMax UnitIsDeadOrGhost UnitIsPlayer UnitPower
 -- GLOBALS: UnitPowerMax UnitStagger bit ceil floor format ipairs math min pairs
--- GLOBALS: print select string table tinsert GetPlayerBuff
+-- GLOBALS: print select string table tinsert GetPlayerBuff ShowStacks
