@@ -9,8 +9,8 @@
     output-page: "Getting started"
 
 -
-    type: textile
-    input-file: doc/Rules.textile
+    type: markdown
+    input-file: doc/Rules.md
     output-page: "Rule API"
 
 -
