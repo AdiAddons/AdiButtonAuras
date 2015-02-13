@@ -34,18 +34,24 @@ AdiButtonAuras:RegisterRules(function()
 			"WARLOCK",
 			-- ... but ...
 			 80240, -- Havoc
-			  6353, -- Soul Fire
-			104027, -- Soul Fire (metamorphosis)
 			103958, -- Metamorphosis
 		},
 		ShowPower {
 			{
-				17877,  -- Shadowburn
-				114635, -- Ember Tap
+				 17877, -- Shadowburn
 				108683, -- Fire and Brimstone
-				116858, -- Chaos Bolt
+				108685, -- Conflagrate (Fire and Brimstone)
+				108686, -- Immolate (Fire and Brimstone)
+				114635, -- Ember Tap
+				114654, -- Incinerate (Fire and Brimstone)
 			},
 			"BURNING_EMBERS",
+		},
+		ShowPower {
+			116858, -- Chaos Bolt
+			"BURNING_EMBERS",
+			3,
+			"hint"
 		},
 		ShowPower {
 			74434, -- Soulburn
@@ -56,18 +62,19 @@ AdiButtonAuras:RegisterRules(function()
 			"DEMONIC_FURY",
 		},
 		Configure {
-			"Pyroclasm",
+			"Backdraft",
 			format(L["%s when you have 3 or more stacks of %s."], DescribeHighlight("good"), GetSpellInfo(117828)),
 			116858, -- Chaos Bolt
 			"player",
 			"UNIT_AURA",
 			function(_, model)
-				local found, count = GetPlayerBuff("player", 117828)
+				local found, count, expiration = GetPlayerBuff("player", 117828)
 				if found and count >= 3 then
 					model.highlight = "good"
+					model.expiration = expiration
 				end
 			end,
-			123686, -- Provided by: Pyroclasm
+			117896, -- Provided by: Backdraft (Passive)
 		},
 		Configure {
 			"Havoc",
@@ -86,41 +93,6 @@ AdiButtonAuras:RegisterRules(function()
 					return selfHavoc(units, model) and enemyHavoc(units, model)
 				end
 			end)()
-		},
-		Configure {
-			"HavocHint",
-			L["Suggest using Havoc when it is available."],
-			80240,
-			"player",
-			"UNIT_AURA",
-			function(_, model)
-				if not GetPlayerBuff("player", 80240) then
-					model.hint = true
-				end
-			end
-		},
-		Configure {
-			"MoltenCore",
-			L["Show Molten Core expiry on Soul Fire, hint on 5+ stacks"],
-			{6353, 104027},
-			"player",
-			"UNIT_AURA",
-			(function()
-				local hasMoltenCore = BuildAuraHandler_FirstOf("HELPFUL PLAYER", nil, "player", {122355, 140074})
-				return function(units, model)
-					if hasMoltenCore(units, model) then
-						if model.count >= 5 then
-							model.hint = true
-						end
-					end
-				end
-			end)()
-		},
-		ShowPower {
-			116858, -- Chaos Bolt
-			"BURNING_EMBERS",
-			3,
-			"hint"
 		},
 	}
 
