@@ -168,6 +168,23 @@ AdiButtonAuras:RegisterRules(function()
 				end
 			end,
 		},
+		Configure {
+		   "DreamOfCenarius",
+		   	L["Show duration of Dream of Cenarius when found on yourself"],
+		    {
+		      5185, -- Healing Touch
+		      20484 -- Rebirth
+		    },
+		    "player",
+		    "UNIT_AURA",
+		    function(_, model)
+		      local dreamFound, _, dreamExpiration = GetPlayerBuff("player", 145162)
+		        if dreamFound then
+		            model.expiration = dreamExpiration
+		        end
+		    end
+		}
+
 	}
 
 end)
