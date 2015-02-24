@@ -35,26 +35,14 @@ AdiButtonAuras:RegisterRules(function()
 			-- ... but ...
 			   774, -- Rejuvenation
 			  5217, -- Tiger's Fury
-			145518, -- Genesis
-			 16870, -- Clearcasting
-			114108, -- Soul of the Forest (restoration)
 			 16974, -- Predatory Swiftness (passive)
+			114108, -- Soul of the Forest (restoration)
+			145518, -- Genesis
 			155777, -- Rejuvenation (Germination)
 		},
 		BuffAliases {
 			145518, -- Genesis
 			   774, -- Rejuvenation
-		},
-		PassiveModifier {
-			113043, -- Omen of Clarity
-			{
-				8936, -- Regrowth
-				5176, -- Wrath
-				5185, -- Healing Touch
-			},
-			16870, -- Clearcasting
-			"player",
-			"flash"
 		},
 		PassiveModifier {
 			114107, -- Soul of the Forest
