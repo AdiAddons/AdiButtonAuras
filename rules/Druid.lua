@@ -78,16 +78,6 @@ AdiButtonAuras:RegisterRules(function()
 			77495, -- Provided by: Mastery: Harmony
 		},
 		PassiveModifier {
-			16864, -- Omen of Clarity
-			{
-				5221, -- Shred
-				5185, -- Healing Touch
-			},
-			135700, -- Clearcasting
-			"player",
-			"flash"
-		},
-		PassiveModifier {
 			16974, -- Predatory Swiftness (passive)
 			{
 				 5185, -- Healing Touch
