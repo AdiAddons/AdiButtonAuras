@@ -115,6 +115,24 @@ AdiButtonAuras:RegisterRules(function()
 			end,
 			46584, -- Raise Dead
 		},
+		Configure {
+			"Outbreak",
+			format(L["Show the shortest duration of %s and %s."], DescribeAllSpells(55095, 55078)), -- Frost Fever, Blood Plague
+			77575, -- Outbreak
+			"enemy",
+			"UNIT_AURA",
+			function(units, model)
+				local hasFrostFever, _, ffExpiration = GetPlayerDebuff(units.enemy, 55095)
+				local hasBloodPlague, _, bpExpiration = GetPlayerDebuff(units.enemy, 55078)
+				if hasFrostFever and hasBloodPlague then
+					model.highlight, model.count, model.expiration = "bad", 2, math.min(ffExpiration, bpExpiration)
+				elseif hasFrostFever then
+					model.highlight, model.expiration = "bad", ffExpiration
+				elseif hasBloodPlague then
+					model.highlight, model.expiration = "bad", bpExpiration
+				end
+			end,
+		},
 	}
 end)
 
