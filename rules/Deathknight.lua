@@ -133,6 +133,34 @@ AdiButtonAuras:RegisterRules(function()
 				end
 			end,
 		},
+		Configure {
+			"PlagueLeech",
+			L["Suggests using Plague Leech."],
+			123693, -- Plague Leech
+ 			"enemy",
+			{"UNIT_AURA", "RUNE_POWER_UPDATE"},
+			function(units, model)
+				local hasFrostFever = GetPlayerDebuff(units.enemy, 55095)
+				local hasBloodPlague = GetPlayerDebuff(units.enemy, 55078)
+				if hasFrostFever and hasBloodPlague then
+					local numDepleted = 0
+					local sameTypeOnCD = 0
+					for i = 1, 6 do
+						local start = GetRuneCooldown(i)
+						sameTypeOnCD = start > 0 and (sameTypeOnCD + 1) or sameTypeOnCD
+						-- if two runes of the same type are on CD, then one is fully depleted
+						numDepleted = sameTypeOnCD == 2 and (numDepleted + 1) or numDepleted
+						-- reset the counter on even runes
+						sameTypeOnCD = i % 2 == 0 and 0 or sameTypeOnCD
+
+						if numDepleted >= 2 then break end
+					end
+					if numDepleted >= 2 then
+						model.hint = true
+					end
+				end
+			end,
+		},
 	}
 end)
 
@@ -147,4 +175,4 @@ end)
 -- GLOBALS: SimpleDebuffs UnitCanAttack UnitCastingInfo UnitChannelInfo UnitClass
 -- GLOBALS: UnitHealth UnitHealthMax UnitIsDeadOrGhost UnitIsPlayer UnitPower
 -- GLOBALS: UnitPowerMax UnitStagger bit ceil floor format ipairs math min pairs
--- GLOBALS: print select string table tinsert GetPlayerBuff ShowStacks
+-- GLOBALS: print select string table tinsert GetPlayerBuff ShowStacks GetRuneCooldown
