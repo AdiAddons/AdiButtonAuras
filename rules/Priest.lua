@@ -54,25 +54,14 @@ AdiButtonAuras:RegisterRules(function()
 				end
 			end)(),
 		},
-		Configure {
-			"Archangel",
-			BuildDesc("HELPFUL PLAYER", nil, "player", 81662),
-			81700, -- Archangel
-			"player",
-			"UNIT_AURA",
-			(function()
-				local hasEvangelism = BuildAuraHandler_Single("HELPFUL PLAYER", nil, "player", 81661) -- Evangelism (buff)
-				local proxy = {} -- Local model
-				return function(units, model)
-					if hasEvangelism(units, proxy) then
-						model.count = proxy.count
-						if proxy.expiration - GetTime() < 5 then
-							model.hint = true
-						end
-					end
-				end
-			end)(),
-			81662, -- Evangelism
+		ShowStacks {
+			81700,    -- on Archangel
+			81661,    -- show the stacks of Evangelism (buff)
+			5,        -- number of max stacks
+			"player", -- unit to track the buff on
+			nil,      -- no handler (else it will get a hint)
+			nil,      -- no highlight (the default ui highlights it)
+			81662,    -- provider spell -> Evangelism (passive)
 		},
 		ShowStacks {
 			{
