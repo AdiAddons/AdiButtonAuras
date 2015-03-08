@@ -91,7 +91,7 @@ Not in the way InlineAura did it. However you can create custom rules in game us
 Contributions & feedback
 ------------------------
 
-The project is open-source and [hosted on github.com](https://github.com/Adirelle/AdiButtonAura). You can report issues there. Pull request are also welcome. Adirelle often hands around on the freenode IRC network, in the #wowace channel.*
+The project is open-source and [hosted on github.com](https://github.com/Adirelle/AdiButtonAuras). You can report issues there. Pull request are also welcome. Adirelle often hands around on the freenode IRC network, in the #wowace channel.*
 
 #### Before reporting issues
 
