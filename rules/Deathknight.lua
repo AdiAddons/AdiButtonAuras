@@ -137,7 +137,7 @@ AdiButtonAuras:RegisterRules(function()
 			"PlagueLeech",
 			L["Suggests using Plague Leech."],
 			123693, -- Plague Leech
- 			"enemy",
+			"enemy",
 			{"UNIT_AURA", "RUNE_POWER_UPDATE"},
 			function(units, model)
 				local hasFrostFever = GetPlayerDebuff(units.enemy, 55095)
