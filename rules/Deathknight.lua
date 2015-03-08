@@ -169,7 +169,7 @@ end)
 -- GLOBALS: DescribeAllSpells DescribeAllTokens DescribeFilter DescribeHighlight
 -- GLOBALS: DescribeLPSSource GetComboPoints GetEclipseDirection GetNumGroupMembers
 -- GLOBALS: GetPlayerBuff GetPlayerDebuff GetShapeshiftFormID GetSpellBonusHealing
--- GLOBALS: GetSpellInfo GetTime GetTotemInfo HasPetSpells ImportPlayerSpells
+-- GLOBALS: GetSpellInfo GetTime GetTotemInfo HasPetSpells ImportPlayerSpells L
 -- GLOBALS: LongestDebuffOf PLAYER_CLASS PassiveModifier PetBuffs SelfBuffAliases
 -- GLOBALS: SelfBuffs SharedSimpleBuffs SharedSimpleDebuffs ShowPower SimpleBuffs
 -- GLOBALS: SimpleDebuffs UnitCanAttack UnitCastingInfo UnitChannelInfo UnitClass
