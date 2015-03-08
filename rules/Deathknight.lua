@@ -168,11 +168,11 @@ end)
 -- GLOBALS: BuildAuraHandler_Single BuildDesc BuildKey Configure DebuffAliases Debug
 -- GLOBALS: DescribeAllSpells DescribeAllTokens DescribeFilter DescribeHighlight
 -- GLOBALS: DescribeLPSSource GetComboPoints GetEclipseDirection GetNumGroupMembers
--- GLOBALS: GetShapeshiftFormID GetSpellBonusHealing GetSpellInfo GetTime
--- GLOBALS: GetTotemInfo HasPetSpells ImportPlayerSpells L LongestDebuffOf
--- GLOBALS: PLAYER_CLASS PassiveModifier PetBuffs SelfBuffAliases SelfBuffs
--- GLOBALS: SharedSimpleBuffs SharedSimpleDebuffs ShowPower SimpleBuffs
+-- GLOBALS: GetPlayerBuff GetPlayerDebuff GetShapeshiftFormID GetSpellBonusHealing
+-- GLOBALS: GetSpellInfo GetTime GetTotemInfo HasPetSpells ImportPlayerSpells
+-- GLOBALS: LongestDebuffOf PLAYER_CLASS PassiveModifier PetBuffs SelfBuffAliases
+-- GLOBALS: SelfBuffs SharedSimpleBuffs SharedSimpleDebuffs ShowPower SimpleBuffs
 -- GLOBALS: SimpleDebuffs UnitCanAttack UnitCastingInfo UnitChannelInfo UnitClass
 -- GLOBALS: UnitHealth UnitHealthMax UnitIsDeadOrGhost UnitIsPlayer UnitPower
 -- GLOBALS: UnitPowerMax UnitStagger bit ceil floor format ipairs math min pairs
--- GLOBALS: print select string table tinsert GetPlayerBuff ShowStacks GetRuneCooldown
+-- GLOBALS: print select string table tinsert ShowStacks GetRuneCooldown
