@@ -3,7 +3,7 @@ AdiButtonAuras
 
 **_Display auras, and more, on action buttons._**
 
-AdiButtonAuras is a rewrite of Inline Aura, but with different [design decisions](https://github.com/Adirelle/AdiButtonAuras/blob/master/doc/Design.md) based on my experience on the latter.
+AdiButtonAuras is a rewrite of Inline Aura, but with different [design decisions](https://github.com/Adirelle/AdiButtonAuras/blob/master/doc/Design.md) based on my experience with the latter.
 
 AdiButtonAuras uses a set of rules that apply to one or more spells. Each rule can track an aura on one or more units and change the display of the spell accordingly.
 
@@ -65,11 +65,11 @@ There is also a default rule for *items* not supported by LibItemBuffs-1.0.
 FAQ
 ---
 
-#### When I try to configure a spell, the button is dimmed and I cannot choose it. Why?
+**When I try to configure a spell, the button is dimmed and I cannot choose it. Why?**
 
 AdiButtons has no rule about this spell yet. Consider [filling an issue](https://github.com/Adirelle/AdiButtonAuras/issues).
 
-#### Why are some rules ending with some obscure characters between brackets, like [LPS-DRUID-5.4.1-7]?
+**Why are some rules ending with some obscure characters between brackets, like [LPS-DRUID-5.4.1-7]?**
 
 These are references to the libraries AdiButtonAuras used to create the rule.
 
@@ -79,11 +79,11 @@ These are references to the libraries AdiButtonAuras used to create the rule.
  * LD-N: [LibDispellable-1.0](https://github.com/Adirelle/LibDispellable-1.0/), Nth revision.
  * LIB-N-XXX: [LibItemBuffs-1.0](https://github.com/Adirelle/LibItemBuffs-1.0/), Nth revision, XXX data version
 
-#### Are you going to support ElvUI?
+**Are you going to support ElvUI?**
 
 AdiButtonAuras should work with ElvUI. I am not going to support its skin though.
 
-#### Are you going to add a configuration panel to create custom rules?
+**Are you going to add a configuration panel to create custom rules?**
 
 Not in the way InlineAura did it. However you can create custom rules in-game using the Lua API.
 
