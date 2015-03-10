@@ -92,7 +92,7 @@ Contributions & feedback
 
 The project is open-source and [hosted on github.com](https://github.com/Adirelle/AdiButtonAuras). You can report issues there. Pull request are also welcome. Adirelle often hangs around on the freenode IRC network in the #wowace channel.
 
-####Before reporting issues
+**Before reporting issues**
 
  * Please check if any errors happened and paste the exact error messages in the issue.
  * Open the configuration panel, check "Debugging tooltip" and look for the spell identifier by hovering the spell icon in the spellbook, on your action bars and in the (de)buff display. Report these numbers in the issue.

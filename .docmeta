@@ -2,23 +2,3 @@
     type: markdown
     input-file: README.md
     output-page: Main
-
--
-    type: markdown
-    input-file: doc/GettingStarted.md
-    output-page: "Getting started"
-
--
-    type: markdown
-    input-file: doc/Rules.md
-    output-page: "Rule API"
-
--
-    type: markdown
-    input-file: doc/RulesRef.md
-    output-page: "Rule Reference"
-
--
-    type: markdown
-    input-file: doc/Design.md
-    output-page: "Design decisions"
