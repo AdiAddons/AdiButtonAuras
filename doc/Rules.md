@@ -31,9 +31,9 @@ Different variants of a spell can exist because of a specialization, a talent or
 
 ### Units
 
-A list of [UnitIds](http://wowpedia.org/UnitId) to watch. This is not always the target of the spell itself. Depending on the rule, you may want to watch another unit (quite often `player`) to look for a buff that could modify the spell. For example, warlocks' Backdraft is a player buff that reduces the casting time and cost of Incinerate, so a rule showing the number of Backdraft stacks on Incinerate should watch "player" and not the target of Incinerate.
+A list of [UnitIds](http://wow.gamepedia.org/UnitId) to watch. This is not always the target of the spell itself. Depending on the rule, you may want to watch another unit (quite often `player`) to look for a buff that could modify the spell. For example, warlocks' Backdraft is a player buff that reduces the casting time and cost of Incinerate, so a rule showing the number of Backdraft stacks on Incinerate should watch "player" and not the target of Incinerate.
 
-In addition to the [standard UnitIds](http://wowpedia.org/UnitId#Base_Values), AdiButtonAuras accepts two special UnitIds. They are resolved dynamically using the current target and the UI settings that affect targeting (self and focus keybindings, target self by default). Macro conditionals including, `@unitId`, should be detected and used.
+In addition to the [standard UnitIds](http://wow.gamepedia.org/UnitId#Base_Values), AdiButtonAuras accepts two special UnitIds. They are resolved dynamically using the current target and the UI settings that affect targeting (self and focus keybindings, target self by default). Macro conditionals including, `@unitId`, should be detected and used.
 
 Here are the two special UnitIds:
 
@@ -42,7 +42,7 @@ Here are the two special UnitIds:
 
 ### Events
 
-A list of [events](http://wowpedia.org/Events) indicating that the data may have changed and should be refreshed. Events starting with `UNIT_` that do not concern one of the UnitIds of the rule are ignored.
+A list of [events](http://wow.gamepedia.org/Events) indicating that the data may have changed and should be refreshed. Events starting with `UNIT_` that do not concern one of the UnitIds of the rule are ignored.
 
 The most common event is `UNIT_AURA`, since we are watching for auras.
 
@@ -51,12 +51,12 @@ The most common event is `UNIT_AURA`, since we are watching for auras.
 The handlers are functions called to refresh the data. Their signature is `function(units, model)`, where:
 
 * `units` contains an map of UnitId to actual UnitId. It is mainly useful for `units.ally` and `units.enemy`, that are resolved for the action button when they are listed in the rule. If none of these were listed, or if the rule watches for a fixed unit, e.g. `"player"`, this argument must be ignored.
-* `model` is a table containing the data to display on the spell. The handler should update its attributes (see below).
+* `model` is a table containing the data to display on the spell. The handler should update its attributes.
 
 `model` has five attributes:
 
-* `.expiration`: the expiration time of the (de)buff, like the return value of [GetTime()](http://wowpedia.org/API_GetTime), or the 7th return value of [UnitAura](http://wowpedia.org/API_UnitAura). This is used to display a countdown on the button. The default, 0, means "never expires".
-* `.count`: the number of stacks of the (de)buff, like the 3rd return value of [UnitAura](http://wowpedia.org/API_UnitAura). The default, 0, means "no stack".
+* `.expiration`: the expiration time of the (de)buff, like the return value of [GetTime()](http://wow.gamepedia.org/API_GetTime), or the 7th return value of [UnitAura](http://wow.gamepedia.org/API_UnitAura). This is used to display a countdown on the button. The default, 0, means "never expires".
+* `.count`: the number of stacks of the (de)buff, like the 3rd return value of [UnitAura](http://wow.gamepedia.org/API_UnitAura). The default, 0, means "no stack".
 * `.highlight`: an effect to apply to the button, amongst `"good"` (green border), `"bad"` (red border), `"flash"` (glowing animation), `"hint"` (rotating star animation), `"lighten"` (lighter border) and `"darken"` (darker border). Any other value means "no highlight".
 * `.hint`: an effect to apply to the button (spark animation inside the button) that is intended to be visually not as strong as the glowing animation for "flash".
 * `.flash`: an effect to apply to the button (glowing animation). Intended as a replacement of `model.highlight = "flash"`, so that it could be shown together with the good/bad border.
@@ -65,11 +65,9 @@ If several handlers, possibly from different rules, apply to the same spell, the
 
 ## Restricted Lua environment
 
-The rule-defining functions only have access to a restricted set of WoW API functions. There are all "read-only" functions. The exact list of allowed functions are availabe in [RuleDSL.lua](../RuleDSL.lua#L580).
+The rule-defining functions only have access to a restricted set of WoW API functions. These are all "read-only" functions. The exact list is available in [RuleDSL.lua](../core/RuleDSL.lua#L589).
 
-However, a set of additional functions is available to help writing the rules.
-
-A set of helpers is available to create new rules with minimum effort, see [RulesRef.md](RulesRef.md).
+A set of helpers is also available to minimize the effort when creating new rules (see [RulesRef.md](RulesRef.md)).
 
 The other constants and functions are useful only if you have to write your own customized rules using [`Configure`](RulesRef.md#Configure).
 
