@@ -261,9 +261,11 @@ end
 
 function overlayPrototype:ApplyCount()
 	local count = self.count
-	self.Count:SetShown(count)
 	if count then
-		self.Count:SetFormattedText("%d", count)
+		self.Count:SetText(count)
+		self.Count:Show()
+	else
+		self.Count:Hide()
 	end
 end
 
