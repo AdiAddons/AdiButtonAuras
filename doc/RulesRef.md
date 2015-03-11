@@ -236,7 +236,7 @@ ShowPower {
 ShowStacks {
 	115308, -- Elusive Brew
 	128939, -- Elusive Brew (stacking buff)
-	20,
+	15,
 	"player",
 	10
 },

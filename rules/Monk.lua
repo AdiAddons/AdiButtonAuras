@@ -213,9 +213,9 @@ AdiButtonAuras:RegisterRules(function()
 		ShowStacks {
 			115308, -- Elusive Brew
 			128939, -- Elusive Brew (stacking buff)
-			20, -- 20 stacks max
+			15, -- 15 stacks max
 			"player",
-			10 -- highlight at 10 stacks,
+			10, -- highlight at 10 stacks,
 		},
 	}
 
