@@ -133,6 +133,12 @@ function private.GetThemeOptions(addon, addonName)
 						type = 'color',
 						order = 50,
 					},
+					countAtMax = {
+						name = L['Count at maximum'],
+						desc = L['Color of the count text when it is at its maximum value.'],
+						type = 'color',
+						order = 60,
+					},
 				},
 			},
 			masque = masqueOption,

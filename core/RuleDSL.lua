@@ -318,6 +318,7 @@ local function ShowCountAndHighlight(key, spells, unit, events, handler, highlig
 			local actualUnit = units[unit]
 			if not actualUnit then return end
 			local maxi = getMax(actualUnit)
+			model.maxCount = maxi
 			if maxi == 0 then return end
 			return handler(getValue(actualUnit), maxi, model, highlight)
 		end
@@ -330,6 +331,7 @@ local function ShowCountAndHighlight(key, spells, unit, events, handler, highlig
 		local count = getValue(actualUnit)
 		if not count or count == 0 then return end
 		model.count = count
+		model.maxCount = getMax(actualUnit)
 		return true
 	end
 	local showRule = Configure(key..'Display', format(L["Show %s."], descWhat), spells, unit, events, showHandler, providers, 4)
@@ -373,6 +375,7 @@ local function ShowCountAndHighlight(key, spells, unit, events, handler, highlig
 		local actualUnit = units[unit]
 		if not actualUnit then return end
 		local maxi = getMax(actualUnit)
+		model.maxCount = maxi
 		if maxi == 0 or not test(getValue(actualUnit), maxi) then return end
 		showHighlight(model)
 		return true

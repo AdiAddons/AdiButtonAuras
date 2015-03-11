@@ -85,6 +85,7 @@ addon.DEFAULT_SETTINGS = {
 			countdownLow    = { 1.0, 0.0, 0.0 },
 			countdownMedium = { 1.0, 1.0, 0.0 },
 			countdownHigh   = { 1.0, 1.0, 1.0 },
+			countAtMax      = { 1.0, 0.0, 0.0 },
 		},
 		maxCountdown = 600,
 		minMinutes = 600,
