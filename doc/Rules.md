@@ -50,16 +50,23 @@ The most common event is `UNIT_AURA`, since we are watching for auras.
 
 The handlers are functions called to refresh the data. Their signature is `function(units, model)`, where:
 
-* `units` contains an map of UnitId to actual UnitId. It is mainly useful for `units.ally` and `units.enemy`, that are resolved for the action button when they are listed in the rule. If none of these were listed, or if the rule watches for a fixed unit, e.g. `"player"`, this argument must be ignored.
-* `model` is a table containing the data to display on the spell. The handler should update its attributes.
+ * `units` contains an map of UnitId to actual UnitId. It is mainly useful for `units.ally` and `units.enemy`, that are resolved for the action button when they are listed in the rule. If none of these were listed, or if the rule watches for a fixed unit, e.g. `"player"`, this argument must be ignored.
+ * `model` is a table containing the data to display on the spell. The handler should update its attributes.
 
-`model` has five attributes:
+`model` has six attributes:
 
-* `.expiration`: the expiration time of the (de)buff, like the return value of [GetTime()](http://wow.gamepedia.org/API_GetTime), or the 7th return value of [UnitAura](http://wow.gamepedia.org/API_UnitAura). This is used to display a countdown on the button. The default, 0, means "never expires".
-* `.count`: the number of stacks of the (de)buff, like the 3rd return value of [UnitAura](http://wow.gamepedia.org/API_UnitAura). The default, 0, means "no stack".
-* `.highlight`: an effect to apply to the button, amongst `"good"` (green border), `"bad"` (red border), `"flash"` (glowing animation), `"hint"` (rotating star animation), `"lighten"` (lighter border) and `"darken"` (darker border). Any other value means "no highlight".
-* `.hint`: an effect to apply to the button (spark animation inside the button) that is intended to be visually not as strong as the glowing animation for "flash".
-* `.flash`: an effect to apply to the button (glowing animation). Intended as a replacement of `model.highlight = "flash"`, so that it could be shown together with the good/bad border.
+ * `.expiration`: the expiration time of the (de)buff, like the return value of [GetTime()](http://wow.gamepedia.org/API_GetTime), or the 7th return value of [UnitAura](http://wow.gamepedia.org/API_UnitAura). This is used to display a countdown on the button. The default, 0, means "never expires".
+ * `.count`: the number of stacks of the (de)buff, like the 3rd return value of [UnitAura](http://wow.gamepedia.org/API_UnitAura). The default, 0, means "no stack".
+ * `.maxCount`: the number of maximum stacks possible. Useful for rules like `ShowPower` or `ShowStacks`. The count text changes color when the number of stacks reaches maxCount.
+ * `.highlight`: an effect to apply to the button, one of the following (any other value means "no highlight")
+   * `"good"` - green border
+   * `"bad"` - red border
+   * `"flash"` - glowing animation
+   * `"hint"` - rotating star animation
+   * `"lighten"` - lighter button icon
+   * `"darken"` - darker button icon
+ * `.hint`: an effect to apply to the button (spark animation inside the button) that is intended to be visually not as strong as the glowing animation for "flash".
+ * `.flash`: an effect to apply to the button (glowing animation). Intended as a replacement of `model.highlight = "flash"`, so that it could be shown together with the good/bad border.
 
 If several handlers, possibly from different rules, apply to the same spell, they are called in order of definition. Latter handlers could see the results of previous ones in `model`. No assumptions are made about how they handle existing values. Most of the time they just overwrite them.
 
