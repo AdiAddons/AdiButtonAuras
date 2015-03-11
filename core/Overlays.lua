@@ -440,7 +440,7 @@ local model = {}
 local modelProxy = setmetatable({}, {
 	__index = model,
 	__newindex = function(_, key, value)
-		if key == "count" or key == "expiration" then
+		if key == "count" or key == "maxCount" or key == "expiration" then
 			if type(value) ~= "number" then
 				return error(format("Invalid %s, should be a number, not %s", key, type(value)), 2)
 			end
@@ -459,7 +459,7 @@ local modelProxy = setmetatable({}, {
 				return error(format("Invalid %s, should be false or true, not %s", key, type(value)), 2)
 			end
 		else
-			return error(format('Unknown model property: %s, must be one of: count, expiration, highlight or hint', tostring(key)), 2)
+			return error(format('Unknown model property: %s, must be one of: count, maxCount, expiration, highlight or hint', tostring(key)), 2)
 		end
 		model[key] = value
 	end,
@@ -468,7 +468,7 @@ local modelProxy = setmetatable({}, {
 function overlayPrototype:UpdateState(event)
 	self:SetScript('OnUpdate', nil)
 
-	model.count, model.expiration, model.highlight, model.hint, model.flash  = 0, 0, nil, false, false
+	model.count, model.maxCount, model.expiration, model.highlight, model.hint, model.flash  = 0, 0, 0, nil, false, false
 
 	if self.handlers then
 		model.spellId, model.actionType, model.actionId = self.spellId, self.actionType, self.actionId
@@ -491,7 +491,7 @@ function overlayPrototype:UpdateState(event)
 		end
 	end
 
-	self:SetCount(model.count)
+	self:SetCount(model.count, model.maxCount)
 	self:SetExpiration(model.expiration)
 	self:SetHighlight(model.highlight)
 	self:SetFlash(model.flash)

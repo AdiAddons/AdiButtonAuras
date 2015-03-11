@@ -221,11 +221,14 @@ function overlayPrototype:SetExpiration(expiration)
 	self:ApplyExpiration()
 end
 
-function overlayPrototype:SetCount(count)
+function overlayPrototype:SetCount(count, maxCount)
 	count = tonumber(count)
+	maxCount = tonumber(maxCount)
 	if count == 0 then count = nil end
-	if self.count == count then return end
+	if maxCount == 0 then maxCount = nil end
+	if self.count == count and self.maxCount == maxCount then return end
 	self.count = count
+	self.maxCount = maxCount
 	self:ApplyCount()
 end
 
@@ -261,8 +264,14 @@ end
 
 function overlayPrototype:ApplyCount()
 	local count = self.count
+	local maxCount = self.maxCount
 	if count then
 		self.Count:SetText(count)
+		if maxCount and count >= maxCount then
+			self.Count:SetTextColor(unpack(addon.db.profile.colors.countAtMax))
+		else
+			self.Count:SetTextColor(unpack(addon.db.profile.colors.countdownHigh))
+		end
 		self.Count:Show()
 	else
 		self.Count:Hide()
