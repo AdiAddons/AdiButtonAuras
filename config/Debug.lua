@@ -49,7 +49,7 @@ function private.GetDebugOptions(addon, addonName)
 		local id = tonumber(strmatch(idstr, "^spell:(%d+)$"))
 		if id then
 			local name, _, icon = GetSpellInfo(id)
-			return format("|T%s:0|t %s", icon, name), IdToLink(...)
+			return format("|T%s:0|t %s (%s)", icon, name, idstr), IdToLink(...)
 		else
 			return IdToLink(...)
 		end
@@ -96,9 +96,19 @@ function private.GetDebugOptions(addon, addonName)
 		end
 	end
 
+	local function SortSpellList(a, b)
+		local aName = strmatch(a, "|t%s([%S%s]+)%s")
+		local bName = strmatch(b, "|t%s([%S%s]+)%s")
+		return aName < bName
+	end
+
 	local function GetKnownSpells()
-		p("\nConfigured spells (spells that are both in your spellbook and", addonName, "rules:")
-		p("|cffffffff", strjoin("\n", IdToLink(addon.getkeys(addon.rules))), "|r")
+		local ruleKeys = {addon.getkeys(addon.rules)}
+		local spellStrings = {IdToLink(unpack(ruleKeys))}
+		table.sort(spellStrings, SortSpellList)
+		p("\nTotal number of rules (spells and items):", #ruleKeys)
+		p("\nConfigured spells (spells that are both in your spellbook and", addonName, "rules:\n")
+		p("|cffffffff", strjoin("\n", unpack(spellStrings)), "|r")
 	end
 
 	local function CreatePanel(name, order, func)
