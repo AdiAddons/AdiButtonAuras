@@ -31,6 +31,8 @@ function private.GetDebugOptions(addon, addonName)
 	local format = _G.format
 	local GetAddOnMetadata = _G.GetAddOnMetadata
 	local GetCVarBool = _G.GetCVarBool
+	local GetItemIcon = _G.GetItemIcon
+	local GetItemInfo = _G.GetItemInfo
 	local GetSpellInfo = _G.GetSpellInfo
 	local IsAddOnLoaded = _G.IsAddOnLoaded
 	local pairs = _G.pairs
@@ -43,16 +45,23 @@ function private.GetDebugOptions(addon, addonName)
 	local wipe = _G.wipe
 
 	local tconcat = _G.table.concat
+	local tsort = _G.table.sort
 
-	local function IdToLink(idstr, ...)
+	local function IdToLink(spellList, itemList, idstr, ...)
 		if not idstr then return end
-		local id = tonumber(strmatch(idstr, "^spell:(%d+)$"))
+		local idType, id = strmatch(idstr, "^(%w+):(%d+)$")
+		id = tonumber(id)
 		if id then
-			local name, _, icon = GetSpellInfo(id)
-			return format("|T%s:0|t %s (%s)", icon, name, idstr), IdToLink(...)
-		else
-			return IdToLink(...)
+			local _, name, icon
+			if idType == "spell" then
+				name, _, icon = GetSpellInfo(id)
+			elseif idType == "item" then
+				name = GetItemInfo(id)
+				icon = GetItemIcon(id)
+			end
+			tinsert(idType == "spell" and spellList or itemList, format("|T%s:0|t %s (%s)", icon, name, idstr))
 		end
+		return IdToLink(spellList, itemList, ...)
 	end
 
 	local t = {}
@@ -96,19 +105,25 @@ function private.GetDebugOptions(addon, addonName)
 		end
 	end
 
-	local function SortSpellList(a, b)
-		local aName = strmatch(a, "|t%s([%S%s]+)%s")
-		local bName = strmatch(b, "|t%s([%S%s]+)%s")
+	local function SortListByName(a, b)
+		local pattern = "|t%s([%S%s]+)%s"
+		local aName = strmatch(a, pattern)
+		local bName = strmatch(b, pattern)
 		return aName < bName
 	end
 
-	local function GetKnownSpells()
+	local function GetKnownRules()
 		local ruleKeys = {addon.getkeys(addon.rules)}
-		local spellStrings = {IdToLink(unpack(ruleKeys))}
-		table.sort(spellStrings, SortSpellList)
-		p("\nTotal number of rules (spells and items):", #ruleKeys)
-		p("\nConfigured spells (spells that are both in your spellbook and", addonName, "rules:\n")
-		p("|cffffffff", strjoin("\n", unpack(spellStrings)), "|r")
+		local spellList = {}
+		local itemList = {}
+		IdToLink(spellList, itemList, unpack(ruleKeys))
+		tsort(spellList, SortListByName)
+		tsort(itemList, SortListByName)
+		p("\nTotal number of rules:", #ruleKeys)
+		p("\nConfigured spells (spells that are both in your spellbook and", addonName, "rules):\n")
+		p("|cffffffff", strjoin("\n", unpack(spellList)), "|r")
+		p("\nConfigured items:\n")
+		p("|cffffffff", strjoin("\n", unpack(itemList)), "|r")
 	end
 
 	local function CreatePanel(name, order, func)
@@ -140,7 +155,7 @@ function private.GetDebugOptions(addon, addonName)
 			general   = CreatePanel('General', 10, GetMainDebug),
 			libraries = CreatePanel('Libraries', 20, GetLibraryVersions),
 			lps       = CreatePanel('LibPlayerSpells-1.0', 30, GetLPS),
-			spells    = CreatePanel('Spells', 40, GetKnownSpells),
+			spells    = CreatePanel('Rules', 40, GetKnownRules),
 		},
 	}
 
