@@ -42,6 +42,7 @@ function private.GetDebugOptions(addon, addonName)
 	local tonumber = _G.tonumber
 	local tostring = _G.tostring
 	local tostringall = _G.tostringall
+	local unpack = _G.unpack
 	local wipe = _G.wipe
 
 	local tconcat = _G.table.concat
