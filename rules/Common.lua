@@ -70,10 +70,11 @@ AdiButtonAuras:RegisterRules(function()
 			"bloodlust",
 			L["Show when @NAME or an equivalent haste buff is found on yourself."],
 			{
-				 2825, -- Bloodlust (Horde shaman)
-				32182, -- Heroism (Alliance shaman)
-				80353, -- Time Warp (mage)
-				90355, -- Ancient Hysteria (hunter exotic pet ability)
+				  2825, -- Bloodlust (Horde shaman)
+				 32182, -- Heroism (Alliance shaman)
+				 80353, -- Time Warp (mage)
+				 90355, -- Ancient Hysteria (hunter exotic pet ability)
+				160452, -- Netherwinds (hunter pet)
 				"item:102351", -- Drums of Rage
 				"item:120257", -- Drums of Fury
 			},
@@ -86,13 +87,15 @@ AdiButtonAuras:RegisterRules(function()
 					 80353, -- Time Warp (mage)
 					 90355, -- Ancient Hysteria (hunter exotic pet ability)
 					146555, -- Drums of Rage
+					160452, -- Netherwinds (hunter pet)
 					178207, -- Drums of Fury
 				})
 				local isSated = BuildAuraHandler_Longest("HARMFUL", "bad", "ally", {
 					 57723, -- Exhaustion (Drums of Rage/Fury debuff)
 					 57724, -- Sated (Bloodlst/Heroism debuff),
 					 80354, -- Temporal Displacement (Time Warp debuff)
-					 95809  -- Insanity (Ancient Hysteria debuff)
+					 95809,  -- Insanity (Ancient Hysteria debuff)
+					160455, -- Fatigued (Netherwinds debuff)
 				})
 				return function(units, model)
 					return hasBloodlust(units, model) or isSated(units, model)
