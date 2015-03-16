@@ -397,7 +397,7 @@ local function ShowPower(spells, powerType, handler, highlight, desc)
 			error("Unknown power "..powerType, 3)
 		end
 		powerLoc = _G[powerType]
-		events = { "UNIT_POWER", "UNIT_POWER_MAX" }
+		events = { "UNIT_POWER", "UNIT_MAXPOWER" }
 	else
 		error("Invalid power type value, expected string, got "..type(powerType), 3)
 	end

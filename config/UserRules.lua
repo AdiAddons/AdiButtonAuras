@@ -44,7 +44,7 @@ return Configure {
     "enemy",
 
     -- Event(s) to watch
-    { "UNIT_HEALTH", "UNIT_HEALTH_MAX" },
+    { "UNIT_HEALTH", "UNIT_MAXHEALTH" },
 
     -- Callback
     function(units, model)

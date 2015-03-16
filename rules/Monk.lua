@@ -94,7 +94,7 @@ AdiButtonAuras:RegisterRules(function()
 			format(L["Show %s."], L["stagger level"]),
 			119582, -- Purifying Brew
 			"player",
-			{ "UNIT_AURA", "UNIT_HEALTH_MAX" },
+			{ "UNIT_AURA", "UNIT_MAXHEALTH" },
 			(function()
 				local STANCE_OF_THE_STURY_OX_ID = 23
 				local STAGGER_YELLOW_TRANSITION = STAGGER_YELLOW_TRANSITION
@@ -115,7 +115,7 @@ AdiButtonAuras:RegisterRules(function()
 			L["Suggest using @NAME under 92% mana."],
 			123761, -- Mana Tea (glyphed)
 			"player",
-			{ "UNIT_AURA", "UNIT_POWER", "UNIT_POWER_MAX" },
+			{ "UNIT_AURA", "UNIT_POWER", "UNIT_MAXPOWER" },
 			function(_, model)
 				local found, count, expiration = GetPlayerBuff("player", 115867) -- Mana Tea (stacking buff)
 				if found then
@@ -153,7 +153,7 @@ AdiButtonAuras:RegisterRules(function()
 			format(L["Suggest when total effective healing would be at least %d times the base healing."], UPLIFT_THRESHOLD),
 			116670, -- Uplift
 			"group",
-			{ "UNIT_AURA", "UNIT_HEALTH", "UNIT_HEALTH_MAX" },
+			{ "UNIT_AURA", "UNIT_HEALTH", "UNIT_MAXHEALTH" },
 			function(units, model)
 				-- Rough estimation at level 90
 				local heal = 1.2 * ((7210+8379)/2 + 0.68 * GetSpellBonusHealing())
@@ -204,7 +204,7 @@ AdiButtonAuras:RegisterRules(function()
 			L["Show hint when your health is below 35%."],
 			115072, -- Expel Harm
 			"player",
-			{ "UNIT_HEALTH_FREQUENT", "UNIT_HEALTH_MAX" },
+			{ "UNIT_HEALTH_FREQUENT", "UNIT_MAXHEALTH" },
 			function(_, model)
 				if UnitHealth("player") / UnitHealthMax("player") < 0.35 then
 					model.hint = true

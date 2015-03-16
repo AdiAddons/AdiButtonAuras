@@ -77,7 +77,7 @@ AdiButtonAuras:RegisterRules(function()
 				130736, -- Soul Reaper (Unholy)
 			},
 			"enemy",
-			{ "UNIT_HEALTH", "UNIT_HEALTH_MAX" },
+			{ "UNIT_HEALTH", "UNIT_MAXHEALTH" },
 			function(units, model)
 				if UnitHealth(units.enemy) / UnitHealthMax(units.enemy) < 0.35 then
 					model.hint = true
@@ -92,7 +92,7 @@ AdiButtonAuras:RegisterRules(function()
 				130736, -- Soul Reaper (Unholy)
 			},
 			"enemy",
-			{ "UNIT_HEALTH", "UNIT_HEALTH_MAX" },
+			{ "UNIT_HEALTH", "UNIT_MAXHEALTH" },
 			function(units, model)
 				if UnitHealth(units.enemy) / UnitHealthMax(units.enemy) < 0.45 then
 					model.hint = true
