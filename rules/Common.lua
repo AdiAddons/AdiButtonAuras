@@ -75,6 +75,7 @@ AdiButtonAuras:RegisterRules(function()
 				80353, -- Time Warp (mage)
 				90355, -- Ancient Hysteria (hunter exotic pet ability)
 				"item:102351", -- Drums of Rage
+				"item:120257", -- Drums of Fury
 			},
 			"ally",
 			"UNIT_AURA",
@@ -85,9 +86,10 @@ AdiButtonAuras:RegisterRules(function()
 					 80353, -- Time Warp (mage)
 					 90355, -- Ancient Hysteria (hunter exotic pet ability)
 					146555, -- Drums of Rage
+					178207, -- Drums of Fury
 				})
 				local isSated = BuildAuraHandler_Longest("HARMFUL", "bad", "ally", {
-					 57723, -- Exhaustion (Drums of Rage debuff)
+					 57723, -- Exhaustion (Drums of Rage/Fury debuff)
 					 57724, -- Sated (Bloodlst/Heroism debuff),
 					 80354, -- Temporal Displacement (Time Warp debuff)
 					 95809  -- Insanity (Ancient Hysteria debuff)
