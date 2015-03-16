@@ -105,7 +105,7 @@ end
 
 local function CheckAvailability(info, spellId, providers)
 	if not LibSpellbook:IsKnown(spellId) then
-		Debug('Unknown spell:', info)
+		Debug('Unknown', info, spellId)
 		return false
 	end
 	if not providers then return true end
@@ -597,12 +597,15 @@ local RULES_ENV = addon.BuildSafeEnv(
 	},
 	-- Allowed globals
 	{
-		"bit", "ceil", "floor", "format", "GetComboPoints", "GetEclipseDirection", "GetNumGroupMembers",
-		"GetShapeshiftFormID", "GetSpellBonusHealing", "GetSpellInfo", "GetTime", "GetTotemInfo",
-		"HasPetSpells", "ipairs", "math", "min", "pairs", "select", "string", "table", "tinsert",
-		"UnitIsPlayer", "UnitCanAttack", "UnitCastingInfo", "UnitChannelInfo", "UnitClass","UnitHealth",
-		"print", "UnitHealthMax", "UnitPower", "UnitPowerMax", "UnitStagger", "UnitIsDeadOrGhost",
-		"IsPlayerSpell", "GetSpellCharges", "GetRuneCooldown"
+		-- lua
+		"bit", "ceil", "floor", "format", "ipairs", "math", "min", "pairs", "print",
+		"select", "string", "table", "tinsert", "type",
+		-- WoW API
+		"GetComboPoints", "GetEclipseDirection", "GetNumGroupMembers", "GetRuneCooldown",
+		"GetShapeshiftFormID", "GetSpellBonusHealing", "GetSpellCharges", "GetSpellInfo",
+		"GetTime", "GetTotemInfo", "HasPetSpells", "IsPlayerSpell", "UnitCanAttack",
+		"UnitCastingInfo", "UnitChannelInfo", "UnitClass","UnitHealth", "UnitHealthMax",
+		"UnitIsDeadOrGhost", "UnitIsPlayer", "UnitPower", "UnitPowerMax", "UnitStagger",
 	}
 )
 

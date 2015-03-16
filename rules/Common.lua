@@ -102,37 +102,35 @@ AdiButtonAuras:RegisterRules(function()
 	--------------------------------------------------------------------------
 	-- Crowd-control spells
 	--------------------------------------------------------------------------
-	-- Use DRData, grouped by DR categories
+	-- Use DRData
 
 	local DRData, DRVer = GetLib("DRData-1.0")
-	local LibSpellbook, LSBVer = GetLib('LibSpellbook-1.0')
-	local source = format(" [DR-%d,LSB-%d]", DRVer, LSBVer)
+	local source = format(" [DR-%d]", DRVer)
 
-	-- Build a list of spell ids per DR categories.
-	local drspells = {}
-	for id, category in pairs(DRData:GetSpells()) do
-		if not drspells[category] then
-			drspells[category] = {}
-		end
-		tinsert(drspells[category], id)
-	end
+	local categories = DRData:GetCategories()
 
-	-- Create a rule for each spell of each category
-	local drproviders = DRData.GetProviders and DRData:GetProviders() or {}
-	for category, spells in pairs(drspells) do
-		local key = BuildKey("CrowdControl", category)
-		local desc = BuildDesc(L["a debuff"], "bad", "enemy", format(L["of type '%s'"], DRData:GetCategoryName(category):lower()))..source
-		local handler = BuildAuraHandler_Longest("HARMFUL", "bad", "enemy", spells)
-		for i, spell in ipairs(spells) do
-			local spell = spell
-			tinsert(rules, function()
-				local ids = LibSpellbook:GetAllIds(spell)
-				if ids then
-					for id in pairs(ids) do
-						AddRuleFor(key, desc, id, "enemy", "UNIT_AURA", handler, drproviders[id])
-					end
+	for category, localizedName in pairs(categories) do
+		local debuffs = {}
+		local spells = {} -- associative array to avoid duplicates
+		for debuff, provider in DRData:IterateProviders(category) do
+			debuffs[#debuffs + 1] = debuff
+			if type(provider) == "table" then
+				for i = 1, #provider do
+					spells[provider[i]] = true
 				end
-			end)
+			else
+				spells[provider] = true
+			end
+		end
+
+		local key = "CrowdControl:"..category
+		local desc = BuildDesc(L["a debuff"], "bad", "enemy", format(L["of type '%s'"], localizedName:lower()))..source
+		local handler = BuildAuraHandler_Longest("HARMFUL", "bad", "enemy", debuffs)
+
+		for spell in pairs(spells) do
+			rules[#rules + 1] = function()
+				AddRuleFor(key, desc, spell, "enemy", "UNIT_AURA", handler)
+			end
 		end
 	end
 
@@ -303,5 +301,5 @@ end)
 -- GLOBALS: SimpleDebuffs UnitCanAttack UnitCastingInfo UnitChannelInfo UnitClass
 -- GLOBALS: UnitHealth UnitHealthMax UnitIsDeadOrGhost UnitIsPlayer UnitPower
 -- GLOBALS: UnitPowerMax UnitStagger bit ceil floor format ipairs math min pairs
--- GLOBALS: print select string table tinsert
+-- GLOBALS: print select string table tinsert type
 -- GLOBALS: GetPlayerBuff IterateBuffs GetLib ShowStacks
