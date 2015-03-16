@@ -28,6 +28,8 @@ AdiButtonAuras:RegisterRules(function()
 
 	-- GLOBALS: STAGGER_YELLOW_TRANSITION SPELL_POWER_MANA
 
+	local zenMeditation = GetSpellInfo(115176)
+
 	-- Mistweaver constants
 	local TFT_COUNT    = 4 -- Minimum number of Renewing Mist to highlight Thunder Focus Tea
 	local TFT_DURATION = 6 -- Duration threshold to highlight Thunder Focus Tea
@@ -216,6 +218,23 @@ AdiButtonAuras:RegisterRules(function()
 			15, -- 15 stacks max
 			"player",
 			10, -- highlight at 10 stacks,
+		},
+		Configure {
+			"ZenMeditation",
+			format(L["%s while you are channeling @NAME."], DescribeHighlight("good")),
+			115176, -- Zen Meditation
+			"player",
+			{
+				"UNIT_SPELLCAST_CHANNEL_START",
+				"UNIT_SPELLCAST_CHANNEL_STOP",
+				"UNIT_SPELLCAST_CHANNEL_UPDATE",
+			},
+			function(_, model)
+				local name, _, _, _, _, endTime = UnitChannelInfo("player")
+				if name == zenMeditation then
+					model.highlight, model.expiration = "good", endTime / 1000
+				end
+			end,
 		},
 	}
 
