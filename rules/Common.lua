@@ -94,7 +94,7 @@ AdiButtonAuras:RegisterRules(function()
 					 57723, -- Exhaustion (Drums of Rage/Fury debuff)
 					 57724, -- Sated (Bloodlst/Heroism debuff),
 					 80354, -- Temporal Displacement (Time Warp debuff)
-					 95809,  -- Insanity (Ancient Hysteria debuff)
+					 95809, -- Insanity (Ancient Hysteria debuff)
 					160455, -- Fatigued (Netherwinds debuff)
 				})
 				return function(units, model)
@@ -148,15 +148,19 @@ AdiButtonAuras:RegisterRules(function()
 	local band, bor = bit.band, bit.bor
 
 	local classMask = LibPlayerSpells.constants[PLAYER_CLASS]
+	local burstMask = LibPlayerSpells.constants.BURST_HASTE
 
 	local buffsMasks, buffSpells = {}, {}
 	for buff, flags, _, target, buffMask in LibPlayerSpells:IterateSpells("RAIDBUFF") do
-		buffsMasks[buff] = buffMask
-		if band(flags, classMask) ~= 0 then
-			if buffSpells[buffMask] then
-				tinsert(buffSpells[buffMask], target)
-			else
-				buffSpells[buffMask] = { target }
+		-- exclude bloodlust type buffs since they are covered above already
+		if band(buffMask, burstMask) == 0 then
+			buffsMasks[buff] = buffMask
+			if band(flags, classMask) ~= 0 then
+				if buffSpells[buffMask] then
+					tinsert(buffSpells[buffMask], target)
+				else
+					buffSpells[buffMask] = { target }
+				end
 			end
 		end
 	end
