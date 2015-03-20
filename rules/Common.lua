@@ -167,7 +167,8 @@ AdiButtonAuras:RegisterRules(function()
 
 	-- Create a rule per bitmask
 	for buffMask, spells in pairs(buffSpells) do
-		local buffMask = buffMask
+		local names = LibPlayerSpells:GetRaidBuffCategoryNames(buffMask)
+		local name = table.concat(names, L[" and "]) -- we have two categories at most
 
 		local function CheckUnitBuffs(unit)
 			local found, minExpiration = 0
@@ -185,7 +186,11 @@ AdiButtonAuras:RegisterRules(function()
 
 		tinsert(rules, Configure {
 			"Raidbuff:"..buffMask,
-			L["Track @NAME or equivalent raid buffs on all group members. Indicate the duration of the shortest buff and the number of missing buffs."].." [LPS]",
+			format(
+				L["Show the shortest duration and the number of group members missing a buff from the %1$s %2$s."],
+				#names > 1 and L["categories"] or L["category"],
+				name
+			)..format(" [%s]", DescribeLPSSource(PLAYER_CLASS)),
 			buffSpells[buffMask],
 			"group",
 			"UNIT_AURA",
