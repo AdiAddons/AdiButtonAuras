@@ -156,10 +156,27 @@ AdiButtonAuras:RegisterRules(function()
 		if band(buffMask, burstMask) == 0 then
 			buffsMasks[buff] = buffMask
 			if band(flags, classMask) ~= 0 then
-				if buffSpells[buffMask] then
-					tinsert(buffSpells[buffMask], target)
+				local spells = buffSpells[buffMask]
+				if spells then
+					spells[#spells + 1] = target
 				else
 					buffSpells[buffMask] = { target }
+				end
+			end
+		end
+	end
+
+	local function CheckUnitBuffs(unit, buffMask)
+		local found, minExpiration = 0
+		for i, id, _, expiration in IterateBuffs(unit) do
+			local buffProvided = band(buffsMasks[id] or 0, buffMask)
+			if buffProvided ~= 0 then
+				found = bor(found, buffProvided)
+				if not minExpiration or expiration < minExpiration then
+					minExpiration = expiration
+				end
+				if found == buffMask then
+					return true, minExpiration
 				end
 			end
 		end
@@ -169,22 +186,9 @@ AdiButtonAuras:RegisterRules(function()
 	for buffMask, spells in pairs(buffSpells) do
 		local names = LibPlayerSpells:GetRaidBuffCategoryNames(buffMask)
 		local name = table.concat(names, L[" and "]) -- we have two categories at most
+		local CheckUnitBuffs = CheckUnitBuffs
 
-		local function CheckUnitBuffs(unit)
-			local found, minExpiration = 0
-			for i, id, _, expiration in IterateBuffs(unit) do
-				local buffProvided = band(buffsMasks[id] or 0, buffMask)
-				if buffProvided ~= 0 then
-					found = bor(found, buffProvided)
-					if not minExpiration or expiration < minExpiration then
-						minExpiration = expiration
-					end
-				end
-			end
-			return found == buffMask, minExpiration
-		end
-
-		tinsert(rules, Configure {
+		rules[#rules + 1] = Configure {
 			"Raidbuff:"..buffMask,
 			format(
 				L["Show the shortest duration and the number of group members missing a buff from the %1$s %2$s."],
@@ -198,7 +202,7 @@ AdiButtonAuras:RegisterRules(function()
 				local missing, minExpiration = 0
 				for unit in pairs(units.group) do
 					if UnitIsPlayer(unit) and not UnitIsDeadOrGhost(unit) then
-						local found, expiration = CheckUnitBuffs(unit)
+						local found, expiration = CheckUnitBuffs(unit, buffMask)
 						if not found then
 							missing = missing + 1
 						elseif not minExpiration or expiration < minExpiration then
@@ -213,7 +217,7 @@ AdiButtonAuras:RegisterRules(function()
 					model.count = missing
 				end
 			end
-		})
+		}
 	end
 
 	--------------------------------------------------------------------------
