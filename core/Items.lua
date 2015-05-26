@@ -40,13 +40,15 @@ local LibItemBuffs, LIBVer = addon.GetLib('LibItemBuffs-1.0')
 local BuildKey = addon.BuildKey
 local BuildDesc = addon.BuildDesc
 
+local CONSUMABLE = select(4, _G.GetAuctionItemClasses())
+
 local descriptions = {}
 
-local function GetItemTargetFilterAndHighlight(itemId)
+local function GetItemTargetFilterAndHighlight(itemId, itemClass)
 	if IsHarmfulItem(itemId) then
 		return "enemy", "HARMFUL PLAYER", "bad"
 	else
-		return IsHelpfulItem(itemId) and "ally" or "player", "HELPFUL PLAYER", "good"
+		return IsHelpfulItem(itemId) and itemClass ~= CONSUMABLE and "ally" or "player", "HELPFUL PLAYER", "good"
 	end
 end
 
@@ -76,14 +78,16 @@ end
 local function BuildItemRule(itemId, buffName, ...)
 	if not buffName and not ... then return false end
 
-	local token, filter, highlight = GetItemTargetFilterAndHighlight(itemId)
+	local name, _, _, _, _, itemClass = GetItemInfo(itemId)
+
+	local token, filter, highlight = GetItemTargetFilterAndHighlight(itemId, itemClass)
 
 	local rule = {
 		units = { [token] = true },
 		events = { UNIT_AURA = true },
 		handlers = {},
 		keys = {},
-		name = GetItemInfo(itemId)
+		name = name,
 	}
 
 	if ... then
