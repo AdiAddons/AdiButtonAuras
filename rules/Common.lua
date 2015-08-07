@@ -63,6 +63,33 @@ AdiButtonAuras:RegisterRules(function()
 		}, -- Snares and anti-snares
 
 	--------------------------------------------------------------------------
+	-- Legendary Rings
+	--------------------------------------------------------------------------
+		-- The Savage Hollows, DPS only
+		BuffAliases {
+			{
+				"item:124634", -- Thorasus, the Stone Heart of Draenor
+				"item:124635", -- Nithramus, the All-Seer
+				"item:124636", -- Maalus, the Blood Drinker
+			},
+			{
+				187616, -- Nithramus
+				187619, -- Thorasus
+				187620, -- Maalus
+			}
+		},
+		-- Tanks only
+		BuffAliases {
+			"item:124637", -- Sanctus, Sigil of the Unbroken
+			187617, -- Sanctus
+		},
+		-- Heal only
+		BuffAliases {
+			"item:124638", -- Etheralus, the Eternal Reward
+			187618, -- Etheralus
+		},
+
+	--------------------------------------------------------------------------
 	-- Bloodlust
 	--------------------------------------------------------------------------
 
