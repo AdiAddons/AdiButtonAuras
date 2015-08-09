@@ -65,28 +65,55 @@ AdiButtonAuras:RegisterRules(function()
 	--------------------------------------------------------------------------
 	-- Legendary Rings
 	--------------------------------------------------------------------------
-		-- The Savage Hollows, DPS only
-		BuffAliases {
+
+		Configure {
+			"LegendaryRingsDPS",
+			format(L["%s when someone used their legendary ring."], DescribeHighlight("good")),
 			{
 				"item:124634", -- Thorasus, the Stone Heart of Draenor
 				"item:124635", -- Nithramus, the All-Seer
 				"item:124636", -- Maalus, the Blood Drinker
 			},
-			{
-				187616, -- Nithramus
-				187619, -- Thorasus
-				187620, -- Maalus
-			}
+			"player",
+			"UNIT_AURA",
+			(function()
+				local hasSavageHollows = BuildAuraHandler_FirstOf("HELPFUL", "good", "player", {
+					187616, -- Nithramus
+					187619, -- Thorasus
+					187620, -- Maalus
+				})
+				return function(units, model)
+					return hasSavageHollows(units, model)
+				end
+			end)(),
 		},
-		-- Tanks only
-		BuffAliases {
+
+		Configure {
+			"LegendaryRingsTanks",
+			format(L["%s when someone used their legendary ring."], DescribeHighlight("good")),
 			"item:124637", -- Sanctus, Sigil of the Unbroken
-			187617, -- Sanctus
+			"player",
+			"UNIT_AURA",
+			(function()
+				local hasSanctus = BuildAuraHandler_Single("HELPFUL", "good", "player", 187617) -- Sanctus
+				return function(units, model)
+					return hasSanctus(units, model)
+				end
+			end)(),
 		},
-		-- Heal only
-		BuffAliases {
+
+		Configure {
+			"LegendaryRingsHeal",
+			format(L["%s when someone used their legendary ring."], DescribeHighlight("good")),
 			"item:124638", -- Etheralus, the Eternal Reward
-			187618, -- Etheralus
+			"player",
+			"UNIT_AURA",
+			(function()
+				local hasEtheralus = BuildAuraHandler_Single("HELPFUL", "good", "player", 187618) -- Etheralus
+				return function(units, model)
+					return hasEtheralus(units, model)
+				end
+			end)(),
 		},
 
 	--------------------------------------------------------------------------
