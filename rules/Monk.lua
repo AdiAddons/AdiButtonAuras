@@ -268,3 +268,4 @@ end)
 -- GLOBALS: UnitHealth UnitHealthMax UnitIsDeadOrGhost UnitIsPlayer UnitPower
 -- GLOBALS: UnitPowerMax UnitStagger bit ceil floor format ipairs math min pairs
 -- GLOBALS: print select string table tinsert GetPlayerBuff ShowStacks
+-- GLOBALS: GetSpellCharges
