@@ -251,7 +251,7 @@ AdiButtonAuras:RegisterRules(function()
 					model.hint = true
 				end
 			end,
-		},	
+		},
 	}
 
 end)
