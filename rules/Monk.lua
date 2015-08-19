@@ -236,6 +236,22 @@ AdiButtonAuras:RegisterRules(function()
 				end
 			end,
 		},
+		Configure {
+			"GuardHint",
+			L["Show hint when your Guard charges max out."],
+			{
+				115295, -- Guard
+				123402, -- Guard (Glyph of Guard)
+			},
+			"player",
+			"SPELL_UPDATE_CHARGES",
+			function(_, model)
+				local currentCharges, maxCharges, _, _ = GetSpellCharges(115295)
+				if currentCharges == maxCharges then
+					model.hint = true
+				end
+			end,
+		},	
 	}
 
 end)
