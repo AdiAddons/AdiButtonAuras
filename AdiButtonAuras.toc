@@ -28,7 +28,7 @@
 ## X-eMail: adirelle@gmail.com
 ## SavedVariables: AdiButtonAurasDB
 
-## OptionalDeps: Ace3, LibSpellbook-1.0, LibDispellable-1.0, LibItemBuffs-1.0, LibPlayerSpells-1.0, DRData-1.0, LibDualSpec-1.0, LibButtonGlow-1.0, LibSharedMedia-3.0, SharedMedia_ButtonHighlight, AdiDebug, Dominos, LibActionButton-1.0, Bartender4, Masque
+## OptionalDeps: Ace3, LibSpellbook-1.0, LibDispellable-1.0, LibItemBuffs-1.0, LibPlayerSpells-1.0, DRData-1.0, LibDualSpec-1.0, LibButtonGlow-1.0, LibSharedMedia-3.0, SharedMedia_ButtonHighlight, AdiDebug, Dominos, LibActionButton-1.0, LibActionButton-1.0-ElvUI, Bartender4, Masque
 
 #@no-lib-strip@
 libs\LibStub\LibStub.lua
