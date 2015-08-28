@@ -252,7 +252,7 @@ AdiButtonAuras:RegisterRules(function()
 				end
 			end,
 		},
-			Configure {
+		Configure {
 			"TouchOfDeathHint",
 			L["Show hint when Touch of Death can be cast."],
 			115080, -- Touch of Death
