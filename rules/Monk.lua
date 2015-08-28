@@ -252,6 +252,19 @@ AdiButtonAuras:RegisterRules(function()
 				end
 			end,
 		},
+			Configure {
+			"TouchOfDeathHint",
+			L["Show hint when Touch of Death can be cast."],
+			115080, -- Touch of Death
+			"player",
+			"UNIT_AURA",
+			function(_, model)
+				local found, _, _ = GetPlayerBuff("player", 121125) -- Death Note
+				if found then
+					model.hint = true
+				end
+			end,
+		},
 	}
 
 end)
