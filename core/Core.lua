@@ -77,7 +77,7 @@ addon.DEFAULT_SETTINGS = {
 	profile = {
 		enabled = { ['*'] = true },
 		rules = { ['*'] = true },
-		inverted = { ['*'] = false },
+		missing = { ['*'] = "none" },
 		flashPromotion = { ['*'] = false },
 		colors = {
 			good            = { 0.0, 1.0, 0.0, 0.7 },
@@ -233,6 +233,16 @@ function addon:ADDON_LOADED(event, name)
 		toWatch[addonName] = nil
 
 		self.db = GetLib('AceDB-3.0'):New(addonName.."DB", self.DEFAULT_SETTINGS, true)
+
+		if self.db.profile.inverted then
+			for key, inverted in pairs(self.db.profile.inverted) do
+				if inverted then
+					self.db.profile.missing[key] = "invert"
+				end
+			end
+			self.db.profile.inverted = nil
+		end
+
 		self.db.RegisterCallback(self, "OnProfileChanged")
 		self.db.RegisterCallback(self, "OnProfileCopied", "OnProfileChanged")
 		self.db.RegisterCallback(self, "OnProfileReset", "OnProfileChanged")
