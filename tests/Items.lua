@@ -106,7 +106,7 @@ for i, data in pairs {
 
 		when(G.GetItemSpell(456)).thenAnswer(nil)
 		when(LibItemBuffs:GetItemBuffs(456)).thenAnswer(500)
-		when(G.GetItemInfo(456)).thenAnswer("LeItem")
+		when(G.GetItemInfo(456)).thenAnswer("LeItem", nil, nil, nil, nil, "Miscallaneous")
 
 		when(G.IsHarmfulItem(456)).thenAnswer(harmful)
 		when(G.IsHelpfulItem(456)).thenAnswer(helpful)
