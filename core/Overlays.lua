@@ -478,19 +478,11 @@ function overlayPrototype:UpdateState(event)
 			handler(unitMap, modelProxy)
 		end
 
-		if addon.db.profile.missing[self.spellId] == "invert" then
+		if addon.db.profile.inverted[self.spellId] then
 			if model.highlight then
 				model.highlight = nil
 			else
 				model.highlight = self.units.enemy and "bad" or "good"
-			end
-		end
-
-		if not model.highlight then
-			if addon.db.profile.missing[self.spellId] == "hint" then
-				model.hint = true
-			elseif addon.db.profile.missing[self.spellId] == "flash" then
-				model.flash = true
 			end
 		end
 
