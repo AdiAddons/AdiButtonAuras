@@ -165,6 +165,7 @@ end
 
 function overlayPrototype:ApplyHighlightSkin()
 	local highlight = self.Highlight
+	highlight:SetAllPoints(self)
 	local texture = LSM:Fetch(addon.HIGHLIGHT_MEDIATYPE, addon.db.profile.highlightTexture)
 	highlight:SetTexture(texture)
 end

@@ -29,9 +29,9 @@ function private.GetThemeOptions(addon, addonName)
 	local L = addon.L
 	local Masque = addon.GetLib('Masque', true)
 
-	local masqueOption
+	local group, masqueOption
 	if Masque then
-		local group = Masque:Group(addonName)
+		group = Masque:Group(addonName)
 		masqueOption = {
 			name = L['Use Masque'],
 			type = 'toggle',
@@ -41,6 +41,7 @@ function private.GetThemeOptions(addon, addonName)
 					group:Enable()
 				else
 					group:Disable()
+					addon:SendMessage(addon.THEME_CHANGED)
 				end
 			end,
 			get = function()
@@ -148,7 +149,7 @@ function private.GetThemeOptions(addon, addonName)
 				type = 'select',
 				dialogControl = 'LSM30_Background',
 				values = addon.GetLib('LibSharedMedia-3.0'):HashTable(addon.HIGHLIGHT_MEDIATYPE),
-				disabled = function() return Masque and addon.db.profile.masque end,
+				disabled = function() return Masque and not group.db.Disabled end,
 				order = 30,
 				width = 'double',
 			},
