@@ -41,6 +41,7 @@ function private.GetThemeOptions(addon, addonName)
 					group:Enable()
 				else
 					group:Disable()
+					addon:SendMessage(addon.THEME_CHANGED)
 				end
 			end,
 			get = function()
