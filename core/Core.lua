@@ -234,13 +234,18 @@ function addon:ADDON_LOADED(event, name)
 
 		self.db = GetLib('AceDB-3.0'):New(addonName.."DB", self.DEFAULT_SETTINGS, true)
 
-		if self.db.profile.inverted then
-			for key, inverted in pairs(self.db.profile.inverted) do
-				if inverted then
-					self.db.profile.missing[key] = "invert"
+		-- migrate SV from old inverted to new missing
+		local profile = self.db.profile
+		if profile.inverted then
+			for key in pairs(profile.inverted) do
+				if profile.flashPromotion[key] then
+					profile.missing[key] = "flash"
+					profile.flashPromotion[key] = nil
+				else
+					profile.missing[key] = "invert"
 				end
 			end
-			self.db.profile.inverted = nil
+			profile.inverted = nil
 		end
 
 		self.db.RegisterCallback(self, "OnProfileChanged")
