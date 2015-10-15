@@ -316,14 +316,14 @@ function private.GetSpellOptions(addon, addonName)
 				type = 'select',
 				values = {
 						none = L['Disabled'],
-						invert = L['Invert border'],
+						invert = L['Show border'],
 						flash = L['Show flash'],
 						hint = L['Show hint'],
 				},
 				set = function(info, value)
 					handler:Set(info, value)
-					if value ~= 'none' and value ~= 'invert' then
-						addon.db.profile.flashPromotion[handler.current] = false
+					if value ~= 'none' then
+						addon.db.profile.flashPromotion[handler.current] = nil
 					end
 				end,
 			},
@@ -334,7 +334,7 @@ function private.GetSpellOptions(addon, addonName)
 				type = 'toggle',
 				width = 'double',
 				disabled = function()
-					return addon.db.profile.missing[handler.current] ~= 'none' and addon.db.profile.missing[handler.current] ~= 'invert'
+					return addon.db.profile.missing[handler.current] ~= 'none'
 				end,
 			},
 			rules = {
