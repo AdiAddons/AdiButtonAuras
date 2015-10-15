@@ -316,7 +316,7 @@ function private.GetSpellOptions(addon, addonName)
 				type = 'select',
 				values = {
 						none = L['Disabled'],
-						invert = L['Show border'],
+						highlight = L['Show border'],
 						flash = L['Show flash'],
 						hint = L['Show hint'],
 				},

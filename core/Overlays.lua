@@ -478,7 +478,7 @@ function overlayPrototype:UpdateState(event)
 			handler(unitMap, modelProxy)
 		end
 
-		if addon.db.profile.missing[self.spellId] == "invert" then
+		if addon.db.profile.missing[self.spellId] == "highlight" then
 			if model.highlight then
 				model.highlight = nil
 			else

@@ -242,7 +242,7 @@ function addon:ADDON_LOADED(event, name)
 					profile.missing[key] = "flash"
 					profile.flashPromotion[key] = nil
 				else
-					profile.missing[key] = "invert"
+					profile.missing[key] = "highlight"
 				end
 			end
 			profile.inverted = nil
