@@ -309,11 +309,23 @@ function private.GetSpellOptions(addon, addonName)
 				order = 20,
 				type = 'toggle',
 			},
-			inverted = {
-				name = L['Inverted'],
-				desc = L['Check to show a border when the (de)buff is missing.'],
+			missing = {
+				name = L['Show missing'],
+				desc = L['Select the method for showing missing (de)buffs.'],
 				order = 30,
-				type = 'toggle',
+				type = 'select',
+				values = {
+						none = L['Disabled'],
+						highlight = L['Show border'],
+						flash = L['Show flash'],
+						hint = L['Show hint'],
+				},
+				set = function(info, value)
+					handler:Set(info, value)
+					if value ~= 'none' then
+						addon.db.profile.flashPromotion[handler.current] = nil
+					end
+				end,
 			},
 			flashPromotion = {
 				name = L['Show flash instead'],
@@ -321,6 +333,9 @@ function private.GetSpellOptions(addon, addonName)
 				order = 40,
 				type = 'toggle',
 				width = 'double',
+				disabled = function()
+					return addon.db.profile.missing[handler.current] ~= 'none'
+				end,
 			},
 			rules = {
 				name = L['Rules'],

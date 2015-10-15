@@ -77,7 +77,7 @@ addon.DEFAULT_SETTINGS = {
 	profile = {
 		enabled = { ['*'] = true },
 		rules = { ['*'] = true },
-		inverted = { ['*'] = false },
+		missing = { ['*'] = "none" },
 		flashPromotion = { ['*'] = false },
 		colors = {
 			good            = { 0.0, 1.0, 0.0, 0.7 },
@@ -233,6 +233,21 @@ function addon:ADDON_LOADED(event, name)
 		toWatch[addonName] = nil
 
 		self.db = GetLib('AceDB-3.0'):New(addonName.."DB", self.DEFAULT_SETTINGS, true)
+
+		-- migrate SV from old inverted to new missing
+		local profile = self.db.profile
+		if profile.inverted then
+			for key in pairs(profile.inverted) do
+				if profile.flashPromotion[key] then
+					profile.missing[key] = "flash"
+					profile.flashPromotion[key] = nil
+				else
+					profile.missing[key] = "highlight"
+				end
+			end
+			profile.inverted = nil
+		end
+
 		self.db.RegisterCallback(self, "OnProfileChanged")
 		self.db.RegisterCallback(self, "OnProfileCopied", "OnProfileChanged")
 		self.db.RegisterCallback(self, "OnProfileReset", "OnProfileChanged")
