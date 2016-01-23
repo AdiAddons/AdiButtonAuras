@@ -1,13 +1,15 @@
-language: erlang
+language: c
+sudo: required
 
 env:
   - LUA="lua5.1" LUAC="luac5.1"
 
 install:
+  - sudo apt-get update -qq # required since the travis switch to GCE
   - sudo apt-get install $LUA luarocks
   - sudo luarocks install luaunit
   - sudo luarocks install mockagne
-  - sudo luarocks install luabitop
+  - sudo luarocks install luabitop 1.0.2-2 # 1.0.2-3 has a wrong source url in its rockspec
 
 script:
   - cd tests
@@ -20,3 +22,8 @@ notifications:
   email:
     on_failure: always
     on_success: change
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/21ad1d19b94e216e29bd
+    on_success: change
+    on_failure: always
