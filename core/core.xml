@@ -6,7 +6,7 @@
 	<Script file="AuraTools.lua"/>
 	<Script file="Description.lua"/>
 	<Script file="RuleDSL.lua"/>
-	<Script file="Items.lua"/>
+	<!--<Script file="Items.lua"/>-->
 	<Script file="Overlays.lua"/>
 	<Script file="Display.lua"/>
     <Script file="DebugTooltip.lua"/>
