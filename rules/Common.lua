@@ -41,7 +41,7 @@ AdiButtonAuras:RegisterRules(function()
 				  5116, -- Concussive Shot (hunter)
 				  6136, -- Chilled (mage)
 				  7321, -- Chilled (mage, bis)
-				  8056, -- Frost Shock (shaman)
+				  -- 8056, -- Frost Shock (shaman) -- NOTE: gone in Legion
 				  8178, -- Grounding Totem Effect (shaman)
 				 12323, -- Hamstring (warrior)
 				 13810, -- Ice Trap (hunter)
@@ -55,10 +55,10 @@ AdiButtonAuras:RegisterRules(function()
 				 54644, -- Frost Breath (hunter, chimaera)
 				 58180, -- Infected Wounds (druid)
 				 61391, -- Typhoon (druid)
-				 61394, -- Frozen Wake (hunter, glyph)
+				 -- 61394, -- Frozen Wake (hunter, glyph) -- NOTE: gone in Legion
 				116095, -- Disable (monk, 1 stack)
 				127797, -- Ursol's Vortex
-				129923  -- Sluggish (warrior, hs glyph)
+				-- 129923  -- Sluggish (warrior, hs glyph) -- NOTE: gone in Legion
 			}
 		}, -- Snares and anti-snares
 
