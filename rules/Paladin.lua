@@ -25,22 +25,8 @@ if not addon.isClass("PALADIN") then return end
 
 AdiButtonAuras:RegisterRules(function()
 	Debug('Adding paladin rules')
-	return {
-		ImportPlayerSpells { "PALADIN" },
-		-- display current holy power on spenders and flash it maximum reached
-		ShowPower {
-			{
-				 53385, -- Divine Storm
-				 53600, -- Shield of the Righteous
-				 85222, -- Light of Dawn
-				 85256, -- Templar's Verdict
-				 85673, -- Word of Glory
-				114163, -- Eternal Flame
-				157048, -- Final Verdict
-			},
-			"HOLY_POWER"
-		},
-	}
+
+	return ImportPlayerSpells { "PALADIN" }
 end)
 
 -- GLOBALS: AddRuleFor BuffAliases BuildAuraHandler_FirstOf BuildAuraHandler_Longest
