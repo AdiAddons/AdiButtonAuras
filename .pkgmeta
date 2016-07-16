@@ -32,6 +32,9 @@ externals:
     url: git://git.wowace.com/wow/libbuttonglow-1-0/mainline.git
     tag: latest
   libs/AceGUI-3.0-SharedMediaWidgets: svn://svn.wowace.com/wow/ace-gui-3-0-shared-media-widgets/mainline/trunk/AceGUI-3.0-SharedMediaWidgets
+  libs/LibArtifactData-1.0:
+    url: git://git.wowace.com/wow/libartifactdata-1-0/mainline.git
+    tag: latest
   libs/LibSpellbook-1.0: https://github.com/Adirelle/LibSpellbook-1.0.git
   libs/LibItemBuffs-1.0: https://github.com/Adirelle/LibItemBuffs-1.0.git
   libs/LibDispellable-1.0: git://git.wowace.com/wow/libdispellable-1-0/mainline.git
