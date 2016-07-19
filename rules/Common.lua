@@ -198,6 +198,7 @@ AdiButtonAuras:RegisterRules(function()
 	--------------------------------------------------------------------------
 	-- Use LibDispellable and LibPlayerSpells
 	local LibDispellable, LDVer = GetLib('LibDispellable-1.0')
+	local LibPlayerSpells = GetLib('LibPlayerSpells-1.0')
 
 	local HELPFUL = LibPlayerSpells.constants.HELPFUL
 	for spell, flags, _, _, _, category in LibPlayerSpells:IterateSpells("DISPEL", PLAYER_CLASS) do
