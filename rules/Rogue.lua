@@ -26,25 +26,7 @@ if not addon.isClass("ROGUE") then return end
 AdiButtonAuras:RegisterRules(function()
 	Debug('Adding rogue rules')
 
-	return {
-		ImportPlayerSpells { "ROGUE" },
-		ShowPower {
-			{
-				 32645, -- Envenom
-				  2098, -- Eviscerate
-				  5171, -- Slice and Dice
-				121411, -- Crimson Tempest
-				  1943, -- Rupture
-				   408, -- Kidney Shot
-				 73651, -- Recuperate
-				 26679, -- Deadly Throw
-
-				-- 73981, -- Redirect
-			},
-			"COMBO"
-		},
-	}
-
+	return ImportPlayerSpells { "ROGUE" }
 end)
 
 -- GLOBALS: AddRuleFor BuffAliases BuildAuraHandler_FirstOf BuildAuraHandler_Longest

@@ -26,51 +26,7 @@ if not addon.isClass("HUNTER") then return end
 AdiButtonAuras:RegisterRules(function()
 	Debug('Adding hunter rules')
 
-	return {
-		ImportPlayerSpells { "HUNTER" },
-		Configure {
-			"Call Pet",
-			L['Suggests summoning a pet'],
-			{
-				883,      -- Call Pet 1
-				-- 83242, -- Call Pet 2
-				-- 83243, -- Call Pet 3
-				-- 83244, -- Call Pet 4
-				-- 83245, -- Call Pet 5
-			},
-			"player",
-			"UNIT_PET",
-			function(units, model)
-				if not HasPetSpells() then
-					if not IsPlayerSpell(155228) then -- Lone Wolf
-						model.hint = true
-					end
-				else
-					model.highlight = "good"
-				end
-			end,
-			883, -- Requires Call Pet
-		},
-		Configure {
-			"Exotic Munitions",
-			L["Suggest using your exotic munitions."],
-			{
-				162536, -- Incendiary Ammo
-				162537, -- Poisoned Ammo
-				162539, -- Frozen Ammo
-			},
-			"player",
-			"UNIT_AURA",
-			function(units, model)
-				if not GetPlayerBuff("player", 162536) and
-					not GetPlayerBuff("player", 162537) and
-					not GetPlayerBuff("player", 162539)
-				then
-					model.hint = true
-				end
-			end
-		}
-	}
+	return ImportPlayerSpells { "HUNTER" }
 end)
 
 -- GLOBALS: AddRuleFor BuffAliases BuildAuraHandler_FirstOf BuildAuraHandler_Longest

@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 
-## Interface: 60200
+## Interface: 70000
 
 ## Title: AdiButtonAuras
 ## Notes: Display auras on action buttons.
@@ -28,7 +28,7 @@
 ## X-eMail: adirelle@gmail.com
 ## SavedVariables: AdiButtonAurasDB
 
-## OptionalDeps: Ace3, LibSpellbook-1.0, LibDispellable-1.0, LibItemBuffs-1.0, LibPlayerSpells-1.0, DRData-1.0, LibDualSpec-1.0, LibButtonGlow-1.0, LibSharedMedia-3.0, SharedMedia_ButtonHighlight, AdiDebug, Dominos, LibActionButton-1.0, LibActionButton-1.0-ElvUI, Bartender4, Masque
+## OptionalDeps: Ace3, LibArtifactData-1.0, LibSpellbook-1.0, LibDispellable-1.0, LibItemBuffs-1.0, LibPlayerSpells-1.0, DRData-1.0, LibDualSpec-1.0, LibButtonGlow-1.0, LibSharedMedia-3.0, SharedMedia_ButtonHighlight, AdiDebug, Dominos, LibActionButton-1.0, LibActionButton-1.0-ElvUI, Bartender4, Masque
 
 #@no-lib-strip@
 libs\LibStub\LibStub.lua
@@ -41,6 +41,7 @@ libs\DRData-1.0\DRData-1.0.xml
 libs\LibPlayerSpells-1.0\lib.xml
 libs\LibSharedMedia-3.0\lib.xml
 libs\LibButtonGlow-1.0\LibButtonGlow-1.0.lua
+libs\LibArtifactData-1.0\LibArtifactData-1.0.lua
 #@end-no-lib-strip@
 libs\LibSpellbook-1.0\LibSpellbook-1.0.lua
 libs\LibItemBuffs-1.0\LibItemBuffs-1.0.xml

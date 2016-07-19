@@ -253,6 +253,7 @@ function private.GetUserRulesOptions(addon, addonName)
 							MAGE = L['MAGE'],
 							WARLOCK = L['WARLOCK'],
 							HUNTER = L['HUNTER'],
+							DEMONHUNTER = L['DEMONHUNTER'],
 						},
 					},
 					delete = {

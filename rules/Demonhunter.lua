@@ -21,12 +21,11 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 
 local _, addon = ...
 
-if not addon.isClass("SHAMAN") then return end
+if not addon.isClass("DEMONHUNTER") then return end
 
 AdiButtonAuras:RegisterRules(function()
-	Debug('Adding shaman rules')
-
-	return ImportPlayerSpells { "SHAMAN" }
+	Debug('Adding demonhunter rules')
+	return ImportPlayerSpells { "DEMONHUNTER" }
 end)
 
 -- GLOBALS: AddRuleFor BuffAliases BuildAuraHandler_FirstOf BuildAuraHandler_Longest

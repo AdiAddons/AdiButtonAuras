@@ -41,7 +41,7 @@ AdiButtonAuras:RegisterRules(function()
 				  5116, -- Concussive Shot (hunter)
 				  6136, -- Chilled (mage)
 				  7321, -- Chilled (mage, bis)
-				  8056, -- Frost Shock (shaman)
+				  -- 8056, -- Frost Shock (shaman) -- NOTE: gone in Legion
 				  8178, -- Grounding Totem Effect (shaman)
 				 12323, -- Hamstring (warrior)
 				 13810, -- Ice Trap (hunter)
@@ -55,10 +55,10 @@ AdiButtonAuras:RegisterRules(function()
 				 54644, -- Frost Breath (hunter, chimaera)
 				 58180, -- Infected Wounds (druid)
 				 61391, -- Typhoon (druid)
-				 61394, -- Frozen Wake (hunter, glyph)
+				 -- 61394, -- Frozen Wake (hunter, glyph) -- NOTE: gone in Legion
 				116095, -- Disable (monk, 1 stack)
 				127797, -- Ursol's Vortex
-				129923  -- Sluggish (warrior, hs glyph)
+				-- 129923  -- Sluggish (warrior, hs glyph) -- NOTE: gone in Legion
 			}
 		}, -- Snares and anti-snares
 
@@ -191,87 +191,6 @@ AdiButtonAuras:RegisterRules(function()
 				AddRuleFor(key, desc, spell, "enemy", "UNIT_AURA", handler)
 			end
 		end
-	end
-
-	--------------------------------------------------------------------------
-	-- Raid buffs
-	--------------------------------------------------------------------------
-	-- Use LibPlayerSpells
-
-	local LibPlayerSpells = GetLib('LibPlayerSpells-1.0')
-	local band, bor = bit.band, bit.bor
-
-	local classMask = LibPlayerSpells.constants[PLAYER_CLASS]
-	local burstMask = LibPlayerSpells.constants.BURST_HASTE
-
-	local buffsMasks, buffSpells = {}, {}
-	for buff, flags, _, target, buffMask in LibPlayerSpells:IterateSpells("RAIDBUFF") do
-		-- exclude bloodlust type buffs since they are covered above already
-		if band(buffMask, burstMask) == 0 then
-			buffsMasks[buff] = buffMask
-			if band(flags, classMask) ~= 0 then
-				local spells = buffSpells[buffMask]
-				if spells then
-					spells[#spells + 1] = target
-				else
-					buffSpells[buffMask] = { target }
-				end
-			end
-		end
-	end
-
-	local function CheckUnitBuffs(unit, buffMask)
-		local found, minExpiration = 0
-		for i, id, _, expiration in IterateBuffs(unit) do
-			local buffProvided = band(buffsMasks[id] or 0, buffMask)
-			if buffProvided ~= 0 then
-				found = bor(found, buffProvided)
-				if not minExpiration or expiration < minExpiration then
-					minExpiration = expiration
-				end
-				if found == buffMask then
-					return true, minExpiration
-				end
-			end
-		end
-	end
-
-	-- Create a rule per bitmask
-	for buffMask, spells in pairs(buffSpells) do
-		local names = LibPlayerSpells:GetRaidBuffCategoryNames(buffMask)
-		local name = table.concat(names, L[" and "]) -- we have two categories at most
-		local CheckUnitBuffs = CheckUnitBuffs
-
-		rules[#rules + 1] = Configure {
-			"Raidbuff:"..buffMask,
-			format(
-				L["Show the shortest duration and the number of group members missing a buff from the %1$s %2$s."],
-				#names > 1 and L["categories"] or L["category"],
-				name
-			)..format(" [%s]", DescribeLPSSource(PLAYER_CLASS)),
-			buffSpells[buffMask],
-			"group",
-			"UNIT_AURA",
-			function(units, model)
-				local missing, minExpiration = 0
-				for unit in pairs(units.group) do
-					if UnitIsPlayer(unit) and not UnitIsDeadOrGhost(unit) then
-						local found, expiration = CheckUnitBuffs(unit, buffMask)
-						if not found then
-							missing = missing + 1
-						elseif not minExpiration or expiration < minExpiration then
-							minExpiration = expiration
-						end
-					end
-				end
-				if minExpiration then
-					model.highlight, model.expiration = "good", minExpiration
-				end
-				if missing > 0 then
-					model.count = missing
-				end
-			end
-		}
 	end
 
 	--------------------------------------------------------------------------

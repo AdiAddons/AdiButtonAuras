@@ -25,63 +25,8 @@ if not addon.isClass("PRIEST") then return end
 
 AdiButtonAuras:RegisterRules(function()
 	Debug('Adding priest rules')
-	return {
-		ImportPlayerSpells {
-			-- Import all spells for ...
-			"PRIEST",
-			-- ... but ...
-			   17, -- Power Word: Shield
-			81661, -- Evangelism
-		},
-		ShowPower {
-			{
-				 2944, -- Devouring Plague
-				64044, -- Psychic Horror
-			},
-			"SHADOW_ORBS",
-		},
-		Configure {
-			"PWShield",
-			L["Show Power Word: Shield or Weakened Soul on targeted ally."],
-			17, -- Power Word: Shield
-			"ally",
-			"UNIT_AURA",
-			(function()
-				local hasPWShield = BuildAuraHandler_Single("HELPFUL", "good", "ally", 17)
-				local hasWeakenedSoul = BuildAuraHandler_Single("HARMFUL", "bad", "ally", 6788)
-				return function(units, model)
-					return hasPWShield(units, model) or hasWeakenedSoul(units, model)
-				end
-			end)(),
-		},
-		ShowStacks {
-			81700,    -- on Archangel
-			81661,    -- show the stacks of Evangelism (buff)
-			5,        -- number of max stacks
-			"player", -- unit to track the buff on
-			nil,      -- no handler (else it will get a hint)
-			nil,      -- no highlight (the default ui highlights it)
-			81662,    -- provider spell -> Evangelism (passive)
-		},
-		ShowStacks {
-			{
-				   596, -- Prayer of Healing
-				  2060, -- Heal
-				155245, -- Clarity of Purpose
-			},
-			63735,      -- Serendipity (buff)
-			2,          -- Max two stacks
-			"player",
-			2,          -- Hint at 2 stacks
-			"hint",
-			63733,      -- Serendipity (passive)
-		},
-		ShowStacks {
-			33076,  -- Prayer of Mending
-			155362, -- Word of Mending (buff)
-			10,     -- Max 10 stacks
-		},
-	}
+
+	return ImportPlayerSpells { "PRIEST" }
 end)
 
 -- GLOBALS: AddRuleFor BuffAliases BuildAuraHandler_FirstOf BuildAuraHandler_Longest
