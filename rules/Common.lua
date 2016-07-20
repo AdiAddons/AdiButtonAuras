@@ -202,7 +202,7 @@ AdiButtonAuras:RegisterRules(function()
 
 	local HELPFUL = LibPlayerSpells.constants.HELPFUL
 	for spell, flags, _, _, _, category in LibPlayerSpells:IterateSpells("DISPEL", PLAYER_CLASS) do
-		local offensive = band(flags, HELPFUL) == 0
+		local offensive = bit.band(flags, HELPFUL) == 0
 		local spell, token = spell, offensive and "enemy" or "ally"
 		tinsert(rules, Configure {
 			"Dispel",
