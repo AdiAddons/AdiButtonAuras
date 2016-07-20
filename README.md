@@ -9,12 +9,12 @@ AdiButtonAuras uses a set of rules that apply to one or more spells. Each rule c
 
 AdiButtonAuras has several custom rules to suggest using spells at meaningful times. By default, these suggestions are displayed using a rotary, shinning star on the associated action buttons. These can be disabled.
 
-Development version build status: [![Build Status](https://travis-ci.org/Adirelle/AdiButtonAuras.svg)](https://travis-ci.org/Adirelle/AdiButtonAuras)
+Development version build status: [![Build Status](https://travis-ci.org/AdiAddons/AdiButtonAuras.svg)](https://travis-ci.org/AdiAddons/AdiButtonAuras)
 
 Getting started
 ---------------
 
-Before heading straight into a raid and/or playing with the options, you may want to read this short [Getting started guide](https://github.com/Adirelle/AdiButtonAuras/blob/master/doc/GettingStarted.md), which will introduce you to the basics of AdiButtonAuras.
+Before heading straight into a raid and/or playing with the options, you may want to read this short [Getting started guide](https://github.com/AdiAddons/AdiButtonAuras/blob/master/doc/GettingStarted.md), which will introduce you to the basics of AdiButtonAuras.
 
 Options
 -------
@@ -40,7 +40,7 @@ Options
 
 #### User-defined rules
 
-AdiButtonAuras allows you to enter and save your own rules, using a Lua-based language. Take a look at the [rule reference](https://github.com/Adirelle/AdiButtonAuras/blob/master/doc/RulesRef.md) to see what is available.
+AdiButtonAuras allows you to enter and save your own rules, using a Lua-based language. Take a look at the [rule reference](https://github.com/AdiAddons/AdiButtonAuras/blob/master/doc/RulesRef.md) to see what is available.
 
 TODOs
 -----
@@ -53,10 +53,10 @@ Supported classes and specializations
 
 Most of the simple (de)buffs are supported through embedded libraries:
 
- * most class and racial spells using [LibPlayerSpells-1.0](https://github.com/Adirelle/LibPlayerSpells-1.0),
- * crowd-control spells using [DRData-1.0](https://github.com/Adirelle/DRData-1.0),
- * dispel spells using [LibDispellable-1.0](https://github.com/Adirelle/LibDispellable-1.0/),
- * trinket, enchantment and item buffs using [LibItemBuffs-1.0](https://github.com/Adirelle/LibItemBuffs-1.0/).
+ * most class and racial spells using [LibPlayerSpells-1.0](https://github.com/AdiAddons/LibPlayerSpells-1.0),
+ * crowd-control spells using [DRData-1.0](https://github.com/AdiAddons/DRData-1.0),
+ * dispel spells using [LibDispellable-1.0](https://github.com/AdiAddons/LibDispellable-1.0/),
+ * trinket, enchantment and item buffs using [LibItemBuffs-1.0](https://github.com/AdiAddons/LibItemBuffs-1.0/).
 
 Special cases and hints are handled using customized rules, see below.
 
@@ -67,17 +67,17 @@ FAQ
 
 **When I try to configure a spell, the button is dimmed and I cannot choose it. Why?**
 
-AdiButtons has no rule about this spell yet. Consider [filling an issue](https://github.com/Adirelle/AdiButtonAuras/issues).
+AdiButtons has no rule about this spell yet. Consider [filling an issue](https://github.com/AdiAddons/AdiButtonAuras/issues).
 
 **Why are some rules ending with some obscure characters between brackets, like [LPS-DRUID-5.4.1-7]?**
 
 These are references to the libraries AdiButtonAuras used to create the rule.
 
- * LPS-XXX-A.B.C-N: data from [LibPlayerSpells-1.0](https://github.com/Adirelle/LibPlayerSpells-1.0) for class XXX, patch A.B.C, Nth revision. E.g. "[LPS-DRUID-5.4.1-7]" stands for "rule created accordingly to LibPlayerSpells-1.0 data for druid, patch 5.4.1, 7th revision."
- * DR-N: [DRData-1.0](https://github.com/Adirelle/DRData-1.0), Nth revision.
- * LSB-N: [LibSpellbook-1.0](https://github.com/Adirelle/LibSpellbook-1.0), Nth revision.
- * LD-N: [LibDispellable-1.0](https://github.com/Adirelle/LibDispellable-1.0/), Nth revision.
- * LIB-N-XXX: [LibItemBuffs-1.0](https://github.com/Adirelle/LibItemBuffs-1.0/), Nth revision, XXX data version
+ * LPS-XXX-A.B.C-N: data from [LibPlayerSpells-1.0](https://github.com/AdiAddons/LibPlayerSpells-1.0) for class XXX, patch A.B.C, Nth revision. E.g. "[LPS-DRUID-5.4.1-7]" stands for "rule created accordingly to LibPlayerSpells-1.0 data for druid, patch 5.4.1, 7th revision."
+ * DR-N: [DRData-1.0](https://github.com/AdiAddons/DRData-1.0), Nth revision.
+ * LSB-N: [LibSpellbook-1.0](https://github.com/AdiAddons/LibSpellbook-1.0), Nth revision.
+ * LD-N: [LibDispellable-1.0](https://github.com/AdiAddons/LibDispellable-1.0/), Nth revision.
+ * LIB-N-XXX: [LibItemBuffs-1.0](https://github.com/AdiAddons/LibItemBuffs-1.0/), Nth revision, XXX data version
 
 **Are you going to support ElvUI?**
 
@@ -90,7 +90,7 @@ Not in the way InlineAura did it. However you can create custom rules in-game us
 Contributions & feedback
 ------------------------
 
-The project is open-source and [hosted on github.com](https://github.com/Adirelle/AdiButtonAuras). You can report issues there. Pull request are also welcome. Adirelle often hangs around on the freenode IRC network in the #wowace channel.
+The project is open-source and [hosted on github.com](https://github.com/AdiAddons/AdiButtonAuras). You can report issues there. Pull request are also welcome. Adirelle often hangs around on the freenode IRC network in the #wowace channel.
 
 **Before reporting issues**
 
