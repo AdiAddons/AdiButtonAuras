@@ -26,8 +26,32 @@ if not addon.isClass("DRUID") then return end
 AdiButtonAuras:RegisterRules(function()
 	Debug('Rules', 'Adding druid rules')
 
-	return ImportPlayerSpells { "DRUID" }
-
+	return {
+		ImportPlayerSpells { "DRUID" },
+		ShowPower {
+			{
+				 1079, -- Rip
+				22568, -- Ferocious Bite
+				22570, -- Maim
+				52610, -- Savage Roar
+			},
+			"COMBO"
+		},
+		Configure {
+			"Efflorescence",
+			L["Show duration for @NAME"],
+			145205,
+			"player",
+			"PLAYER_TOTEM_UPDATE",
+			function(_, model)
+				local present, _, startTime, duration = GetTotemInfo(1)
+				if present then
+					model.highlight = "good"
+					model.expiration = startTime + duration
+				end
+			end,
+		},
+	}
 end)
 
 -- GLOBALS: AddRuleFor BuffAliases BuildAuraHandler_FirstOf BuildAuraHandler_Longest
