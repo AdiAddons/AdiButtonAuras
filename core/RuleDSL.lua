@@ -389,15 +389,13 @@ end
 
 local function ShowPower(spells, powerType, handler, highlight, desc)
 	local events, powerLoc, powerIndex
-	if powerType == "COMBO" then
-		powerIndex, powerLoc, events = 4, _G.COMBO_POINTS, "UNIT_COMBO_POINTS"
-	elseif type(powerType) == "string" then
+	if type(powerType) == "string" then
 		powerIndex = _G["SPELL_POWER_"..powerType]
 		if not powerIndex then
 			error("Unknown power "..powerType, 3)
 		end
 		powerLoc = _G[powerType]
-		events = { "UNIT_POWER", "UNIT_MAXPOWER" }
+		events = { "UNIT_POWER_FREQUENT", "UNIT_MAXPOWER" }
 	else
 		error("Invalid power type value, expected string, got "..type(powerType), 3)
 	end

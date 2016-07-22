@@ -35,7 +35,7 @@ AdiButtonAuras:RegisterRules(function()
 				22570, -- Maim
 				52610, -- Savage Roar
 			},
-			"COMBO"
+			"COMBO_POINTS"
 		},
 		Configure {
 			"Efflorescence",
