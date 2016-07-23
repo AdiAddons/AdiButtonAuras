@@ -49,3 +49,4 @@ ignore:
   - tests
   - doc
   - libs/*/tests
+  - deploy
