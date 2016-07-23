@@ -1,16 +1,19 @@
-language: c
-sudo: required
-dist: trusty
+sudo: false
 
 env:
   - LUA="lua5.1" LUAC="luac5.1"
 
+addons:
+  apt:
+    packages:
+      - lua5.1
+      - luarocks
+      - liblua5.1-bitop0
+
 install:
-  - sudo apt-get update -qq # required since the travis switch to GCE
-  - sudo apt-get install -y $LUA luarocks
-  - sudo luarocks install luaunit
-  - sudo luarocks install mockagne
-  - sudo luarocks install luabitop
+  - eval $(luarocks path --bin)
+  - luarocks install --local luaunit 2.1
+  - luarocks install --local mockagne 1.0
 
 script:
   - cd tests
@@ -28,3 +31,8 @@ notifications:
       - https://webhooks.gitter.im/e/21ad1d19b94e216e29bd
     on_success: change
     on_failure: always
+
+cache:
+  apt: true
+  directories:
+    - $HOME/.luarocks
