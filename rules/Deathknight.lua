@@ -43,6 +43,53 @@ AdiButtonAuras:RegisterRules(function()
 			end,
 			207057, -- Shattering Strikes
 		},
+		Configure {
+			"BurstFesteringWound",
+			format(L["%s when %s has %d or more stacks"], DescribeHighlight("hint"), GetSpellInfo(194310), 7), -- Festering Wound
+			{
+				 55090, -- Scourge Strike
+				207311, -- Clawing Shadows
+			},
+			"enemy",
+			"UNIT_AURA",
+			function(units, model)
+				local found, count = GetPlayerDebuff(units.enemy, 194310) -- Festering Wound
+				if found and count >= 7 then
+					model.hint = true
+				end
+			end,
+		},
+		Configure {
+			"SummonGargoyle",
+			format("%s when you summoned either your Gargoyle or Dark Arbiter.", DescribeHighlight("good")),
+			{
+				 49206, -- Summon Gargoyle
+				207349, -- Dark Arbiter
+			},
+			"player",
+			"PLAYER_TOTEM_UPDATE",
+			function(_, model)
+				local found, _, startTime, duration = GetTotemInfo(3) -- both are always the third totem
+				if found then
+					model.highlight = "good"
+					model.expiration = startTime + duration
+				end
+			end,
+		},
+		Configure {
+			"RaiseDead",
+			format(L["%s when you don't have a summoned ghoul."], DescribeHighlight("hint")),
+			46584,
+			"player",
+			"UNIT_PET",
+			function(_, model)
+				if HasPetSpells() then
+					model.highlight = "good"
+				else
+					model.hint = true
+				end
+			end,
+		}
 	}
 end)
 
