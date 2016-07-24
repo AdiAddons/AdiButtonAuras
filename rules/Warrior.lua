@@ -26,7 +26,22 @@ if not addon.isClass("WARRIOR") then return end
 AdiButtonAuras:RegisterRules(function()
 	Debug('Adding warrior rules')
 
-	return ImportPlayerSpells { "WARRIOR" }
+	return {
+		ImportPlayerSpells { "WARRIOR" },
+		Configure {
+			"Execute",
+			format(L["%s when %s is below %s%% health."], DescribeHighlight("hint"), DescribeAllTokens("enemy"), 20),
+			{ 5308, 163201 }, -- Execute
+			"enemy",
+			{ "UNIT_HEALTH", "UNIT_MAXHEALTH" },
+			function(units, model)
+				local foe = units.enemy
+				if UnitHealth(foe) / UnitHealthMax(foe) <= 0.20 then
+					model.flash = true
+				end
+			end,
+		},
+	}
 end)
 
 -- GLOBALS: AddRuleFor BuffAliases BuildAuraHandler_FirstOf BuildAuraHandler_Longest
