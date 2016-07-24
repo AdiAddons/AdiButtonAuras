@@ -26,7 +26,24 @@ if not addon.isClass("DEATHKNIGHT") then return end
 AdiButtonAuras:RegisterRules(function()
 	Debug('Adding deathknight rules')
 
-	return ImportPlayerSpells { "DEATHKNIGHT" }
+	return {
+		ImportPlayerSpells { "DEATHKNIGHT" },
+		Configure {
+			"ShatteringStrikes",
+			format(L["Show %s."], format(L["stacks of %s"], GetSpellInfo(51714))), -- Razorice
+			49143, -- Frost Strike
+			"enemy",
+			"UNIT_AURA",
+			function(units, model)
+				local found, count = GetPlayerDebuff(units.enemy, 51714) -- Razorice
+				if found then
+					model.count = count
+					model.maxCount = 5
+				end
+			end,
+			207057, -- Shattering Strikes
+		},
+	}
 end)
 
 -- GLOBALS: AddRuleFor BuffAliases BuildAuraHandler_FirstOf BuildAuraHandler_Longest
