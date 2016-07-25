@@ -109,7 +109,7 @@ function overlayPrototype:InitializeDisplay()
 	self.Highlight = highlight
 
 	local overlay = self:CreateTexture(self:GetName().."Overlay", "BACKGROUND")
-	overlay:SetTexture(0.4, 0.4, 0.4, 1)
+	overlay:SetColorTexture(0.4, 0.4, 0.4, 1)
 	overlay:SetAllPoints(self)
 	overlay:Hide()
 	self.Overlay = overlay
