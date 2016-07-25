@@ -94,7 +94,7 @@ AdiButtonAuras:RegisterRules(function()
 		Configure {
 			"LayOnHands",
 			BuildDesc("HARMFUL", "bad", "ally", 25771),
-			633, -- Blessing of Protection
+			633, -- Lay on Hands
 			"ally",
 			"UNIT_AURA",
 			(function()
