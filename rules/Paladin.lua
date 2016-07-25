@@ -63,7 +63,7 @@ AdiButtonAuras:RegisterRules(function()
 				BuildDesc("HELPFUL PLAYER", "good", "player", 642), -- Devine Shield
 				BuildDesc("HARMFUL", "bad", "player", 25771) -- Forbearance
 			),
-		 	642, -- Devine Shield
+			642, -- Devine Shield
 			"player",
 			"UNIT_AURA",
 			(function()
@@ -80,7 +80,7 @@ AdiButtonAuras:RegisterRules(function()
 				BuildDesc("HELPFUL", "good", "ally", 1022), -- Blessing of Protection
 				BuildDesc("HARMFUL", "bad", "ally", 25771) -- Forbearance
 			),
-		 	1022, -- Blessing of Protection
+			1022, -- Blessing of Protection
 			"ally",
 			"UNIT_AURA",
 			(function()
@@ -94,7 +94,7 @@ AdiButtonAuras:RegisterRules(function()
 		Configure {
 			"LayOnHands",
 			BuildDesc("HARMFUL", "bad", "ally", 25771),
-		 	633, -- Blessing of Protection
+			633, -- Blessing of Protection
 			"ally",
 			"UNIT_AURA",
 			(function()
