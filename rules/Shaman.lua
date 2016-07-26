@@ -26,7 +26,44 @@ if not addon.isClass("SHAMAN") then return end
 AdiButtonAuras:RegisterRules(function()
 	Debug('Adding shaman rules')
 
-	return ImportPlayerSpells { "SHAMAN" }
+	local liquidMagmaTotem = GetSpellInfo(192222)
+
+	local function BuildTotemHandler(totemName)
+		return function(_, model)
+			for slot = 1, 5 do -- max 5 totems at once?
+				local found, name, start, duration = GetTotemInfo(slot)
+				if found and name == totemName then
+					model.expiration = start + duration
+					model.highlight = "good"
+					break
+				end
+			end
+		end
+	end
+
+	return {
+		ImportPlayerSpells { "SHAMAN" },
+		ShowPower {
+			8042, -- Earth Shock
+			"MAELSTROM",
+		},
+		ShowPower {
+			{
+				188389, -- Flame Shock
+				196840, -- Frost Shock
+			},
+			"MAELSTROM",
+			20, -- hint when at 20 or more
+		},
+		Configure {
+			"LiquidMagmaTotemDuration",
+			format(L["Show the duration of %s"], liquidMagmaTotem),
+			192222, -- Liquid Magma Totem
+			"player",
+			"PLAYER_TOTEM_UPDATE",
+			BuildTotemHandler(liquidMagmaTotem),
+		},
+	}
 end)
 
 -- GLOBALS: AddRuleFor BuffAliases BuildAuraHandler_FirstOf BuildAuraHandler_Longest
