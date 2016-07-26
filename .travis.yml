@@ -1,3 +1,4 @@
+langage: c
 sudo: false
 
 env:
@@ -37,6 +38,7 @@ deploy:
   script: $TRAVIS_BUILD_DIR/deploy/deploy.sh adibuttonauras "$encrypted_38056f6ca8c4_key" "$encrypted_38056f6ca8c4_iv"
   on:
     repo: AdiAddons/AdiButtonAuras
+    all_branches: true
     condition: '$TRAVIS_BRANCH = master || -n "$TRAVIS_TAG"'
 
 cache:
