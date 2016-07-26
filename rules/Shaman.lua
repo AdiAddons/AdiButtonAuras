@@ -55,6 +55,14 @@ AdiButtonAuras:RegisterRules(function()
 			"MAELSTROM",
 			20, -- hint when at 20 or more
 		},
+		ShowPower {
+			187837, -- Lightning Bolt
+			"MAELSTROM",
+			45,
+			nil,
+			nil,
+			210727, -- Overcharge
+		},
 		Configure {
 			"LiquidMagmaTotemDuration",
 			format(L["Show the duration of %s"], liquidMagmaTotem),
