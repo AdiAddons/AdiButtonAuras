@@ -38,7 +38,7 @@ externals:
   libs/LibSpellbook-1.0: https://github.com/Adirelle/LibSpellbook-1.0.git
   libs/LibItemBuffs-1.0: https://github.com/Adirelle/LibItemBuffs-1.0.git
   libs/LibDispellable-1.0: git://git.wowace.com/wow/libdispellable-1-0/mainline.git
-  libs/DRData-1.0: https://github.com/AdiAddons/DRData-1.0.git
+  libs/DRData-1.0: git://git.wowace.com/wow/drdata-1-0/mainline.git
   libs/LibPlayerSpells-1.0: git://git.wowace.com/wow/libplayerspells-1-0/mainline.git
   SMBH: https://github.com/Adirelle/SharedMedia_ButtonHighlight.git
 

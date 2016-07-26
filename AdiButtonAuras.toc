@@ -41,10 +41,10 @@ libs\LibPlayerSpells-1.0\lib.xml
 libs\LibSharedMedia-3.0\lib.xml
 libs\LibButtonGlow-1.0\LibButtonGlow-1.0.lua
 libs\LibArtifactData-1.0\LibArtifactData-1.0.lua
+libs\DRData-1.0\DRData-1.0.lua
 #@end-no-lib-strip@
 libs\LibSpellbook-1.0\LibSpellbook-1.0.lua
 libs\LibItemBuffs-1.0\LibItemBuffs-1.0.xml
-libs\DRData-1.0\DRData-1.0.xml
 
 # Not in libs subfolder to shorten the path
 SMBH\lib.xml
