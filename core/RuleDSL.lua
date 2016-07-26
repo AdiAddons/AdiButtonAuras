@@ -344,7 +344,7 @@ local function ShowCountAndHighlight(key, spells, unit, events, handler, highlig
 	local test
 
 	if handler == 1 then
-		desc = format(L["%s when your %s reachs its maximum."], highlightDesc, descWhat)
+		desc = format(L["%s when your %s reaches its maximum."], highlightDesc, descWhat)
 		test = function(current, maxi) return current >= maxi end
 
 	elseif handler == -1 then
@@ -387,7 +387,7 @@ local function ShowCountAndHighlight(key, spells, unit, events, handler, highlig
 	}
 end
 
-local function ShowPower(spells, powerType, handler, highlight, desc)
+local function ShowPower(spells, powerType, handler, highlight, desc, providers)
 	local events, powerLoc, powerIndex
 	if type(powerType) == "string" then
 		powerIndex = _G["SPELL_POWER_"..powerType]
@@ -412,7 +412,8 @@ local function ShowPower(spells, powerType, handler, highlight, desc)
 		desc,
 		powerLoc,
 		function() return UnitPower("player", powerIndex) end,
-		function() return UnitPowerMax("player", powerIndex) end
+		function() return UnitPowerMax("player", powerIndex) end,
+		providers
 	)
 end
 
