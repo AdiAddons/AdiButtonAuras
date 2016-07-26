@@ -36,7 +36,8 @@ deploy:
   provider: script
   script: $TRAVIS_BUILD_DIR/deploy/deploy.sh adibuttonauras "$encrypted_38056f6ca8c4_key" "$encrypted_38056f6ca8c4_iv"
   on:
-    branch: master
+    repo: AdiAddons/AdiButtonAuras
+    condition: '"$TRAVIS_BRANCH" = master -o -n "$TRAVIS_TAG"'
 
 cache:
   apt: true
