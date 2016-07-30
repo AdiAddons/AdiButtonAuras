@@ -26,10 +26,6 @@ if not addon.isClass("MAGE") then return end
 AdiButtonAuras:RegisterRules(function()
 	Debug('Adding mage rules')
 
-	local function BuildTotemHandler(slot)
-
-	end
-
 	return {
 		ImportPlayerSpells {
 			-- import all spells for

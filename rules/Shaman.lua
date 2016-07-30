@@ -27,6 +27,9 @@ AdiButtonAuras:RegisterRules(function()
 	Debug('Adding shaman rules')
 
 	local liquidMagmaTotem = GetSpellInfo(192222)
+	local healingStreamTotem = GetSpellInfo(5394)
+	local healingTideTotem = GetSpellInfo(108280)
+	local cloudBurstTotem = GetSpellInfo(157153)
 
 	local function BuildTotemHandler(totemName)
 		return function(_, model)
@@ -34,7 +37,6 @@ AdiButtonAuras:RegisterRules(function()
 				local found, name, start, duration = GetTotemInfo(slot)
 				if found and name == totemName then
 					model.expiration = start + duration
-					model.highlight = "good"
 					break
 				end
 			end
@@ -70,6 +72,31 @@ AdiButtonAuras:RegisterRules(function()
 			"player",
 			"PLAYER_TOTEM_UPDATE",
 			BuildTotemHandler(liquidMagmaTotem),
+		},
+		Configure {
+			"HealingStreamTotem",
+			format(L["Show the duration of %s"], healingStreamTotem),
+			5394, -- Healing Stream Totem
+			"player",
+			"PLAYER_TOTEM_UPDATE",
+			BuildTotemHandler(healingStreamTotem),
+		},
+		Configure {
+			"HealingTideTotem",
+			format(L["Show the duration of %s"], healingTideTotem),
+			108280, -- Healing Tide Totem
+			"player",
+			"PLAYER_TOTEM_UPDATE",
+			BuildTotemHandler(healingTideTotem),
+		},
+		Configure {
+			"CloudburstTotem",
+			format(L["Show the duration of %s"], cloudBurstTotem),
+			201764, -- Recall Cloudburst Totem
+			"player",
+			"PLAYER_TOTEM_UPDATE",
+			BuildTotemHandler(cloudBurstTotem),
+			157153, -- Cloudburst Totem
 		},
 	}
 end)
