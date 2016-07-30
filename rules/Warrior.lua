@@ -36,8 +36,10 @@ AdiButtonAuras:RegisterRules(function()
 			{ "UNIT_HEALTH", "UNIT_MAXHEALTH" },
 			function(units, model)
 				local foe = units.enemy
-				if UnitHealth(foe) / UnitHealthMax(foe) <= 0.20 then
-					model.flash = true
+				local maxHealth = UnitHealthMax(foe)
+				if maxHealth <= 0 then return end
+				if UnitHealth(foe) / maxHealth <= 0.20 then
+					model.hint = true
 				end
 			end,
 		},
