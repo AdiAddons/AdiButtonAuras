@@ -26,7 +26,32 @@ if not addon.isClass("WARLOCK") then return end
 AdiButtonAuras:RegisterRules(function()
 	Debug('Adding warlock rules')
 
-	return ImportPlayerSpells { "WARLOCK" }
+	return {
+		ImportPlayerSpells { "WARLOCK" },
+		ShowPower {
+			{
+				  5740, -- Rain of Fire
+				 17887, -- Shadowburn
+				116858, -- Chaos Bolt
+			},
+			"SOUL_SHARDS",
+		},
+		Configure {
+			"BurningRush",
+			L["Show your current health percentage."],
+			111400, -- Burning Rush
+			"player",
+			{ "UNIT_HEALTH", "UNIT_MAXHEALTH", "UNIT_ARUA" },
+			function(_, model)
+				local hasBurningRush = GetPlayerBuff("player", 111400)
+				if hasBurningRush then
+					local maxHealth = UnitHealthMax("player")
+					if maxHealth <= 0 then return end
+					model.count = floor(UnitHealth("player") / maxHealth * 100 + 0.5)
+				end
+			end,
+		}
+	}
 end)
 
 -- GLOBALS: AddRuleFor BuffAliases BuildAuraHandler_FirstOf BuildAuraHandler_Longest
