@@ -604,7 +604,8 @@ local RULES_ENV = addon.BuildSafeEnv(
 		"GetShapeshiftFormID", "GetSpellBonusHealing", "GetSpellCharges", "GetSpellInfo",
 		"GetTime", "GetTotemInfo", "HasPetSpells", "IsPlayerSpell", "UnitCanAttack",
 		"UnitCastingInfo", "UnitChannelInfo", "UnitClass","UnitHealth", "UnitHealthMax",
-		"UnitIsDeadOrGhost", "UnitIsPlayer", "UnitPower", "UnitPowerMax", "UnitStagger",
+		"UnitIsDeadOrGhost", "UnitIsPlayer", "UnitName", "UnitPower", "UnitPowerMax",
+		"UnitStagger",
 	}
 )
 
