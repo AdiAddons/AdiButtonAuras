@@ -28,6 +28,19 @@ AdiButtonAuras:RegisterRules(function()
 
 	local soulEffigy = GetSpellInfo(205178)
 
+	local function BuildTotemHandler(texture)
+		return function(_, model)
+			for slot = 1, 5 do
+				local found, _, start, duration, tex = GetTotemInfo(slot)
+				if found and tex == texture then
+					model.highlight = "good"
+					model.expiration = start + duration
+					break
+				end
+			end
+		end
+	end
+
 	return {
 		ImportPlayerSpells {
 			-- import all spells for
@@ -39,6 +52,8 @@ AdiButtonAuras:RegisterRules(function()
 			{
 				  5740, -- Rain of Fire
 				 17887, -- Shadowburn
+				104316, -- Call Dreadstalkers
+				105174, -- Hand of Gul'dan
 				116858, -- Chaos Bolt
 			},
 			"SOUL_SHARDS",
@@ -80,7 +95,23 @@ AdiButtonAuras:RegisterRules(function()
 					return hasEffigyDebuff(units, model) or hasEffigyTotem(units, model)
 				end
 			end)(),
-		}
+		},
+		Configure {
+			"Dreadstalkers",
+			L["Show the duration of your Dreadstalkers"],
+			104316,
+			"player",
+			"PLAYER_TOTEM_UPDATE",
+			BuildTotemHandler("Interface\\Icons\\spell_warlock_calldreadstalkers")
+		},
+		Configure {
+			"WildImps",
+			L["Show the duration of your Wild Imps"],
+			105174,
+			"player",
+			"PLAYER_TOTEM_UPDATE",
+			BuildTotemHandler("Interface\\Icons\\spell_warlock_summonimpoutland")
+		},
 	}
 end)
 
