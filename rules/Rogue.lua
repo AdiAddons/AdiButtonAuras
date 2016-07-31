@@ -26,7 +26,22 @@ if not addon.isClass("ROGUE") then return end
 AdiButtonAuras:RegisterRules(function()
 	Debug('Adding rogue rules')
 
-	return ImportPlayerSpells { "ROGUE" }
+	return {
+		ImportPlayerSpells { "ROGUE" },
+		ShowPower {
+			{
+				   408, -- Kidney Shot
+				  2098, -- Run Through
+				152150, -- Death from Above
+				193316, -- Roll the Bones
+				195452, -- Nightblade
+				196819, -- Eviscerate
+				199804, -- Between the Eyes
+				206237, -- Enveloping Shadows
+			},
+			"COMBO_POINTS",
+		}
+	}
 end)
 
 -- GLOBALS: AddRuleFor BuffAliases BuildAuraHandler_FirstOf BuildAuraHandler_Longest
