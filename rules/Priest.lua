@@ -26,7 +26,87 @@ if not addon.isClass("PRIEST") then return end
 AdiButtonAuras:RegisterRules(function()
 	Debug('Adding priest rules')
 
-	return ImportPlayerSpells { "PRIEST" }
+	return {
+		ImportPlayerSpells {
+			-- import all spells for
+			"PRIEST",
+			-- except
+			193223, -- Surrender to Madness
+			212570, -- Surrendered Soul
+			217673, -- Mind Spike
+		},
+
+		Configure {
+			"Silence",
+			format(L["%s when %s is casting/channelling a spell that you can interrupt."],
+				DescribeHighlight("flash"),
+				DescribeAllTokens("enemy")
+			),
+			15487, -- Silence
+			"enemy",
+			{ -- Events
+				"UNIT_SPELLCAST_CHANNEL_START",
+				"UNIT_SPELLCAST_CHANNEL_STOP",
+				"UNIT_SPELLCAST_CHANNEL_UPDATE",
+				"UNIT_SPELLCAST_DELAYED",
+				"UNIT_SPELLCAST_INTERRUPTIBLE",
+				"UNIT_SPELLCAST_NOT_INTERRUPTIBLE",
+				"UNIT_SPELLCAST_START",
+				"UNIT_SPELLCAST_STOP",
+			},
+			-- Handler
+			function(units, model)
+				local unit = units.enemy
+				if unit and UnitCanAttack("player", unit) and not UnitIsPlayer(unit) then
+					local name, _, _, _, _, endTime, _, _, notInterruptible = UnitCastingInfo(unit)
+					if name and not notInterruptible then
+						model.flash, model.expiration = true, endTime / 1000
+						return
+					end
+					name, _, _, _, _, endTime, _, notInterruptible = UnitChannelInfo(unit)
+					if name and not notInterruptible then
+						model.flash, model.expiration = true, endTime / 1000
+					end
+				end
+			end,
+		},
+
+		Configure {
+			"MindSpike",
+			BuildDesc("HARMFUL PLAYER", "bad", "enemy", 217673), -- Mind Spike
+			8092, -- Mind Blast
+			"enemy",
+			"UNIT_AURA",
+			function(units, model)
+				local found, count, expiration = GetPlayerDebuff(units.enemy, 217673) -- Mind Spike
+				if found then
+					model.count = count
+					model.maxCount = 10
+					model.expiration = expiration
+					model.highlight = "bad"
+				end
+			end,
+			73510, -- Mind Spike
+		},
+
+		Configure {
+			"SurrenderToMadness",
+			format(L["%s %s"],
+				BuildDesc("HELPFUL PLAYER", "good", "player", 193223), -- Surrender to Madness
+				BuildDesc("HARMFUL PLAYER", "bad", "player", 212570) -- Surrendered Soul
+			),
+			193223, -- Surrender to Madness
+			"player",
+			"UNIT_AURA",
+			(function()
+				local hasMadness = BuildAuraHandler_Single("HELPFUL PLAYER", "good", "player", 193223) -- Surrender to Madness
+				local hasNoSoul = BuildAuraHandler_Single("HARMFUL PLAYER", "bad", "player", 212570) -- Surrendered Soul
+				return function(_, model)
+					return hasMadness(_, model) or hasNoSoul(_, model)
+				end
+			end)(),
+		}
+	}
 end)
 
 -- GLOBALS: AddRuleFor BuffAliases BuildAuraHandler_FirstOf BuildAuraHandler_Longest
