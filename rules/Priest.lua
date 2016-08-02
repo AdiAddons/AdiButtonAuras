@@ -32,8 +32,18 @@ AdiButtonAuras:RegisterRules(function()
 			"PRIEST",
 			-- except
 			193223, -- Surrender to Madness
+			194384, -- Atonement
+			210027, -- Share in the Light (not game changing)
 			212570, -- Surrendered Soul
 			217673, -- Mind Spike
+		},
+
+		BuffAliases {
+			{
+				194509, -- Power Word: Radiance
+				200829, -- Plea
+			},
+			194384
 		},
 
 		Configure {
