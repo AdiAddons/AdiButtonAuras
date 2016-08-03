@@ -41,14 +41,16 @@ AdiButtonAuras:RegisterRules(function()
 			-- import all spells for
 			"PALADIN",
 			-- except
-			  633, -- Lay on Hands
-			  642, -- Devine Shield
-			 1022, -- Blessing of Protection
-			25771, -- Forbearance
+			   633, -- Lay on Hands
+			   642, -- Devine Shield
+			  1022, -- Blessing of Protection
+			 25771, -- Forbearance
+			204018, -- Blassing of Spellwarding
 		},
+
 		ShowPower {
 			{
-				 53385, -- Devine Storm
+				 53385, -- Divine Storm
 				 85256, -- Templar's Verdict
 				202273, -- Seal of Light
 				210191, -- Word of Glory
@@ -57,13 +59,14 @@ AdiButtonAuras:RegisterRules(function()
 			},
 			"HOLY_POWER",
 		},
+
 		Configure {
-			"DevineShield",
+			"DivineShield",
 			format(L["%s %s"],
-				BuildDesc("HELPFUL PLAYER", "good", "player", 642), -- Devine Shield
+				BuildDesc("HELPFUL PLAYER", "good", "player", 642), -- Divine Shield
 				BuildDesc("HARMFUL", "bad", "player", 25771) -- Forbearance
 			),
-			642, -- Devine Shield
+			642, -- Divine Shield
 			"player",
 			"UNIT_AURA",
 			(function()
@@ -74,6 +77,7 @@ AdiButtonAuras:RegisterRules(function()
 				end
 			end)(),
 		},
+
 		Configure {
 			"BlessingOfProtection",
 			format(L["%s %s"],
@@ -91,6 +95,25 @@ AdiButtonAuras:RegisterRules(function()
 				end
 			end)(),
 		},
+
+		Configure {
+			"BlessingOfSpellwarding",
+			format(L["%s %s"],
+				BuildDesc("HELPFUL", "good", "ally", 204018), -- Blessing of Spellwarding
+				BuildDesc("HARMFUL", "bad", "ally", 25771) -- Forbearance
+			),
+			204018, -- Blessing of Spellwarding
+			"ally",
+			"UNIT_AURA",
+			(function()
+				local hasForbearance = BuildAuraHandler_Single("HARMFUL", "bad", "ally", 25771)
+				local hasBlessingOfSpellwarding = BuildAuraHandler_Single("HELPFUL", "good", "ally", 204018)
+				return function(units, model)
+					return hasBlessingOfSpellwarding(units, model) or hasForbearance(units, model)
+				end
+			end)(),
+		},
+
 		Configure {
 			"LayOnHands",
 			BuildDesc("HARMFUL", "bad", "ally", 25771),
@@ -104,6 +127,7 @@ AdiButtonAuras:RegisterRules(function()
 				end
 			end)(),
 		},
+
 		Configure {
 			"GreaterBlessings",
 			format(L["Show the number of Greater Blessings placed on group members."]),
@@ -127,6 +151,7 @@ AdiButtonAuras:RegisterRules(function()
 				end
 			end,
 		},
+
 		Configure {
 			"HolyWrath",
 			L["Show your missing health."],
@@ -141,6 +166,41 @@ AdiButtonAuras:RegisterRules(function()
 					model.highlight = "darken"
 				end
 			end
+		},
+
+		Configure {
+			"AvengersShieldInterrupt",
+			format(L["%s when %s is casting/channelling a spell that you can interrupt."],
+				DescribeHighlight("flash"),
+				DescribeAllTokens("enemy")
+			),
+			31935, -- Avenger's Shield
+			"enemy",
+			{ -- Events
+				"UNIT_SPELLCAST_CHANNEL_START",
+				"UNIT_SPELLCAST_CHANNEL_STOP",
+				"UNIT_SPELLCAST_CHANNEL_UPDATE",
+				"UNIT_SPELLCAST_DELAYED",
+				"UNIT_SPELLCAST_INTERRUPTIBLE",
+				"UNIT_SPELLCAST_NOT_INTERRUPTIBLE",
+				"UNIT_SPELLCAST_START",
+				"UNIT_SPELLCAST_STOP",
+			},
+			-- Handler
+			function(units, model)
+				local unit = units.enemy
+				if unit and UnitCanAttack("player", unit) and not UnitIsPlayer(unit) then
+					local name, _, _, _, _, endTime, _, _, notInterruptible = UnitCastingInfo(unit)
+					if name and not notInterruptible then
+						model.flash, model.expiration = true, endTime / 1000
+						return
+					end
+					name, _, _, _, _, endTime, _, notInterruptible = UnitChannelInfo(unit)
+					if name and not notInterruptible then
+						model.flash, model.expiration = true, endTime / 1000
+					end
+				end
+			end,
 		},
 	}
 end)
