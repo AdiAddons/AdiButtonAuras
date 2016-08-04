@@ -45,6 +45,8 @@ AdiButtonAuras:RegisterRules(function()
 			   642, -- Devine Shield
 			  1022, -- Blessing of Protection
 			 25771, -- Forbearance
+			200656, -- Power of the Silver Hand (build-up) (Holy artifact)
+			200657, -- Power of the Silver Hand (Holy artifact)
 			204018, -- Blassing of Spellwarding
 		},
 
@@ -216,6 +218,26 @@ AdiButtonAuras:RegisterRules(function()
 					model.expiration = start + duration
 				end
 			end,
+		},
+
+		Configure {
+			"PowerOfTheSilverHand",
+			BuildDesc("HELPFUL PLAYER", "good", "player", 200657),
+			20473, -- Holy Shock
+			"player",
+			"UNIT_AURA",
+			function(_, model)
+				local found, _, expiration = GetPlayerBuff("player", 200657)
+				if found then
+					model.highlight = "good"
+					model.expiration = expiration
+				else
+					found, _, expiration = GetPlayerBuff("player", 200656) -- build-up
+					if found then
+						model.expiration = expiration
+					end
+				end
+			end
 		}
 	}
 end)
