@@ -202,6 +202,21 @@ AdiButtonAuras:RegisterRules(function()
 				end
 			end,
 		},
+
+		Configure {
+			"LightsHammer",
+			L["Show duration of @NAME."],
+			114158, -- Light's Hammer
+			"player",
+			"PLAYER_TOTEM_UPDATE",
+			function(_, model)
+				local found, _, start, duration = GetTotemInfo(2) -- Light's Hammer is always the 2nd totem
+				if found then
+					model.highlight = "good"
+					model.expiration = start + duration
+				end
+			end,
+		}
 	}
 end)
 
