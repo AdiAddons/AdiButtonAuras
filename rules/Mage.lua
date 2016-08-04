@@ -37,6 +37,7 @@ AdiButtonAuras:RegisterRules(function()
 			113862, -- Greater Invisibility (dmg reduction)
 			116014, -- Rune of Power
 		},
+
 		ShowPower {
 			{
 				 44425, -- Arcane Barrage
@@ -45,6 +46,7 @@ AdiButtonAuras:RegisterRules(function()
 			"ARCANE_CHARGES",
 			5, -- an unreachable value, so that no hint is shown as the usage is situational
 		},
+
 		Configure {
 			"RuneOfPower",
 			format(L["%s %s"],
@@ -68,6 +70,7 @@ AdiButtonAuras:RegisterRules(function()
 				end
 			end)(),
 		},
+
 		Configure {
 			"IceBlockHypothermia",
 			format(L["%s %s"],
@@ -85,6 +88,7 @@ AdiButtonAuras:RegisterRules(function()
 				end
 			end)(),
 		},
+
 		Configure {
 			"GreaterInvisibility",
 			BuildDesc("HELPFUL PLAYER", "good", "player", 110960), -- Greater Invisibility
@@ -98,6 +102,22 @@ AdiButtonAuras:RegisterRules(function()
 					return isInvisible(_, model) or hasDmgReduction(_, model)
 				end
 			end)(),
+		},
+		-- Suggest using Fire Blast when you have Heating Up
+		Configure {
+			"HeatingUp",
+			BuildDesc("HELPFUL PLAYER", "hint", "player", 48107), -- Heating Up
+			108853, -- Fire Blast
+			"player",
+			"UNIT_AURA",
+			function(_, model)
+				local found, _, expiration = GetPlayerBuff("player", 48107) -- Heating Up
+				if found then
+					model.expiration = expiration
+					model.hint = true
+				end
+			end,
+			195283, -- Hot Streak (passive provider)
 		}
 	}
 end)
