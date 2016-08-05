@@ -65,7 +65,6 @@ AdiButtonAuras:RegisterRules(function()
 			"MAELSTROM",
 			45,
 			nil,
-			nil,
 			210727, -- Overcharge
 		},
 

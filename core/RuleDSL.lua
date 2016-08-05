@@ -388,7 +388,7 @@ local function ShowCountAndHighlight(key, spells, unit, events, handler, highlig
 	}
 end
 
-local function ShowPower(spells, powerType, handler, highlight, desc, providers)
+local function ShowPower(spells, powerType, handler, highlight, providers, desc)
 	local events, powerLoc, powerIndex
 	if type(powerType) == "string" then
 		powerIndex = _G["SPELL_POWER_"..powerType]

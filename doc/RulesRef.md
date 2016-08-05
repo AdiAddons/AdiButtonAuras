@@ -181,7 +181,7 @@ DebuffAliases {
 ***
 
 <a name="ShowPower"></a>
-**`ShowPower { spells, power, handlerOrThreshold, highlight, description }`**
+**`ShowPower { spells, power, handlerOrThreshold, highlight, providers, description }`**
 >Displays the specified power on the given spell(s) (e.g. the number of Soul Shards).
 >Also creates a second rule to highlight the spell(s) depending on the value; highlight with a hint at maximum by default (i.e. `handlerOrThreshold` is set to 1.0).
 * `spells` - spell id(s) of the spell(s) on which to display the power value (_number_ or _table_)
@@ -194,6 +194,8 @@ DebuffAliases {
     - default value: a _function_ that displays the current power value and highlights with a hint when it reaches it's maximum
 * (`highlight`) - [highlight type](#highlight-type) (_string_)
     default value: "hint"
+* (`providers`) - (_number_ or _table_)
+    Spell(s) required to enable this rule; defaults to the spell(s) to highlight.
 * (`description`) - description for the option panel (_string_)
     default value: nothing if the user supplied a _function_ in `handlerOrThreshold`, else a meaningful description
 
