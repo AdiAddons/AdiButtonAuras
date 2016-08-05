@@ -211,13 +211,14 @@ ShowPower {
 ***
 
 <a name="ShowStacks"></a>
-**`ShowStacks { spells, buff, maxStacks, unit, handlerOrThreshold, highlight, providers, description }`**
->Display the number of stacks of a given buff on the specified spell.
+**`ShowStacks { spells, aura, maxStacks, unit, handlerOrThreshold, highlight, providers, description }`**
+>Display the number of stacks of a given aura (cast by the player) on the specified spell.
 >Can also highlight the action depending on the number of stacks; by default highlights with a hint when reaching the maximum.
 * `spells` - spell id(s) of the spell(s) on which to display the number of stacks (_number_ or _table_)
-* `buff` - spell id of the buff to look for (_number_).
+* `aura` - spell id of the aura to look for (_number_).
 * `maxStacks` - maximum number of stacks to expect (_number_).
-* `unit` - the unit to scan for the buff.
+* `unit` - the unit to scan for the aura (_string_). If the unit is `"enemy"` the aura is interpreted as a debuff, else it is considered a buff.
+    default value: `"player"`
 * (`handlerOrThreshold`) - handler (_function_ or _number_)
     - if a _number_ is provided, it is interpreted as follows:
         - numbers in the [-1.0;1.0] range indicate a fraction of the maximum, e.g. 0.5 for 50%, else they are taken literally.
