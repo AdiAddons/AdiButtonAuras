@@ -36,6 +36,7 @@ AdiButtonAuras:RegisterRules(function()
 			110960, -- Greater Invisibility
 			113862, -- Greater Invisibility (dmg reduction)
 			116014, -- Rune of Power
+			199844, -- Glacial Spike!
 		},
 
 		ShowPower {
@@ -118,6 +119,27 @@ AdiButtonAuras:RegisterRules(function()
 				end
 			end,
 			195283, -- Hot Streak (passive provider)
+		},
+		-- Suggest using Frostbolt when Water Jet in on the target
+		Configure {
+			"WaterJetFrostbolt",
+			BuildDesc("HARMFUL PLAYER", "hint", "enemy", 135029), -- Water Jet
+			116, -- Frostbolt
+			"enemy",
+			"UNIT_AURA",
+			function(units, model)
+				local found = GetPlayerDebuff(units.enemy, 135029) -- Water Jet
+				if found then
+					model.hint = true
+				end
+			end,
+			135029, -- Water Jet
+		},
+
+		ShowStacks {
+			199786, -- on Glacial Spikes
+			205473, -- the stacks of Icicles
+			5, -- max
 		}
 	}
 end)
@@ -133,4 +155,4 @@ end)
 -- GLOBALS: SimpleDebuffs UnitCanAttack UnitCastingInfo UnitChannelInfo UnitClass
 -- GLOBALS: UnitHealth UnitHealthMax UnitIsDeadOrGhost UnitIsPlayer UnitPower
 -- GLOBALS: UnitPowerMax UnitStagger bit ceil floor format ipairs math min pairs
--- GLOBALS: print select string table tinsert GetPlayerBuff ShowStacks
+-- GLOBALS: print select string table tinsert GetPlayerBuff GetPlayerDebuff ShowStacks
