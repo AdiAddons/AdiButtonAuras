@@ -464,6 +464,7 @@ end
 local ImportPlayerSpells
 do
 	local band = bit.band
+	local bxor = bit.bxor
 	local UNIQUE_AURA = LibPlayerSpells.constants.UNIQUE_AURA
 	local INVERT_AURA = LibPlayerSpells.constants.INVERT_AURA
 	local TARGETING = LibPlayerSpells.masks.TARGETING
@@ -471,16 +472,21 @@ do
 	local PERSONAL = LibPlayerSpells.constants.PERSONAL
 	local PET = LibPlayerSpells.constants.PET
 	local IMPORTANT = LibPlayerSpells.constants.IMPORTANT
+	local SOURCE = LibPlayerSpells.masks.SOURCE
 
-	function ImportPlayerSpells(filter, ...)
+	function ImportPlayerSpells(cat, ...)
+		if not LibPlayerSpells.__categories[cat] then
+			error(format("Invalid filter for ImportPlayerSpells: %s", cat))
+		end
 		local exceptions = AsSet({...}, "number", 3)
 		local builders = {}
-		for buff, flags, provider, modified, _, category in LibPlayerSpells:IterateSpells(filter, "AURA", "RAIDBUFF") do
+		for buff, flags, provider, modified, _, category in LibPlayerSpells:IterateSpells(cat, "AURA", "RAIDBUFF") do
 			local providers = provider ~= buff and FilterOut(AsList(provider, "number"), exceptions)
 			local spells = FilterOut(AsList(modified, "number"), exceptions)
 			if not exceptions[buff] and #spells > 0 and (not providers or #providers > 0) then
 				local filter, highlight, token = "HELPFUL", "good", "ally"
 				local targeting = band(flags, TARGETING)
+				local source = band(flags, SOURCE)
 				if targeting == HARMFUL then
 					filter, highlight, token = "HARMFUL", "bad", "enemy"
 				elseif targeting == PERSONAL then
@@ -491,7 +497,7 @@ do
 				if band(flags, INVERT_AURA) ~= 0 then
 					filter = (filter == "HARMFUL") and "HELPFUL" or "HARMFUL"
 				end
-				if band(flags, UNIQUE_AURA) == 0 then
+				if band(flags, UNIQUE_AURA) == 0 and bxor(source, LibPlayerSpells.constants[cat]) == 0 then
 					filter = filter.." PLAYER"
 				end
 				if band(flags, IMPORTANT) ~= 0 then
