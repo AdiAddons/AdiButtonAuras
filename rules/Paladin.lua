@@ -238,7 +238,7 @@ AdiButtonAuras:RegisterRules(function()
 					end
 				end
 			end
-		}
+		},
 	}
 end)
 

@@ -37,13 +37,13 @@ AdiButtonAuras:RegisterRules(function()
 			212570, -- Surrendered Soul
 			217673, -- Mind Spike
 		},
-
+		-- show Atonement on Power Word: Radiance and Plea
 		BuffAliases {
 			{
 				194509, -- Power Word: Radiance
 				200829, -- Plea
 			},
-			194384
+			194384, -- Atonement
 		},
 
 		Configure {
@@ -115,7 +115,7 @@ AdiButtonAuras:RegisterRules(function()
 					return hasMadness(_, model) or hasNoSoul(_, model)
 				end
 			end)(),
-		}
+		},
 	}
 end)
 

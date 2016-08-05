@@ -60,7 +60,7 @@ AdiButtonAuras:RegisterRules(function()
 			(function()
 				local hasRuneOfPower = BuildAuraHandler_Single("HELPFUL PLAYER", "good", "player", 116014)
 				local hasTotem = function(_, model)
-					local found, _, start, duration = GetTotemInfo(1) -- Arcane mages have only one totem
+					local found, _, start, duration = GetTotemInfo(1) -- mages have only one totem
 					if found then
 						model.highlight = "bad" -- to signify you don't have the buff you strive for
 						model.expiration = start + duration

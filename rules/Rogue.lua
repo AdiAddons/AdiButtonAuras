@@ -36,6 +36,7 @@ AdiButtonAuras:RegisterRules(function()
 			192925, -- Blood of the Assassinated (Assassination artifact) (completely within Rupture's own debuff)
 			193538, -- Alacity (not game changing)
 		},
+
 		ShowPower {
 			{
 				   408, -- Kidney Shot

@@ -28,6 +28,7 @@ AdiButtonAuras:RegisterRules(function()
 
 	return {
 		ImportPlayerSpells { "DRUID" },
+
 		ShowPower {
 			{
 				 1079, -- Rip
@@ -37,6 +38,7 @@ AdiButtonAuras:RegisterRules(function()
 			},
 			"COMBO_POINTS"
 		},
+
 		Configure {
 			"Efflorescence",
 			L["Show duration for @NAME"],

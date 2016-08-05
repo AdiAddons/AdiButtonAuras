@@ -28,21 +28,17 @@ AdiButtonAuras:RegisterRules(function()
 
 	return {
 		ImportPlayerSpells { "DEATHKNIGHT" },
-		Configure {
-			"ShatteringStrikes",
-			format(L["Show %s."], format(L["stacks of %s"], GetSpellInfo(51714))), -- Razorice
+		-- show the stacks of Razorice on Frost Strike if Shattering Strikes is known
+		ShowStacks {
 			49143, -- Frost Strike
+			51714, -- Razorice
+			5, -- max
 			"enemy",
-			"UNIT_AURA",
-			function(units, model)
-				local found, count = GetPlayerDebuff(units.enemy, 51714) -- Razorice
-				if found then
-					model.count = count
-					model.maxCount = 5
-				end
-			end,
+			nil,
+			nil,
 			207057, -- Shattering Strikes
 		},
+
 		Configure {
 			"BurstFesteringWound",
 			format(L["%s when %s has %d or more stacks"], DescribeHighlight("hint"), GetSpellInfo(194310), 7), -- Festering Wound
@@ -59,6 +55,7 @@ AdiButtonAuras:RegisterRules(function()
 				end
 			end,
 		},
+
 		Configure {
 			"SummonGargoyle",
 			format("%s when you summoned either your Gargoyle or Dark Arbiter.", DescribeHighlight("good")),
@@ -76,6 +73,7 @@ AdiButtonAuras:RegisterRules(function()
 				end
 			end,
 		},
+
 		Configure {
 			"RaiseDead",
 			format(L["%s when you don't have a summoned ghoul."], DescribeHighlight("hint")),
@@ -89,7 +87,7 @@ AdiButtonAuras:RegisterRules(function()
 					model.hint = true
 				end
 			end,
-		}
+		},
 	}
 end)
 

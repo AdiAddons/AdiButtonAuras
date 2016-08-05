@@ -48,6 +48,7 @@ AdiButtonAuras:RegisterRules(function()
 			-- except
 			205178, -- Soul Effigy
 		},
+
 		ShowPower {
 			{
 				  5740, -- Rain of Fire
@@ -58,6 +59,7 @@ AdiButtonAuras:RegisterRules(function()
 			},
 			"SOUL_SHARDS",
 		},
+
 		Configure {
 			"BurningRush",
 			L["Show your current health percentage."],
@@ -73,6 +75,7 @@ AdiButtonAuras:RegisterRules(function()
 				end
 			end,
 		},
+
 		Configure {
 			"SoulEffigy",
 			L["Show the duration of your @NAME"],
@@ -96,6 +99,7 @@ AdiButtonAuras:RegisterRules(function()
 				end
 			end)(),
 		},
+
 		Configure {
 			"Dreadstalkers",
 			L["Show the duration of your Dreadstalkers"],
@@ -104,6 +108,7 @@ AdiButtonAuras:RegisterRules(function()
 			"PLAYER_TOTEM_UPDATE",
 			BuildTotemHandler("Interface\\Icons\\spell_warlock_calldreadstalkers")
 		},
+
 		Configure {
 			"WildImps",
 			L["Show the duration of your Wild Imps"],

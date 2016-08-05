@@ -28,6 +28,7 @@ AdiButtonAuras:RegisterRules(function()
 
 	return {
 		ImportPlayerSpells { "WARRIOR" },
+
 		Configure {
 			"Execute",
 			format(L["%s when %s is below %s%% health."], DescribeHighlight("hint"), DescribeAllTokens("enemy"), 20),

@@ -45,10 +45,12 @@ AdiButtonAuras:RegisterRules(function()
 
 	return {
 		ImportPlayerSpells { "SHAMAN" },
+
 		ShowPower {
 			8042, -- Earth Shock
 			"MAELSTROM",
 		},
+
 		ShowPower {
 			{
 				188389, -- Flame Shock
@@ -57,6 +59,7 @@ AdiButtonAuras:RegisterRules(function()
 			"MAELSTROM",
 			20, -- hint when at 20 or more
 		},
+
 		ShowPower {
 			187837, -- Lightning Bolt
 			"MAELSTROM",
@@ -65,6 +68,7 @@ AdiButtonAuras:RegisterRules(function()
 			nil,
 			210727, -- Overcharge
 		},
+
 		Configure {
 			"LiquidMagmaTotemDuration",
 			format(L["Show the duration of %s"], liquidMagmaTotem),
@@ -73,6 +77,7 @@ AdiButtonAuras:RegisterRules(function()
 			"PLAYER_TOTEM_UPDATE",
 			BuildTotemHandler(liquidMagmaTotem),
 		},
+
 		Configure {
 			"HealingStreamTotem",
 			format(L["Show the duration of %s"], healingStreamTotem),
@@ -81,6 +86,7 @@ AdiButtonAuras:RegisterRules(function()
 			"PLAYER_TOTEM_UPDATE",
 			BuildTotemHandler(healingStreamTotem),
 		},
+
 		Configure {
 			"HealingTideTotem",
 			format(L["Show the duration of %s"], healingTideTotem),
@@ -89,6 +95,7 @@ AdiButtonAuras:RegisterRules(function()
 			"PLAYER_TOTEM_UPDATE",
 			BuildTotemHandler(healingTideTotem),
 		},
+
 		Configure {
 			"CloudburstTotem",
 			format(L["Show the duration of %s"], cloudBurstTotem),
