@@ -68,6 +68,7 @@ local BuildDesc         = addon.BuildDesc
 local DescribeLPSSource = addon.DescribeLPSSource
 
 local GetPlayerBuff = addon.AuraTools.GetPlayerBuff
+local GetPlayerDebuff = addon.AuraTools.GetPlayerDebuff
 
 local L = addon.L
 
@@ -417,9 +418,9 @@ local function ShowPower(spells, powerType, handler, highlight, desc, providers)
 	)
 end
 
-local function ShowStacks(spells, buff, maxi, unit, handler, highlight, providers, desc)
+local function ShowStacks(spells, aura, maxi, unit, handler, highlight, providers, desc)
 	unit = unit or "player"
-	local key = BuildKey("ShowStacks", buff, unit, highlight)
+	local key = BuildKey("ShowStacks", aura, unit, highlight)
 
 	local getMax
 	if type(maxi) == "number" then
@@ -430,6 +431,8 @@ local function ShowStacks(spells, buff, maxi, unit, handler, highlight, provider
 		getMax = function() return math.huge end
 	end
 
+	local GetPlayerAura = unit == "enemy" and GetPlayerDebuff or GetPlayerBuff
+
 	return ShowCountAndHighlight(
 		key,
 		spells,
@@ -438,8 +441,11 @@ local function ShowStacks(spells, buff, maxi, unit, handler, highlight, provider
 		handler,
 		highlight or (handler and "hint"),
 		desc,
-		format(L["stacks of %s"], DescribeAllSpells(buff)),
-		function(unit) return select(2, GetPlayerBuff(unit, buff)) or 0 end,
+		format(L["stacks of %s"], DescribeAllSpells(aura)),
+		function(unit)
+			local _, count = GetPlayerAura(unit, aura)
+			return count or 0
+		end,
 		getMax,
 		providers
 	)
