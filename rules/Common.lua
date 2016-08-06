@@ -320,4 +320,4 @@ end)
 -- GLOBALS: UnitHealth UnitHealthMax UnitIsDeadOrGhost UnitIsPlayer UnitPower
 -- GLOBALS: UnitPowerMax UnitStagger bit ceil floor format ipairs math min pairs
 -- GLOBALS: print select string table tinsert type
--- GLOBALS: GetPlayerBuff IterateBuffs GetLib ShowStacks
+-- GLOBALS: GetPlayerBuff IterateBuffs GetLib ShowStacks GetDebuff
