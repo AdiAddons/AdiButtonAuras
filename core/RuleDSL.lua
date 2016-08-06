@@ -474,13 +474,14 @@ do
 	local IMPORTANT = LibPlayerSpells.constants.IMPORTANT
 	local SOURCE = LibPlayerSpells.masks.SOURCE
 
-	function ImportPlayerSpells(cat, ...)
-		if not LibPlayerSpells.__categories[cat] then
-			error(format("Invalid filter for ImportPlayerSpells: %s", cat))
+	function ImportPlayerSpells(category, ...)
+		if not LibPlayerSpells.__categories[category] then
+			error(format("Invalid category for ImportPlayerSpells: %s", category))
 		end
+		local categoryMask = LibPlayerSpells.constants[category]
 		local exceptions = AsSet({...}, "number", 3)
 		local builders = {}
-		for buff, flags, provider, modified, _, category in LibPlayerSpells:IterateSpells(cat, "AURA", "RAIDBUFF") do
+		for buff, flags, provider, modified in LibPlayerSpells:IterateSpells(category, "AURA", "RAIDBUFF") do
 			local providers = provider ~= buff and FilterOut(AsList(provider, "number"), exceptions)
 			local spells = FilterOut(AsList(modified, "number"), exceptions)
 			if not exceptions[buff] and #spells > 0 and (not providers or #providers > 0) then
@@ -497,7 +498,7 @@ do
 				if band(flags, INVERT_AURA) ~= 0 then
 					filter = (filter == "HARMFUL") and "HELPFUL" or "HARMFUL"
 				end
-				if band(flags, UNIQUE_AURA) == 0 and bxor(source, LibPlayerSpells.constants[cat]) == 0 then
+				if band(flags, UNIQUE_AURA) == 0 and bxor(source, categoryMask) == 0 then
 					filter = filter.." PLAYER"
 				end
 				if band(flags, IMPORTANT) ~= 0 then
