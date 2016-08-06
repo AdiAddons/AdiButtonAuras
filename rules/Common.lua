@@ -156,6 +156,32 @@ AdiButtonAuras:RegisterRules(function()
 				end
 			end)(),
 		},
+
+	--------------------------------------------------------------------------
+	-- Battle Resurrection (Surrendered Soul)
+	--------------------------------------------------------------------------
+
+		Configure {
+			"SurrenderedSoul",
+			BuildDesc("HARMFUL", "bad", "ally", 212570), -- Surrendered Soul
+			{
+				 20484, -- Rebirth
+				 20707, -- Soulstone
+				 61999, -- Raise Ally
+				126393, -- Eternal Guardian (Quilen)
+				159931, -- Gift of Chi-Ji (Crane)
+				159956, -- Dust of Life (Moth)
+			},
+			"ally",
+			"UNI_AURA",
+			function(units, model)
+				local found, _, expiration = GetDebuff(units.ally, 212570) -- Surrendered Soul
+				if found then
+					model.highlight = "bad"
+					model.expiration = expiration
+				end
+			end,
+		},
 	}
 
 	--------------------------------------------------------------------------
