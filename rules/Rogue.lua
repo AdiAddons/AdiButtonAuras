@@ -75,4 +75,5 @@ end)
 -- GLOBALS: UnitPowerMax UnitStagger
 
 -- Lua API
--- GLOBALS: bit ceil floor format ipairs math min pairs print select string table tinsert
+-- GLOBALS: bit ceil floor format ipairs math min pairs print select string table
+-- GLOBALS: tinsert type
