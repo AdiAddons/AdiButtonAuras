@@ -613,12 +613,11 @@ local RULES_ENV = addon.BuildSafeEnv(
 		"bit", "ceil", "floor", "format", "ipairs", "math", "min", "pairs", "print",
 		"select", "string", "table", "tinsert", "type",
 		-- WoW API
-		"GetComboPoints", "GetEclipseDirection", "GetNumGroupMembers", "GetRuneCooldown",
-		"GetShapeshiftFormID", "GetSpellBonusHealing", "GetSpellCharges", "GetSpellInfo",
-		"GetTime", "GetTotemInfo", "HasPetSpells", "IsPlayerSpell", "UnitCanAttack",
-		"UnitCastingInfo", "UnitChannelInfo", "UnitClass","UnitHealth", "UnitHealthMax",
-		"UnitIsDeadOrGhost", "UnitIsPlayer", "UnitName", "UnitPower", "UnitPowerMax",
-		"UnitStagger",
+		"GetRuneCooldown", "GetShapeshiftFormID", "GetSpellBonusHealing", "GetSpellCharges",
+		"GetSpellInfo", "GetTime", "GetTotemInfo", "HasPetSpells", "IsPlayerSpell",
+		"UnitCanAttack", "UnitCastingInfo", "UnitChannelInfo", "UnitClass","UnitHealth",
+		"UnitHealthMax", "UnitIsDeadOrGhost", "UnitIsPlayer", "UnitName", "UnitPower",
+		"UnitPowerMax", "UnitStagger",
 	}
 )
 
