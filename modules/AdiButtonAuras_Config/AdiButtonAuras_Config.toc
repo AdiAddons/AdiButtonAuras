@@ -1,5 +1,5 @@
 # AdiButtonAuras - Mistweaver plugin - Enhanced displays for Renewing Mist.
-# Copyright 2013-2014 Adirelle (adirelle@gmail.com)
+# Copyright 2013-2016 Adirelle (adirelle@gmail.com)
 # All rights reserved.
 #
 # This file is part of AdiButtonAuras.
