@@ -35,6 +35,7 @@ AdiButtonAuras:RegisterRules(function()
 			192432, -- From the Shadows (Assassination artifact) (to emphasize Vendetta's debuff)
 			192925, -- Blood of the Assassinated (Assassination artifact) (completely within Rupture's own debuff)
 			193538, -- Alacity (not game changing)
+			206760, -- Night Terrors (to emphasize Nightblade's DoT)
 		},
 
 		ShowPower {
