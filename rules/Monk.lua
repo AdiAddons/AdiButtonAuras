@@ -26,7 +26,28 @@ if not addon.isClass("MONK") then return end
 AdiButtonAuras:RegisterRules(function()
 	Debug('Adding monk rules')
 
-	return ImportPlayerSpells { "MONK" }
+	return {
+		ImportPlayerSpells { "MONK" },
+
+		Configure {
+			"InvokePets",
+			L["Show the duration of @NAME."],
+			{
+				123904, -- Invoke Xuen, the White Tiger
+				132578, -- Invoke Niuzao, the Black Ox
+				198664, -- Invoke Chi-Ji, the Red Crane
+			},
+			"player",
+			"UNIT_PET",
+			function(_, model)
+				local remaining = GetPetTimeRemaining()
+				if remaining then
+					model.expiration = GetTime() + remaining / 1000
+					model.highlight = "good"
+				end
+			end,
+		},
+	}
 end)
 
 -- ABA
