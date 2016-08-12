@@ -78,7 +78,7 @@ AdiButtonAuras:RegisterRules(function()
 
 		Configure {
 			"SoulEffigy",
-			L["Show the duration of your @NAME"],
+			L["Show the duration of @NAME."],
 			205178, -- Soul Effigy
 			{ "enemy", "player" },
 			{ "UNIT_ARUA", "PLAYER_TOTEM_UPDATE" },
@@ -102,7 +102,7 @@ AdiButtonAuras:RegisterRules(function()
 
 		Configure {
 			"Dreadstalkers",
-			L["Show the duration of your Dreadstalkers"],
+			L["Show the duration of your Dreadstalkers."],
 			104316,
 			"player",
 			"PLAYER_TOTEM_UPDATE",
@@ -111,7 +111,7 @@ AdiButtonAuras:RegisterRules(function()
 
 		Configure {
 			"WildImps",
-			L["Show the duration of your Wild Imps"],
+			L["Show the duration of your Wild Imps."],
 			105174,
 			"player",
 			"PLAYER_TOTEM_UPDATE",

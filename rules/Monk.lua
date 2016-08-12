@@ -47,6 +47,24 @@ AdiButtonAuras:RegisterRules(function()
 				end
 			end,
 		},
+
+		Configure {
+			"Statues",
+			L["Show the duration of your summoned statue."],
+			{
+				115313, -- Summon Jade Serpent Statue
+				115315, -- Summon Black Ox Statue
+			},
+			"player",
+			"PLAYER_TOTEM_UPDATE",
+			function(_, model)
+				local found, _, start, duration = GetTotemInfo(1) -- monks have only one totem
+				if found then
+					model.highlight = "good"
+					model.expiration = start + duration
+				end
+			end,
+		},
 	}
 end)
 
