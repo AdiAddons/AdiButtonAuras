@@ -41,7 +41,7 @@ AdiButtonAuras:RegisterRules(function()
 
 		Configure {
 			"Efflorescence",
-			L["Show duration for @NAME"],
+			L["Show the duration of @NAME."],
 			145205,
 			"player",
 			"PLAYER_TOTEM_UPDATE",

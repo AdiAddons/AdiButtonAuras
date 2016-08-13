@@ -37,6 +37,7 @@ AdiButtonAuras:RegisterRules(function()
 			113862, -- Greater Invisibility (dmg reduction)
 			116014, -- Rune of Power
 			199844, -- Glacial Spike!
+			205022, -- Arcane Familiar
 		},
 
 		ShowPower {
@@ -52,7 +53,7 @@ AdiButtonAuras:RegisterRules(function()
 			"RuneOfPower",
 			format(L["%s %s"],
 				BuildDesc("HELPFUL PLAYER", "good", "player", 116014), -- Rune of Power buff
-				L["Show duration for @NAME."]
+				L["Show the duration of @NAME."]
 			),
 			116011, -- Rune of Power
 			"player",
@@ -60,7 +61,7 @@ AdiButtonAuras:RegisterRules(function()
 			(function()
 				local hasRuneOfPower = BuildAuraHandler_Single("HELPFUL PLAYER", "good", "player", 116014)
 				local hasTotem = function(_, model)
-					local found, _, start, duration = GetTotemInfo(1) -- mages have only one totem
+					local found, _, start, duration = GetTotemInfo(1) -- Rune of Power is always the first totem
 					if found then
 						model.highlight = "bad" -- to signify you don't have the buff you strive for
 						model.expiration = start + duration
@@ -70,6 +71,21 @@ AdiButtonAuras:RegisterRules(function()
 					return hasRuneOfPower(units, model) or hasTotem(units, model)
 				end
 			end)(),
+		},
+
+		Configure {
+			"ArcaneFamiliar",
+			L["Show the duration of @NAME."],
+			205022, -- Arcane Familiar
+			"player",
+			"UNIT_AURA",
+			function(_, model)
+				local found, _, start, duration = GetTotemInfo(4) -- Arcane Familiar is always the forth totem
+				if found then
+					model.highlight = "good"
+					model.expiration = start + duration
+				end
+			end,
 		},
 
 		Configure {

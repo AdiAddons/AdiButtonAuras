@@ -207,7 +207,7 @@ AdiButtonAuras:RegisterRules(function()
 
 		Configure {
 			"LightsHammer",
-			L["Show duration of @NAME."],
+			L["Show the duration of @NAME."],
 			114158, -- Light's Hammer
 			"player",
 			"PLAYER_TOTEM_UPDATE",
