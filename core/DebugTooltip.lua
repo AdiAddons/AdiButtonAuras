@@ -30,6 +30,7 @@ local GetMacroInfo = _G.GetMacroInfo
 local GetMacroItem = _G.GetMacroItem
 local GetMacroSpell = _G.GetMacroSpell
 local getmetatable = _G.getmetatable
+local GetPowerInfo = _G.C_ArtifactUI.GetPowerInfo
 local GetSpellBookItemInfo = _G.GetSpellBookItemInfo
 local GetSpellInfo = _G.GetSpellInfo
 local hooksecurefunc = _G.hooksecurefunc
@@ -52,6 +53,14 @@ local function AddSpellInfo(tooltip, source, id)
 		tooltip:AddDoubleLine("Actual spell name", resolvedName)
 		tooltip:AddDoubleLine("Actual spell identifier", resolvedId)
 	end
+	tooltip:Show()
+end
+
+local function AddArtifactInfo(tooltip, traitId)
+	if not traitId or IsDisabled() then return end
+	local spellId = GetPowerInfo(traitId)
+	if not spellId then return end
+	tooltip:AddDoubleLine("Spell identifier", spellId)
 	tooltip:Show()
 end
 
@@ -103,3 +112,4 @@ hooksecurefunc(proto, "SetUnitDebuff", function(...) return AddAuraInfo(UnitDebu
 hooksecurefunc(proto, "SetSpellByID", function(tooltip, ...) return AddSpellInfo(tooltip, "SpellByID", ...) end)
 hooksecurefunc(proto, "SetSpellBookItem", AddSpellbookInfo)
 hooksecurefunc(proto, "SetAction", AddActionInfo)
+hooksecurefunc(proto, "SetArtifactPowerByID", AddArtifactInfo)
