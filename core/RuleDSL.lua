@@ -605,7 +605,7 @@ local RULES_ENV = addon.BuildSafeEnv(
 	baseEnv,
 	-- Allowed Libraries
 	{
-		"LibDispellable-1.0", "LibPlayerSpells-1.0", "DRData-1.0", "LibSpellbook-1.0", "LibItemBuffs-1.0"
+		"LibDispellable-1.0", "LibPlayerSpells-1.0", "LibSpellbook-1.0", "LibItemBuffs-1.0"
 	},
 	-- Allowed globals
 	{
