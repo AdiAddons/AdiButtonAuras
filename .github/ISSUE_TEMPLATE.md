@@ -1,12 +1,3 @@
-## Before creating the issue:
-
-Please check the following:
-  - Do you use the latest version of AdiButtonAuras?  
-    If you are using the curse client, please choose "alpha" as release type and update. Check if your problem still persists after that.
-  - Has your problem/request already been posted? If so, either comment on the existing issue or just follow progress there.
-
-**Please answer all of the questions below. You can remove those that do not apply to your problem.**
-
 #### Which version of AdiButtonAuras are you using (enter the exact version number here)?
 
 
@@ -27,3 +18,5 @@ Please check the following:
   - Your spec:
   - Name of the spell (and spell id if known):
   - Source of the spell (core ability/talent/artifact/pvp):
+
+#### If you have an error report, copy it below:
