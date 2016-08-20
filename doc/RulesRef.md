@@ -20,17 +20,17 @@
 
 ### Concepts
 
-World of Warcraft has a pretty complex system of buffs and effects.
+World of Warcraft has a pretty complex system of auras and effects.
 
 Every spell or ability is identified by an unique number, which is called the **spell identifier**, and which is often noted by an hash-number, e.g. #113043 for Omen of Clarity. Sites like wowhead.com and wowdb.com refer to the spells by their spell identifiers, e.g. : http://www.wowhead.com/spell=113043 or http://www.wowdb.com/spells/113043-omen-of-clarity.
 
 In most cases, the ability in the spellbook, the ability in the action bar and the buff or debuff (which are collectively called *aura*) are identicial.
 
-However, sometimes they differ. A passive ability can cause a spell to provide a buff that will in turn modify another ability. For example, in Mists of Pandaria (MoP), the passive ability Omen of Clarity causes Lifebloom to provide the buff Clearcasting, which modifies Regrowth, Wrath and Healing Touch. In AdiButtonAuras, Omen of Clarity is the *provider*, Clearcasting is the *modifier buff* and Regrowth, Wrath and Healing Touch are the *modified spells*.
+However, sometimes they differ. A passive ability can cause a spell to provide a buff that will in turn modify another ability. For example, in Legion, the passive ability Omen of Clarity (for Restoration Druids) causes Lifebloom to provide the buff Clearcasting, which modifies Regrowth. In AdiButtonAuras, Omen of Clarity is the *provider*, Clearcasting is the *modifier buff* and Regrowth is the *modified spell*.
 
-Finally, in some cases, one given spell can have different spell identifiers depending on the character specialization and glyphs. For example, in Warlords of Draenor (WoD), Omen of Clarity is identified by #113043 for Restoration and by #16864 for Feral.
+Finally, in some cases, one given spell can have different spell identifiers depending on the character specialization. For example, in Legion, Omen of Clarity is identified by #113043 for Restoration and by #16864 for Feral.
 
-For checking the spell identifiers, I recommend using the "Debugging Tooltip" option of AdiButtonAuras.
+For checking the spell identifiers you can use the "Debugging Tooltip" option of AdiButtonAuras.
 
 <a name="user-rules"></a>
 ### User Rules
@@ -103,7 +103,7 @@ return {
 
 <a name="SharedSimpleDebuffs"></a>
 **`SharedSimpleDebuffs { debuff1, ..., debuffN }`**
->List of debuffs cast by anyone on any enemy, where only one of that kind is possible (e.g. Hunter's Mark)
+>List of debuffs cast by anyone on any enemy, where only one of that kind is possible (e.g. Forbearance)
 * `debuff1` ... `debuffN` - debuff id (_number_)
 
 ***
@@ -155,15 +155,17 @@ DebuffAliases {
 **`SelfBuffAliases { spells, buffs }`**
 >Shows any of player's `buffs` on the player on all of `spells`.
 * `spells` - spell id (_number_ or _table_)
-* `buffs` - buff id (_number_ or _table_)
+* (`buffs`) - buff id (_number_ or _table_)  
+  defaults to `spells` if omitted
 
 ***
 
 <a name="LongestDebuffOf"></a>
-**`LongestDebuffOf { spells, buffs }`**
+**`LongestDebuffOf { spells, debuffs }`**
 >Shows the longuest of player's `buffs` on all of `spells`.
 * `spells` - spell id (_number_ or _table_)
-* `buffs` - buff id (_number_ or _table_)
+* (`debuffs`) - debuff id (_number_ or _table_)  
+  defaults to `spells` if omitted
 
 ***
 
@@ -173,10 +175,10 @@ DebuffAliases {
 * `passive` - passive spell id (_number_)
 * `spell` - spell id (_number_ or _table_)
 * `buff` - buff id (_number_)
-* (`unit`) - [unit id](#unit-id) (_string_)
-    default value: "player"
-* (`highlight`) - [highlight type](#highlight-type) (_string_)
-    default value: "good"
+* (`unit`) - [unit id](#unit-id) (_string_)  
+  default value: "player"
+* (`highlight`) - [highlight type](#highlight-type) (_string_)  
+  default value: "good"
 
 ***
 
@@ -185,7 +187,7 @@ DebuffAliases {
 >Displays the specified power on the given spell(s) (e.g. the number of Soul Shards).
 >Also creates a second rule to highlight the spell(s) depending on the value; highlight with a hint at maximum by default (i.e. `handlerOrThreshold` is set to 1.0).
 * `spells` - spell id(s) of the spell(s) on which to display the power value (_number_ or _table_)
-* `power` - power type (_string_ - one of the possible suffixes of `SPELL_POWER_` (e.g. ``"ENERGY"``) or `"COMBO"` for combo points).
+* `power` - power type (_string_ - one of the possible suffixes of `SPELL_POWER_` (e.g. `"ENERGY"` or `"INSANITY"`).
 * (`handlerOrThreshold`) - handler (_function_ or _number_)
     - if a _number_ is provided, it is interpreted as follows:
         - numbers in the [-1.0;1.0] range indicate a fraction of the maximum, e.g. 0.5 for 50%, else they are taken literally.
@@ -226,13 +228,13 @@ ShowPower {
         - numbers in the [-1.0;1.0] range indicate a fraction of the maximum, e.g. 0.5 for 50%, else they are taken literally.
         - positive numbers indicate a minimum threshold, e.g. 50 triggers when the number of stacks is greater than or equal to 50.
         - negative numbers indicate a maximum threshold, e.g. -50 triggers when the number of stacks is less than or equal to 50.
-    - default value: a _function_ that displays the current number of stacks and highlights with a hint when it reaches it's maximum
-* (`highlight`) - [highlight type](#highlight-type) (_string_)
-    default value: "hint"
-* (`providers`) - (_number_ or _table_)
-    Spell(s) required to enable this rule; defaults to the spell(s) to highlight.
+    - default value: a _function_ that displays the current number of stacks and highlights with a hint when it reaches its maximum
+* (`highlight`) - [highlight type](#highlight-type) (_string_)  
+  default value: "hint"
+* (`providers`) - Spell(s) required to enable this rule (_number_ or _table_).  
+  defaults to the `spells` if omitted.
 * (`description`) - description for the option panel (_string_)
-    default value: nothing if the user supplied a _function_ in `handlerOrThreshold`, else a dmeaningful description
+    default value: nothing if the user supplied a _function_ in `handlerOrThreshold`, else a meaningful description
 
 >Example:
 ```lua
@@ -257,8 +259,8 @@ ShowStacks {
 * `units` - [unit id(s)](#unit-id) (_string_ or _table_)
 * `events` - event(s) (_string_ or _table_)
 * `handlers` -  handler (_function_ or a _table_ of _functions_)
-* (`providers`) - provider spell id (_number_ or _table_)
-	default value: `spells`
+* (`providers`) - provider spell id (_number_ or _table_)  
+  defaults to `spells` if omitted
 
 ***
 
@@ -269,13 +271,14 @@ ShowStacks {
 * `"flash"` (active overlay)
 * `"good"` (green border)
 * `"bad"` (red border)
-* `"darken"` (darker border)
-* `"lighten"` (lighter border)
-* `"stacks"` (not really a highlight: shows the number of buff stacks)
+* `"darken"` (darkens the button)
+* `"lighten"` (lightens the button)
+* `"hint"` (displays a rotary star)
+* `"stacks"` (not really a highlight: shows the number of aura stacks)
 
 <a name="unit-id"></a>
 **unit id**
 >One of the following:
-* one of the [standard unit ids](http://wowpedia.org/World_of_Warcraft_API_Unit_IDs).
-* `"ally"` dynamically-resolved ally, depending on button macros, modifier keys, and auto-targetting settings.
-* `"enemy"` dynamically-resolved enemy, depending on button macros, modifier keys, and auto-targetting settings.
+* one of the [standard unit ids](http://wow.gamepedia.com/UnitId#Base_Values).
+* `"ally"` dynamically-resolved ally, depending on button macros, modifier keys, and auto-targeting settings.
+* `"enemy"` dynamically-resolved enemy, depending on button macros, modifier keys, and auto-targeting settings.

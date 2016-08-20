@@ -15,7 +15,7 @@ As a general rule:
 
 **However, there are special cases!**
 
-*Raid buffs* display the number of players missing a buff from the same [buff category](http://wow.gamepedia.com/Buff#Raid_Buffs) ![Raid buff showing two raid members without a stats buff](media/raid_buffs.png).
+*Crowd control* abilities display the duration of all debuffs within the same diminishing returns category.
 
 Some spells like Warlocks' Havoc have custom rules, e.g. red when you target the enemy affected by Havoc (to remember *not* to attack that target) and green when you target any other enemy.
 
@@ -28,12 +28,12 @@ By making your buttons sparkle, much like the default UI does, only better!
   * It will make interrupt spells sparkle and display how long you have to interrupt ![Interrupt](media/interrupt.png)
   * It will show a hint when to use certain abilities like Soul Reaper under 35% hp ![Soul Reaper](media/soul_reaper.png)
   * Inform you when there is a buff you can purge from an enemy ![purge](media/purge.png)
-  * Or show you there is a debuff that you can dispell and its duration ![dispell](media/dispell.png)
+  * Or show you there is a debuff that you can dispel and its duration ![dispel](media/dispell.png)
 
 Setting up
 ==========
 
-AdiButtonAuras comes with pre-built rules so it is ready to go without additional messing around, but if there is an aura you do not like you can open the options using /adibuttonauras and change the aura settings for the recognized buttons, which will be highlighted in green.
+AdiButtonAuras comes with pre-built rules so it is ready to go without additional messing around, but if there is an aura you do not like you can open the options using `/adibuttonauras` or `/aba` and change the aura settings for the recognized buttons, which will be highlighted in green.
 
 (Note: in this screenshot the [Dominos](http://www.curse.com/addons/wow/dominos) actionbar addon is being used and put on top of the options)
 
@@ -46,7 +46,7 @@ AdiButtonAuras needs to know about the spell before it puts an aura on its butto
 Other options
 -------------
 
-Additionally there are several display options: from how long a (de)buff duration has to be to show a timer to theme settings, which allow you to personalize the look of the text and the colors in you have trouble seeing the default ones:
+Additionally there are several display options: from how long a (de)buff duration has to be to show a timer to theme settings, which allow you to personalize the look of the text and the colors if you have trouble seeing the default ones:
 ![Spell options](media/theme_options.png)
 
 Getting Involved

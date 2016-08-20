@@ -72,7 +72,7 @@ If several handlers, possibly from different rules, apply to the same spell, the
 
 ## Restricted Lua environment
 
-The rule-defining functions only have access to a restricted set of WoW API functions. These are all "read-only" functions. The exact list is available in [RuleDSL.lua](../core/RuleDSL.lua#L589).
+The rule-defining functions only have access to a restricted set of WoW API functions. These are all "read-only" functions. The exact list is available in [RuleDSL.lua](../core/RuleDSL.lua#L610).
 
 A set of helpers is also available to minimize the effort when creating new rules (see [RulesRef.md](RulesRef.md)).
 
@@ -105,7 +105,7 @@ Returns a localized description of the unit ids.
 
 e.g. `DescribeAllTokens('player', 'pet')` returns `yourself` and `your pet` (assuming an english client)
 
-#### DescribeAllSpells(spellId1, ..., spellId2)
+#### DescribeAllSpells(spellId1, ..., spellIdN)
 
 Returns the localized names of the spells.
 
@@ -121,20 +121,20 @@ Returns a localized description using the given arguments.
 
 Returns a string suitable as the key argument of [`Configure`](RulesRef.md#Configure).
 
-#### BuildAuraHandler_Single(filter, highlight, unit, buff)
+#### BuildAuraHandler_Single(filter, highlight, unit, aura)
 
-Returns a function suitable as rule handler, that will `highlight` the button if `buff` is found on `unit`, restricted by `filter`.
+Returns a function suitable as rule handler, that will `highlight` the button if `aura` is found on `unit`, restricted by `filter`.
 
-This function returns `true` if `buff` has been found.
+This function returns `true` if `aura` has been found.
 
-#### BuildAuraHandler_Longest(filter, highlight, unit, buffs)
+#### BuildAuraHandler_Longest(filter, highlight, unit, auras)
 
-Returns a function suitable as rule handler, that will `highlight` the button with the longest of `buffs` found on `unit` restricted by `filter`.
+Returns a function suitable as rule handler, that will `highlight` the button with the longest of `auras` found on `unit` restricted by `filter`.
 
-This function returns `true` if one of `buffs` has been found.
+This function returns `true` if one of `auras` has been found.
 
-#### BuildAuraHandler_FirstOf(filter, highlight, unit, buffs)
+#### BuildAuraHandler_FirstOf(filter, highlight, unit, auras)
 
-Returns a function suitable as rule handler, that will `highlight` the button with the first of `buffs` found on `unit` restricted by `filter`.
+Returns a function suitable as rule handler, that will `highlight` the button with the first of `aura` found on `unit` restricted by `filter`.
 
-This function returns `true` if one of `buffs` has been found.
+This function returns `true` if one of `auras` has been found.
