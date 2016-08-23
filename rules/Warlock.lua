@@ -65,7 +65,7 @@ AdiButtonAuras:RegisterRules(function()
 			L["Show your current health percentage."],
 			111400, -- Burning Rush
 			"player",
-			{ "UNIT_HEALTH", "UNIT_MAXHEALTH", "UNIT_ARUA" },
+			{ "UNIT_HEALTH", "UNIT_MAXHEALTH", "UNIT_AURA" },
 			function(_, model)
 				local hasBurningRush = GetPlayerBuff("player", 111400)
 				if hasBurningRush then
