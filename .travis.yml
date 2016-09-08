@@ -15,12 +15,14 @@ install:
   - eval $(luarocks path --bin)
   - luarocks install --local luaunit 2.1
   - luarocks install --local mockagne 1.0
+  - luarocks install --local luacheck
+
+before_script:
+  - /home/travis/.luarocks/bin/luacheck . -qo "011" "111" "112" "113"
 
 script:
   - cd tests
-  - ./lualint.sh
   - ./cs.sh
-  - ./globals.sh
   - $LUA Items.lua
 
 notifications:

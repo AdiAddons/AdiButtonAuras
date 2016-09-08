@@ -116,24 +116,3 @@ AdiButtonAuras:RegisterRules(function()
 	addon:CompileUserRules()
 	return builders
 end)
-
--- ABA
--- GLOBALS: AddRuleFor BuffAliases BuildAuraHandler_FirstOf BuildAuraHandler_Longest
--- GLOBALS: BuildAuraHandler_Single BuildDesc BuildKey Configure DebuffAliases Debug
--- GLOBALS: DescribeAllSpells DescribeAllTokens DescribeFilter DescribeHighlight
--- GLOBALS: DescribeLPSSource GetBuff GetDebuff GetLib GetPlayerBuff GetPlayerDebuff
--- GLOBALS: ImportPlayerSpells IterateBuffs IterateDebuffs IteratePlayerBuffs
--- GLOBALS: IteratePlayerDebuffs L LongestDebuffOf PassiveModifier PetBuffs PLAYER_CLASS
--- GLOBALS: SelfBuffAliases SelfBuffs SharedSimpleBuffs SharedSimpleDebuffs ShowPower
--- GLOBALS: ShowStacks SimpleBuffs SimpleDebuffs
-
--- WoW API
--- GLOBALS: GetNumGroupMembers GetRuneCooldown GetShapeshiftFormID GetSpellCharges
--- GLOBALS: GetSpellBonusHealing GetSpellInfo GetTime GetTotemInfo HasPetSpells
--- GLOBALS: IsPlayerSpell UnitCanAttack UnitCastingInfo UnitChannelInfo UnitClass
--- GLOBALS: UnitHealth UnitHealthMax UnitIsDeadOrGhost UnitIsPlayer UnitName UnitPower
--- GLOBALS: UnitPowerMax UnitStagger
-
--- Lua API
--- GLOBALS: bit ceil floor format ipairs math min pairs print select string table
--- GLOBALS: tinsert type
