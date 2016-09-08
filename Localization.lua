@@ -19,7 +19,7 @@ You should have received a copy of the GNU General Public License
 along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 --]]
 
-local addonName, addon = ...
+local _, addon = ...
 
 local L = setmetatable({}, {
 	__index = function(self, key)
@@ -171,7 +171,7 @@ L["%s when you have 3 or more stacks of %s."] = true
 
 
 ------------------------ frFR ------------------------
-local locale = GetLocale()
+local locale = _G.GetLocale()
 if locale == 'frFR' then
 L["a buff you can dispel"] = "un buff que vous pouvez dissiper" -- Needs review
 L["a debuff you can dispel"] = "un débuff que vous pouvez dissiper" -- Needs review
