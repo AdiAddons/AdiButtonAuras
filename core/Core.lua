@@ -60,7 +60,6 @@ local wipe = _G.wipe
 local xpcall = _G.xpcall
 local assert = _G.assert
 local UnitClass = _G.UnitClass
--- GLOBALS: LibStub
 
 local L = addon.L
 

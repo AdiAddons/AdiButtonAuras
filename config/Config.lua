@@ -23,7 +23,6 @@ local _, private = ...
 
 local _G = _G
 
--- GLOBALS: AdiButtonAuras
 AdiButtonAuras:CreateConfig(function(addonName, addon)
 
 	local GetItemInfo = _G.GetItemInfo

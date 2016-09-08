@@ -23,8 +23,6 @@ local _, private = ...
 
 local _G = _G
 
--- GLOBALS: LibStub
-
 function private.GetDebugOptions(addon, addonName)
 
 	local floor = _G.floor

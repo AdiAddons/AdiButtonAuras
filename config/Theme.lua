@@ -73,7 +73,6 @@ function private.GetThemeOptions(addon, addonName)
 						desc = L['Select the font to be used to display both countdown and application count.'],
 						type = 'select',
 						dialogControl = 'LSM30_Font',
-						-- GLOBALS: AceGUIWidgetLSMlists
 						values = AceGUIWidgetLSMlists.font,
 						order = 10,
 					},
