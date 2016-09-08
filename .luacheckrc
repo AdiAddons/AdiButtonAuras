@@ -1,4 +1,7 @@
 globals = {
+	-- Addons and Libraries
+	"AceGUIWidgetLSMLists", "AdiButtonAura", "AdiDebug", "LibStub",
+
 	-- ABA API
 	"AddRuleFor", "BuffAliases", "BuildAuraHandler_FirstOf", "BuildAuraHandler_Longest",
 	"BuildAuraHandler_Single", "BuildDesc", "BuildKey", "Configure", "DebuffAliases", "Debug",
