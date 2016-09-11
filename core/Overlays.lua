@@ -377,7 +377,7 @@ function overlayPrototype:UpdateCooldown(event)
 		self:Debug('cooldownStart=', start, 'cooldownDuration=', duration)
 		self.cooldownStart, self.cooldownDuration = start, duration
 		if inCooldown then
-			C_Timer.After((start+duration+0.1)-GetTime(), function() return self.UpdateCooldown(self) end)
+			C_Timer.After(start + duration + 0.1 - GetTime(), function() return self:UpdateCooldown() end)
 		end
 	end
 	if self.inCooldown ~= inCooldown then
@@ -385,6 +385,7 @@ function overlayPrototype:UpdateCooldown(event)
 		self.inCooldown = inCooldown
 		self:ApplyHighlight()
 		self:ApplyHint()
+		self:ApplyFlash()
 	end
 end
 overlayPrototype.ACTIONBAR_UPDATE_COOLDOWN = overlayPrototype.UpdateCooldown
