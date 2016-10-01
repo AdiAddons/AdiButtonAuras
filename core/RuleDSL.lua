@@ -43,6 +43,8 @@ local tonumber = _G.tonumber
 local tostring = _G.tostring
 local type = _G.type
 local UnitClass = _G.UnitClass
+local UnitHealth = _G.UnitHealth
+local UnitHealthMax = _G.UnitHealthMax
 local UnitPower = _G.UnitPower
 local UnitPowerMax = _G.UnitPowerMax
 local unpack = _G.unpack
@@ -418,6 +420,22 @@ local function ShowPower(spells, powerType, handler, highlight, providers, desc)
 	)
 end
 
+local function ShowHealth(spells, unit, handler, highlight, providers, desc)
+	return ShowCountAndHighlight(
+		BuildKey("ShowHealth", unit, highlight),
+		spells,
+		unit,
+		{ "UNIT_HEALTH_FREQUENT", "UNIT_MAXHEALTH" },
+		handler or 1,
+		highlight or "hint",
+		desc,
+		_G.HEALTH,
+		UnitHealth,
+		UnitHealthMax,
+		providers
+	)
+end
+
 local function ShowStacks(spells, aura, maxi, unit, handler, highlight, providers, desc)
 	unit = unit or "player"
 	local key = BuildKey("ShowStacks", aura, unit, highlight)
@@ -550,6 +568,7 @@ local baseEnv = {
 	-- Basic functions
 	Configure = WrapTableArgFunc(Configure),
 	ShowPower = WrapTableArgFunc(ShowPower),
+	ShowHealth = WrapTableArgFunc(ShowHealth),
 	ShowStacks = WrapTableArgFunc(ShowStacks),
 	PassiveModifier = WrapTableArgFunc(PassiveModifier),
 	ImportPlayerSpells = WrapTableArgFunc(ImportPlayerSpells),

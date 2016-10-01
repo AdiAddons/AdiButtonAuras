@@ -10,7 +10,7 @@ globals = {
 	"ImportPlayerSpells", "IterateBuffs", "IterateDebuffs", "IteratePlayerBuffs",
 	"IteratePlayerDebuffs", "L", "LongestDebuffOf", "PassiveModifier", "PetBuffs", "PLAYER_CLASS",
 	"SelfBuffAliases", "SelfBuffs", "SharedSimpleBuffs", "SharedSimpleDebuffs", "ShowPower",
-	"ShowStacks", "SimpleBuffs", "SimpleDebuffs",
+	"ShowStacks", "SimpleBuffs", "SimpleDebuffs", "ShowHealth",
 
 	-- WoW API
 	"GetNumGroupMembers", "GetPetTimeRemaining", "GetRuneCooldown", "GetShapeshiftFormID",
