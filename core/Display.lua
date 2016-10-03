@@ -27,6 +27,7 @@ local C_Timer = _G.C_Timer
 local GetTime = _G.GetTime
 local UIParent = _G.UIParent
 local floor = _G.floor
+local format = _G.format
 local hooksecurefunc = _G.hooksecurefunc
 local next = _G.next
 local pairs = _G.pairs
@@ -263,11 +264,18 @@ function overlayPrototype:ApplyExpiration()
 	self.Timer:Update()
 end
 
+local function ScaleDown(value, unit, next, ...)
+	if value > 1000 and next then
+		return ScaleDown(value / 1000, next, ...)
+	end
+	return format("%d%s", floor(value + 0.5), unit)
+end
+
 function overlayPrototype:ApplyCount()
 	local count = self.count
 	local maxCount = self.maxCount
 	if count then
-		self.Count:SetText(count)
+		self.Count:SetText(ScaleDown(count, "", "k", "m", "g"))
 		if maxCount and count >= maxCount then
 			self.Count:SetTextColor(unpack(addon.db.profile.colors.countAtMax))
 		else

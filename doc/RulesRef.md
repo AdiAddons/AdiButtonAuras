@@ -15,6 +15,7 @@
   1. [LongestDebuffOf](#LongestDebuffOf)
   1. [PassiveModifier](#PassiveModifier)
   1. [ShowPower](#ShowPower)
+  1. [ShowHealth](#ShowHealth)
   1. [ShowStacks](#ShowStacks)
   1. [Configure](#Configure)
 
@@ -211,6 +212,27 @@ ShowPower {
 },
 ```
 >This darkens Tiger's Fury when the player has more than 35 energy.
+
+***
+
+<a name="ShowHealth"></a>
+**`ShowHealth { spells, unit, handlerOrThreshold, highlight, providers, description }`**
+>Displays the health of the specified unit on the given spell(s).
+>Also creates a second rule to highlight the spell(s) depending on the value; highlight with a hint at maximum by default (i.e. `handlerOrThreshold` is set to 1.0).
+* `spells` - spell id(s) of the spell(s) on which to display the power value (_number_ or _table_)
+* `unit` - the unit whose health is displayed.
+* (`handlerOrThreshold`) - handler (_function_ or _number_)
+    - if a _number_ is provided, it is interpreted as follows:
+        - numbers in the [-1.0;1.0] range indicate a fraction of the maximum, e.g. 0.5 for 50%, else they are taken literally.
+        - positive numbers indicate a minimum threshold, e.g. 50 triggers when the power is greater than or equal to 50.
+        - negative numbers indicate a maximum threshold, e.g. -50 triggers when the power is less than or equal to 50.
+    - default value: a _function_ that displays the current power value and highlights with a hint when it reaches it's maximum
+* (`highlight`) - [highlight type](#highlight-type) (_string_)
+    default value: "hint"
+* (`providers`) - (_number_ or _table_)
+    Spell(s) required to enable this rule; defaults to the spell(s) to highlight.
+* (`description`) - description for the option panel (_string_)
+    default value: nothing if the user supplied a _function_ in `handlerOrThreshold`, else a meaningful description
 
 ***
 
