@@ -14,10 +14,10 @@ globals = {
 
 	-- WoW API
 	"GetNumGroupMembers", "GetPetTimeRemaining", "GetRuneCooldown", "GetShapeshiftFormID",
-	"GetSpellCharges", "GetSpellBonusHealing", "GetSpellInfo", "GetTime", "GetTotemInfo",
-	"HasPetSpells", "IsPlayerSpell", "UnitCanAttack", "UnitCastingInfo", "UnitChannelInfo",
-	"UnitClass", "UnitHealth", "UnitHealthMax", "UnitIsDeadOrGhost", "UnitIsPlayer", "UnitName",
-	"UnitPower", "UnitPowerMax", "UnitStagger",
+	"GetSpellBonusHealing", "GetSpellCharges", "GetSpellCount", "GetSpellInfo", "GetTime",
+	"GetTotemInfo", "HasPetSpells", "IsPlayerSpell", "UnitCanAttack", "UnitCastingInfo",
+	"UnitChannelInfo", "UnitClass","UnitHealth", "UnitHealthMax", "UnitIsDeadOrGhost",
+	"UnitIsPlayer", "UnitName", "UnitPower", "UnitPowerMax", "UnitStagger",
 
 	-- Lua API
 	"bit", "ceil", "floor", "format", "ipairs", "math", "min", "pairs", "print", "select", "string", "table",
