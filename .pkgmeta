@@ -2,43 +2,43 @@ package-as: AdiButtonAuras
 
 externals:
   libs/LibStub:
-    url: svn://svn.wowace.com/wow/libstub/mainline/trunk
+    url: https://repos.wowace.com/wow/libstub/trunk
     tag: latest
   libs/CallbackHandler-1.0:
-    url: svn://svn.wowace.com/wow/callbackhandler/mainline/trunk/CallbackHandler-1.0
+    url: https://repos.wowace.com/wow/callbackhandler/trunk/CallbackHandler-1.0
     tag: latest
   libs/AceDB-3.0:
-    url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceDB-3.0
+    url: https://repos.wowace.com/wow/ace3/trunk/AceDB-3.0
     tag: latest
   libs/AceDBOptions-3.0:
-    url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceDBOptions-3.0
+    url: https://repos.wowace.com/wow/ace3/trunk/AceDBOptions-3.0
     tag: latest
   libs/LibDualSpec-1.0:
-    url: git://git.wowace.com/wow/libdualspec-1-0/mainline.git
+    url: https://repos.wowace.com/wow/libdualspec-1-0
     tag: latest
   libs/AceGUI-3.0:
-    url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceGUI-3.0
+    url: https://repos.wowace.com/wow/ace3/trunk/AceGUI-3.0
     tag: latest
   libs/AceConfig-3.0:
-    url: svn://svn.wowace.com/wow/ace3/mainline/trunk/AceConfig-3.0
+    url: https://repos.wowace.com/wow/ace3/trunk/AceConfig-3.0
     tag: latest
   libs/LibSharedMedia-3.0:
-    url: svn://svn.wowace.com/wow/libsharedmedia-3-0/mainline/trunk/LibSharedMedia-3.0
+    url: https://repos.wowace.com/wow/libsharedmedia-3-0/trunk
     tag: latest
   libs/BugGrabber:
-    url: svn://svn.wowace.com/wow/bug-grabber/mainline/trunk
+    url: https://repos.wowace.com/wow/bug-grabber/trunk
     tag: latest
   libs/LibButtonGlow-1.0:
-    url: git://git.wowace.com/wow/libbuttonglow-1-0/mainline.git
+    url: https://repos.wowace.com/wow/libbuttonglow-1-0
     tag: latest
-  libs/AceGUI-3.0-SharedMediaWidgets: svn://svn.wowace.com/wow/ace-gui-3-0-shared-media-widgets/mainline/trunk/AceGUI-3.0-SharedMediaWidgets
+  libs/AceGUI-3.0-SharedMediaWidgets: https://repos.wowace.com/wow/ace-gui-3-0-shared-media-widgets/trunk
   libs/LibArtifactData-1.0:
-    url: git://git.wowace.com/wow/libartifactdata-1-0/mainline.git
+    url: https://github.com/Rainrider/LibArtifactData-1.0.git
     tag: latest
   libs/LibSpellbook-1.0: https://github.com/AdiAddons/LibSpellbook-1.0.git
   libs/LibItemBuffs-1.0: https://github.com/AdiAddons/LibItemBuffs-1.0.git
-  libs/LibDispellable-1.0: git://git.wowace.com/wow/libdispellable-1-0/mainline.git
-  libs/LibPlayerSpells-1.0: git://git.wowace.com/wow/libplayerspells-1-0/mainline.git
+  libs/LibDispellable-1.0: https://repos.wowace.com/wow/libdispellable-1-0
+  libs/LibPlayerSpells-1.0: https://repos.wowace.com/wow/libplayerspells-1-0
   SMBH: https://github.com/Adirelle/SharedMedia_ButtonHighlight.git
 
 move-folders:

@@ -11,4 +11,4 @@ openssl aes-256-cbc -K "$ENCRYPT_KEY" -iv "$ENCRYPT_IV" -in "$DEPLOY_DIR/wowace.
 chmod -R og= "$HOME/.ssh"
 
 # Do push
-git push "git@git.wowace.com:wow/${WOWACE_PROJECT}/mainline.git" "${TRAVIS_TAG:-$TRAVIS_BRANCH}"
+git push "https://repos.wowace.com/wow/${WOWACE_PROJECT}" "${TRAVIS_TAG:-$TRAVIS_BRANCH}"
