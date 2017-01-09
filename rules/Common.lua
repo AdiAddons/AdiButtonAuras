@@ -40,7 +40,7 @@ AdiButtonAuras:RegisterRules(function()
 				  3600, -- Earthbind (shaman)
 				  5116, -- Concussive Shot (hunter)
 				  6136, -- Chilled (mage)
-				  7321, -- Chilled (mage, bis)
+				  -- 7321, -- Chilled (mage, bis) -- NOTE: removed in 7.1.5
 				  -- 8056, -- Frost Shock (shaman) -- NOTE: gone in Legion
 				  8178, -- Grounding Totem Effect (shaman)
 				 12323, -- Hamstring (warrior)
