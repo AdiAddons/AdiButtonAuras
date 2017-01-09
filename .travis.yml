@@ -1,49 +1,44 @@
-langage: c
 sudo: false
-
 env:
-  - LUA="lua5.1" LUAC="luac5.1"
-
+  global:
+  - LUA=lua5.1
+  - LUAC=luac5.1
+  - secure: Pavhc5OYLXqF0p5+xj1/QBFTX9V6lCOPeX5o9ZDumiz7ID1VRjfXzKir/zMyP1mVvhvDhELtSyQI+df5cEr8WsDauKY6gY47IOgrLaJyUCJgnudmrMzcab4Hh5Bog7BBQ3zzlZnr+Ep2EjbIL1uOJtALnqE5UcvjWbtLQljxGhg=
+  - secure: kLx2SOUTzvpRhNlzSDRq+8cTfeVom0p7yqAhiCBIJ4u7tVcr6mk/g+XGFKsgr+eivlcR6P/fQhup59wPkutQePWlYiS3r8JZ61w40zasmYh0kTW0vWNdsjazRHPIkRDzw3PuSP1ng/Q1nUc7kCGS6PU81GH9qsJhnRzFO+Svk74=
 addons:
   apt:
     packages:
-      - lua5.1
-      - luarocks
-      - liblua5.1-bitop0
-
+    - lua5.1
+    - luarocks
+    - liblua5.1-bitop0
 install:
-  - eval $(luarocks path --bin)
-  - luarocks install --local luaunit 2.1
-  - luarocks install --local mockagne 1.0
-  - luarocks install --local luacheck
-
+- eval $(luarocks path --bin)
+- luarocks install --local luaunit 2.1
+- luarocks install --local mockagne 1.0
+- luarocks install --local luacheck
 before_script:
-  - /home/travis/.luarocks/bin/luacheck . --config .luacheckrc --exclude-files "./tests/*" -qo "011" "111" "112" "113"
-
+- '$HOME/.luarocks/bin/luacheck . --config .luacheckrc --exclude-files "./tests/*" -qo "011" "111" "112" "113"'
 script:
-  - cd tests
-  - ./cs.sh
-  - $LUA Items.lua
-
+- cd tests
+- "./cs.sh"
+- "$LUA Items.lua"
 notifications:
   email:
-    on_failure: always
+    on_failure: change
     on_success: change
   webhooks:
     urls:
-      - https://webhooks.gitter.im/e/8af376a7b5a9d8919d21
+    - https://webhooks.gitter.im/e/8af376a7b5a9d8919d21
     on_success: change
     on_failure: always
-
 deploy:
   provider: script
-  script: $TRAVIS_BUILD_DIR/deploy/deploy.sh adibuttonauras "$encrypted_38056f6ca8c4_key" "$encrypted_38056f6ca8c4_iv"
+  script: "$TRAVIS_BUILD_DIR/deploy/deploy.sh adibuttonauras"
   on:
     repo: AdiAddons/AdiButtonAuras
     all_branches: true
-    condition: '$TRAVIS_BRANCH = master || -n "$TRAVIS_TAG"'
-
+    condition: "$TRAVIS_BRANCH = master || -n $TRAVIS_TAG"
 cache:
   apt: true
   directories:
-    - $HOME/.luarocks
+  - "$HOME/.luarocks"
