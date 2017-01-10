@@ -31,7 +31,7 @@ notifications:
     on_failure: always
 deploy:
   provider: script
-  script: $TRAVIS_BUILD_DIR/deploy/deploy.sh 68441
+  script: "curl -sdS https://www.wowace.com/api/projects/68441/package?token=$WOWACE_API_TOKEN"
   on:
     repo: AdiAddons/AdiButtonAuras
     all_branches: true
