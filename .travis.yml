@@ -3,8 +3,6 @@ env:
   global:
   - LUA=lua5.1
   - LUAC=luac5.1
-  - secure: Pavhc5OYLXqF0p5+xj1/QBFTX9V6lCOPeX5o9ZDumiz7ID1VRjfXzKir/zMyP1mVvhvDhELtSyQI+df5cEr8WsDauKY6gY47IOgrLaJyUCJgnudmrMzcab4Hh5Bog7BBQ3zzlZnr+Ep2EjbIL1uOJtALnqE5UcvjWbtLQljxGhg=
-  - secure: kLx2SOUTzvpRhNlzSDRq+8cTfeVom0p7yqAhiCBIJ4u7tVcr6mk/g+XGFKsgr+eivlcR6P/fQhup59wPkutQePWlYiS3r8JZ61w40zasmYh0kTW0vWNdsjazRHPIkRDzw3PuSP1ng/Q1nUc7kCGS6PU81GH9qsJhnRzFO+Svk74=
 addons:
   apt:
     packages:
@@ -33,7 +31,7 @@ notifications:
     on_failure: always
 deploy:
   provider: script
-  script: "$TRAVIS_BUILD_DIR/deploy/deploy.sh adibuttonauras"
+  script: $TRAVIS_BUILD_DIR/deploy/deploy.sh 68441
   on:
     repo: AdiAddons/AdiButtonAuras
     all_branches: true
