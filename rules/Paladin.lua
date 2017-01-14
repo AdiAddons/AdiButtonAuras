@@ -54,7 +54,6 @@ AdiButtonAuras:RegisterRules(function()
 			{
 				 53385, -- Divine Storm
 				 85256, -- Templar's Verdict
-				202273, -- Seal of Light
 				210191, -- Word of Glory
 				213757, -- Execution Sentence
 				215661, -- Judicar's Vengeance
@@ -134,7 +133,6 @@ AdiButtonAuras:RegisterRules(function()
 			"GreaterBlessings",
 			format(L["Show the number of Greater Blessings placed on group members."]),
 			{
-				203528, -- Greater Blessing of Might
 				203538, -- Greater Blessing of Kings
 				203539, -- Greater Blessing of Wisdom
 			},
@@ -142,9 +140,8 @@ AdiButtonAuras:RegisterRules(function()
 			"UNIT_AURA",
 			function(units, model)
 				local count = 0
-				model.maxCount = 3
+				model.maxCount = 2
 				for unit in pairs(units.group) do
-					count = GetPlayerBuff(unit, 203528) and count + 1 or count
 					count = GetPlayerBuff(unit, 203538) and count + 1 or count
 					count = GetPlayerBuff(unit, 203539) and count + 1 or count
 				end
