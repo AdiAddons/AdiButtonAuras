@@ -59,6 +59,7 @@ AdiButtonAuras:RegisterRules(function()
 				116095, -- Disable (monk, 1 stack)
 				127797, -- Ursol's Vortex
 				-- 129923  -- Sluggish (warrior, hs glyph) -- NOTE: gone in Legion
+				236027, -- Charge (warrior)
 			}
 		}, -- Snares and anti-snares
 
