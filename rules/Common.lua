@@ -152,13 +152,14 @@ AdiButtonAuras:RegisterRules(function()
 	local LibPlayerSpells = GetLib('LibPlayerSpells-1.0')
 	local band, bor = bit.band, bit.bor
 	local classMask = LibPlayerSpells.constants[PLAYER_CLASS]
+	local racialMask = LibPlayerSpells.constants.RACIAL
 
 	local debuffs, ccSpells = {}, {}
 
 	for aura, flags, _, target, ccMask in LibPlayerSpells:IterateSpells("CROWD_CTRL") do
 		debuffs[ccMask] = debuffs[ccMask] or {} -- associative array to avoid duplicates
 		debuffs[ccMask][aura] = true
-		if band(flags, classMask) > 0 then
+		if band(flags, classMask) > 0 or band(flags, racialMask) > 0 then
 			ccSpells[ccMask] = ccSpells[ccMask] or {} -- associative array to avoid duplicates
 			local spells = ccSpells[ccMask]
 			if type(target) == "table" then
