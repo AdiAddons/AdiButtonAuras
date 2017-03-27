@@ -230,8 +230,10 @@ AdiButtonAuras:RegisterRules(function()
 	-- Use LibPlayerSpells
 
 	local interrupts = {}
-	for spell, _, _, _, _, category in LibPlayerSpells:IterateSpells("INTERRUPT", PLAYER_CLASS) do
-		tinsert(interrupts, spell)
+	for spell, _, _, _, _, category in LibPlayerSpells:IterateSpells("INTERRUPT") do
+		if category == PLAYER_CLASS or category == "RACIAL" then
+			tinsert(interrupts, spell)
+		end
 	end
 	if #interrupts > 0 then
 		local source = DescribeLPSSource(PLAYER_CLASS)
