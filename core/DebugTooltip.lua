@@ -58,7 +58,8 @@ end
 
 local function AddArtifactInfo(tooltip, traitId)
 	if not traitId or IsDisabled() then return end
-	local spellId = GetPowerInfo(traitId)
+	tooltip:AddDoubleLine("Trait identifier", traitId)
+	local spellId = GetPowerInfo(traitId).spellID
 	if not spellId then return end
 	tooltip:AddDoubleLine("Spell identifier", spellId)
 	tooltip:Show()
