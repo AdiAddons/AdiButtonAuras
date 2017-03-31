@@ -264,18 +264,18 @@ function overlayPrototype:ApplyExpiration()
 	self.Timer:Update()
 end
 
-local function ScaleDown(value, unit, next, ...)
-	if value > 1000 and next then
-		return ScaleDown(value / 1000, next, ...)
+local function ScaleDown(value, unit, ...)
+	if value > 1000 and ... then
+		return ScaleDown(value / 1000, ...)
 	end
-	return format("%d%s", floor(value + 0.5), unit)
+	return format("%d%s", floor(value + 0.5), unit or "")
 end
 
 function overlayPrototype:ApplyCount()
 	local count = self.count
 	local maxCount = self.maxCount
 	if count then
-		self.Count:SetText(ScaleDown(count, "", "k", "m", "g"))
+		self.Count:SetText(ScaleDown(count, nil, "k", "m", "b"))
 		if maxCount and count >= maxCount then
 			self.Count:SetTextColor(unpack(addon.db.profile.colors.countAtMax))
 		else
