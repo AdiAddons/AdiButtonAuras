@@ -37,7 +37,7 @@ externals:
     tag: latest
   libs/LibSpellbook-1.0: https://github.com/AdiAddons/LibSpellbook-1.0.git
   libs/LibItemBuffs-1.0: https://github.com/AdiAddons/LibItemBuffs-1.0.git
-  libs/LibDispellable-1.0: https://repos.wowace.com/wow/libdispellable-1-0
+  libs/LibDispellable-1.0: https://github.com/AdiAddons/LibDispellable-1.0.git
   libs/LibPlayerSpells-1.0: https://github.com/AdiAddons/LibPlayerSpells-1.0.git
   SMBH: https://github.com/Adirelle/SharedMedia_ButtonHighlight.git
 
