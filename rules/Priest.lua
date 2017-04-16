@@ -116,5 +116,15 @@ AdiButtonAuras:RegisterRules(function()
 				end
 			end)(),
 		},
+		Configure {
+			"Insanity",
+			BuildDesc("HELPFUL PLAYER", "bad", "player", 132573),
+			129197, -- Mind Flay: Insanity (debuff)
+			"player",
+			"UNIT_AURA",
+			(function()
+				return BuildAuraHandler_Single("HELPFUL PLAYER", "bad", "player", 132573) -- Shadow Word: Insanity (buff)
+			end)()
+		},
 	}
 end)
