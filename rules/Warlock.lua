@@ -26,8 +26,6 @@ if not addon.isClass("WARLOCK") then return end
 AdiButtonAuras:RegisterRules(function()
 	Debug('Adding warlock rules')
 
-	local soulEffigy = GetSpellInfo(205178)
-
 	local function BuildTotemHandler(texture)
 		return function(_, model)
 			for slot = 1, 5 do
@@ -42,17 +40,14 @@ AdiButtonAuras:RegisterRules(function()
 	end
 
 	return {
-		ImportPlayerSpells {
-			-- import all spells for
-			"WARLOCK",
-			-- except
-			205178, -- Soul Effigy
-		},
+		ImportPlayerSpells { "WARLOCK" },
 
 		ShowPower {
 			{
 				  5740, -- Rain of Fire
 				 17887, -- Shadowburn
+				 27243, -- Seed of Corruption
+				 30108, -- Unstable Affliction
 				104316, -- Call Dreadstalkers
 				105174, -- Hand of Gul'dan
 				116858, -- Chaos Bolt
@@ -74,30 +69,6 @@ AdiButtonAuras:RegisterRules(function()
 					model.count = floor(UnitHealth("player") / maxHealth * 100 + 0.5)
 				end
 			end,
-		},
-
-		Configure {
-			"SoulEffigy",
-			L["Show the duration of @NAME."],
-			205178, -- Soul Effigy
-			{ "enemy", "player" },
-			{ "UNIT_ARUA", "PLAYER_TOTEM_UPDATE" },
-			(function()
-				local hasEffigyDebuff = BuildAuraHandler_Single("HARMFUL PLAYER", "bad", "enemy", 205178)
-				local hasEffigyTotem = function(units, model)
-					local found, _, start, duration = GetTotemInfo(4) -- Soul Effigy is the fourth totem
-					if found then
-						if UnitName(units.enemy) == soulEffigy then
-							model.highlight = "good"
-						end
-						model.expiration = start + duration
-					end
-				end
-
-				return function(units, model)
-					return hasEffigyDebuff(units, model) or hasEffigyTotem(units, model)
-				end
-			end)(),
 		},
 
 		Configure {
