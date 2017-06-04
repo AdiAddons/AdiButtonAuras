@@ -50,7 +50,7 @@ AdiButtonAuras:RegisterRules(function()
 				195452, -- Nightblade
 				196819, -- Eviscerate
 				199804, -- Between the Eyes
-				206237, -- Enveloping Shadows
+				245388, -- Toxic Blade
 			},
 			"COMBO_POINTS",
 		},
