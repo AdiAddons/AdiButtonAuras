@@ -23,21 +23,21 @@ local _, private = ...
 
 local SAMPLE_RULE = [===[
 -- Sample rule using Configure
--- See https://github.com/Adirelle/AdiButtonAuras/blob/master/doc/Rules.textile for more details
+-- See https://github.com/AdiAddons/AdiButtonAuras/blob/master/doc/Rules.md for more details.
+-- This rule is only meant as an example and is already included in AdiButtonAuras. Please do not activate it as is.
 
 return Configure {
 
     -- Unique Id
-    "SoulReaper",
+    "Execute",
 
     -- Description
-    "Shows Hint when target is below 35% health.",
+    "Hint when the targeted enemy is below 20% health.",
 
     -- Spells to modify
     {
-        114866, -- Soul Reaper (Blood)
-        130735, -- Soul Reaper (Frost)
-        130736, -- Soul Reaper (Unholly)
+          5308, -- Execute (Fury)
+        163201, -- Execute (Arms)
     },
 
     -- Unit(s) to watch
@@ -48,7 +48,7 @@ return Configure {
 
     -- Callback
     function(units, model)
-        if UnitHealth(units.enemy) / UnitHealthMax(units.enemy) < 0.35 then
+        if UnitHealth(units.enemy) / UnitHealthMax(units.enemy) < 0.20 then
             model.hint = true
         end
     end
@@ -242,18 +242,18 @@ function private.GetUserRulesOptions(addon, addonName)
 						order = 25,
 						values = {
 							ALL = L['None'],
-							WARRIOR = L['WARRIOR'],
 							DEATHKNIGHT = L['DEATHKNIGHT'],
-							PALADIN = L['PALADIN'],
-							MONK = L['MONK'],
-							PRIEST = L['PRIEST'],
-							SHAMAN = L['SHAMAN'],
-							DRUID = L['DRUID'],
-							ROGUE = L['ROGUE'],
-							MAGE = L['MAGE'],
-							WARLOCK = L['WARLOCK'],
-							HUNTER = L['HUNTER'],
 							DEMONHUNTER = L['DEMONHUNTER'],
+							DRUID = L['DRUID'],
+							HUNTER = L['HUNTER'],
+							MAGE = L['MAGE'],
+							MONK = L['MONK'],
+							PALADIN = L['PALADIN'],
+							PRIEST = L['PRIEST'],
+							ROGUE = L['ROGUE'],
+							SHAMAN = L['SHAMAN'],
+							WARLOCK = L['WARLOCK'],
+							WARRIOR = L['WARRIOR'],
 						},
 					},
 					delete = {
