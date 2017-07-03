@@ -139,18 +139,6 @@ return {
 * `spells` - spell id (_number_ or _table_)
 * (`debuffs`) - debuff id (_number_ or _table_). Defaults to `spells` if omitted
 
->Example:
-```lua
-DebuffAliases {
-	{
-		   348, -- Immolate
-		108686, -- Immolate (Fire and Brimstone)
-	},
-	348, -- Immolate
-},
-```
->This will show the duration of the debuff [Immolate](http://www.wowhead.com/spell=348) on both variants of the spell [Immolate](http://www.wowhead.com/spell=348) (the normal and the [modified](http://www.wowhead.com/spell=108686) by [Fire and Brimstone](http://www.wowhead.com/spell=108683))
-
 ***
 
 <a name="SelfBuffAliases"></a>
@@ -182,19 +170,18 @@ DebuffAliases {
 
 <a name="ShowPower"></a>
 **`ShowPower { spells, power, handlerOrThreshold, highlight, providers, description }`**
->Shows the amount of `power` on `spells`.
->Also creates a second rule to highlight `spells` depending on the amount of `power` (highlight with a hint at maximum by default).
+>Shows the amount of `power` on `spells` and highlights `spells` depending on the amount of `power`.
 * `spells` - spell id (_number_ or _table_)
 * `power` - power type (_string_ - one of the possible suffixes of `SPELL_POWER_` (e.g. `"ENERGY"` or `"SOUL_SHARDS"`).
 * (`handlerOrThreshold`) - specifies the conditions that should be met to highlight `spells` (_function_ or _number_)
     - if a _number_ is provided, it is interpreted as follows:
-        - numbers in the [-1.0;1.0] range indicate a fraction of the maximum, e.g. 0.5 for 50%, else they are taken literally.
+        - numbers in the [-1.0;1.0] range indicate a fraction of the maximum (e.g. 0.5 for 50%), else they are taken literally.
         - positive numbers indicate a minimum threshold, e.g. 50 triggers when the displayed value is greater than or equal to 50.
         - negative numbers indicate a maximum threshold, e.g. -50 triggers when the displayed value is less than or equal to 50.
-    - if a _function_ is provided, it gets the following arguments passed:
-        - `currentPower` - current amount of `power` (_number_)
-        - `maxPower` - the maximum possible amount of `power` (_number_)
-        - `model` - see `model` under [handlers](../Rules.md#handlers) (_table_)
+    - if a _function_ is provided, it is only called if `max ~= 0` and gets the following arguments passed:
+        - `current` - current amount of `power` (_number_)
+        - `max` - the maximum possible amount of `power` (_number_)
+        - `model` - see `model` under [handlers](./Rules.md#handlers) (_table_)
         - `highlight` - the [`highlight`](#highlight-type) passed to ShowPower or `"hint"` if it has been omitted (_string_)
     - default value: a _function_ that displays the current power value and highlights with a hint when it reaches its maximum
 * (`highlight`) - [highlight type](#highlight-type) (_string_). Default value: "hint"
@@ -216,19 +203,18 @@ ShowPower {
 
 <a name="ShowHealth"></a>
 **`ShowHealth { spells, unit, handlerOrThreshold, highlight, providers, description }`**
->Displays the health of the specified unit on `spells`.
->Also creates a second rule to highlight the `spells` depending on the health value (highlight with a hint at maximum by default).
+>Shows the health of the specified unit on `spells` and highlights `spells` depending on the health value.
 * `spells` - spell id (_number_ or _table_)
 * `unit` - the [unit](#unit-id) whose health is to be displayed (_string_)
 * (`handlerOrThreshold`) - specifies the conditions that should be met to highlight `spells` (_function_ or _number_)
     - if a _number_ is provided, it is interpreted as follows:
-        - numbers in the [-1.0;1.0] range indicate a fraction of the maximum, e.g. 0.5 for 50%, else they are taken literally.
+        - numbers in the [-1.0;1.0] range indicate a fraction of the maximum (e.g. 0.5 for 50%), else they are taken literally.
         - positive numbers indicate a minimum threshold, e.g. 50 triggers when the displayed value is greater than or equal to 50.
         - negative numbers indicate a maximum threshold, e.g. -50 triggers when the displayed value is less than or equal to 50.
-    - if a _function_ is provided, it gets the following arguments passed:
-        - `health` - the unit's current amount of health (_number_)
-        - `maxHealth` - the unit's maximum possible amount of health (_number_)
-        - `model` - see `model` under [handlers](../Rules.md#handlers) (_table_)
+    - if a _function_ is provided, it is only called if `unit` exists and `max ~= 0` and gets the following arguments passed:
+        - `current` - the unit's current amount of health (_number_)
+        - `max` - the unit's maximum possible amount of health (_number_)
+        - `model` - see `model` under [handlers](./Rules.md#handlers) (_table_)
         - `highlight` - the [`highlight`](#highlight-type) passed to ShowHealth or `"hint"` if it has been omitted (_string_)
     - default value: a _function_ that displays the current health value and highlights with a hint when it reaches its maximum
 * (`highlight`) - [highlight type](#highlight-type) (_string_). Default value: "hint"
@@ -239,39 +225,26 @@ ShowPower {
 
 <a name="ShowStacks"></a>
 **`ShowStacks { spells, aura, maxStacks, unit, handlerOrThreshold, highlight, providers, description }`**
->Display the number of stacks of a given aura (cast by the player) on `spells`.
->Can also highlight the action depending on the number of stacks; by default highlights with a hint when reaching the maximum.
+>Shows the number of stacks of a given aura (cast by the player) on `spells` and highlights `spells` depending on the number of stacks.
 * `spells` - spell id (_number_ or _table_)
 * `aura` - spell id of the aura whose stacks are to be displayed (_number_).
 * `maxStacks` - maximum number of stacks to expect (_number_ or _function_). Defaults to a function that returns `math.huge` if nil
 * `unit` - the [unit](#unit-id) to scan for the aura (_string_). If the unit is `"enemy"` the aura is considered a debuff, else - a buff
 * (`handlerOrThreshold`) - specifies the conditions that should be met to highlight `spells` (_function_ or _number_)
     - if a _number_ is provided, it is interpreted as follows:
-        - numbers in the [-1.0;1.0] range indicate a fraction of the maximum, e.g. 0.5 for 50%, else they are taken literally.
+        - numbers in the [-1.0;1.0] range indicate a fraction of the maximum (e.g. 0.5 for 50%), else they are taken literally.
         - positive numbers indicate a minimum threshold, e.g. 50 triggers when the number of stacks is greater than or equal to 50.
         - negative numbers indicate a maximum threshold, e.g. -50 triggers when the number of stacks is less than or equal to 50.
-    - if a _function_ is provided, it gets the following arguments passed:
-        - `stacks` - the current amount of stacks of `aura` (_number_)
-        - `maxStacks` - the maximum possible amount of stacks of `aura` (_number_)
-        - `model` - see `model` under [handlers](../Rules.md#handlers) (_table_)
+    - if a _function_ is provided, it is only called if `unit` exists and `max ~= 0` and gets the following arguments passed:
+        - `current` - the current amount of stacks of `aura` (_number_)
+        - `max` - the maximum possible amount of stacks of `aura` (_number_)
+        - `model` - see `model` under [handlers](./Rules.md#handlers) (_table_)
         - `highlight` - the [`highlight`](#highlight-type) passed to ShowStacks or `"hint"` if it has been omitted (_string_)
     - default value: a _function_ that displays the current number of stacks and highlights with a hint when it reaches its maximum
 * (`highlight`) - [highlight type](#highlight-type) (_string_)  
   default value: "hint"
 * (`providers`) - Spell id(s) of the spell(s) required to enable this rule (_number_ or _table_). Defaults to the `spells` if omitted.
 * (`description`) - description for the options panel (_string_). Only used if a _function_ has been provided for `handlerOrThreshold`. Auto-generated else.
-
->Example:
-```lua
-ShowStacks {
-	115308, -- Elusive Brew
-	128939, -- Elusive Brew (stacking buff)
-	15,
-	"player",
-	10
-},
-```
->Shows the player's stacks of Elusive Brew (buff) on Elusive Brew. Highlights with a hint when it is greater than or equal to 10.
 
 ***
 
