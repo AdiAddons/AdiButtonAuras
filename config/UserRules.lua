@@ -23,7 +23,7 @@ local _, private = ...
 
 local SAMPLE_RULE = [===[
 -- Sample rule using Configure
--- See https://github.com/AdiAddons/AdiButtonAuras/blob/master/doc/Rules.md for more details.
+-- See https://github.com/AdiAddons/AdiButtonAuras/blob/master/doc/RulesRef.md#user-rules for more details.
 -- This rule is only meant as an example and is already included in AdiButtonAuras. Please do not activate it as is.
 
 return Configure {
