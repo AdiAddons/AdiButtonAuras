@@ -244,7 +244,6 @@ local getters = {}
 local iterators = {}
 
 for key in pairs(mts) do
-	local key = key
 	getters[key] = function(unit, id)
 		if unit and UnitExists(unit) then
 			local aura = cache[unit][key]:CheckGUID():GetById(id)

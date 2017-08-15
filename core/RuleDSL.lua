@@ -192,7 +192,6 @@ local function Configure(key, desc, spells, units, events, handlers, providers, 
 	units, events, handlers, providers = CheckRuleArgs(units, events, handlers, providers, callLevel+1)
 	local builders = {}
 	for i, spell in ipairs(spells) do
-		local spell = spell
 		tinsert(builders, function()
 			_AddRuleFor(key, desc, spell, units, events, handlers, providers, callLevel+1)
 		end)
@@ -293,7 +292,7 @@ local function Auras(filter, highlight, unit, spells)
 	local key = BuildKey('Auras', filter, highlight, unit)
 	local desc = BuildDesc(filter, highlight, unit, '@NAME')
 	for i, spell in ipairs(AsList(spells, "number", 2)) do
-		tinsert(funcs, Configure(key, desc, spell, unit,  "UNIT_AURA",  BuildAuraHandler_Single(filter, highlight, unit, spell, 2), 2))
+		tinsert(funcs, Configure(key, desc, spell, unit, "UNIT_AURA", BuildAuraHandler_Single(filter, highlight, unit, spell, 2), 2))
 	end
 	return (#funcs > 1) and funcs or funcs[1]
 end
