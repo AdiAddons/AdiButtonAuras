@@ -45,6 +45,21 @@ AdiButtonAuras:RegisterRules(function()
 			},
 			194384, -- Atonement
 		},
+		-- Holy Priest legendary: Al'maiesh, the Cord of Hope
+		SelfBuffAliases {
+			  2050, -- Holy Word: Serenity
+			211440, -- Al'maiesh, the Cord of Hope
+		},
+		-- Holy Priest legendary: Al'maiesh, the Cord of Hope
+		SelfBuffAliases {
+			 34861, -- Holy Word: Sanctify
+			211442, -- Al'maiesh, the Cord of Hope
+		},
+		-- Holy Priest legendary: Al'maiesh, the Cord of Hope
+		SelfBuffAliases {
+			 88625, -- Holy Word: Chastise
+			211443, -- Al'maiesh, the Cord of Hope
+		},
 
 		Configure {
 			"Silence",
