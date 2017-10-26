@@ -40,6 +40,7 @@ local GetSpellLink = _G.GetSpellLink
 local GetTime = _G.GetTime
 local gsub = _G.gsub
 local ipairs = _G.ipairs
+local math = _G.math
 local next = _G.next
 local pairs = _G.pairs
 local SecureCmdOptionParse = _G.SecureCmdOptionParse
@@ -377,7 +378,9 @@ function overlayPrototype:UpdateCooldown(event)
 		self:Debug('cooldownStart=', start, 'cooldownDuration=', duration)
 		self.cooldownStart, self.cooldownDuration = start, duration
 		if inCooldown then
-			C_Timer.After(start + duration + 0.1 - GetTime(), function() return self:UpdateCooldown() end)
+			-- BUG: sometimes the API returns cooldowns beyond 50 days
+			local delay = math.min(start + duration + 0.1 - GetTime(), 24 * 3600)
+			C_Timer.After(delay, function() return self:UpdateCooldown() end)
 		end
 	end
 	if self.inCooldown ~= inCooldown then
