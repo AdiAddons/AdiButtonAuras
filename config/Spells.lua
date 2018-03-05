@@ -309,10 +309,24 @@ function private.GetSpellOptions(addon, addonName)
 				order = 20,
 				type = 'toggle',
 			},
+			flashPromotion = {
+				name = L['Show flash instead'],
+				desc = L['Check to show a flash instead of a colored border.'],
+				order = 25,
+				type = 'toggle',
+				disabled = function()
+					return addon.db.profile.missing[handler.current] ~= 'none'
+				end,
+			},
+			_empty = {
+				name = '',
+				order = 30,
+				type = 'description',
+			},
 			missing = {
 				name = L['Show missing'],
 				desc = L['Select the method for showing missing (de)buffs.'],
-				order = 30,
+				order = 40,
 				type = 'select',
 				values = {
 					none = L['Disabled'],
@@ -327,14 +341,16 @@ function private.GetSpellOptions(addon, addonName)
 					end
 				end,
 			},
-			flashPromotion = {
-				name = L['Show flash instead'],
-				desc = L['Check to show a flash instead of a colored border.'],
-				order = 40,
-				type = 'toggle',
-				width = 'double',
+			missingThreshold = {
+				name = L['Show missing threshold'],
+				desc = L['Show the missing highlight when the remaining duration is below this value.'],
+				order = 45,
+				type = 'range',
+				min = 0,
+				max = 10,
+				step = 1,
 				disabled = function()
-					return addon.db.profile.missing[handler.current] ~= 'none'
+					return addon.db.profile.missing[handler.current] == 'none'
 				end,
 			},
 			rules = {

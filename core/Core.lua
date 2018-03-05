@@ -77,6 +77,7 @@ addon.DEFAULT_SETTINGS = {
 		enabled = { ['*'] = true },
 		rules = { ['*'] = true },
 		missing = { ['*'] = "none" },
+		missingThreshold = { ['*'] = 0 },
 		flashPromotion = { ['*'] = false },
 		colors = {
 			good            = { 0.0, 1.0, 0.0, 0.7 },
