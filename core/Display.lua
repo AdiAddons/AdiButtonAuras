@@ -287,10 +287,6 @@ function overlayPrototype:ApplyCount()
 	end
 end
 
-function overlayPrototype:ApplyHighlight()
-	self:ApplyColoredHighlight()
-end
-
 function overlayPrototype:ApplyFlash()
 	if self:ShouldShowFlash() or self:ShouldShowHint("flash") then
 		return self:ShowFlash()
@@ -308,7 +304,7 @@ function overlayPrototype:ShouldShowFlash()
 	return self.flash
 end
 
-function overlayPrototype:ApplyColoredHighlight()
+function overlayPrototype:ApplyHighlight()
 	local type, highlight, overlay = self.highlight, self.Highlight, self.Overlay
 	if type == "darken" or type == "lighten" then
 		overlay:SetBlendMode(type == "darken" and "MOD" or "ADD")
@@ -340,7 +336,7 @@ function overlayPrototype:ShouldShowHint(expectedSetting)
 end
 
 function overlayPrototype:UpdateDisplay(event)
-	self:Debug('UpdateDisplay' ,event)
+	self:Debug('UpdateDisplay', event)
 	self.inCombat = InCombatLockdown()
 	self:ApplyExpiration()
 	self:ApplyCount()

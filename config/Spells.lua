@@ -315,10 +315,10 @@ function private.GetSpellOptions(addon, addonName)
 				order = 30,
 				type = 'select',
 				values = {
-						none = L['Disabled'],
-						highlight = L['Show border'],
-						flash = L['Show flash'],
-						hint = L['Show hint'],
+					none = L['Disabled'],
+					highlight = L['Show border'],
+					flash = L['Show flash'],
+					hint = L['Show hint'],
 				},
 				set = function(info, value)
 					handler:Set(info, value)
