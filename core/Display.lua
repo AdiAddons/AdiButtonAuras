@@ -254,6 +254,14 @@ function overlayPrototype:SetHint(hint)
 	self:ApplyHint()
 end
 
+function overlayPrototype:SetMissingHighlight(missing, threshold)
+	self.missing = missing
+	self.missingThreshold = threshold
+	if missing ~= "none" and threshold and threshold > 0 then
+		self:ApplyMissingHighlight()
+	end
+end
+
 ------------------------------------------------------------------------------
 -- Actual state feedback
 ------------------------------------------------------------------------------
@@ -333,6 +341,27 @@ end
 
 function overlayPrototype:ShouldShowHint(expectedSetting)
 	return self.hint and not self.inCooldown and self.inCombat and addon.db.profile.hints == expectedSetting
+end
+
+function overlayPrototype:ApplyMissingHighlight()
+	local timeLeft = (self.expiration or 0) - GetTime()
+	local missing = self.missing or "none"
+	local missingThreshold = self.missingThreshold or 0
+
+	if missing ~= "none" and missingThreshold > 0 then
+		if timeLeft > missingThreshold then
+			return C_Timer.After(max(0.1, timeLeft - missingThreshold), function() self:ApplyMissingHighlight() end)
+		elseif timeLeft > 0 then
+			if missing == "flash" then
+				self:ShowFlash()
+			elseif missing == "hint" then
+				self:ShowHint()
+			elseif missing == "highlight" then
+				self.highlight = self.units.enemy and "bad" or "good"
+				self:ApplyHighlight()
+			end
+		end
+	end
 end
 
 function overlayPrototype:UpdateDisplay(event)
