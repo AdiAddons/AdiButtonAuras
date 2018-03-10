@@ -360,7 +360,10 @@ function overlayPrototype:ApplyMissingHighlight()
 			end
 			if not self.running then
 				self.running = true
-				return C_Timer.After(max(0.1, timeLeft - missingThreshold), function() self:ApplyMissingHighlight() end)
+				return C_Timer.After(
+					max(0.1, timeLeft - missingThreshold),
+					function() self.running = nil; self:ApplyMissingHighlight() end
+				)
 			end
 		elseif timeLeft > 0 then
 			if missing == "flash" then
