@@ -350,6 +350,14 @@ function overlayPrototype:ApplyMissingHighlight()
 
 	if missing ~= "none" and missingThreshold > 0 then
 		if timeLeft > missingThreshold then
+			if missing == "flash" then
+				self:HideFlash()
+			elseif missing == "hint" then
+				self:HideHint()
+			elseif missing == "highlight" then
+				self.highlight = nil
+				self:ApplyHighlight()
+			end
 			return C_Timer.After(max(0.1, timeLeft - missingThreshold), function() self:ApplyMissingHighlight() end)
 		elseif timeLeft > 0 then
 			if missing == "flash" then
