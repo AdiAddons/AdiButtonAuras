@@ -347,7 +347,7 @@ function private.GetSpellOptions(addon, addonName)
 				order = 45,
 				type = 'range',
 				min = 0,
-				max = 10,
+				max = 15,
 				step = 1,
 				disabled = function()
 					return addon.db.profile.missing[handler.current] == 'none'
