@@ -351,8 +351,10 @@ function overlayPrototype:ApplyMissingHighlight()
 	if missing ~= "none" and missingThreshold > 0 then
 		if timeLeft > missingThreshold then
 			if missing == "flash" then
+				self.flash = nil
 				self:HideFlash()
 			elseif missing == "hint" then
+				self.hint = nil
 				self:HideHint()
 			elseif missing == "highlight" then
 				self.highlight = nil
@@ -367,8 +369,10 @@ function overlayPrototype:ApplyMissingHighlight()
 			end
 		elseif timeLeft > 0 then
 			if missing == "flash" then
+				self.flash = true
 				self:ShowFlash()
 			elseif missing == "hint" then
+				self.hint = true
 				self:ShowHint()
 			elseif missing == "highlight" then
 				self.highlight = self.units.enemy and "bad" or "good"
