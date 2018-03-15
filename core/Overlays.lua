@@ -473,7 +473,6 @@ function overlayPrototype:UpdateState(event)
 	self:SetScript('OnUpdate', nil)
 
 	model.count, model.maxCount, model.expiration, model.highlight, model.hint, model.flash = 0, 0, 0, nil, false, false
-	local missing, missingThreshold
 
 	if self.handlers then
 		model.spellId, model.actionType, model.actionId = self.spellId, self.actionType, self.actionId
@@ -484,23 +483,27 @@ function overlayPrototype:UpdateState(event)
 		end
 
 		local prefs = addon.db.profile
-		missing = prefs.missing[self.spellId]
+		local missing = prefs.missing[self.spellId]
 		if missing ~= "none" then
-			missingThreshold = prefs.missingThreshold[self.spellId]
-			if missing == "highlight" then
-				if model.highlight then
-					model.highlight = nil
-				else
+			local missingThreshold = prefs.missingThreshold[self.spellId]
+			local timeLeft = (model.expiration or 0) - GetTime()
+			if timeLeft <= missingThreshold then
+				if missing == "highlight" then
 					model.highlight = self.units.enemy and "bad" or "good"
-				end
-			end
-
-			if not model.highlight then
-				if missing == "hint" then
+				elseif missing == "hint" then
 					model.hint = true
 				elseif missing == "flash" then
 					model.flash = true
 				end
+			else
+				if missing == "highlight" then
+					model.highlight = nil
+				elseif missing == "hint" then
+					model.hint = nil
+				elseif missing == "flash" then
+					model.flash = nil
+				end
+				C_Timer.After(max(0.1, timeLeft - missingThreshold), function() self:UpdateState() end)
 			end
 		end
 
@@ -514,7 +517,6 @@ function overlayPrototype:UpdateState(event)
 	self:SetHighlight(model.highlight)
 	self:SetFlash(model.flash)
 	self:SetHint(model.hint)
-	self:SetMissingHighlight(missing, missingThreshold)
 
 	return true
 end
