@@ -503,7 +503,7 @@ function overlayPrototype:UpdateState(event)
 				elseif missing == "flash" then
 					model.flash = nil
 				end
-				C_Timer.After(max(0.1, timeLeft - missingThreshold), function() self:UpdateState() end)
+				C_Timer.After(math.max(0.1, timeLeft - missingThreshold), function() self:UpdateState() end)
 			end
 		end
 
