@@ -472,33 +472,42 @@ local modelProxy = setmetatable({}, {
 function overlayPrototype:UpdateState(event)
 	self:SetScript('OnUpdate', nil)
 
-	model.count, model.maxCount, model.expiration, model.highlight, model.hint, model.flash  = 0, 0, 0, nil, false, false
+	model.count, model.maxCount, model.expiration, model.highlight, model.hint, model.flash = 0, 0, 0, nil, false, false
 
 	if self.handlers then
 		model.spellId, model.actionType, model.actionId = self.spellId, self.actionType, self.actionId
 
 		local unitMap = self.unitMap
-		for i, handler in ipairs(self.handlers) do
+		for _, handler in ipairs(self.handlers) do
 			handler(unitMap, modelProxy)
 		end
 
-		if addon.db.profile.missing[self.spellId] == "highlight" then
-			if model.highlight then
-				model.highlight = nil
+		local prefs = addon.db.profile
+		local missing = prefs.missing[self.spellId]
+		if missing ~= "none" then
+			local missingThreshold = prefs.missingThreshold[self.spellId]
+			local timeLeft = (model.expiration or 0) - GetTime()
+			if timeLeft <= missingThreshold then
+				if missing == "highlight" then
+					model.highlight = self.units.enemy and "bad" or "good"
+				elseif missing == "hint" then
+					model.hint = true
+				elseif missing == "flash" then
+					model.flash = true
+				end
 			else
-				model.highlight = self.units.enemy and "bad" or "good"
+				if missing == "highlight" then
+					model.highlight = nil
+				elseif missing == "hint" then
+					model.hint = nil
+				elseif missing == "flash" then
+					model.flash = nil
+				end
+				C_Timer.After(math.max(0.1, timeLeft - missingThreshold), function() self:UpdateState() end)
 			end
 		end
 
-		if not model.highlight then
-			if addon.db.profile.missing[self.spellId] == "hint" then
-				model.hint = true
-			elseif addon.db.profile.missing[self.spellId] == "flash" then
-				model.flash = true
-			end
-		end
-
-		if addon.db.profile.flashPromotion[self.spellId] and (model.highlight == "good" or model.highlight == "bad") then
+		if prefs.flashPromotion[self.spellId] and (model.highlight == "good" or model.highlight == "bad") then
 			model.highlight, model.flash = nil, true
 		end
 	end
