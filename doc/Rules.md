@@ -55,7 +55,7 @@ The handlers are functions called to refresh the data. Their signature is `funct
 
 `model` has six attributes:
 
- * `.expiration`: the expiration time of the (de)buff, like the return value of [GetTime()](http://wow.gamepedia.org/API_GetTime), or the 7th return value of [UnitAura](http://wow.gamepedia.org/API_UnitAura). This is used to display a countdown on the button. The default, 0, means "never expires".
+ * `.expiration`: the expiration time of the (de)buff, like the return value of [GetTime()](http://wow.gamepedia.org/API_GetTime), or the 6th return value of [UnitAura](http://wow.gamepedia.org/API_UnitAura). This is used to display a countdown on the button. The default, 0, means "never expires".
  * `.count`: the number of stacks of the (de)buff, like the 3rd return value of [UnitAura](http://wow.gamepedia.org/API_UnitAura). The default, 0, means "no stack".
  * `.maxCount`: the number of maximum stacks possible. Useful for rules like `ShowPower` or `ShowStacks`. The count text changes color when the number of stacks reaches maxCount.
  * `.highlight`: an effect to apply to the button, one of the following (any other value means "no highlight")

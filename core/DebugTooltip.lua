@@ -76,8 +76,8 @@ end
 
 local function AddMacroInfo(tooltip, source, index)
 	if not index or not GetMacroInfo(index) then return end
-	local spell, _, spellId = GetMacroSpell(index)
-	AddSpellInfo(tooltip, source, spellId or spell)
+	local spellId = GetMacroSpell(index)
+	AddSpellInfo(tooltip, source, spellId)
 	local item, link = GetMacroItem(index)
 	return AddItemInfo(tooltip, link or item)
 end
@@ -95,7 +95,7 @@ local function AddActionInfo(tooltip, slot)
 end
 
 local function AddAuraInfo(func, tooltip, ...)
-	return AddSpellInfo(tooltip, "aura", select(11, func(...)))
+	return AddSpellInfo(tooltip, "aura", select(10, func(...)))
 end
 
 local function AddSpellbookInfo(tooltip, slot, bookType)

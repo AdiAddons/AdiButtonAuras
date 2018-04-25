@@ -85,9 +85,9 @@ local unitIdentityMeta = { __index = unitIdentity }
 ------------------------------------------------------------------------------
 
 local function GetMacroAction(macroId)
-	local macroSpell, _, macroSpellId = GetMacroSpell(macroId)
-	if macroSpell or macroSpellId then
-		return "spell", macroSpellId or LibSpellbook:Resolve(macroSpell)
+	local spellId = GetMacroSpell(macroId)
+	if spellId then
+		return "spell", spellId
 	else
 		local _, itemLink = GetMacroItem(macroId)
 		local itemId = itemLink and tonumber(itemLink:match('item:(%d+):'))
@@ -580,11 +580,8 @@ local stanceButtonPrototype = setmetatable({}, overlayMeta)
 local stanceButtonMeta = { __index = stanceButtonPrototype }
 
 function stanceButtonPrototype:GetAction()
-	local _, name = GetShapeshiftFormInfo(self.button:GetID())
-	local ids = LibSpellbook:GetAllIds(name)
-	if ids then
-		return 'spell', (next(ids))
-	end
+	local _, _, _, id = GetShapeshiftFormInfo(self.button:GetID())
+	return 'spell', id
 end
 
 function stanceButtonPrototype:GetActionCooldown()
@@ -599,7 +596,7 @@ local petActionButtonPrototype = setmetatable({}, overlayMeta)
 local petActionButtonMeta = { __index = petActionButtonPrototype }
 
 function petActionButtonPrototype:GetAction()
-	local spellId = select(8, GetPetActionInfo(self.button:GetID()))
+	local spellId = select(7, GetPetActionInfo(self.button:GetID()))
 	if spellId and spellId ~= 0 then
 		return 'spell', spellId
 	end

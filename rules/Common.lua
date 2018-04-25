@@ -260,11 +260,11 @@ AdiButtonAuras:RegisterRules(function()
 			function(units, model)
 				local unit = units.enemy
 				if unit and UnitCanAttack("player", unit) then
-					local name, _, _, _, _, endTime, _, _, notInterruptible = UnitCastingInfo(unit)
+					local name, _, _, _, endTime, _, _, notInterruptible = UnitCastingInfo(unit)
 					if name and not notInterruptible then
 						model.flash, model.expiration = true, endTime / 1000
 					end
-					name, _, _, _, _, endTime, _, notInterruptible = UnitChannelInfo(unit)
+					name, _, _, _, endTime, _, notInterruptible = UnitChannelInfo(unit)
 					if name and not notInterruptible then
 						model.flash, model.expiration = true, endTime / 1000
 					end

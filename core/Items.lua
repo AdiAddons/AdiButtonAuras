@@ -64,17 +64,6 @@ local function BuildBuffIdHandler(key, token, filter, highlight, buffId)
 	end
 end
 
-local function BuildBuffNameHandler(key, token, filter, highlight, buffName)
-	return function(units, model)
-		if not units[token] or not addon.db.profile.rules[key] then return end
-		local name, _, _, count, _, _, expiration = UnitAura(units[token], buffName, nil, filter)
-		if name then
-			model.highlight, model.count, model.expiration = highlight, count, expiration
-			return true
-		end
-	end
-end
-
 local function BuildItemRule(itemId, buffName, ...)
 	if not buffName and not ... then return false end
 

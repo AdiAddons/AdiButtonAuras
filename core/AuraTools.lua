@@ -91,7 +91,7 @@ local playerAurasMetatable = {
 		_Update = function(self, unit, filter)
 			local serial = GetTime()
 			for index = 1, math.huge do
-				local name, _, _, count, _, _, expiration, _, _, _, id = UnitAura(unit, index, filter)
+				local name, _, count, _, _, expiration, _, _, _, id = UnitAura(unit, index, filter)
 				if not name then
 					break
 				end
@@ -124,7 +124,7 @@ local allAurasMetatable = {
 		CheckGUID = CheckGUID,
 		_Update = function(self, unit, filter)
 			for index = 1, math.huge do
-				local name, _, _, count, _, _, expiration, _, _, _, id = UnitAura(unit, index, filter)
+				local name, _, count, _, _, expiration, _, _, _, id = UnitAura(unit, index, filter)
 				if not name then
 					for i = index, #self do
 						self[i] = del(rawget(self, i))
