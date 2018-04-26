@@ -88,8 +88,8 @@ AdiButtonAuras:RegisterRules(function()
 				  2825, -- Bloodlust (Horde shaman)
 				 32182, -- Heroism (Alliance shaman)
 				 80353, -- Time Warp (mage)
-				 90355, -- Ancient Hysteria (hunter exotic pet ability)
-				160452, -- Netherwinds (hunter pet)
+				264667, -- Primal Rage (hunter ferocity pets)
+				272678, -- Primal Rage (hunter command pet ability)
 				"item:102351", -- Drums of Rage
 				"item:120257", -- Drums of Fury
 			},
@@ -100,48 +100,20 @@ AdiButtonAuras:RegisterRules(function()
 					  2825, -- Bloodlust (Horde shaman)
 					 32182, -- Heroism (Alliance shaman)
 					 80353, -- Time Warp (mage)
-					 90355, -- Ancient Hysteria (hunter exotic pet ability)
 					146555, -- Drums of Rage
-					160452, -- Netherwinds (hunter pet)
 					178207, -- Drums of Fury
+					264667, -- Primal Rage (hunter ferocity pets)
 				})
 				local isSated = BuildAuraHandler_Longest("HARMFUL", "bad", "ally", {
 					 57723, -- Exhaustion (Drums of Rage/Fury debuff)
 					 57724, -- Sated (Bloodlst/Heroism debuff),
 					 80354, -- Temporal Displacement (Time Warp debuff)
-					 95809, -- Insanity (Ancient Hysteria debuff)
-					160455, -- Fatigued (Netherwinds debuff)
+					264689, -- Fatigued (Primal Rage debuff)
 				})
 				return function(units, model)
 					return hasBloodlust(units, model) or isSated(units, model)
 				end
 			end)(),
-		},
-
-	--------------------------------------------------------------------------
-	-- Battle Resurrection (Surrendered Soul)
-	--------------------------------------------------------------------------
-
-		Configure {
-			"SurrenderedSoul",
-			BuildDesc("HARMFUL", "bad", "ally", 212570), -- Surrendered Soul
-			{
-				 20484, -- Rebirth
-				 20707, -- Soulstone
-				 61999, -- Raise Ally
-				126393, -- Eternal Guardian (Quilen)
-				159931, -- Gift of Chi-Ji (Crane)
-				159956, -- Dust of Life (Moth)
-			},
-			"ally",
-			"UNI_AURA",
-			function(units, model)
-				local found, _, expiration = GetDebuff(units.ally, 212570) -- Surrendered Soul
-				if found then
-					model.highlight = "bad"
-					model.expiration = expiration
-				end
-			end,
 		},
 	}
 
