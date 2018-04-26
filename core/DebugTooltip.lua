@@ -106,6 +106,11 @@ local function AddSpellbookInfo(tooltip, slot, bookType)
 	end
 end
 
+local function AddTalentInfo(tooltip, talentId)
+	local _, _, _, _, _, spellId = GetTalentInfoByID(talentId)
+	return AddSpellInfo(tooltip, "talent", spellId)
+end
+
 local proto = getmetatable(GameTooltip).__index
 hooksecurefunc(proto, "SetUnitAura", function(...) return AddAuraInfo(UnitAura, ...) end)
 hooksecurefunc(proto, "SetUnitBuff", function(...) return AddAuraInfo(UnitBuff, ...) end)
@@ -114,3 +119,4 @@ hooksecurefunc(proto, "SetSpellByID", function(tooltip, ...) return AddSpellInfo
 hooksecurefunc(proto, "SetSpellBookItem", AddSpellbookInfo)
 hooksecurefunc(proto, "SetAction", AddActionInfo)
 hooksecurefunc(proto, "SetArtifactPowerByID", AddArtifactInfo)
+hooksecurefunc(proto, "SetTalent", AddTalentInfo)
