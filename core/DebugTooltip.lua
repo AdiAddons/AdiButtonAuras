@@ -94,6 +94,13 @@ local function AddActionInfo(tooltip, slot)
 	end
 end
 
+local function AddPetActionInfo(tooltip, slot)
+	if not slot or IsDisabled() then return end
+
+	local _, _, _, _, _, _, id = GetPetActionInfo(slot)
+	return AddSpellInfo(tooltip, "spell", id)
+end
+
 local function AddAuraInfo(func, tooltip, ...)
 	return AddSpellInfo(tooltip, "aura", select(10, func(...)))
 end
@@ -118,5 +125,6 @@ hooksecurefunc(proto, "SetUnitDebuff", function(...) return AddAuraInfo(UnitDebu
 hooksecurefunc(proto, "SetSpellByID", function(tooltip, ...) return AddSpellInfo(tooltip, "SpellByID", ...) end)
 hooksecurefunc(proto, "SetSpellBookItem", AddSpellbookInfo)
 hooksecurefunc(proto, "SetAction", AddActionInfo)
+hooksecurefunc(proto, "SetPetAction", AddPetActionInfo)
 hooksecurefunc(proto, "SetArtifactPowerByID", AddArtifactInfo)
 hooksecurefunc(proto, "SetTalent", AddTalentInfo)
