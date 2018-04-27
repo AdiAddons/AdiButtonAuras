@@ -45,7 +45,7 @@ AdiButtonAuras:RegisterRules(function()
 				 44425, -- Arcane Barrage
 				114923, -- Nether Tempest
 			},
-			"ARCANE_CHARGES",
+			"ArcaneCharges",
 			5, -- an unreachable value, so that no hint is shown as the usage is situational
 		},
 

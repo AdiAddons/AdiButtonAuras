@@ -48,7 +48,7 @@ AdiButtonAuras:RegisterRules(function()
 
 		ShowPower {
 			8042, -- Earth Shock
-			"MAELSTROM",
+			"Maelstrom",
 		},
 
 		ShowPower {
@@ -56,13 +56,13 @@ AdiButtonAuras:RegisterRules(function()
 				188389, -- Flame Shock
 				196840, -- Frost Shock
 			},
-			"MAELSTROM",
+			"Maelstrom",
 			20, -- hint when at 20 or more
 		},
 
 		ShowPower {
 			187837, -- Lightning Bolt
-			"MAELSTROM",
+			"Maelstrom",
 			45,
 			nil,
 			210727, -- Overcharge

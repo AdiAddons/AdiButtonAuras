@@ -52,7 +52,7 @@ AdiButtonAuras:RegisterRules(function()
 				199804, -- Between the Eyes
 				245388, -- Toxic Blade
 			},
-			"COMBO_POINTS",
+			"ComboPoints",
 		},
 	}
 end)

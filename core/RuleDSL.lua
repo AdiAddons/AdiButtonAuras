@@ -34,6 +34,7 @@ local ipairs = _G.ipairs
 local math = _G.math
 local next = _G.next
 local pairs = _G.pairs
+local PowerType = _G.Enum.PowerType
 local select = _G.select
 local setfenv = _G.setfenv
 local strjoin = _G.strjoin
@@ -392,11 +393,11 @@ end
 local function ShowPower(spells, powerType, handler, highlight, providers, desc)
 	local events, powerLoc, powerIndex
 	if type(powerType) == "string" then
-		powerIndex = _G["SPELL_POWER_"..powerType]
+		powerIndex = PowerType[powerType]
 		if not powerIndex then
 			error("Unknown power "..powerType, 3)
 		end
-		powerLoc = _G[powerType]
+		powerLoc = _G[powerType:gsub('(%S)(%u)', '%1_%2'):upper()]
 		events = { "UNIT_POWER_FREQUENT", "UNIT_MAXPOWER" }
 	else
 		error("Invalid power type value, expected string, got "..type(powerType), 3)

@@ -172,7 +172,7 @@ return {
 **`ShowPower { spells, power, handlerOrThreshold, highlight, providers, description }`**
 >Shows the amount of `power` on `spells` and highlights `spells` depending on the amount of `power`.
 * `spells` - spell id (_number_ or _table_)
-* `power` - power type (_string_ - one of the possible suffixes of `SPELL_POWER_` (e.g. `"ENERGY"` or `"SOUL_SHARDS"`).
+* `power` - power type (_string_ - one of the keys of `Enum.PowerType` (e.g. `"Energy"` or `"SoulShards"`).
 * (`handlerOrThreshold`) - specifies the conditions that should be met to highlight `spells` (_function_ or _number_)
     - if a _number_ is provided, it is interpreted as follows:
         - numbers in the [-1.0;1.0] range indicate a fraction of the maximum (e.g. 0.5 for 50%), else they are taken literally.
@@ -192,7 +192,7 @@ return {
 ```lua
 ShowPower {
 	5217, -- Tiger's Fury
-	"ENERGY",
+	"Energy",
 	35,
 	"darken"
 },

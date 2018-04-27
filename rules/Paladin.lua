@@ -58,7 +58,7 @@ AdiButtonAuras:RegisterRules(function()
 				213757, -- Execution Sentence
 				215661, -- Judicar's Vengeance
 			},
-			"HOLY_POWER",
+			"HolyPower",
 		},
 
 		Configure {

@@ -52,7 +52,7 @@ AdiButtonAuras:RegisterRules(function()
 				105174, -- Hand of Gul'dan
 				116858, -- Chaos Bolt
 			},
-			"SOUL_SHARDS",
+			"SoulShards",
 		},
 
 		Configure {
