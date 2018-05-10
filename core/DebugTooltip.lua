@@ -120,6 +120,13 @@ local function AddTalentInfo(tooltip, talentId)
 	return AddSpellInfo(tooltip, "talent", spellId)
 end
 
+local function AddAzeriteInfo(tooltip, _, _, powerId)
+	if not powerId or IsDisabled() then return end
+	tooltip:AddDoubleLine("Azerite power identifier", powerId)
+	local spellId = tooltip:GetOwner():GetSpellID()
+	return AddSpellInfo(tooltip, "azerite", spellId)
+end
+
 local proto = getmetatable(GameTooltip).__index
 hooksecurefunc(proto, "SetUnitAura", function(...) return AddAuraInfo(UnitAura, ...) end)
 hooksecurefunc(proto, "SetUnitBuff", function(...) return AddAuraInfo(UnitBuff, ...) end)
@@ -130,3 +137,4 @@ hooksecurefunc(proto, "SetAction", AddActionInfo)
 hooksecurefunc(proto, "SetPetAction", AddPetActionInfo)
 hooksecurefunc(proto, "SetArtifactPowerByID", AddArtifactInfo)
 hooksecurefunc(proto, "SetTalent", AddTalentInfo)
+hooksecurefunc(proto, "SetAzeritePower", AddAzeriteInfo)
