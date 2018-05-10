@@ -26,44 +26,5 @@ if not addon.isClass("MONK") then return end
 AdiButtonAuras:RegisterRules(function()
 	Debug('Adding monk rules')
 
-	return {
-		ImportPlayerSpells { "MONK" },
-
-		Configure {
-			"InvokePets",
-			L["Show the duration of @NAME."],
-			{
-				123904, -- Invoke Xuen, the White Tiger
-				132578, -- Invoke Niuzao, the Black Ox
-				198664, -- Invoke Chi-Ji, the Red Crane
-			},
-			"player",
-			"UNIT_PET",
-			function(_, model)
-				local remaining = GetPetTimeRemaining()
-				if remaining then
-					model.expiration = GetTime() + remaining / 1000
-					model.highlight = "good"
-				end
-			end,
-		},
-
-		Configure {
-			"Statues",
-			L["Show the duration of your summoned statue."],
-			{
-				115313, -- Summon Jade Serpent Statue
-				115315, -- Summon Black Ox Statue
-			},
-			"player",
-			"PLAYER_TOTEM_UPDATE",
-			function(_, model)
-				local found, _, start, duration = GetTotemInfo(1) -- monks have only one totem
-				if found then
-					model.highlight = "good"
-					model.expiration = start + duration
-				end
-			end,
-		},
-	}
+	return ImportPlayerSpells { "MONK" }
 end)

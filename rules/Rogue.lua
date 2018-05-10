@@ -26,33 +26,5 @@ if not addon.isClass("ROGUE") then return end
 AdiButtonAuras:RegisterRules(function()
 	Debug('Adding rogue rules')
 
-	return {
-		ImportPlayerSpells {
-			-- import all spells for
-			"ROGUE",
-			-- except
-			192425, -- Surge of Toxins (Assassination artifact) (not game changing)
-			192432, -- From the Shadows (Assassination artifact) (to emphasize Vendetta's debuff)
-			192925, -- Blood of the Assassinated (Assassination artifact) (completely within Rupture's own debuff)
-			193538, -- Alacity (not game changing)
-			206760, -- Night Terrors (to emphasize Nightblade's DoT)
-		},
-
-		ShowPower {
-			{
-				   408, -- Kidney Shot
-				  1943, -- Rupture
-				  2098, -- Run Through
-				  5171, -- Slice and Dice
-				 32645, -- Envenom
-				152150, -- Death from Above
-				193316, -- Roll the Bones
-				195452, -- Nightblade
-				196819, -- Eviscerate
-				199804, -- Between the Eyes
-				245388, -- Toxic Blade
-			},
-			"ComboPoints",
-		},
-	}
+	return ImportPlayerSpells { "ROGUE" }
 end)
