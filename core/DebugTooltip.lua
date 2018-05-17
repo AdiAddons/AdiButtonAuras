@@ -32,6 +32,7 @@ local GetMacroSpell = _G.GetMacroSpell
 local getmetatable = _G.getmetatable
 local GetPetActionInfo = _G.GetPetActionInfo
 local GetPowerInfo = _G.C_ArtifactUI.GetPowerInfo
+local GetPvpTalentInfoByID = _G.GetPvpTalentInfoByID
 local GetSpellBookItemInfo = _G.GetSpellBookItemInfo
 local GetSpellInfo = _G.GetSpellInfo
 local GetTalentInfoByID = _G.GetTalentInfoByID
@@ -120,6 +121,15 @@ local function AddTalentInfo(tooltip, talentId)
 	return AddSpellInfo(tooltip, "talent", spellId)
 end
 
+local function AddPvpTalentInfo(tooltip, talentId)
+	if not talentId or IsDisabled() then return end
+	local _, _, _, _, _, spellId = GetPvpTalentInfoByID(talentId)
+
+	tooltip:AddLine(' ')
+	tooltip:AddDoubleLine('Honor talent identifier:', talentId)
+	return AddSpellInfo(tooltip, 'honor talent', spellId)
+end
+
 local function AddAzeriteInfo(tooltip, _, _, powerId)
 	if not powerId or IsDisabled() then return end
 	tooltip:AddDoubleLine("Azerite power identifier", powerId)
@@ -137,4 +147,5 @@ hooksecurefunc(proto, "SetAction", AddActionInfo)
 hooksecurefunc(proto, "SetPetAction", AddPetActionInfo)
 hooksecurefunc(proto, "SetArtifactPowerByID", AddArtifactInfo)
 hooksecurefunc(proto, "SetTalent", AddTalentInfo)
+hooksecurefunc(proto, 'SetPvpTalent', AddPvpTalentInfo)
 hooksecurefunc(proto, "SetAzeritePower", AddAzeriteInfo)
