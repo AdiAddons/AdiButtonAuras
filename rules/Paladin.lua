@@ -26,5 +26,24 @@ if not addon.isClass("PALADIN") then return end
 AdiButtonAuras:RegisterRules(function()
 	Debug('Adding paladin rules')
 
-	return ImportPlayerSpells { "PALADIN" }
+	return {
+		ImportPlayerSpells {
+			-- import all spells for
+			"PALADIN",
+			-- except for
+			269571, -- Zeal (Retribution talent)
+		},
+
+		ShowPower {
+			{
+				 85256, -- Templar's Verdict (Retribution)
+				 53385, -- Divine Storm (Retribution)
+				 84963, -- Inquisition (Retribution talent)
+				210191, -- Word of Glory (Retribution talent)
+				215661, -- Justicar's Vengeance (Retribution talent)
+				267798, -- Execution Sentence (Retribution talent)
+			},
+			'HolyPower'
+		},
+	}
 end)
