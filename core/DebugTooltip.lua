@@ -147,6 +147,11 @@ local function AddAzeriteInfo(tooltip, _, _, powerId)
 	return AddSpellInfo(tooltip, "azerite", spellId)
 end
 
+local function AddItemRefInfo(link)
+	local id = link:match('spell:(%d+):')
+	return AddSpellInfo(_G.ItemRefTooltip, "spell", id, true)
+end
+
 local proto = getmetatable(GameTooltip).__index
 hooksecurefunc(proto, "SetUnitAura", function(...) return AddAuraInfo(UnitAura, ...) end)
 hooksecurefunc(proto, "SetUnitBuff", function(...) return AddAuraInfo(UnitBuff, ...) end)
@@ -159,3 +164,4 @@ hooksecurefunc(proto, "SetArtifactPowerByID", AddArtifactInfo)
 hooksecurefunc(proto, "SetTalent", AddTalentInfo)
 hooksecurefunc(proto, 'SetPvpTalent', AddPvpTalentInfo)
 hooksecurefunc(proto, "SetAzeritePower", AddAzeriteInfo)
+hooksecurefunc("SetItemRef", AddItemRefInfo)
