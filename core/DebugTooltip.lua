@@ -33,7 +33,7 @@ local getmetatable = _G.getmetatable
 local GetPetActionInfo = _G.GetPetActionInfo
 local GetPowerInfo = _G.C_ArtifactUI.GetPowerInfo
 local GetPvpTalentInfoByID = _G.GetPvpTalentInfoByID
-local GetSpellBookItemInfo = _G.GetSpellBookItemInfo
+local GetSpellBookItemName = _G.GetSpellBookItemName
 local GetSpellInfo = _G.GetSpellInfo
 local GetTalentInfoByID = _G.GetTalentInfoByID
 local hooksecurefunc = _G.hooksecurefunc
@@ -118,11 +118,8 @@ local function AddAuraInfo(func, tooltip, ...)
 end
 
 local function AddSpellbookInfo(tooltip, slot, bookType)
-	if not slot or IsDisabled() then return end
-	local slotType, slotId = GetSpellBookItemInfo(slot, bookType)
-	if slotType == "SPELL" then
-		return AddSpellInfo(tooltip, "spellbook", slotId, true)
-	end
+	local _, _, id = GetSpellBookItemName(slot, bookType)
+	return AddSpellInfo(tooltip, "spellbook", id, true)
 end
 
 local function AddTalentInfo(tooltip, talentId)
