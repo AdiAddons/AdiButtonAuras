@@ -399,8 +399,8 @@ function overlayPrototype:UpdateDynamicUnits(event, unit)
 
 	for token, conditional in pairs(self.unitConditionals) do
 		local _, unit = SecureCmdOptionParse(conditional)
-		if not unit or unit == "" then
-			unit = "target"
+		if not unit then
+			unit = ""
 		elseif unit == "mouseover" then
 			local mouseoverUnit = addon:GetMouseoverUnit()
 			if mouseoverUnit == "mouseover" then
