@@ -168,36 +168,43 @@ AdiButtonAuras:RegisterRules(function()
 	-- Dispels
 	--------------------------------------------------------------------------
 
-	local HELPFUL = LibPlayerSpells.constants.HELPFUL
-	local CURSE   = LibPlayerSpells.constants.CURSE
-	local DISEASE = LibPlayerSpells.constants.DISEASE
-	local MAGIC   = LibPlayerSpells.constants.MAGIC
-	local POISON  = LibPlayerSpells.constants.POISON
+	local TARGETING = LibPlayerSpells.masks.TARGETING
+	local PERSONAL  = LibPlayerSpells.constants.PERSONAL
+	local HARMFUL   = LibPlayerSpells.constants.HARMFUL
+	local CURSE     = LibPlayerSpells.constants.CURSE
+	local DISEASE   = LibPlayerSpells.constants.DISEASE
+	local MAGIC     = LibPlayerSpells.constants.MAGIC
+	local POISON    = LibPlayerSpells.constants.POISON
+	local inclusionMask = bor(LibPlayerSpells.constants[PLAYER_CLASS], LibPlayerSpells.constants.RACIAL)
 
-	-- TODO: racials and personal dispels
-	for spell, flags, _, _, _, category, dispelFlags in LibPlayerSpells:IterateSpells('DISPEL', PLAYER_CLASS) do
-		local isOffensive = band(flags, HELPFUL) == 0
-		local token = isOffensive and 'enemy' or 'ally'
-		local filter = isOffensive and 'HELPFUL' or 'HARMFUL'
-		local highlight = isOffensive and 'good' or 'bad'
-		local dispellable = {
-			Curse   = band(dispelFlags, CURSE) > 0,
-			Disease = band(dispelFlags, DISEASE) > 0,
-			Magic   = band(dispelFlags, MAGIC) > 0,
-			Poison  = band(dispelFlags, POISON) > 0,
-		}
+	for spell, flags, _, _, _, category, dispelFlags in LibPlayerSpells:IterateSpells('DISPEL') do
+		if band(inclusionMask, flags) > 0 then
+			local filter, highlight, token = 'HARMFUL', 'bad', 'ally'
+			local targeting = band(flags, TARGETING)
+			if targeting == HARMFUL then
+				filter, highlight, token = 'HELPFUL', 'good', 'enemy'
+			elseif targeting == PERSONAL then
+				token = 'player'
+			end
+			local desc = filter == 'HARMFUL' and L['a debuff you can dispel'] or L['a buff you can dispel']
+			local dispellable = {
+				Curse   = band(dispelFlags, CURSE) > 0 or nil,
+				Disease = band(dispelFlags, DISEASE) > 0 or nil,
+				Magic   = band(dispelFlags, MAGIC) > 0 or nil,
+				Poison  = band(dispelFlags, POISON) > 0 or nil,
+			}
 
-		tinsert(rules, Configure {
-			'Dispel:' .. spell,
-			(
-				isOffensive and BuildDesc(L['a buff you can dispel'], 'good', 'enemy')
-				or BuildDesc(L['a debuff you can dispel'], 'bad', 'ally')
-			) .. format(' [%s]', DescribeLPSSource(category)),
-			spell,
-			token,
-			'UNIT_AURA',
-			BuildDispelHandler(filter, highlight, token, dispellable),
-		})
+			if next(dispellable) then
+				rules[#rules + 1] = Configure {
+					'Dispel:' .. spell,
+					BuildDesc(desc, highlight, token) .. format(' [%s]', DescribeLPSSource(category)),
+					spell,
+					token,
+					'UNIT_AURA',
+					BuildDispelHandler(filter, highlight, token, dispellable),
+				}
+			end
+		end
 	end
 
 	--------------------------------------------------------------------------

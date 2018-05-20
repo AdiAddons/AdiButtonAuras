@@ -643,7 +643,7 @@ local RULES_ENV = addon.BuildSafeEnv(
 	-- Allowed globals
 	{
 		-- lua
-		"bit", "ceil", "floor", "format", "ipairs", "math", "max", "min", "pairs", "print",
+		"bit", "ceil", "floor", "format", "ipairs", "math", "max", "min", "next", "pairs", "print",
 		"select", "string", "table", "tinsert", "type",
 		-- WoW API
 		"GetNumGroupMembers", "GetPetTimeRemaining", "GetRuneCooldown", "GetShapeshiftFormID",
