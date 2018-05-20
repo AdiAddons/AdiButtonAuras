@@ -284,6 +284,19 @@ local function BuildAuraHandler_FirstOf(filter, highlight, token, buffs, callLev
 	end
 end
 
+local function BuildDispelHandler(filter, highlight, token, dispellable, callLevel)
+	local IterateAuras = addon.GetAuraIterator(filter)
+	local Show = GetHighlightHandler(highlight)
+	return function(units, model)
+		for _, _, count, expiration, dispel in IterateAuras(units[token]) do
+			if dispellable[dispel] then
+				Show(model, count, expiration)
+				return true
+			end
+		end
+	end
+end
+
 ------------------------------------------------------------------------------
 -- High-callLevel helpers
 ------------------------------------------------------------------------------
@@ -555,6 +568,7 @@ local baseEnv = {
 	BuildAuraHandler_Single  = BuildAuraHandler_Single,
 	BuildAuraHandler_Longest = BuildAuraHandler_Longest,
 	BuildAuraHandler_FirstOf = BuildAuraHandler_FirstOf,
+	BuildDispelHandler       = BuildDispelHandler,
 
 	-- Description helpers
 	BuildDesc         = addon.BuildDesc,
@@ -624,7 +638,7 @@ local RULES_ENV = addon.BuildSafeEnv(
 	baseEnv,
 	-- Allowed Libraries
 	{
-		"LibDispellable-1.0", "LibPlayerSpells-1.0", "LibSpellbook-1.0", "LibItemBuffs-1.0"
+		"LibPlayerSpells-1.0", "LibSpellbook-1.0", "LibItemBuffs-1.0"
 	},
 	-- Allowed globals
 	{

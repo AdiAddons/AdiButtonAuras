@@ -167,32 +167,36 @@ AdiButtonAuras:RegisterRules(function()
 	--------------------------------------------------------------------------
 	-- Dispels
 	--------------------------------------------------------------------------
-	-- Use LibDispellable and LibPlayerSpells
-	local LibDispellable, LDVer = GetLib('LibDispellable-1.0')
 
 	local HELPFUL = LibPlayerSpells.constants.HELPFUL
-	for spell, flags, _, _, _, category in LibPlayerSpells:IterateSpells("DISPEL", PLAYER_CLASS) do
-		local offensive = bit.band(flags, HELPFUL) == 0
-		local token = offensive and "enemy" or "ally"
+	local CURSE   = LibPlayerSpells.constants.CURSE
+	local DISEASE = LibPlayerSpells.constants.DISEASE
+	local MAGIC   = LibPlayerSpells.constants.MAGIC
+	local POISON  = LibPlayerSpells.constants.POISON
+
+	-- TODO: racials and personal dispels
+	for spell, flags, _, _, _, category, dispelFlags in LibPlayerSpells:IterateSpells('DISPEL', PLAYER_CLASS) do
+		local isOffensive = band(flags, HELPFUL) == 0
+		local token = isOffensive and 'enemy' or 'ally'
+		local filter = isOffensive and 'HELPFUL' or 'HARMFUL'
+		local highlight = isOffensive and 'good' or 'bad'
+		local dispellable = {
+			Curse   = band(dispelFlags, CURSE) > 0,
+			Disease = band(dispelFlags, DISEASE) > 0,
+			Magic   = band(dispelFlags, MAGIC) > 0,
+			Poison  = band(dispelFlags, POISON) > 0,
+		}
+
 		tinsert(rules, Configure {
-			"Dispel",
-			(offensive
-				and BuildDesc(L["a buff you can dispel"], "good", "enemy")
-				or BuildDesc(L["a debuff you can dispel"], "bad", "ally")
-			)..format(" [LD-%d,%s]", LDVer, DescribeLPSSource(category)),
+			'Dispel:' .. spell,
+			(
+				isOffensive and BuildDesc(L['a buff you can dispel'], 'good', 'enemy')
+				or BuildDesc(L['a debuff you can dispel'], 'bad', 'ally')
+			) .. format(' [%s]', DescribeLPSSource(category)),
 			spell,
 			token,
-			"UNIT_AURA",
-			function(units, model)
-				local unit = units[token]
-				if not unit then return end
-				for i, dispel, _, _, count, _, _, expiration in LibDispellable:IterateDispellableAuras(unit, offensive) do
-					if dispel == spell then
-						model.highlight, model.count, model.expiration = offensive and "good" or "bad", count, expiration
-						return
-					end
-				end
-			end
+			'UNIT_AURA',
+			BuildDispelHandler(filter, highlight, token, dispellable),
 		})
 	end
 

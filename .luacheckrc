@@ -3,8 +3,8 @@ globals = {
 	"AceGUIWidgetLSMlists", "AdiButtonAuras", "AdiDebug", "LibStub",
 
 	-- ABA API
-	"AddRuleFor", "BuffAliases", "BuildAuraHandler_FirstOf", "BuildAuraHandler_Longest",
-	"BuildAuraHandler_Single", "BuildDesc", "BuildKey", "Configure", "DebuffAliases", "Debug",
+	"AddRuleFor", "BuffAliases", "BuildAuraHandler_FirstOf", "BuildAuraHandler_Longest", "BuildAuraHandler_Single",
+	"BuildDispelHandler", "BuildDesc", "BuildKey", "Configure", "DebuffAliases", "Debug",
 	"DescribeAllSpells", "DescribeAllTokens", "DescribeFilter", "DescribeHighlight",
 	"DescribeLPSSource", "GetBuff", "GetDebuff", "GetLib", "GetPlayerBuff", "GetPlayerDebuff",
 	"ImportPlayerSpells", "IterateBuffs", "IterateDebuffs", "IteratePlayerBuffs",

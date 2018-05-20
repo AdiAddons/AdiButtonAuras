@@ -55,7 +55,7 @@ Most of the simple (de)buffs are supported through embedded libraries:
 
  * most class and racial spells using [LibPlayerSpells-1.0](https://github.com/AdiAddons/LibPlayerSpells-1.0),
  * crowd-control spells using [LibPlayerSpells-1.0](https://github.com/AdiAddons/LibPlayerSpells-1.0),
- * dispel spells using [LibDispellable-1.0](https://github.com/AdiAddons/LibDispellable-1.0/),
+ * dispel spells using [LibPlayerSpells-1.0](https://github.com/AdiAddons/LibPlayerSpells-1.0),
  * trinket, enchantment and item buffs using [LibItemBuffs-1.0](https://github.com/AdiAddons/LibItemBuffs-1.0/).
 
 Special cases and hints are handled using customized rules, see below.
@@ -75,7 +75,6 @@ These are references to the libraries AdiButtonAuras used to create the rule.
 
  * LPS-XXX-A.B.C-N: data from [LibPlayerSpells-1.0](https://github.com/AdiAddons/LibPlayerSpells-1.0) for class XXX, patch A.B.C, Nth revision. E.g. "[LPS-DRUID-5.4.1-7]" stands for "rule created accordingly to LibPlayerSpells-1.0 data for druid, patch 5.4.1, 7th revision."
  * LSB-N: [LibSpellbook-1.0](https://github.com/AdiAddons/LibSpellbook-1.0), Nth revision.
- * LD-N: [LibDispellable-1.0](https://github.com/AdiAddons/LibDispellable-1.0/), Nth revision.
  * LIB-N-XXX: [LibItemBuffs-1.0](https://github.com/AdiAddons/LibItemBuffs-1.0/), Nth revision, XXX data version
 
 **Are you going to support ElvUI?**
