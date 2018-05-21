@@ -39,5 +39,20 @@ AdiButtonAuras:RegisterRules(function()
 			195181, -- Bone Shield (Blood)
 			5,
 		},
+
+		Configure {
+			'RaiseDead',
+			format(L["%s when you don't have a summoned ghoul."], DescribeHighlight('hint')),
+			46584,
+			'player',
+			'UNIT_PET',
+			function(_, model)
+				if HasPetSpells() then
+					model.highlight = 'good'
+				else
+					model.hint = true
+				end
+			end,
+		},
 	}
 end)
