@@ -21,9 +21,33 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 
 local _, addon = ...
 
-if not addon.isClass("DEMONHUNTER") then return end
+if not addon.isClass('DEMONHUNTER') then return end
 
 AdiButtonAuras:RegisterRules(function()
 	Debug('Adding demonhunter rules')
-	return ImportPlayerSpells { "DEMONHUNTER" }
+	return {
+		ImportPlayerSpells {
+			-- import all spells for
+			'DEMONHUNTER',
+			-- except for
+			203981, -- Soul Fragments
+		},
+
+		ShowStacks {
+			263648, -- Soul Barrier
+			203981, -- Soul Fragments
+			5,
+			'player',
+		},
+
+		Configure {
+			'Dispel:CleansedByFlame',
+			BuildDesc(L['a debuff you can dispel'], 'bad', 'player'),
+			178740, -- Immolation Aura (Vengeance)
+			'player',
+			'UNIT_AURA',
+			BuildDispelHandler('HARMFUL', 'bad', 'player', { Magic = true }),
+			205625, -- Cleansed by Flame (Vengeance honor talent)
+		},
+	}
 end)
