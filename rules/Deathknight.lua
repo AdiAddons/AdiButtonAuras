@@ -21,10 +21,23 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 
 local _, addon = ...
 
-if not addon.isClass("DEATHKNIGHT") then return end
+if not addon.isClass('DEATHKNIGHT') then return end
 
 AdiButtonAuras:RegisterRules(function()
 	Debug('Adding deathknight rules')
 
-	return ImportPlayerSpells { "DEATHKNIGHT" }
+	return {
+		ImportPlayerSpells {
+			-- import all spells for
+			'DEATHKNIGHT',
+			-- except for
+			273977, -- Grip of the Dead (Blood talent)
+		},
+
+		ShowStacks {
+			219809, -- Tombstone (Blood talent)
+			195181, -- Bone Shield (Blood)
+			5,
+		},
+	}
 end)
