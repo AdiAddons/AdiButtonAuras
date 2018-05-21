@@ -192,7 +192,7 @@ local function Configure(key, desc, spells, units, events, handlers, providers, 
 	end
 	units, events, handlers, providers = CheckRuleArgs(units, events, handlers, providers, callLevel+1)
 	local builders = {}
-	for i, spell in ipairs(spells) do
+	for _, spell in ipairs(spells) do
 		tinsert(builders, function()
 			_AddRuleFor(key, desc, spell, units, events, handlers, providers, callLevel+1)
 		end)
@@ -206,7 +206,7 @@ end
 
 local function GetHighlightHandler(highlight)
 	if highlight == "flash" then
-		return function(model, count) model.flash = true end
+		return function(model) model.flash = true end
 	end
 	if highlight == "hint" then
 		return function(model) model.hint = true end
@@ -236,7 +236,9 @@ local function BuildAuraHandler_Single(filter, highlight, token, buff, callLevel
 	local GetAura = addon.GetAuraGetter(filter)
 	local Show = GetHighlightHandler(highlight)
 	return function(units, model)
-		local found, count, expiration = GetAura(units[token], buff)
+		local unit = units[token]
+		if not unit or unit == '' then return end
+		local found, count, expiration = GetAura(unit, buff)
 		if found then
 			Show(model, count, expiration)
 			return true
@@ -254,8 +256,10 @@ local function BuildAuraHandler_Longest(filter, highlight, token, buffs, callLev
 	local IterateAuras = addon.GetAuraIterator(filter)
 	local Show = GetHighlightHandler(highlight)
 	return function(units, model)
+		local unit = units[token]
+		if not unit or unit == '' then return end
 		local longest = -1
-		for i, id, count, expiration in IterateAuras(units[token]) do
+		for _, id, count, expiration in IterateAuras(unit) do
 			if buffs[id] and expiration > longest then
 				longest = expiration
 				Show(model, count, expiration)
@@ -275,7 +279,9 @@ local function BuildAuraHandler_FirstOf(filter, highlight, token, buffs, callLev
 	local IterateAuras = addon.GetAuraIterator(filter)
 	local Show = GetHighlightHandler(highlight)
 	return function(units, model)
-		for i, id, count, expiration in IterateAuras(units[token]) do
+		local unit = units[token]
+		if not unit or unit == '' then return end
+		for _, id, count, expiration in IterateAuras(unit) do
 			if buffs[id] then
 				Show(model, count, expiration)
 				return true
@@ -288,7 +294,9 @@ local function BuildDispelHandler(filter, highlight, token, dispellable, callLev
 	local IterateAuras = addon.GetAuraIterator(filter)
 	local Show = GetHighlightHandler(highlight)
 	return function(units, model)
-		for _, _, count, expiration, dispel in IterateAuras(units[token]) do
+		local unit = units[token]
+		if not unit or unit == '' then return end
+		for _, _, count, expiration, dispel in IterateAuras(unit) do
 			if dispellable[dispel] then
 				Show(model, count, expiration)
 				return true
@@ -305,7 +313,7 @@ local function Auras(filter, highlight, unit, spells)
 	local funcs = {}
 	local key = BuildKey('Auras', filter, highlight, unit)
 	local desc = BuildDesc(filter, highlight, unit, '@NAME')
-	for i, spell in ipairs(AsList(spells, "number", 2)) do
+	for _, spell in ipairs(AsList(spells, "number", 2)) do
 		tinsert(funcs, Configure(key, desc, spell, unit, "UNIT_AURA", BuildAuraHandler_Single(filter, highlight, unit, spell, 2), 2))
 	end
 	return (#funcs > 1) and funcs or funcs[1]
@@ -474,6 +482,7 @@ local function ShowStacks(spells, aura, maxi, unit, handler, highlight, provider
 		desc,
 		format(L["stacks of %s"], DescribeAllSpells(aura)),
 		function(unit)
+			if not unit or unit == '' then return end
 			local _, count = GetPlayerAura(unit, aura)
 			return count or 0
 		end,
