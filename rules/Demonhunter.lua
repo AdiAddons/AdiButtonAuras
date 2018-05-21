@@ -39,5 +39,15 @@ AdiButtonAuras:RegisterRules(function()
 			5,
 			'player',
 		},
+
+		Configure {
+			'Dispel:CleansedByFlame',
+			BuildDesc(L['a debuff you can dispel'], 'bad', 'player'),
+			178740, -- Immolation Aura (Vengeance)
+			'player',
+			'UNIT_AURA',
+			BuildDispelHandler('HARMFUL', 'bad', 'player', { Magic = true }),
+			205625, -- Cleansed by Flame (Vengeance honor talent)
+		},
 	}
 end)
