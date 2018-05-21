@@ -179,10 +179,10 @@ AdiButtonAuras:RegisterRules(function()
 
 	for spell, flags, _, _, _, category, dispelFlags in LibPlayerSpells:IterateSpells('DISPEL') do
 		if band(inclusionMask, flags) > 0 then
-			local filter, highlight, token = 'HARMFUL', 'bad', 'ally'
+			local filter, highlight, token = 'HARMFUL', 'hint', 'ally'
 			local targeting = band(flags, TARGETING)
 			if targeting == HARMFUL then
-				filter, highlight, token = 'HELPFUL', 'good', 'enemy'
+				filter, token = 'HELPFUL', 'enemy'
 			elseif targeting == PERSONAL then
 				token = 'player'
 			end

@@ -17,6 +17,7 @@
     1. [ShowPower](#ShowPower)
     1. [ShowHealth](#ShowHealth)
     1. [ShowStacks](#ShowStacks)
+    1. [ShowDispellable](#ShowDispellable)
     1. [Configure](#Configure)
 
 ### Concepts
@@ -245,6 +246,18 @@ ShowPower {
   default value: "hint"
 * (`providers`) - Spell id(s) of the spell(s) required to enable this rule (_number_ or _table_). Defaults to the `spells` if omitted.
 * (`description`) - description for the options panel (_string_). Only used if a _function_ has been provided for `handlerOrThreshold`. Auto-generated else.
+
+***
+
+<a name="ShowDispellable"></a>
+**`ShowDispellable { spells, unit, canDispel, providers, highlight, description }`**
+> Highlights `spells` if a dispellable aura is found on `unit`.
+* `spells` - spell id (_number_ or _table_)
+* `unit` - the [unit](#unit-id) to scan for an dispellable aura (_string_). If the unit is `"enemy"`, the aura is considered a debuff, else - a buff
+* `canDispel` - the debuff type that can be dispelled by `spells` (_string_ or _table_). Must be one or more of `"Curse"`, `"Disease"`, `"Magic"` or `"Poison"` (case matters!)
+* (`providers`) - spell id(s) of the spell(s) require to enable this rule (_number_ or _table_)). Defaults to `spells` if omitted
+* (`hint`) - [highlight type](#highlight-type) (_string_). Defaults to `"hint"` if omitted
+* (`description`) - description for the options panel (_string_). Auto-generated if omitted
 
 ***
 

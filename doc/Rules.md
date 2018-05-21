@@ -21,7 +21,7 @@ end)
 
 ## Rule anatomy
 
-A rule is built around 4 elements : spells, units, events and handlers.
+A rule is built around 5 elements : spells, units, events, handlers and providers.
 
 ### Spells
 
@@ -50,7 +50,7 @@ The most common event is `UNIT_AURA`, since we are watching for auras.
 
 The handlers are functions called to refresh the data. Their signature is `function(units, model)`, where:
 
- * `units` contains an map of UnitId to actual UnitId. It is mainly useful for `units.ally` and `units.enemy`, that are resolved for the action button when they are listed in the rule. If none of these were listed, or if the rule watches for a fixed unit, e.g. `"player"`, this argument must be ignored.
+ * `units` contains a map of UnitId to actual UnitId. It is mainly useful for `units.ally` and `units.enemy`, that are resolved for the action button when they are listed in the rule. If none of these were listed, or if the rule watches for a fixed unit, e.g. `"player"`, this argument must be ignored.
  * `model` is a table containing the data to display on the spell. The handler should update its attributes.
 
 `model` has six attributes:
@@ -69,6 +69,10 @@ The handlers are functions called to refresh the data. Their signature is `funct
  * `.flash`: an effect to apply to the button (glowing animation). Intended as a replacement of `model.highlight = "flash"`, so that it could be shown together with the good/bad border.
 
 If several handlers, possibly from different rules, apply to the same spell, they are called in order of definition. Latter handlers could see the results of previous ones in `model`. No assumptions are made about how they handle existing values. Most of the time they just overwrite them.
+
+### Providers
+
+Those are the spells that need be known to the player for a rule to be active. It no providers are specified, then [spells](#spells) are considered the providers.
 
 ## Restricted Lua environment
 
@@ -138,3 +142,11 @@ This function returns `true` if one of `auras` has been found.
 Returns a function suitable as rule handler, that will `highlight` the button with the first of `aura` found on `unit` restricted by `filter`.
 
 This function returns `true` if one of `auras` has been found.
+
+#### BuildDispelHandler(filter, highlight, unit, canDispel)
+
+Returns a function suitable as rule handler, that will `highlight` the button with the first aura restricted by `filter` whose debuff type matches `canDispel`.
+
+`canDispel` is a table containing dispellable dubuff types, i.e. `{ Magic = true, Poison = true }`.
+
+This function returns `true` if a dispellable aura has been found.

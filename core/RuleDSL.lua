@@ -491,6 +491,16 @@ local function ShowStacks(spells, aura, maxi, unit, handler, highlight, provider
 	)
 end
 
+local function ShowDispellable(spells, unit, canDispel, providers, highlight, desc)
+	local filter = unit == 'enemy' and 'HELPFUL' or 'HARMFUL'
+	local key = BuildKey('Dispel', unit, highlight)
+	local handler = BuildDispelHandler(filter, highlight, unit, AsSet(canDispel, 'string', 4))
+	highlight = highlight or 'hint'
+	desc = desc or BuildDesc(filter == 'HELPFUL' and L['a buff you can dispel'] or L['a debuff you can dispel'], highlight, unit)
+
+	return Configure(key, desc, spells, unit, 'UNIT_AURA', handler, providers, 4)
+end
+
 local function FilterOut(spells, exclude)
 	local result = {}
 	for _, spell in ipairs(spells) do
@@ -590,11 +600,12 @@ local baseEnv = {
 
 	-- Basic functions
 	Configure = WrapTableArgFunc(Configure),
-	ShowPower = WrapTableArgFunc(ShowPower),
-	ShowHealth = WrapTableArgFunc(ShowHealth),
-	ShowStacks = WrapTableArgFunc(ShowStacks),
-	PassiveModifier = WrapTableArgFunc(PassiveModifier),
 	ImportPlayerSpells = WrapTableArgFunc(ImportPlayerSpells),
+	PassiveModifier = WrapTableArgFunc(PassiveModifier),
+	ShowDispellable = WrapTableArgFunc(ShowDispellable),
+	ShowHealth = WrapTableArgFunc(ShowHealth),
+	ShowPower = WrapTableArgFunc(ShowPower),
+	ShowStacks = WrapTableArgFunc(ShowStacks),
 
 	-- High-level functions
 	SimpleDebuffs = function(spells)
