@@ -21,22 +21,19 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 
 local _, addon = ...
 
-if not addon.isClass("HUNTER") then return end
+if not addon.isClass('HUNTER') then return end
 
 AdiButtonAuras:RegisterRules(function()
 	Debug('Adding hunter rules')
 
 	return {
-		ImportPlayerSpells { "HUNTER" },
+		ImportPlayerSpells { 'HUNTER' },
 
-		Configure {
-			'Dispel:SurvivalTactics',
-			BuildDesc(L['a debuff you can dispel'], 'bad', 'player'),
+		ShowDispellable {
 			5384, -- Feign Death
 			'player',
-			'UNIT_AURA',
-			BuildDispelHandler('HARMFUL', 'bad', 'player', { Magic = true }),
-			202746,
+			'Magic',
+			202746, -- Survival Tactics (honor talent)
 		},
 	}
 end)
