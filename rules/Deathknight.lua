@@ -40,6 +40,18 @@ AdiButtonAuras:RegisterRules(function()
 			5,
 		},
 
+		ShowStacks {
+			{
+				 55090, -- Scourge Strike (Unholy)
+				207311, -- Clawing Shadows (Unholy talent)
+				223829, -- Necrotic Strike (Unholy honor talent)
+				275699, -- Apocalypse (Unholy)
+			},
+			194310,
+			6,
+			'enemy',
+		},
+
 		Configure {
 			'RaiseDead',
 			format(L["%s when you don't have a summoned ghoul."], DescribeHighlight('hint')),
@@ -51,6 +63,21 @@ AdiButtonAuras:RegisterRules(function()
 					model.highlight = 'good'
 				else
 					model.hint = true
+				end
+			end,
+		},
+
+		Configure {
+			'SummonGargoyle',
+			L['Show the duration of @NAME.'],
+			49206, -- Summon Gargoyle (Unholy talent)
+			'player',
+			'PLAYER_TOTEM_UPDATE',
+			function(_, model)
+				local found, _, startTime, duration = GetTotemInfo(3) -- Gargoyle is always the third totem
+				if found then
+					model.highlight = 'good'
+					model.expiration = startTime + duration
 				end
 			end,
 		},
