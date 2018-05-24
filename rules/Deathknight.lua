@@ -31,6 +31,7 @@ AdiButtonAuras:RegisterRules(function()
 			-- import all spells for
 			'DEATHKNIGHT',
 			-- except for
+			207203, -- Frost Shield (Frost talent)
 			273977, -- Grip of the Dead (Blood talent)
 		},
 
@@ -50,6 +51,16 @@ AdiButtonAuras:RegisterRules(function()
 			194310,
 			6,
 			'enemy',
+		},
+
+		ShowStacks {
+			49143, -- Frost Strike (Frost)
+			51714, -- Razorice (Runeforging)
+			5,
+			'enemy',
+			nil,
+			nil,
+			207057, -- Shattering Strikes (Frost talent)
 		},
 
 		Configure {
