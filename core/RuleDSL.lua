@@ -482,7 +482,7 @@ local function ShowStacks(spells, aura, maxi, unit, handler, highlight, provider
 		desc,
 		format(L["stacks of %s"], DescribeAllSpells(aura)),
 		function(unit)
-			if not unit or unit == '' then return end
+			if not unit or unit == '' then return 0 end
 			local _, count = GetPlayerAura(unit, aura)
 			return count or 0
 		end,
