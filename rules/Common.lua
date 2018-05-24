@@ -123,43 +123,45 @@ AdiButtonAuras:RegisterRules(function()
 
 	local LibPlayerSpells = GetLib('LibPlayerSpells-1.0')
 	local band, bor = bit.band, bit.bor
-	local classMask = LibPlayerSpells.constants[PLAYER_CLASS]
-	local racialMask = LibPlayerSpells.constants.RACIAL
+	local classFlag = LibPlayerSpells.constants[PLAYER_CLASS]
+	local racialFlag = LibPlayerSpells.constants.RACIAL
 
 	local debuffs, ccSpells = {}, {}
 
-	for aura, flags, _, target, ccMask in LibPlayerSpells:IterateSpells("CROWD_CTRL") do
-		debuffs[ccMask] = debuffs[ccMask] or {} -- associative array to avoid duplicates
-		debuffs[ccMask][aura] = true
-		if band(flags, classMask) > 0 or band(flags, racialMask) > 0 then
-			ccSpells[ccMask] = ccSpells[ccMask] or {} -- associative array to avoid duplicates
-			local spells = ccSpells[ccMask]
-			if type(target) == "table" then
-				for i = 1, #target do
-					spells[target[i]] = true
+	for aura, flags, providers, modified, ccFlags in LibPlayerSpells:IterateSpells('CROWD_CTRL') do
+		debuffs[ccFlags] = debuffs[ccFlags] or {} -- assoviative array to avoid duplicates
+		debuffs[ccFlags][aura] = true
+
+		if band(flags, classFlag) > 0 or band(flags, racialFlag) > 0 then
+			ccSpells[ccFlags] = ccSpells[ccFlags] or {}
+			local spells = ccSpells[ccFlags]
+			if type(modified) == 'table' then
+				for i = 1, #modified do
+					spells[modified[i]] = providers
 				end
 			else
-				spells[target] = true
+				spells[modified] = providers
 			end
 		end
 	end
+
 	-- associative to simple array
-	for mask, spells in pairs(debuffs) do
+	for flag, auras in next, debuffs do
 		local list = {}
-		for spell in pairs(spells) do
-			list[#list + 1] = spell
+		for aura in next, auras do
+			list[#list + 1] = aura
 		end
-		debuffs[mask] = list
+		debuffs[flag] = list
 	end
 
-	for mask, spells in pairs(ccSpells) do
-		local key = "CrowdControl:"..mask
-		local name = LibPlayerSpells:GetCrowdControlCategoryName(mask)
-		local desc = format(L["Show the \"bad\" border if the targeted enemy is %s."], name:lower())
-		local handler = BuildAuraHandler_Longest("HARMFUL", "bad", "enemy", debuffs[mask])
-		for spell in pairs(spells) do
+	for flag, spells in next, ccSpells do
+		local name = LibPlayerSpells:GetCrowdControlCategoryName(flag)
+		local desc = format(L[' Show the "bad" border if the targeted enemy is %s.'], name:lower())
+		local handler = BuildAuraHandler_Longest('HARMFUL', 'bad', 'enemy', debuffs[flag])
+		for spell, providers in next, spells do
+			local key = format('CrowdControl:%s:%d', name, spell)
 			rules[#rules + 1] = function()
-				AddRuleFor(key, desc, spell, "enemy", "UNIT_AURA", handler)
+				AddRuleFor(key, desc, spell, 'enemy', 'UNIT_AURA', handler, providers)
 			end
 		end
 	end
