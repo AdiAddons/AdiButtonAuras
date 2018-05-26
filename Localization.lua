@@ -102,6 +102,14 @@ L["\"Bad\" border"] = true
 L["\"Good\" border"] = true
 L["item"] = true
 L["spell"] = true
+L["Dispel border: Curse"] = true
+L["Dispel border: Disease"] = true
+L["Dispel border: Magic"] = true
+L["Dispel border: Poison"] = true
+L["The color used for dispels of type \"Curse\"."] = true
+L["The color used for dispels of type \"Disease\"."] = true
+L["The color used for dispels of type \"Magic\"."] = true
+L["The color used for dispels of type \"Poison\"."] = true
 
 -- RuleDSL.lua
 L["%s when %s %s is found on %s."] = true
@@ -116,6 +124,8 @@ L["lighten"] = true
 L["show duration and/or stack count"] = true
 L["show the \"bad\" border"] = true
 L["show the \"good\" border"] = true
+L["show the number of stacks"] = true
+L["show a colored border"] = true
 L["suggest"] = true
 L["the buff"] = true
 L["the debuff"] = true
@@ -135,6 +145,8 @@ L["a buff you can dispel"] = true
 L["a debuff you can dispel"] = true
 L["a debuff"] = true
 L["of type '%s'"] = true
+L["Show the \"bad\" border if the targeted enemy is %s."] = true
+L["%s when someone used their legendary ring."] = true
 
 -- rules/Deathknight.lua
 L["Shows Hint when target is below 35% health."] = true

@@ -156,7 +156,7 @@ AdiButtonAuras:RegisterRules(function()
 
 	for flag, spells in next, ccSpells do
 		local name = LibPlayerSpells:GetCrowdControlCategoryName(flag)
-		local desc = format(L[' Show the "bad" border if the targeted enemy is %s.'], name:lower())
+		local desc = format(L['Show the "bad" border if the targeted enemy is %s.'], name:lower())
 		local handler = BuildAuraHandler_Longest('HARMFUL', 'bad', 'enemy', debuffs[flag])
 		for spell, providers in next, spells do
 			local key = format('CrowdControl:%s:%d', name, spell)
@@ -181,7 +181,7 @@ AdiButtonAuras:RegisterRules(function()
 
 	for spell, flags, _, _, _, category, dispelFlags in LibPlayerSpells:IterateSpells('DISPEL') do
 		if band(inclusionMask, flags) > 0 then
-			local filter, highlight, token = 'HARMFUL', 'hint', 'ally'
+			local filter, highlight, token = 'HARMFUL', 'dispel', 'ally'
 			local targeting = band(flags, TARGETING)
 			if targeting == HARMFUL then
 				filter, token = 'HELPFUL', 'enemy'
@@ -224,7 +224,7 @@ AdiButtonAuras:RegisterRules(function()
 		local source = DescribeLPSSource(PLAYER_CLASS)
 		tinsert(rules, Configure {
 			"Interrupt",
-			format(L["%s when %s is casting/channelling a spell that you can interrupt."].." [%s]",
+			format(L["%s when %s is casting/channeling a spell that you can interrupt."].." [%s]",
 				DescribeHighlight("flash"),
 				DescribeAllTokens("enemy"),
 				source

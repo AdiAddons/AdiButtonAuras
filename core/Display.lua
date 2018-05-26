@@ -234,9 +234,9 @@ function overlayPrototype:SetCount(count, maxCount)
 	self:ApplyCount()
 end
 
-function overlayPrototype:SetHighlight(highlight)
-	if self.highlight == highlight then return end
-	self.highlight = highlight
+function overlayPrototype:SetHighlight(highlight, dispel)
+	if self.highlight == highlight and self.dispel == dispel then return end
+	self.highlight, self.dispel = highlight, dispel
 	self:ApplyHighlight()
 end
 
@@ -305,7 +305,7 @@ function overlayPrototype:ShouldShowFlash()
 end
 
 function overlayPrototype:ApplyHighlight()
-	local type, highlight, overlay = self.highlight, self.Highlight, self.Overlay
+	local type, highlight, overlay, dispel = self.highlight, self.Highlight, self.Overlay, self.dispel
 	if type == "darken" or type == "lighten" then
 		overlay:SetBlendMode(type == "darken" and "MOD" or "ADD")
 		overlay:Show()
@@ -314,6 +314,9 @@ function overlayPrototype:ApplyHighlight()
 	end
 	if type == "good" or type == "bad" then
 		highlight:SetVertexColor(unpack(addon.db.profile.colors[type], 1, 4))
+		highlight:Show()
+	elseif type == "dispel" and dispel then
+		highlight:SetVertexColor(unpack(addon.db.profile.colors[dispel], 1, 4))
 		highlight:Show()
 	else
 		highlight:Hide()

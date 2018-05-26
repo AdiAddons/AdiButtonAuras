@@ -451,8 +451,15 @@ local modelProxy = setmetatable({}, {
 		elseif key == "highlight" then
 			if value == "flash" then
 				key, value = value, true
-			elseif value ~= nil and value ~= "good" and value ~= "bad" and value ~= "darken" and value ~= "lighten" then
-				return error(format('Invalid %s, should be one of "flash", "good", "bad", "darken", "lighten" or nil, not %s', key, tostring(value)), 2)
+			elseif value ~= nil and value ~= "good" and value ~= "bad"
+					and value ~= "darken" and value ~= "lighten" and value ~= "dispel" then
+				return error(
+					format(
+						'Invalid %s, should be one of "flash", "good", "bad", "darken", "lighten", "dispel" or nil, not %s',
+						key, tostring(value)
+					),
+					2
+				)
 			end
 		elseif key == "flash" then
 			if type(value) ~= "boolean" then
@@ -462,8 +469,24 @@ local modelProxy = setmetatable({}, {
 			if type(value) ~= "boolean" then
 				return error(format("Invalid %s, should be false or true, not %s", key, type(value)), 2)
 			end
+		elseif key == "dispel" then
+			if value ~= 'Curse' and value ~= 'Disease' and value ~= 'Magic' and value ~= 'Poison' and value ~= nil then
+				return error(
+					format(
+						'Invalid %s, should be one of "Curse", "Disease", "Magic", "Posion" or nil, not %s',
+						key, tostring(value)
+					),
+					2
+				)
+			end
 		else
-			return error(format('Unknown model property: %s, must be one of: count, maxCount, expiration, highlight or hint', tostring(key)), 2)
+			return error(
+				format(
+					'Unknown model property: %s, must be one of: count, maxCount, expiration, highlight or hint',
+					tostring(key)
+				),
+				2
+			)
 		end
 		model[key] = value
 	end,
@@ -472,7 +495,8 @@ local modelProxy = setmetatable({}, {
 function overlayPrototype:UpdateState(event)
 	self:SetScript('OnUpdate', nil)
 
-	model.count, model.maxCount, model.expiration, model.highlight, model.hint, model.flash = 0, 0, 0, nil, false, false
+	model.count, model.maxCount, model.expiration = 0, 0, 0
+	model.highlight, model.hint, model.flash, model.dispel = nil, false, false, nil
 
 	if self.handlers then
 		model.spellId, model.actionType, model.actionId = self.spellId, self.actionType, self.actionId
@@ -514,7 +538,7 @@ function overlayPrototype:UpdateState(event)
 
 	self:SetCount(model.count, model.maxCount)
 	self:SetExpiration(model.expiration)
-	self:SetHighlight(model.highlight)
+	self:SetHighlight(model.highlight, model.dispel)
 	self:SetFlash(model.flash)
 	self:SetHint(model.hint)
 
