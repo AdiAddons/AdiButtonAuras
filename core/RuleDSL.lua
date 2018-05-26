@@ -229,6 +229,20 @@ local function GetHighlightHandler(highlight)
 			end
 		end
 	end
+	if highlight == "dispel" then
+		return function(model, count, expiration, dispel)
+			model.highlight = highlight
+			if count and count > 1 then
+				model.count = count
+			end
+			if expiration then
+				model.expiration = expiration
+			end
+			if dispel then
+				model.dispel = dispel
+			end
+		end
+	end
 	return function() end
 end
 
@@ -298,7 +312,7 @@ local function BuildDispelHandler(filter, highlight, token, dispellable, callLev
 		if not unit or unit == '' then return end
 		for _, _, count, expiration, dispel in IterateAuras(unit) do
 			if dispellable[dispel] then
-				Show(model, count, expiration)
+				Show(model, count, expiration, dispel)
 				return true
 			end
 		end
