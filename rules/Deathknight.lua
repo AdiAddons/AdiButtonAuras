@@ -31,8 +31,11 @@ AdiButtonAuras:RegisterRules(function()
 			-- import all spells for
 			'DEATHKNIGHT',
 			-- except for
+			194879, -- Icy Talons
+			200646, -- Unholy Mutation (Unholy honor talent)
 			207203, -- Frost Shield (Frost talent)
 			273977, -- Grip of the Dead (Blood talent)
+			281209, -- Cold Heart (Frost talent)
 		},
 
 		ShowStacks {
@@ -53,14 +56,23 @@ AdiButtonAuras:RegisterRules(function()
 			'enemy',
 		},
 
-		ShowStacks {
+		Configure {
+			'IcyTalons',
+			BuildDesc('HELPFUL PLAYER', 'good', 'player', 194879), -- Icy Talons
 			49143, -- Frost Strike (Frost)
-			51714, -- Razorice (Runeforging)
-			5,
-			'enemy',
-			nil,
-			nil,
-			207057, -- Shattering Strikes (Frost talent)
+			'player',
+			'UNIT_AURA',
+			function(_, model)
+				local found, count, expiration = GetPlayerBuff('player', 194879) -- Icy Talons
+				if found then
+					model.highlight = 'good'
+					model.expiration = expiration
+					if count and count > 1 then
+						model.count = count
+					end
+				end
+			end,
+			194878, -- Icy Talons (Frost talent)
 		},
 
 		Configure {
