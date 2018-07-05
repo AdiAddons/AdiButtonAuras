@@ -29,12 +29,18 @@ local primalFireElemental  = 61029
 local primalStormElemental = 77942
 
 -- totem textures
+local ancestralProtTotem = 136080
 local capacitorTotem     = 136013
+local cloudBurstTotem    = 971076
 local counterstrikeTotem = 511726
 local earthbindTotem     = 136102
+local earthenWallTotem   = 136098
 local groundingTotem     = 136039
+local healingTideTotem   = 538569
+local healingStreamTotem = 135127
 local liquidMagmaTotem   = 971079
 local skyfuryTotem       = 135829
+local spiritLinkTotem    = 237586
 local tremorTotem        = 136108
 local windRushTotem      = 538576
 -- elementals totem textures
@@ -82,10 +88,21 @@ AdiButtonAuras:RegisterRules(function()
 			-- except for
 			  2645, -- Ghost Wolf
 			197211, -- Fury of Air (Enhancement talent)
-			262652, -- Forceful Winds (Enhancement talent)
-			263806, -- Wind Gust (Elemental talent)
+			207400, -- Ancestral Vigor (Restoration talent)
 			224125, -- Molten Weapon (Enhancement talent)
 			224127, -- Crackling Surge (Enhancement talent)
+			262652, -- Forceful Winds (Enhancement talent)
+			263806, -- Wind Gust (Elemental talent)
+			280815, -- Flash Flood (Restoration talent)
+		},
+
+		Configure {
+			'AncestralProtectionTotem',
+			L['Show the duration of @NAME.'],
+			207399, -- Ancestral Protection Totem (Restoration talent)
+			'player',
+			'PLAYER_TOTEM_UPDATE',
+			BuildTotemHandler(ancestralProtTotem),
 		},
 
 		Configure {
@@ -95,6 +112,16 @@ AdiButtonAuras:RegisterRules(function()
 			'player',
 			'PLAYER_TOTEM_UPDATE',
 			BuildTotemHandler(capacitorTotem),
+		},
+
+		Configure {
+			'CloudburstTotem',
+			L['Show the duration of @NAME.'],
+			201764, -- Recall Cloudburst Totem
+			'player',
+			'PLAYER_TOTEM_UPDATE',
+			BuildTotemHandler(cloudBurstTotem),
+			157153, -- Cloudburst Totem (Restoration talent)
 		},
 
 		Configure {
@@ -116,12 +143,39 @@ AdiButtonAuras:RegisterRules(function()
 		},
 
 		Configure {
+			'EarthenWallTotem',
+			L['Show the duration of @NAME.'],
+			198838, -- Earthen Wall Totem (Restoration talent)
+			'player',
+			'PLAYER_TOTEM_UPDATE',
+			BuildTotemHandler(earthenWallTotem),
+		},
+
+		Configure {
 			'GroundingTotem',
 			L['Show the duration of @NAME.'],
 			204336, -- Grounding Totem (Elemental/Enhancement honor talent)
 			'player',
 			'PLAYER_TOTEM_UPDATE',
 			BuildTotemHandler(groundingTotem),
+		},
+
+		Configure {
+			'HealingTideTotem',
+			L['Show the duration of @NAME.'],
+			108280, -- Healing Tide Totem (Restoration)
+			'player',
+			'PLAYER_TOTEM_UPDATE',
+			BuildTotemHandler(healingTideTotem),
+		},
+
+		Configure {
+			'HealingStreamTotem',
+			L['Show the duration of @NAME.'],
+			5394, -- Healing Stream Totem (Restoration)
+			'player',
+			'PLAYER_TOTEM_UPDATE',
+			BuildTotemHandler(healingStreamTotem),
 		},
 
 		Configure {
@@ -140,6 +194,15 @@ AdiButtonAuras:RegisterRules(function()
 			'player',
 			'PLAYER_TOTEM_UPDATE',
 			BuildTotemHandler(skyfuryTotem),
+		},
+
+		Configure {
+			'SpiritLinkTotem',
+			L['Show the duration of @NAME.'],
+			98008, -- Spirit Link Totem (Restoration)
+			'player',
+			'PLAYER_TOTEM_UPDATE',
+			BuildTotemHandler(spiritLinkTotem),
 		},
 
 		Configure {
