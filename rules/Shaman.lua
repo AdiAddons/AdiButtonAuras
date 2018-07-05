@@ -41,6 +41,7 @@ local windRushTotem      = 538576
 local earthElemental     = 136024
 local fireElemental      = 135790
 local stormElemental     = 1020304
+local feralSpirit        = 237577
 
 local function BuildTempPetHandler(id)
 	return function(_, model)
@@ -80,7 +81,11 @@ AdiButtonAuras:RegisterRules(function()
 			'SHAMAN',
 			-- except for
 			  2645, -- Ghost Wolf
+			197211, -- Fury of Air (Enhancement talent)
+			262652, -- Forceful Winds (Enhancement talent)
 			263806, -- Wind Gust (Elemental talent)
+			224125, -- Molten Weapon (Enhancement talent)
+			224127, -- Crackling Surge (Enhancement talent)
 		},
 
 		Configure {
@@ -95,7 +100,7 @@ AdiButtonAuras:RegisterRules(function()
 		Configure {
 			'CounterstrikeTotem',
 			L['Show the duration of @NAME.'],
-			204331,
+			204331, -- Counterstrike Totem (Elemental/Enhancement talent)
 			'player',
 			'PLAYER_TOTEM_UPDATE',
 			BuildTotemHandler(counterstrikeTotem),
@@ -113,7 +118,7 @@ AdiButtonAuras:RegisterRules(function()
 		Configure {
 			'GroundingTotem',
 			L['Show the duration of @NAME.'],
-			204336,
+			204336, -- Grounding Totem (Elemental/Enhancement honor talent)
 			'player',
 			'PLAYER_TOTEM_UPDATE',
 			BuildTotemHandler(groundingTotem),
@@ -122,7 +127,7 @@ AdiButtonAuras:RegisterRules(function()
 		Configure {
 			'LiquidMagmaTotem',
 			L['Show the duration of @NAME.'],
-			192222,
+			192222, -- Liquid Magma Totem (Elemental talent)
 			'player',
 			'PLAYER_TOTEM_UPDATE',
 			BuildTotemHandler(liquidMagmaTotem),
@@ -131,7 +136,7 @@ AdiButtonAuras:RegisterRules(function()
 		Configure {
 			'SkyfuryTotem',
 			L['Show the duration of @NAME.'],
-			204330,
+			204330, -- Skyfury Totem (Elemental/Enhancement honor talent)
 			'player',
 			'PLAYER_TOTEM_UPDATE',
 			BuildTotemHandler(skyfuryTotem),
@@ -149,7 +154,7 @@ AdiButtonAuras:RegisterRules(function()
 		Configure {
 			'WindRushTotem',
 			L['Show the duration of @NAME.'],
-			192077,
+			192077, -- Wind Rush Totem (talent)
 			'player',
 			'PLAYER_TOTEM_UPDATE',
 			BuildTotemHandler(windRushTotem),
@@ -167,7 +172,7 @@ AdiButtonAuras:RegisterRules(function()
 		Configure {
 			'FireElemental',
 			L['Show the duration of @NAME.'],
-			198067,
+			198067, -- Fire Elemental (Elemental)
 			'player',
 			'PLAYER_TOTEM_UPDATE',
 			BuildTotemHandler(fireElemental),
@@ -176,10 +181,19 @@ AdiButtonAuras:RegisterRules(function()
 		Configure {
 			'StormElemental',
 			L['Show the duration of @NAME.'],
-			192249,
+			192249, -- Storm Elemental (Elemental talent)
 			'player',
 			'PLAYER_TOTEM_UPDATE',
 			BuildTotemHandler(stormElemental),
+		},
+
+		Configure {
+			'FeralSpirit',
+			L['Show the duration of @NAME.'],
+			51533, -- Feral Spirit (Enhancement)
+			'player',
+			'PLAYER_TOTEM_UPDATE',
+			BuildTotemHandler(feralSpirit),
 		},
 
 		Configure {
