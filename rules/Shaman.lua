@@ -23,27 +23,12 @@ local _, addon = ...
 
 if not addon.isClass('SHAMAN') then return end
 
--- primal elementals GUIDs
+-- primal elementals' GUIDs
 local primalEarthElemental = 61056
 local primalFireElemental  = 61029
 local primalStormElemental = 77942
 
--- totem textures
-local ancestralProtTotem = 136080
-local capacitorTotem     = 136013
-local cloudBurstTotem    = 971076
-local counterstrikeTotem = 511726
-local earthbindTotem     = 136102
-local earthenWallTotem   = 136098
-local groundingTotem     = 136039
-local healingTideTotem   = 538569
-local healingStreamTotem = 135127
-local liquidMagmaTotem   = 971079
-local skyfuryTotem       = 135829
-local spiritLinkTotem    = 237586
-local tremorTotem        = 136108
-local windRushTotem      = 538576
--- elementals totem textures
+-- guardians' totem textures
 local earthElemental     = 136024
 local fireElemental      = 135790
 local stormElemental     = 1020304
@@ -62,14 +47,11 @@ local function BuildTempPetHandler(id)
 	end
 end
 
--- matches the totems by texture instead of name
--- because of spell name - totem name disparity for elementals
--- i.e. Fire Elemental spawns Greater Fire Elemental
 local function BuildTotemHandler(totem)
 	return function(_, model)
 		for slot = 1, 5 do
-			local found, _, start, duration, texture = GetTotemInfo(slot)
-			if found and texture == totem then
+			local found, name, start, duration = GetTotemInfo(slot)
+			if found and name == totem then
 				model.expiration = start + duration
 				model.highlight = 'good'
 				break
@@ -78,15 +60,47 @@ local function BuildTotemHandler(totem)
 	end
 end
 
+-- matches the totems by texture instead of name
+-- because of spell name - totem name disparity for elementals
+-- i.e. Fire Elemental spawns Greater Fire Elemental
+-- Feral Spirit spawns Spirit Wolf
+local function BuildGuardianHandler(guardian)
+	return function(_, model)
+		for slot = 1, 5 do
+			local found, _, start, duration, texture = GetTotemInfo(slot)
+			if found and texture == guardian then
+				model.expiration = start + duration
+				model.highlight = 'good'
+			end
+		end
+	end
+end
+
 AdiButtonAuras:RegisterRules(function()
 	Debug('Adding shaman rules')
+
+	local ancestralProtTotem = GetSpellInfo(207399)
+	local capacitorTotem     = GetSpellInfo(192058)
+	local cloudBurstTotem    = GetSpellInfo(157153)
+	local counterstrikeTotem = GetSpellInfo(204331)
+	local earthbindTotem     = GetSpellInfo(2484)
+	local earthgrabTotem     = GetSpellInfo(51485)
+	local earthenWallTotem   = GetSpellInfo(198838)
+	local groundingTotem     = GetSpellInfo(204336)
+	local healingTideTotem   = GetSpellInfo(108280)
+	local healingStreamTotem = GetSpellInfo(5394)
+	local liquidMagmaTotem   = GetSpellInfo(192222)
+	local skyfuryTotem       = GetSpellInfo(204330)
+	local spiritLinkTotem    = GetSpellInfo(98008)
+	local totemMastery       = GetSpellInfo(262395)
+	local tremorTotem        = GetSpellInfo(8143)
+	local windRushTotem      = GetSpellInfo(192077)
 
 	return {
 		ImportPlayerSpells {
 			-- import all spells for
 			'SHAMAN',
 			-- except for
-			  2645, -- Ghost Wolf
 			197211, -- Fury of Air (Enhancement talent)
 			207400, -- Ancestral Vigor (Restoration talent)
 			224125, -- Molten Weapon (Enhancement talent)
@@ -127,7 +141,7 @@ AdiButtonAuras:RegisterRules(function()
 		Configure {
 			'CounterstrikeTotem',
 			L['Show the duration of @NAME.'],
-			204331, -- Counterstrike Totem (Elemental/Enhancement talent)
+			204331, -- Counterstrike Totem (talent)
 			'player',
 			'PLAYER_TOTEM_UPDATE',
 			BuildTotemHandler(counterstrikeTotem),
@@ -136,10 +150,19 @@ AdiButtonAuras:RegisterRules(function()
 		Configure {
 			'EarthbindTotem',
 			L['Show the duration of @NAME.'],
-			2484,
+			2484, -- Earthbind Totem
 			'player',
 			'PLAYER_TOTEM_UPDATE',
 			BuildTotemHandler(earthbindTotem),
+		},
+
+		Configure {
+			'EarthgrabTotem',
+			L['Show the duration of @NAME.'],
+			51485, -- Earthgrab Totem (Restoration talent)
+			'player',
+			'PLAYER_TOTEM_UPDATE',
+			BuildTotemHandler(earthgrabTotem),
 		},
 
 		Configure {
@@ -154,7 +177,7 @@ AdiButtonAuras:RegisterRules(function()
 		Configure {
 			'GroundingTotem',
 			L['Show the duration of @NAME.'],
-			204336, -- Grounding Totem (Elemental/Enhancement honor talent)
+			204336, -- Grounding Totem (honor talent)
 			'player',
 			'PLAYER_TOTEM_UPDATE',
 			BuildTotemHandler(groundingTotem),
@@ -190,7 +213,7 @@ AdiButtonAuras:RegisterRules(function()
 		Configure {
 			'SkyfuryTotem',
 			L['Show the duration of @NAME.'],
-			204330, -- Skyfury Totem (Elemental/Enhancement honor talent)
+			204330, -- Skyfury Totem (honor talent)
 			'player',
 			'PLAYER_TOTEM_UPDATE',
 			BuildTotemHandler(skyfuryTotem),
@@ -203,6 +226,18 @@ AdiButtonAuras:RegisterRules(function()
 			'player',
 			'PLAYER_TOTEM_UPDATE',
 			BuildTotemHandler(spiritLinkTotem),
+		},
+
+		Configure {
+			'TotemMastery',
+			L['Show the duration of @NAME.'],
+			{
+				210643, -- Totem Mastery (Elemental talent)
+				262395, -- Totem Mastery (Enhancement talent)
+			},
+			'player',
+			'PLAYER_TOTEM_UPDATE',
+			BuildTotemHandler(totemMastery),
 		},
 
 		Configure {
@@ -229,7 +264,7 @@ AdiButtonAuras:RegisterRules(function()
 			198103,
 			'player',
 			'PLAYER_TOTEM_UPDATE',
-			BuildTotemHandler(earthElemental),
+			BuildGuardianHandler(earthElemental),
 		},
 
 		Configure {
@@ -238,7 +273,7 @@ AdiButtonAuras:RegisterRules(function()
 			198067, -- Fire Elemental (Elemental)
 			'player',
 			'PLAYER_TOTEM_UPDATE',
-			BuildTotemHandler(fireElemental),
+			BuildGuardianHandler(fireElemental),
 		},
 
 		Configure {
@@ -247,7 +282,7 @@ AdiButtonAuras:RegisterRules(function()
 			192249, -- Storm Elemental (Elemental talent)
 			'player',
 			'PLAYER_TOTEM_UPDATE',
-			BuildTotemHandler(stormElemental),
+			BuildGuardianHandler(stormElemental),
 		},
 
 		Configure {
@@ -256,7 +291,7 @@ AdiButtonAuras:RegisterRules(function()
 			51533, -- Feral Spirit (Enhancement)
 			'player',
 			'PLAYER_TOTEM_UPDATE',
-			BuildTotemHandler(feralSpirit),
+			BuildGuardianHandler(feralSpirit),
 		},
 
 		Configure {
