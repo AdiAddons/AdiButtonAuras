@@ -16,15 +16,44 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
+along with AdiButtonAuras. If not, see <http://www.gnu.org/licenses/>.
 --]]
 
 local _, addon = ...
 
-if not addon.isClass("PRIEST") then return end
+if not addon.isClass('PRIEST') then return end
 
 AdiButtonAuras:RegisterRules(function()
 	Debug('Adding priest rules')
 
-	return ImportPlayerSpells { "PRIEST" }
+	return {
+		ImportPlayerSpells {
+			-- import all spells for
+			'PRIEST',
+			-- except for
+			   605, -- Mind Control
+			196773, -- Inner Focus (Holy honor talent)
+		},
+
+		SelfBuffAliases {
+			196762,  -- Inner Focus (Holy honor talent)
+			196773,  -- Inner Focus
+		},
+
+		-- TODO: crowd control rules are evaluated after class rules
+		Configure {
+			'MindControl',
+			L['Show the duration of @NAME.'],
+			605, -- Mind Control
+			'pet',
+			{ 'UNIT_AURA', 'UNIT_PET' },
+			function(_, model)
+				local found, _, expiration = GetPlayerDebuff('pet', 605)
+				if found then
+					model.expiration = expiration
+					model.highlight = 'good'
+				end
+			end,
+		},
+	}
 end)
