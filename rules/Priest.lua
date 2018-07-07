@@ -23,8 +23,24 @@ local _, addon = ...
 
 if not addon.isClass('PRIEST') then return end
 
+local function BuildGuardianHandler(guardian)
+	return function(_, model)
+		for slot = 1, 5 do
+			local found, name, start, duration = GetTotemInfo(slot)
+			if found and name == guardian then
+				model.expiration = start + duration
+				model.highlight = 'good'
+				return
+			end
+		end
+	end
+end
+
 AdiButtonAuras:RegisterRules(function()
 	Debug('Adding priest rules')
+
+	local mindbender = GetSpellInfo(123040)
+	local shadowfiend = GetSpellInfo(34433)
 
 	return {
 		ImportPlayerSpells {
@@ -32,6 +48,7 @@ AdiButtonAuras:RegisterRules(function()
 			'PRIEST',
 			-- except for
 			   605, -- Mind Control
+			194384, -- Atonement (Discipline)
 			196773, -- Inner Focus (Holy honor talent)
 		},
 
@@ -55,5 +72,53 @@ AdiButtonAuras:RegisterRules(function()
 				end
 			end,
 		},
+
+		Configure {
+			'Shadowfiend',
+			L['Show the duration of @NAME.'],
+			34433, -- Shadowfiend (Discipline)
+			'player',
+			'PLAYER_TOTEM_UPDATE',
+			BuildGuardianHandler(shadowfiend)
+		},
+
+		Configure {
+			'Mindbender',
+			L['Show the duration of @NAME.'],
+			123040, -- Mindbender (Discipline talent)
+			'player',
+			'PLAYER_TOTEM_UPDATE',
+			BuildGuardianHandler(mindbender)
+		},
+
+		-- track Atonement on Shadow Mend
+		-- NOTE:
+		-- Shadow Mend is used as the display spell because:
+		-- - Power Word: Shield tracks itself
+		-- - Power Word: Radiance has charges
+		Configure {
+			'AtonementTracker',
+			format(L['Show the shortest duration and the number of group members with %s.'], GetSpellInfo(194384)), -- Atonement
+			186263, -- Shadow Mend (Discipline)
+			'group',
+			'UNIT_AURA',
+			function(units, model)
+				local count, minExpiration = 0
+				for unit in next, units.group do
+					local found, _, expiration = GetPlayerBuff(unit, 194384)
+					if found then
+						count = count + 1
+						if (not minExpiration or expiration < minExpiration) then
+							minExpiration = expiration
+						end
+					end
+				end
+				if count > 0 then
+					model.count = count
+					model.expiration = minExpiration
+				end
+			end,
+			81749, -- Atonement (Discipline)
+		}
 	}
 end)
