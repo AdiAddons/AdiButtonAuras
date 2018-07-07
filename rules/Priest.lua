@@ -49,7 +49,9 @@ AdiButtonAuras:RegisterRules(function()
 			-- except for
 			   605, -- Mind Control
 			194384, -- Atonement (Discipline)
+			193223, -- Surrender to Madness (Shadow)
 			196773, -- Inner Focus (Holy honor talent)
+			263406, -- Surrendered to Madness (Shadow)
 		},
 
 		SelfBuffAliases {
@@ -76,7 +78,7 @@ AdiButtonAuras:RegisterRules(function()
 		Configure {
 			'Shadowfiend',
 			L['Show the duration of @NAME.'],
-			34433, -- Shadowfiend (Discipline)
+			34433, -- Shadowfiend (Discipline/Shadow)
 			'player',
 			'PLAYER_TOTEM_UPDATE',
 			BuildGuardianHandler(shadowfiend)
@@ -85,17 +87,17 @@ AdiButtonAuras:RegisterRules(function()
 		Configure {
 			'Mindbender',
 			L['Show the duration of @NAME.'],
-			123040, -- Mindbender (Discipline talent)
+			123040, -- Mindbender (Discipline/Shadow talent)
 			'player',
 			'PLAYER_TOTEM_UPDATE',
 			BuildGuardianHandler(mindbender)
 		},
 
 		-- track Atonement on Shadow Mend
-		-- NOTE:
-		-- Shadow Mend is used as the display spell because:
+		-- NOTE: Shadow Mend is used as the display spell because:
 		-- - Power Word: Shield tracks itself
 		-- - Power Word: Radiance has charges
+		-- - the debuff from Shadow Mend is not that important
 		Configure {
 			'AtonementTracker',
 			format(L['Show the shortest duration and the number of group members with %s.'], GetSpellInfo(194384)), -- Atonement
@@ -119,6 +121,25 @@ AdiButtonAuras:RegisterRules(function()
 				end
 			end,
 			81749, -- Atonement (Discipline)
-		}
+		},
+
+		Configure {
+			'SurrenderToDarkness',
+			format(
+				'%s %s',
+				BuildDesc('HELPFUL PLAYER', 'good', 'player', 193223), -- Surrender to Madness
+				BuildDesc('HARMFUL PLAYER', 'bad', 'player', 263406) -- Surrendered to Madness
+			),
+			193223, -- Surrender to Madness (Shadow)
+			'player',
+			'UNIT_AURA',
+			(function()
+				local isSurrendering = BuildAuraHandler_Single('HELPFUL PLAYER', 'good', 'player', 193223)
+				local hasSurrendered = BuildAuraHandler_Single('HARMFUL PLAYER', 'bad', 'player', 263406)
+				return function(units, model)
+					return isSurrendering(units, model) or hasSurrendered(units, model)
+				end
+			end)(),
+		},
 	}
 end)
