@@ -21,10 +21,19 @@ along with AdiButtonAuras.  If not, see <http://www.gnu.org/licenses/>.
 
 local _, addon = ...
 
-if not addon.isClass("HUNTER") then return end
+if not addon.isClass('HUNTER') then return end
 
 AdiButtonAuras:RegisterRules(function()
 	Debug('Adding hunter rules')
 
-	return ImportPlayerSpells { "HUNTER" }
+	return {
+		ImportPlayerSpells { 'HUNTER' },
+
+		ShowDispellable {
+			5384, -- Feign Death
+			'player',
+			'Magic',
+			202746, -- Survival Tactics (honor talent)
+		},
+	}
 end)
