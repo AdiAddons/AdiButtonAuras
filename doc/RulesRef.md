@@ -127,26 +127,29 @@ return {
 ***
 
 <a name="BuffAliases"></a>
-**`BuffAliases { spells, buffs }`**
->Shows any of player's `buffs` on all of `spells`.
+**`BuffAliases { spells, buffs, providers }`**
+>Shows any of player's `buffs` on all of `spells` when at least one provider is known.
 * `spells` - spell id (_number_ or _table_)
 * (`buffs`) - buff id (_number_ or _table_). Defaults to `spells` if omitted
+* (`providers`) - spell id (_number_ or _table_). Defaults to `spells` if omitted
 
 ***
 
 <a name="DebuffAliases"></a>
-**`DebuffAliases { spells, debuffs }`**
->Shows any of player's `debuffs` on all of `spells`.
+**`DebuffAliases { spells, debuffs, providers }`**
+>Shows any of player's `debuffs` on all of `spells` when at least one provider is known.
 * `spells` - spell id (_number_ or _table_)
 * (`debuffs`) - debuff id (_number_ or _table_). Defaults to `spells` if omitted
+* (`providers`) - spell id (_number_ or _table_). Defaults to `spells` if omitted
 
 ***
 
 <a name="SelfBuffAliases"></a>
-**`SelfBuffAliases { spells, buffs }`**
->Shows any of player's `buffs` on the player on all of `spells`.
+**`SelfBuffAliases { spells, buffs, providers }`**
+>Shows any of player's `buffs` on the player on all of `spells` when at least one provider is known.
 * `spells` - spell id (_number_ or _table_)
 * (`buffs`) - buff id (_number_ or _table_). Defaults to `spells` if omitted
+* (`providers`) - spell id (_number_ or _table_). Defaults to `spells` if omitted
 
 ***
 

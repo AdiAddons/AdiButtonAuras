@@ -342,11 +342,11 @@ local function PassiveModifier(passive, spell, buff, unit, highlight)
 	return Configure(key, desc, spell, unit, "UNIT_AURA", handler, passive, 3)
 end
 
-local function AuraAliases(filter, highlight, unit, spells, buffs)
+local function AuraAliases(filter, highlight, unit, spells, buffs, providers)
 	buffs = AsList(buffs or spells, "number", 3)
 	local key = BuildKey("AuraAliases", filter, highlight, unit, spells, buffs)
 	local desc = BuildDesc(filter, highlight, unit, buffs)
-	return Configure(key, desc, spells, unit, "UNIT_AURA", BuildAuraHandler_FirstOf(filter, highlight, unit, buffs, 3), nil, 3)
+	return Configure(key, desc, spells, unit, "UNIT_AURA", BuildAuraHandler_FirstOf(filter, highlight, unit, buffs, 3), providers, 3)
 end
 
 local function ShowCountAndHighlight(key, spells, unit, events, handler, highlight, desc, descWhat, getValue, getMax, providers)
