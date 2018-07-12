@@ -328,7 +328,7 @@ local function Auras(filter, highlight, unit, spells)
 	local key = BuildKey('Auras', filter, highlight, unit)
 	local desc = BuildDesc(filter, highlight, unit, '@NAME')
 	for _, spell in ipairs(AsList(spells, "number", 2)) do
-		tinsert(funcs, Configure(key, desc, spell, unit, "UNIT_AURA", BuildAuraHandler_Single(filter, highlight, unit, spell, 2), 2))
+		tinsert(funcs, Configure(key, desc, spell, unit, "UNIT_AURA", BuildAuraHandler_Single(filter, highlight, unit, spell, 2), nil, 2))
 	end
 	return (#funcs > 1) and funcs or funcs[1]
 end
