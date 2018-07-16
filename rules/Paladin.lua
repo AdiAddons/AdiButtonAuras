@@ -41,9 +41,11 @@ AdiButtonAuras:RegisterRules(function()
 			203538, -- Greater Blessing of Kings (Retribution)
 			203539, -- Greater Blessing of Wisdom (Retribution)
 			204018, -- Blessing of Spellwarding (Protection talent)
+			209785, -- Fires of Justice (Retribution talent)
 			269571, -- Zeal (Retribution talent)
 		},
 
+		-- show Holy Power on spenders
 		ShowPower {
 			{
 				 85256, -- Templar's Verdict (Retribution)
@@ -54,6 +56,13 @@ AdiButtonAuras:RegisterRules(function()
 				267798, -- Execution Sentence (Retribution talent)
 			},
 			'HolyPower'
+		},
+
+		-- show Fires of Justice on Crusader Strike
+		SelfBuffAliases {
+			 35395, -- Crusader Strike
+			209785, -- Fires of Justice
+			203316, -- Fires of Justice (Retribution talent)
 		},
 
 		Configure {
@@ -127,7 +136,7 @@ AdiButtonAuras:RegisterRules(function()
 				DescribeHighlight('flash'),
 				DescribeAllTokens('enemy')
 			),
-			31935, -- Avenger's Shield
+			31935, -- Avenger's Shield (Protection)
 			'enemy',
 			{ -- Events
 				'UNIT_SPELLCAST_CHANNEL_START',
@@ -154,6 +163,7 @@ AdiButtonAuras:RegisterRules(function()
 					end
 				end
 			end,
+			231665, -- Avenger's Shield (Rank 2) (Protection)
 		},
 
 		Configure {
@@ -172,23 +182,59 @@ AdiButtonAuras:RegisterRules(function()
 		},
 
 		Configure {
-			'GreaterBlessings',
-			format(L['Show the number of Greater Blessings placed on group members.']),
-			{
-				203538, -- Greater Blessing of Kings (Retribution)
-				203539, -- Greater Blessing of Wisdom (Retribution)
-			},
+			'GreaterBlessingOfKings',
+			format('%s %s',
+				format(
+					L['%s when %s @NAME is not found on a group member.'],
+					DescribeHighlight('hint'),
+					DescribeFilter('HELPFUL PLAYER')
+				),
+				BuildDesc('HELPFUL PLAYER', 'good', 'group', 203538)
+			),
+			203538, -- Greater Blessing of Kings (Retribution)
 			'group',
 			'UNIT_AURA',
 			function(units, model)
-				local count = 0
-				model.maxCount = 2
-				for unit in pairs(units.group) do
-					count = GetPlayerBuff(unit, 203538) and count + 1 or count
-					count = GetPlayerBuff(unit, 203539) and count + 1 or count
+				local found, _, expiration
+				for unit in next, units.group do
+					found, _, expiration = GetPlayerBuff(unit, 203538)
+					if found then
+						model.highlight = 'good'
+						model.expiration = expiration
+						break
+					end
 				end
-				if count > 0 then
-					model.count = count
+				if not found then
+					model.hint = true
+				end
+			end,
+		},
+
+		Configure {
+			'GreaterBlessingOfWisdom',
+			format('%s %s',
+				format(
+					L['%s when %s @NAME is not found on a group member.'],
+					DescribeHighlight('hint'),
+					DescribeFilter('HELPFUL PLAYER')
+				),
+				BuildDesc('HELPFUL PLAYER', 'good', 'group', 203539)
+			),
+			203539, -- Greater Blessing of Kings (Retribution)
+			'group',
+			'UNIT_AURA',
+			function(units, model)
+				local found, _, expiration
+				for unit in next, units.group do
+					found, _, expiration = GetPlayerBuff(unit, 203539)
+					if found then
+						model.highlight = 'good'
+						model.expiration = expiration
+						break
+					end
+				end
+				if not found then
+					model.hint = true
 				end
 			end,
 		},
