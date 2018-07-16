@@ -38,6 +38,7 @@ AdiButtonAuras:RegisterRules(function()
 			  1022, -- Blessing of Protection
 			 25771, -- Forbearance
 			 31935, -- Avenger's Shield (Protection)
+			188370, -- Consecration (Protection)
 			203538, -- Greater Blessing of Kings (Retribution)
 			203539, -- Greater Blessing of Wisdom (Retribution)
 			204018, -- Blessing of Spellwarding (Protection talent)
@@ -177,6 +178,25 @@ AdiButtonAuras:RegisterRules(function()
 				if found then
 					model.highlight = 'good'
 					model.expiration = start + duration
+				end
+			end,
+		},
+
+		Configure {
+			'ProtectionConsecration',
+			format(
+				'%s %s',
+				L['Show the duration of @NAME.'],
+				BuildDesc('HELPFUL PLAYER', 'good', 'player', 188370)
+			),
+			26573,
+			'player',
+			{'PLAYER_TOTEM_UPDATE', 'UNIT_AURA'},
+			function(_, model)
+				local found, _, start, duration = GetTotemInfo(1) -- Consecration is always the 1st totem
+				if found then
+					model.expiration = start + duration
+					model.highlight = GetPlayerBuff('player', 188370) and 'good' or nil
 				end
 			end,
 		},
