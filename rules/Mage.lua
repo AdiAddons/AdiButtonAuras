@@ -31,12 +31,18 @@ AdiButtonAuras:RegisterRules(function()
 			-- import all spell for
 			'MAGE',
 			-- except for
+			 12654, -- Ignite (Fire)
 			 41425, -- Hypothermia
 			 45438, -- Ice Block
-			116014, -- Rune of Power (Frost talent)
+			116014, -- Rune of Power (talent)
 			205473, -- Icicles (Frost)
 			205708, -- Chilled (Frost)
 			205766, -- Bone Chilling (Frost talent)
+		},
+
+		ShowPower {
+			44425, -- Arcane Barrage (Arcane)
+			'ArcaneCharges',
 		},
 
 		-- show the stacks of Icicles on Glacial Spike and Ice Lance
@@ -51,6 +57,13 @@ AdiButtonAuras:RegisterRules(function()
 			nil,
 			nil,
 			76613, -- Mastery: Icicles (Frost)
+		},
+
+		-- show Heating Up on Fire Blast if Hot Streak! is known
+		SelfBuffAliases {
+			108853, -- Fire Blast (Fire)
+			 48107, -- Heating Up (Fire)
+			195283, -- Hot Streak! (Fire)
 		},
 
 		Configure {
@@ -80,7 +93,7 @@ AdiButtonAuras:RegisterRules(function()
 				BuildDesc('HELPFUL PLAYER', 'good', 'player', 116014), -- Rune of Power
 				format(L['Show the "bad" border when your buff %s is not found on yourself.'], GetSpellInfo(116014))
 			),
-			116011, -- Rune of Power (Frost talent)
+			116011, -- Rune of Power (talent)
 			'player',
 			{ 'UNIT_AURA', 'PLAYER_TOTEM_UPDATE' },
 			function(_, model)
