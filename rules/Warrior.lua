@@ -31,6 +31,7 @@ AdiButtonAuras:RegisterRules(function()
 			-- add all spells for
 			'WARRIOR',
 			-- except for
+			  6673, -- Battle Shout
 			115767, -- Deep Wounds (Protection)
 			236321, -- War Banner (Arms honor talent)
 			262115, -- Deep Wounds (Arms)
@@ -54,6 +55,33 @@ AdiButtonAuras:RegisterRules(function()
 					model.expiration = start + duration
 					model.highlight = GetPlayerBuff('player', 236321) and 'good' or nil
 				end
+			end,
+		},
+
+		Configure {
+			'BattleShout',
+			L['Show the number of group members missing @NAME.'],
+			6673, -- Battle Shout
+			'group',
+			'UNIT_AURA',
+			function(units, model)
+				local missing = 0
+				local shortest = 0
+				for unit in next, units.group do
+					local found, _, expiration = GetBuff(unit, 6673)
+					if found then
+						if shortest == 0 or expiration < shortest then
+							shortest = expiration
+						end
+					else
+						missing = missing + 1
+					end
+				end
+
+				model.expiration = shortest
+				model.count = missing
+				model.hint = missing ~= 0
+				model.highlight = shortest > 0 and 'good' or nil
 			end,
 		},
 	}
