@@ -545,7 +545,7 @@ do
 		local categoryMask = LibPlayerSpells.constants[category]
 		local exceptions = AsSet({...}, "number", 3)
 		local builders = {}
-		for buff, flags, provider, modified in LibPlayerSpells:IterateSpells(category, "AURA", "CROWD_CTRL DISPEL") do
+		for buff, flags, provider, modified in LibPlayerSpells:IterateSpells(category, "AURA", "CROWD_CTRL DISPEL RAIDBUFF") do
 			local providers = provider ~= buff and FilterOut(AsList(provider, "number"), exceptions)
 			local spells = FilterOut(AsList(modified, "number"), exceptions)
 			if not exceptions[buff] and #spells > 0 and (not providers or #providers > 0) then

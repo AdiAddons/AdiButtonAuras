@@ -31,6 +31,7 @@ AdiButtonAuras:RegisterRules(function()
 			-- import all spell for
 			'MAGE',
 			-- except for
+			  1459, -- Arcane Intellect
 			 12654, -- Ignite (Fire)
 			 41425, -- Hypothermia
 			 45438, -- Ice Block
@@ -129,6 +130,33 @@ AdiButtonAuras:RegisterRules(function()
 					return hasBoneChilling(units, model) or isChilled(units, model)
 				end
 			end)(),
-		}
+		},
+
+		Configure {
+			'ArcaneIntellect',
+			L['Show the number of group members missing @NAME.'],
+			1459, -- Arcane Intellect
+			'group',
+			'UNIT_AURA',
+			function(units, model)
+				local missing = 0
+				local shortest = 0
+				for unit in next, units.group do
+					local found, _, expiration = GetBuff(unit, 1459)
+					if found then
+						if shortest == 0 or expiration < shortest then
+							shortest = expiration
+						end
+					else
+						missing = missing + 1
+					end
+				end
+
+				model.expiration = shortest
+				model.count = missing
+				model.hint = missing ~= 0
+				model.highlight = shortest > 0 and 'good' or nil
+			end,
+		},
 	}
 end)
