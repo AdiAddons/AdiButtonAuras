@@ -48,6 +48,7 @@ AdiButtonAuras:RegisterRules(function()
 			'PRIEST',
 			-- except for
 			   605, -- Mind Control
+			 21562, -- Power Word: Fortitude
 			194384, -- Atonement (Discipline)
 			193223, -- Surrender to Madness (Shadow)
 			196773, -- Inner Focus (Holy honor talent)
@@ -140,6 +141,33 @@ AdiButtonAuras:RegisterRules(function()
 					return isSurrendering(units, model) or hasSurrendered(units, model)
 				end
 			end)(),
+		},
+
+		Configure {
+			'PowerWordFortitude',
+			L['Show the number of group members missing @NAME.'],
+			21562, -- Power Word: Fortitude
+			'group',
+			'UNIT_AURA',
+			function(units, model)
+				local missing = 0
+				local shortest = 0
+				for unit in next, units.group do
+					local found, _, expiration = GetBuff(unit, 21562)
+					if found then
+						if shortest == 0 or expiration < shortest then
+							shortest = expiration
+						end
+					else
+						missing = missing + 1
+					end
+				end
+
+				model.expiration = shortest
+				model.count = missing
+				model.hint = missing ~= 0
+				model.highlight = shortest > 0 and 'good' or nil
+			end,
 		},
 	}
 end)
