@@ -1,10 +1,10 @@
 #### Which version of AdiButtonAuras are you using (enter the exact version number here)?
 
 
-#### How did you install the addon (curse client/manually)?
+#### How did you install the addon (twitch client/manually)?
 
 
-#### If using the curse client, what type of release did you install (alpha/beta/release)?
+#### If using the twitch client, what type of release did you install (alpha/beta/release)?
 
 
 #### If you installed manually, where did you download the addon from?
@@ -17,6 +17,6 @@
   - Your class:
   - Your spec:
   - Name of the spell (and spell id if known):
-  - Source of the spell (core ability/talent/artifact/pvp):
+  - Source of the spell (core ability/talent/pvp):
 
 #### If you have an error report, copy it below:
