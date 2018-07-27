@@ -18,5 +18,6 @@
   - Your spec:
   - Name of the spell (and spell id if known):
   - Source of the spell (core ability/talent/pvp):
+  - Do you use a macro to cast the spell (post the macro if so):
 
 #### If you have an error report, copy it below:
