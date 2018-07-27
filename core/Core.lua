@@ -642,12 +642,12 @@ addon.dynamicUnitConditionals = dynamicUnitConditionals
 
 function addon:UpdateDynamicUnitConditionals()
 	local selfCast, focusCast = GetModifiedClick("SELFCAST"), GetModifiedClick("FOCUSCAST")
-	local enemy = "[@target,harm]"
+	local enemy = "[harm]"
 	local ally
 	if GetCVarBool("autoSelfCast") then
-		ally = "[@target,help,nodead][@player]"
+		ally = "[help,nodead][@player]"
 	else
-		ally = "[@target,help]"
+		ally = "[help]"
 	end
 	if focusCast ~= "NONE" then
 		enemy = "[@focus,mod:"..focusCast.."]"..enemy
