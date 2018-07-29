@@ -44,4 +44,4 @@ ignore:
   - tests
   - doc
   - libs/*/tests
-  - deploy
+  - libs/LibItemBuffs-1.0/extractor
