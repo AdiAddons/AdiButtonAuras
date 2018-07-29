@@ -26,6 +26,7 @@
 ## X-Date: @project-date-iso@
 ## X-License: GPL v3
 ## X-eMail: adirelle@gmail.com
+## X-Curse-Project-ID: 68441
 ## SavedVariables: AdiButtonAurasDB
 
 ## OptionalDeps: Ace3, LibSpellbook-1.0, LibItemBuffs-1.0, LibPlayerSpells-1.0, LibDualSpec-1.0, LibButtonGlow-1.0, LibSharedMedia-3.0, SharedMedia_ButtonHighlight, AdiDebug, Dominos, LibActionButton-1.0, LibActionButton-1.0-ElvUI, Bartender4, Masque

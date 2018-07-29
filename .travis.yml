@@ -24,7 +24,7 @@ before_deploy:
 
 deploy:
   provider: script
-  script: bash .release/release.sh -p $WOWACE_API_TOKEN
+  script: bash .release/release.sh
   skip_cleanup: true
   on:
     repo: AdiAddons/AdiButtonAuras
