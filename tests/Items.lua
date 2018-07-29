@@ -19,7 +19,7 @@ You should have received a copy of the GNU General Public License
 along with AdiButtonAuras. If not, see <http://www.gnu.org/licenses/>.
 --]]
 
-package.path = package.path .. ";./wowmock/?.lua"
+package.path = package.path .. ";./tests/wowmock/?.lua"
 local LuaUnit = require('luaunit')
 local mockagne = require('mockagne')
 local wowmock = require('wowmock')
@@ -41,7 +41,7 @@ function testItems:setup()
 end
 
 function testItems:load()
-	wowmock('../core/Items.lua', G, 'AdiButtonAuras', addon)
+	wowmock('./core/Items.lua', G, 'AdiButtonAuras', addon)
 end
 
 function testItems:testSpell()

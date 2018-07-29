@@ -1,25 +1,41 @@
 sudo: false
-env:
-  global:
-  - LUA=lua5.1
-  - LUAC=luac5.1
+language: minimal
+
 addons:
   apt:
     packages:
-    - lua5.1
     - luarocks
     - liblua5.1-bitop0
+
 install:
 - eval $(luarocks path --bin)
 - luarocks install --local luaunit 2.1
 - luarocks install --local mockagne 1.0
 - luarocks install --local luacheck
-before_script:
-- '$HOME/.luarocks/bin/luacheck . --config .luacheckrc --exclude-files "./tests/*" -qo "011" "111" "112" "113"'
+
 script:
-- cd tests
-- "./cs.sh"
-- "$LUA Items.lua"
+- $HOME/.luarocks/bin/luacheck . --config .luacheckrc --exclude-files "./tests/*" -qo "011" "111" "112" "113"
+- bash ./tests/cs.sh
+- lua ./tests/Items.lua
+
+before_deploy:
+- lua .release/libreplace.lua
+- curl -s https://raw.githubusercontent.com/BigWigsMods/packager/master/release.sh -o .release/release.sh
+
+deploy:
+  provider: script
+  script: bash .release/release.sh -d -p $WOWACE_API_TOKEN
+  skip_cleanup: true
+  on:
+    repo: AdiAddons/AdiButtonAuras
+    all_branches: true
+    condition: "$TRAVIS_BRANCH = master || -n $TRAVIS_TAG"
+
+cache:
+  apt: true
+  directories:
+  - $HOME/.luarocks
+
 notifications:
   email:
     on_failure: change
@@ -29,14 +45,3 @@ notifications:
     - https://webhooks.gitter.im/e/8af376a7b5a9d8919d21
     on_success: change
     on_failure: always
-deploy:
-  provider: script
-  script: "curl -sdS https://www.wowace.com/api/projects/68441/package?token=$WOWACE_API_TOKEN"
-  on:
-    repo: AdiAddons/AdiButtonAuras
-    all_branches: true
-    condition: "$TRAVIS_BRANCH = master || -n $TRAVIS_TAG"
-cache:
-  apt: true
-  directories:
-  - "$HOME/.luarocks"
