@@ -54,9 +54,9 @@ local strtrim = _G.strtrim
 local tonumber = _G.tonumber
 local tostring = _G.tostring
 local type = _G.type
+local UnitCanAssist = _G.UnitCanAssist
+local UnitCanAttack = _G.UnitCanAttack
 local UnitGUID = _G.UnitGUID
-local UnitIsEnemy = _G.UnitIsEnemy
-local UnitIsFriend = _G.UnitIsFriend
 local wipe = _G.wipe
 
 local LibSpellbook = addon.GetLib('LibSpellbook-1.0')
@@ -403,10 +403,10 @@ function overlayPrototype:UpdateDynamicUnits(event, unit)
 		if not unit or unit == "" then
 			if token == "enemy" then
 				unit = not conditional:find("help") and not conditional:find("noharm")
-					and UnitIsEnemy("target", "player") and "target" or ""
+					and UnitCanAttack("player", "target") and "target" or ""
 			elseif token == "ally" then
 				unit = not conditional:find("harm") and not conditional:find("nohelp")
-					and UnitIsFriend("target", "player") and "target" or "player"
+					and UnitCanAssist("player", "target") and "target" or "player"
 			else
 				unit = ""
 			end
