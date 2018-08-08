@@ -210,6 +210,7 @@ local toWatch = {
 	[addonName] = true,
 	["LibActionButton-1.0"] = true,
 	["LibActionButton-1.0-ElvUI"] = true,
+	["LibActionButton-1.0-nMainbar"] = true,
 	Dominos = IsLoadable('Dominos'),
 	Bartender4 = IsLoadable('Bartender4'),
 }
@@ -318,6 +319,16 @@ function addon:ADDON_LOADED(event, name)
 		self:Debug('Found LibActionButton-1.0-ElvUI')
 		toWatch["LibActionButton-1.0-ElvUI"] = nil
 		local lab = GetLib('LibActionButton-1.0-ElvUI')
+		lab.RegisterCallback(self, 'OnButtonCreated', UpdateHandler)
+		lab.RegisterCallback(self, 'OnButtonUpdate', UpdateHandler)
+		for button in pairs(lab:GetAllButtons()) do
+			local _ = self:GetOverlay(button)
+		end
+	end
+    	if toWatch["LibActionButton-1.0-nMainbar"] and GetLib('LibActionButton-1.0-nMainbar', true) then
+		self:Debug('Found LibActionButton-1.0-nMainbar')
+		toWatch["LibActionButton-1.0-nMainbar"] = nil
+		local lab = GetLib('LibActionButton-1.0-nMainbar')
 		lab.RegisterCallback(self, 'OnButtonCreated', UpdateHandler)
 		lab.RegisterCallback(self, 'OnButtonUpdate', UpdateHandler)
 		for button in pairs(lab:GetAllButtons()) do
