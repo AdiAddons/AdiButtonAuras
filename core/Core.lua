@@ -218,9 +218,9 @@ local toWatch = {
 local function UpdateHandler(event, button)
 	local overlay = addon:GetOverlay(button)
 	if overlay and overlay:IsVisible() then
+		overlay:ApplySkin()
 		return overlay:UpdateAction(event)
 	end
-
 end
 
 local CONFIG_CHANGED = addonName..'_Config_Changed'

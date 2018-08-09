@@ -172,6 +172,8 @@ function overlayPrototype:ApplyHighlightSkin()
 end
 
 function overlayPrototype:ApplySkin()
+	local width, height = self.button:GetSize()
+	self:SetSize(width or 36, height or 36)
 	if not self:Masque() then
 		self:ApplyHighlightSkin()
 	end
