@@ -19,6 +19,10 @@ You should have received a copy of the GNU General Public License
 along with AdiButtonAuras. If not, see <http://www.gnu.org/licenses/>.
 --]]
 
+local _, addon = ...
+
+local GetUnitSpeed = GetUnitSpeed
+
 AdiButtonAuras:RegisterRules(function()
 	Debug('Adding common rules')
 
@@ -256,6 +260,56 @@ AdiButtonAuras:RegisterRules(function()
 				end
 			end
 		})
+	end
+
+	--------------------------------------------------------------------------
+	-- SNARES
+	--------------------------------------------------------------------------
+
+	debuffs = {}
+	local snares = {}
+
+	for debuff, _, _, modified, _, category in LibPlayerSpells:IterateSpells("SNARE") do
+		debuffs[debuff] = true
+		if type(modified) == 'table' then
+			for _, spell in next, modified do
+				snares[spell] = category
+			end
+		else
+			snares[modified] = category
+		end
+	end
+
+	local desc = format(
+		L['Show the percentage speed of %s when snared.'] .. ' [%s]',
+		DescribeAllTokens('enemy'),
+		DescribeLPSSource(PLAYER_CLASS)
+	)
+	local IterateAuras = addon.GetAuraIterator('HARMFUL')
+
+	local function SnaresHandler(units, model)
+		local unit = units.enemy
+		if not unit or unit == '' then return end
+
+		for _, id in IterateAuras(unit) do
+			if debuffs[id] then
+				model.count = GetUnitSpeed(unit) / 7 * 100
+				return true
+			end
+		end
+	end
+
+	for spell, category in next, snares do
+		if category == PLAYER_CLASS then
+			rules[#rules + 1] = Configure {
+				'Snare:' .. spell,
+				desc,
+				spell,
+				'enemy',
+				'UNIT_AURA',
+				SnaresHandler,
+			}
+		end
 	end
 
 	--------------------------------------------------------------------------
