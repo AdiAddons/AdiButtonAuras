@@ -86,6 +86,7 @@ addon.DEFAULT_SETTINGS = {
 			Disease         = { 0.6, 0.4, 0.0, 1.0 },
 			Magic           = { 0.2, 0.6, 1.0, 1.0 },
 			Poison          = { 0.0, 0.6, 0.0, 1.0 },
+			Enrage          = { 0.9, 0.6, 0.1, 1.0 },
 			countdownLow    = { 1.0, 0.0, 0.0 },
 			countdownMedium = { 1.0, 1.0, 0.0 },
 			countdownHigh   = { 1.0, 1.0, 1.0 },

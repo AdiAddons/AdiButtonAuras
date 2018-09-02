@@ -177,6 +177,7 @@ AdiButtonAuras:RegisterRules(function()
 	local DISEASE   = LibPlayerSpells.constants.DISEASE
 	local MAGIC     = LibPlayerSpells.constants.MAGIC
 	local POISON    = LibPlayerSpells.constants.POISON
+	local ENRAGE    = LibPlayerSpells.constants.ENRAGE
 	local inclusionMask = bor(LibPlayerSpells.constants[PLAYER_CLASS], LibPlayerSpells.constants.RACIAL)
 
 	for spell, flags, _, _, _, category, dispelFlags in LibPlayerSpells:IterateSpells('DISPEL') do
@@ -194,6 +195,7 @@ AdiButtonAuras:RegisterRules(function()
 				Disease = band(dispelFlags, DISEASE) > 0 or nil,
 				Magic   = band(dispelFlags, MAGIC) > 0 or nil,
 				Poison  = band(dispelFlags, POISON) > 0 or nil,
+				Enrage  = band(dispelFlags, ENRAGE) > 0 or nil,
 			}
 
 			if next(dispellable) then

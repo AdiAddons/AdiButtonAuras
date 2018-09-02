@@ -479,10 +479,10 @@ local modelProxy = setmetatable({}, {
 				return error(format("Invalid %s, should be false or true, not %s", key, type(value)), 2)
 			end
 		elseif key == "dispel" then
-			if value ~= 'Curse' and value ~= 'Disease' and value ~= 'Magic' and value ~= 'Poison' and value ~= nil then
+			if value ~= 'Curse' and value ~= 'Disease' and value ~= 'Magic' and value ~= 'Poison' and value ~= 'Enrage' and value ~= nil then
 				return error(
 					format(
-						'Invalid %s, should be one of "Curse", "Disease", "Magic", "Posion" or nil, not %s',
+						'Invalid %s, should be one of "Curse", "Disease", "Magic", "Posion", "Enrage" or nil, not %s',
 						key, tostring(value)
 					),
 					2

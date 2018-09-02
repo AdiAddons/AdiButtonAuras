@@ -106,10 +106,12 @@ L["Dispel border: Curse"] = true
 L["Dispel border: Disease"] = true
 L["Dispel border: Magic"] = true
 L["Dispel border: Poison"] = true
+L["Dispel border: Enrage"] = true
 L["The color used for dispels of type \"Curse\"."] = true
 L["The color used for dispels of type \"Disease\"."] = true
 L["The color used for dispels of type \"Magic\"."] = true
 L["The color used for dispels of type \"Poison\"."] = true
+L["The color user for dispels of type \"Enrage\"."] = true
 
 -- RuleDSL.lua
 L["%s when %s %s is found on %s."] = true
