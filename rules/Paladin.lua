@@ -213,7 +213,7 @@ AdiButtonAuras:RegisterRules(function()
 			),
 			203538, -- Greater Blessing of Kings (Retribution)
 			'group',
-			'UNIT_AURA',
+			{'GROUP_ROSTER_UPDATE', 'UNIT_AURA'},
 			function(units, model)
 				local found, _, expiration
 				for unit in next, units.group do
@@ -242,7 +242,7 @@ AdiButtonAuras:RegisterRules(function()
 			),
 			203539, -- Greater Blessing of Kings (Retribution)
 			'group',
-			'UNIT_AURA',
+			{'GROUP_ROSTER_UPDATE', 'UNIT_AURA'},
 			function(units, model)
 				local found, _, expiration
 				for unit in next, units.group do

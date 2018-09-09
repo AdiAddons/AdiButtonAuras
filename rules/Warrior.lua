@@ -63,7 +63,7 @@ AdiButtonAuras:RegisterRules(function()
 			L['Show the number of group members missing @NAME.'],
 			6673, -- Battle Shout
 			'group',
-			'UNIT_AURA',
+			{'GROUP_ROSTER_UPDATE', 'UNIT_AURA'},
 			function(units, model)
 				local missing = 0
 				local shortest = 0

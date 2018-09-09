@@ -104,7 +104,7 @@ AdiButtonAuras:RegisterRules(function()
 			format(L['Show the shortest duration and the number of group members with %s.'], GetSpellInfo(194384)), -- Atonement
 			186263, -- Shadow Mend (Discipline)
 			'group',
-			'UNIT_AURA',
+			{'GROUP_ROSTER_UPDATE', 'UNIT_AURA'},
 			function(units, model)
 				local count, minExpiration = 0
 				for unit in next, units.group do
@@ -148,7 +148,7 @@ AdiButtonAuras:RegisterRules(function()
 			L['Show the number of group members missing @NAME.'],
 			21562, -- Power Word: Fortitude
 			'group',
-			'UNIT_AURA',
+			{'GROUP_ROSTER_UPDATE', 'UNIT_AURA'},
 			function(units, model)
 				local missing = 0
 				local shortest = 0
