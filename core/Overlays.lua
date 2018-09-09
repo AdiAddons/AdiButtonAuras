@@ -298,6 +298,7 @@ function overlayPrototype:SetAction(event, actionType, actionId, macroConditiona
 				if strmatch(cond, 'mod:') then
 					events.MODIFIER_STATE_CHANGED = 'UpdateDynamicUnits'
 				end
+				self:RegisterEvent('UNIT_FACTION')
 				hasDynamicUnits = true
 			end
 		end
@@ -351,6 +352,12 @@ end
 
 function overlayPrototype:ACTIONBAR_SLOT_CHANGED(event, actionId)
 	if actionId == 0 or actionId == self:GetActionId() then
+		self:UpdateDynamicUnits(event)
+	end
+end
+
+function overlayPrototype:UNIT_FACTION(event, unit)
+	if self.units[unit] or unit == self.unitMap.ally or unit == self.unitMap.enemy or (self.units.group and self.unitMap.group[unit]) then
 		self:UpdateDynamicUnits(event)
 	end
 end
