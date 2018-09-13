@@ -66,22 +66,28 @@ AdiButtonAuras:RegisterRules(function()
 			{'GROUP_ROSTER_UPDATE', 'UNIT_AURA'},
 			function(units, model)
 				local missing = 0
-				local shortest = 0
+				local shortest
 				for unit in next, units.group do
-					local found, _, expiration = GetBuff(unit, 6673)
-					if found then
-						if shortest == 0 or expiration < shortest then
-							shortest = expiration
+					if UnitIsPlayer(unit) and not UnitIsDeadOrGhost(unit) then
+						local found, _, expiration = GetBuff(unit, 6673)
+						if found then
+							if not shortest or expiration < shortest then
+								shortest = expiration
+							end
+						else
+							missing = missing + 1
 						end
-					else
-						missing = missing + 1
 					end
 				end
 
-				model.expiration = shortest
-				model.count = missing
-				model.hint = missing ~= 0
-				model.highlight = shortest > 0 and 'good' or nil
+				if shortest then
+					model.expiration = shortest
+					model.highlight = 'good'
+				end
+				if missing > 0 then
+					model.count = missing
+					model.hint = true
+				end
 			end,
 		},
 	}
