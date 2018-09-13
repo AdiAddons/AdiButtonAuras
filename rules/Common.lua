@@ -291,9 +291,10 @@ AdiButtonAuras:RegisterRules(function()
 		local unit = units.enemy
 		if not unit or unit == '' then return end
 
-		for _, id in IterateAuras(unit) do
+		for _, id, _, expiration in IterateAuras(unit) do
 			if debuffs[id] then
 				model.count = GetUnitSpeed(unit) / 7 * 100
+				model.expiration = expiration
 				return true
 			end
 		end
