@@ -24,6 +24,7 @@ local addonName, addon = ...
 local _G = _G
 local GameTooltip = _G.GameTooltip
 local GetActionInfo = _G.GetActionInfo
+local GetAzeritePowerInfo = _G.C_AzeriteEmpoweredItem.GetPowerInfo
 local GetItemInfo = _G.GetItemInfo
 local GetItemSpell = _G.GetItemSpell
 local GetMacroInfo = _G.GetMacroInfo
@@ -140,8 +141,8 @@ local function AddAzeriteInfo(tooltip, _, _, powerId)
 	if not powerId or IsDisabled() then return end
 	tooltip:AddLine(' ')
 	tooltip:AddDoubleLine("Azerite power id:", powerId)
-	local spellId = tooltip:GetOwner():GetSpellID()
-	return AddSpellInfo(tooltip, "azerite", spellId)
+	local info = GetAzeritePowerInfo(powerId)
+	return AddSpellInfo(tooltip, "azerite", info.spellID)
 end
 
 local function AddItemRefInfo(link)
