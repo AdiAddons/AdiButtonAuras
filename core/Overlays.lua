@@ -65,6 +65,12 @@ local MOUSEOVER_CHANGED = addon.MOUSEOVER_CHANGED
 local MOUSEOVER_TICK = addon.MOUSEOVER_TICK
 local GROUP_CHANGED = addon.GROUP_CHANGED
 
+local FLASHABLE_HIGHLIGHTS = {
+	good = true,
+	bad = true,
+	dispel = true,
+}
+
 ------------------------------------------------------------------------------
 -- Unit handling
 ------------------------------------------------------------------------------
@@ -547,7 +553,7 @@ function overlayPrototype:UpdateState(event)
 			end
 		end
 
-		if prefs.flashPromotion[self.spellId] and (model.highlight == "good" or model.highlight == "bad") then
+		if prefs.flashPromotion[self.spellId] and model.highlight and FLASHABLE_HIGHLIGHTS[model.highlight] then
 			model.highlight, model.flash = nil, true
 		end
 	end
