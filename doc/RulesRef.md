@@ -287,6 +287,7 @@ ShowPower {
 * `"darken"` (darkens the button)
 * `"lighten"` (lightens the button)
 * `"hint"` (displays a rotary star)
+* `"dispel"` (displays a border colored according to the aura type)
 * `"stacks"` (not really a highlight: shows the number of aura stacks)
 
 <a name="unit-id"></a>

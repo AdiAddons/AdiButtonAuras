@@ -65,6 +65,7 @@ The handlers are functions called to refresh the data. Their signature is `funct
    * `"hint"` - rotating star animation
    * `"lighten"` - lighter button icon
    * `"darken"` - darker button icon
+   * `"dispel"` - border colored according to debuff type
  * `.hint`: an effect to apply to the button (spark animation inside the button) that is intended to be visually not as strong as the glowing animation for "flash".
  * `.flash`: an effect to apply to the button (glowing animation). Intended as a replacement of `model.highlight = "flash"`, so that it could be shown together with the good/bad border.
 
