@@ -213,7 +213,7 @@ if Masque then
 	function addon:PLAYER_LOGIN(event)
 		Masque:Register(addonName, function(_, _, _, _, _, _, disabled)
 			if disabled then
-				addon:SendMessage(THEME_CHANGED)
+				addon:SendMessage(addon.THEME_CHANGED)
 			end
 		end)
 		group:ReSkin()
