@@ -199,30 +199,8 @@ do
 end
 
 ------------------------------------------------------------------------------
--- Initialization
+-- Event names
 ------------------------------------------------------------------------------
-
-local function IsLoadable(addon)
-	local enabled, loadable = select(4, GetAddOnInfo(addon))
-	return enabled and loadable and true or nil
-end
-
-local toWatch = {
-	[addonName] = true,
-	["LibActionButton-1.0"] = true,
-	["LibActionButton-1.0-ElvUI"] = true,
-	["LibActionButton-1.0-nMainbar"] = true,
-	Dominos = IsLoadable('Dominos'),
-	Bartender4 = IsLoadable('Bartender4'),
-}
-
-local function UpdateHandler(event, button)
-	local overlay = addon:GetOverlay(button)
-	if overlay and overlay:IsVisible() then
-		overlay:ApplySkin()
-		return overlay:UpdateAction(event)
-	end
-end
 
 local CONFIG_CHANGED = addonName..'_Config_Changed'
 local THEME_CHANGED = addonName..'_Theme_Changed'
@@ -232,125 +210,118 @@ addon.RULES_UPDATED = RULES_UPDATED
 addon.CONFIG_CHANGED = CONFIG_CHANGED
 addon.THEME_CHANGED = THEME_CHANGED
 
-function addon:ADDON_LOADED(event, name)
-	-- Initialization
-	if name == addonName then
-		self:Debug(name, 'loaded')
-		toWatch[addonName] = nil
+------------------------------------------------------------------------------
+-- Initialization
+------------------------------------------------------------------------------
 
-		self.db = GetLib('AceDB-3.0'):New(addonName.."DB", self.DEFAULT_SETTINGS, true)
-
-		-- migrate SV from old inverted to new missing
-		local profile = self.db.profile
-		if profile.inverted then
-			for key in pairs(profile.inverted) do
-				if profile.flashPromotion[key] then
-					profile.missing[key] = "flash"
-					profile.flashPromotion[key] = nil
-				else
-					profile.missing[key] = "highlight"
-				end
-			end
-			profile.inverted = nil
-		end
-
-		self.db.RegisterCallback(self, "OnProfileChanged")
-		self.db.RegisterCallback(self, "OnProfileCopied", "OnProfileChanged")
-		self.db.RegisterCallback(self, "OnProfileReset", "OnProfileChanged")
-
-		GetLib('LibDualSpec-1.0'):EnhanceDatabase(self.db, addonName)
-
-		self:ScanButtons("ActionButton", NUM_ACTIONBAR_BUTTONS)
-		self:ScanButtons("BonusActionButton", NUM_ACTIONBAR_BUTTONS)
-		self:ScanButtons("MultiBarRightButton", NUM_ACTIONBAR_BUTTONS)
-		self:ScanButtons("MultiBarLeftButton", NUM_ACTIONBAR_BUTTONS)
-		self:ScanButtons("MultiBarBottomRightButton", NUM_ACTIONBAR_BUTTONS)
-		self:ScanButtons("MultiBarBottomLeftButton", NUM_ACTIONBAR_BUTTONS)
-		self:ScanButtons("StanceButton", NUM_STANCE_SLOTS)
-		self:ScanButtons("PetActionButton", NUM_PET_ACTION_SLOTS)
-
-		hooksecurefunc('ActionButton_Update', function(button)
-			return UpdateHandler('ActionButton_Update', button)
-		end)
-		hooksecurefunc('PetActionBar_Update', function()
-			for i = 1, NUM_PET_ACTION_SLOTS do
-				UpdateHandler('PetActionBar_Update', _G['PetActionButton'..i])
-			end
-		end)
-		hooksecurefunc('StanceBar_UpdateState', function()
-			for i = 1, NUM_STANCE_SLOTS do
-				UpdateHandler('StanceBar_UpdateState', _G['StanceButton'..i])
-			end
-		end)
-
-		self:RegisterEvent('UPDATE_MACROS')
-
-		self:UpdateDynamicUnitConditionals()
-
-		local LibSpellbook = GetLib('LibSpellbook-1.0')
-		LibSpellbook.RegisterCallback(addon, 'LibSpellbook_Spells_Changed')
-		if LibSpellbook:HasSpells() then
-			addon:LibSpellbook_Spells_Changed('OnLoad')
-		end
-
-		LSM.RegisterCallback(self, "LibSharedMedia_SetGlobal", "OnMediaUpdate")
-		LSM.RegisterCallback(self, "LibSharedMedia_Registered", "OnMediaUpdate")
-
-		self:SendMessage(CONFIG_CHANGED)
-		self:SendMessage(THEME_CHANGED)
+local function UpdateHandler(event, button)
+	local overlay = addon:GetOverlay(button)
+	if overlay and overlay:IsVisible() then
+		overlay:ApplySkin()
+		return overlay:UpdateAction(event)
 	end
+end
 
-	-- Supported addons and libraries
-	if toWatch.Dominos and (name == 'Dominos' or IsAddOnLoaded('Dominos')) then
-		self:Debug('Dominos loaded')
-		toWatch.Dominos = nil
+function addon:ADDON_LOADED(event, name)
+	if name ~= addonName then
+		return
+	end
+	self:UnregisterEvent(event)
+	self[event] = nil
+
+	self:Initialize()
+
+	if IsAddOnLoaded('Dominos') then
 		self:ScanButtons("DominosActionButton", 120)
 	end
-	if toWatch["LibActionButton-1.0"] and GetLib('LibActionButton-1.0', true) then
-		self:Debug('Found LibActionButton-1.0')
-		toWatch["LibActionButton-1.0"] = nil
-		local lab = GetLib('LibActionButton-1.0')
-		lab.RegisterCallback(self, 'OnButtonCreated', UpdateHandler)
-		lab.RegisterCallback(self, 'OnButtonUpdate', UpdateHandler)
-		for button in pairs(lab:GetAllButtons()) do
-			local _ = self:GetOverlay(button)
-		end
-	end
-	if toWatch["LibActionButton-1.0-ElvUI"] and GetLib('LibActionButton-1.0-ElvUI', true) then
-		self:Debug('Found LibActionButton-1.0-ElvUI')
-		toWatch["LibActionButton-1.0-ElvUI"] = nil
-		local lab = GetLib('LibActionButton-1.0-ElvUI')
-		lab.RegisterCallback(self, 'OnButtonCreated', UpdateHandler)
-		lab.RegisterCallback(self, 'OnButtonUpdate', UpdateHandler)
-		for button in pairs(lab:GetAllButtons()) do
-			local _ = self:GetOverlay(button)
-		end
-	end
-		if toWatch["LibActionButton-1.0-nMainbar"] and GetLib('LibActionButton-1.0-nMainbar', true) then
-		self:Debug('Found LibActionButton-1.0-nMainbar')
-		toWatch["LibActionButton-1.0-nMainbar"] = nil
-		local lab = GetLib('LibActionButton-1.0-nMainbar')
-		lab.RegisterCallback(self, 'OnButtonCreated', UpdateHandler)
-		lab.RegisterCallback(self, 'OnButtonUpdate', UpdateHandler)
-		for button in pairs(lab:GetAllButtons()) do
-			local _ = self:GetOverlay(button)
-		end
-	end
-	if toWatch.Bartender4 and (name == 'Bartender4' or IsAddOnLoaded('Bartender4')) then
-		self:Debug('Bartender4 loaded')
-		toWatch.Bartender4 = nil
+
+	if IsAddOnLoaded('Bartender4') then
 		self:ScanButtons("BT4Button", 120)
 		self:ScanButtons("BT4PetButton", NUM_PET_ACTION_SLOTS)
 		self:ScanButtons("BT4StanceButton", NUM_STANCE_SLOTS)
 	end
 
-	if not next(toWatch) then
-		self:Debug('No more addons to watch.')
-		self:UnregisterEvent('ADDON_LOADED')
+	-- LibActionButton support
+	for _, libName in pairs{
+		'LibActionButton-1.0',
+		'LibActionButton-1.0-ElvUI',
+		'LibActionButton-1.0-nMainbar'
+	} do
+		local lib = GetLib(libName, true)
+		if lib then
+			lib.RegisterCallback(self, 'OnButtonCreated', UpdateHandler)
+			lib.RegisterCallback(self, 'OnButtonUpdate', UpdateHandler)
+			for button in pairs(lib:GetAllButtons()) do
+				local _ = self:GetOverlay(button)
+			end
+		end
 	end
 end
 
 addon:RegisterEvent('ADDON_LOADED')
+
+function addon:Initialize()
+	self.db = GetLib('AceDB-3.0'):New(addonName.."DB", self.DEFAULT_SETTINGS, true)
+
+	-- migrate SV from old inverted to new missing
+	local profile = self.db.profile
+	if profile.inverted then
+		for key in pairs(profile.inverted) do
+			if profile.flashPromotion[key] then
+				profile.missing[key] = "flash"
+				profile.flashPromotion[key] = nil
+			else
+				profile.missing[key] = "highlight"
+			end
+		end
+		profile.inverted = nil
+	end
+
+	self.db.RegisterCallback(self, "OnProfileChanged")
+	self.db.RegisterCallback(self, "OnProfileCopied", "OnProfileChanged")
+	self.db.RegisterCallback(self, "OnProfileReset", "OnProfileChanged")
+
+	GetLib('LibDualSpec-1.0'):EnhanceDatabase(self.db, addonName)
+
+	self:ScanButtons("ActionButton", NUM_ACTIONBAR_BUTTONS)
+	self:ScanButtons("BonusActionButton", NUM_ACTIONBAR_BUTTONS)
+	self:ScanButtons("MultiBarRightButton", NUM_ACTIONBAR_BUTTONS)
+	self:ScanButtons("MultiBarLeftButton", NUM_ACTIONBAR_BUTTONS)
+	self:ScanButtons("MultiBarBottomRightButton", NUM_ACTIONBAR_BUTTONS)
+	self:ScanButtons("MultiBarBottomLeftButton", NUM_ACTIONBAR_BUTTONS)
+	self:ScanButtons("StanceButton", NUM_STANCE_SLOTS)
+	self:ScanButtons("PetActionButton", NUM_PET_ACTION_SLOTS)
+
+	hooksecurefunc('ActionButton_Update', function(button)
+		return UpdateHandler('ActionButton_Update', button)
+	end)
+	hooksecurefunc('PetActionBar_Update', function()
+		for i = 1, NUM_PET_ACTION_SLOTS do
+			UpdateHandler('PetActionBar_Update', _G['PetActionButton'..i])
+		end
+	end)
+	hooksecurefunc('StanceBar_UpdateState', function()
+		for i = 1, NUM_STANCE_SLOTS do
+			UpdateHandler('StanceBar_UpdateState', _G['StanceButton'..i])
+		end
+	end)
+
+	self:RegisterEvent('UPDATE_MACROS')
+
+	self:UpdateDynamicUnitConditionals()
+
+	local LibSpellbook = GetLib('LibSpellbook-1.0')
+	LibSpellbook.RegisterCallback(addon, 'LibSpellbook_Spells_Changed')
+	if LibSpellbook:HasSpells() then
+		addon:LibSpellbook_Spells_Changed('OnLoad')
+	end
+
+	LSM.RegisterCallback(self, "LibSharedMedia_SetGlobal", "OnMediaUpdate")
+	LSM.RegisterCallback(self, "LibSharedMedia_Registered", "OnMediaUpdate")
+
+	self:SendMessage(CONFIG_CHANGED)
+	self:SendMessage(THEME_CHANGED)
+end
 
 function addon:OnProfileChanged()
 	self:SendMessage(CONFIG_CHANGED)
