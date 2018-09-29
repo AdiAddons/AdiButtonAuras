@@ -174,9 +174,7 @@ end
 function overlayPrototype:ApplySkin()
 	local width, height = self.button:GetSize()
 	self:SetSize(width or 36, height or 36)
-	if not self:Masque() then
-		self:ApplyHighlightSkin()
-	end
+	self:ApplyHighlightSkin()
 	self:ApplyFont(self.Timer)
 	self:ApplyFont(self.Count)
 end
@@ -185,31 +183,45 @@ end
 -- Masque support
 ------------------------------------------------------------------------------
 
-local Masque, MasqueVersion = addon.GetLib('Masque', true)
+local Masque = addon.GetLib('Masque', true)
 if Masque then
 	local group = Masque:Group(addonName)
 
-	-- Provide a fake background to Masque, to avoid masking the underlying button
+	-- Provide a fake background to Masque, to avoid hiding the underlying button
 	local NOOP = function() end
 	local fakeBackground = setmetatable({}, { __index = function() return NOOP end})
 
-	function overlayPrototype:Masque()
-		if not self.masqueData then
-			self.masqueData = {
-				Border = self.Highlight,
-				Normal = false,
-				FloatingBG = fakeBackground,
-			}
-			group:AddButton(self, self.masqueData)
-		end
-		return not group.db.Disabled
+	local DefaultInitializeDisplay = overlayPrototype.InitializeDisplay
+	overlayPrototype.InitializeDisplay = function(button)
+		DefaultInitializeDisplay(button)
+		group:AddButton(button, {
+			Border = button.Highlight,
+			Normal = false,
+			FloatingBG = fakeBackground,
+		})
 	end
 
-	Masque.Register(addonName, function() addon:SendMessage(addon.THEME_CHANGED) end)
-else
-	function overlayPrototype:Masque()
-		return false
+	local DefaultApplyHighlightSkin = overlayPrototype.ApplyHighlightSkin
+	overlayPrototype.ApplyHighlightSkin = function(button)
+		if group.db.Disabled then
+			return DefaultApplyHighlightSkin(button)
+		end
 	end
+
+	-- Reskin on PLAYER_LOGIN since the author of Masque will not admit its design is flawed
+	-- See https://github.com/StormFX/Masque/issues/41
+	function addon:PLAYER_LOGIN(event)
+		Masque:Register(addonName, function(_, _, _, _, _, _, disabled)
+			if disabled then
+				addon:SendMessage(THEME_CHANGED)
+			end
+		end)
+		group:ReSkin()
+
+		self:UnregisterEvent(event)
+		self[event] = nil
+	end
+	addon:RegisterEvent('PLAYER_LOGIN')
 end
 
 ------------------------------------------------------------------------------
