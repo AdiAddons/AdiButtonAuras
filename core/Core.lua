@@ -222,6 +222,27 @@ local function UpdateHandler(event, button)
 	end
 end
 
+local labs = {}
+function api:RegisterLAB(libName)
+	assert(type(libName) == "string", format("Bad argument to 'RegisterLAB', expected string, got '%s'", type(libName)))
+
+	if not libName:match("LibActionButton%-1%.0") then
+		error(format("Bad argument to 'RegisterLAB', expected 'LibActionButton-1.0*', got '%s'", libName), 2)
+	end
+
+	if not labs[libName] then
+		local lib = GetLib(libName, true)
+		if lib then
+			lib.RegisterCallback(addon, 'OnButtonCreated', UpdateHandler)
+			lib.RegisterCallback(addon, 'OnButtonUpdate', UpdateHandler)
+			for button in pairs(lib:GetAllButtons()) do
+				local _ = addon:GetOverlay(button)
+			end
+			labs[libName] = true
+		end
+	end
+end
+
 function addon:ADDON_LOADED(event, name)
 	if name ~= addonName then
 		return
@@ -242,20 +263,9 @@ function addon:ADDON_LOADED(event, name)
 	end
 
 	-- LibActionButton support
-	for _, libName in pairs{
-		'LibActionButton-1.0',
-		'LibActionButton-1.0-ElvUI',
-		'LibActionButton-1.0-nMainbar'
-	} do
-		local lib = GetLib(libName, true)
-		if lib then
-			lib.RegisterCallback(self, 'OnButtonCreated', UpdateHandler)
-			lib.RegisterCallback(self, 'OnButtonUpdate', UpdateHandler)
-			for button in pairs(lib:GetAllButtons()) do
-				local _ = self:GetOverlay(button)
-			end
-		end
-	end
+	api:RegisterLAB('LibActionButton-1.0')
+	api:RegisterLAB('LibActionButton-1.0-ElvUI')
+	api:RegisterLAB('LibActionButton-1.0-nMainbar')
 end
 
 addon:RegisterEvent('ADDON_LOADED')
