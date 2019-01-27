@@ -34,12 +34,15 @@ AdiButtonAuras:RegisterRules(function()
 			114108, -- Soul of the Forest (Restoration talent)
 			135700, -- Clearcasting (Feral)
 			145152, -- Bloodtalons (Feral talent)
+			203059, -- King of the Jungle (Feral honor talent)
 			203407, -- Revitalize (Restoration honor talent)
 			203554, -- Focused Growth (Restoration honor talent)
 			207386, -- Spring Blossoms (Restoration talent)
 			207640, -- Abundance (Restoration talent)
 			209746, -- Moonkin Aura (Balance honor talent)
+			236187, -- Master Shapeshifter (Guardian honor talent)
 			279709, -- Starfond (Balance talent)
+			285646, -- Scent of Blood (Feral talent)
 		},
 
 		-- show combo points on spenders
@@ -50,6 +53,7 @@ AdiButtonAuras:RegisterRules(function()
 				 22570, -- Maim (Feral)
 				 52610, -- Savage Roar (Feral talent)
 				236026, -- Enraged Maim (Feral honor talent)
+				285381, -- Primal Wrath (Feral talent)
 			},
 			'ComboPoints'
 		},
@@ -106,6 +110,23 @@ AdiButtonAuras:RegisterRules(function()
 					model.expiration = startTime + duration
 				end
 			end,
+		},
+
+		-- show Scent of Blood on Swipe
+		Configure {
+			'ScentOfBlood',
+			BuildDesc(),
+			106785, -- Swipe
+			'player',
+			'UNIT_AURA',
+			function(_, model)
+				local found, _, expiration = GetPlayerBuff('player', 285646) -- Scent of Blood (Feral talent)
+				if found then
+					model.highlight = 'good'
+					model.expiration = expiration
+				end
+			end,
+			285564, -- Scent of Blood (Feral talent)
 		},
 	}
 end)
