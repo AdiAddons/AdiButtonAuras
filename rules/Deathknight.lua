@@ -56,6 +56,16 @@ AdiButtonAuras:RegisterRules(function()
 			'enemy',
 		},
 
+		ShowStacks {
+			 45524, -- Chains of Ice
+			281209, -- Cold Heart (Frost talent)
+			20,
+			'player',
+			1,
+			'hint',
+			281208, -- Cold Heart (Frost talent)
+		},
+
 		Configure {
 			'IcyTalons',
 			BuildDesc('HELPFUL PLAYER', 'good', 'player', 194879), -- Icy Talons
