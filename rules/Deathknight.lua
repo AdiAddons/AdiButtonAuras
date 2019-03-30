@@ -32,10 +32,10 @@ AdiButtonAuras:RegisterRules(function()
 			'DEATHKNIGHT',
 			-- except for
 			194879, -- Icy Talons
-			200646, -- Unholy Mutation (Unholy honor talent)
 			207203, -- Frost Shield (Frost talent)
 			273977, -- Grip of the Dead (Blood talent)
 			281209, -- Cold Heart (Frost talent)
+			287254, -- Dead of Winter (Frost honor talent)
 		},
 
 		ShowStacks {
@@ -98,6 +98,21 @@ AdiButtonAuras:RegisterRules(function()
 			'PLAYER_TOTEM_UPDATE',
 			function(_, model)
 				local found, _, startTime, duration = GetTotemInfo(3) -- Gargoyle is always the third totem
+				if found then
+					model.highlight = 'good'
+					model.expiration = startTime + duration
+				end
+			end,
+		},
+
+		Configure {
+			'RaiseAbomination',
+			L['Show the duration of @NAME.'],
+			288853, -- Summon Gargoyle (Unholy talent)
+			'player',
+			'PLAYER_TOTEM_UPDATE',
+			function(_, model)
+				local found, _, startTime, duration = GetTotemInfo(1) -- Raise Abomination is always the first totem
 				if found then
 					model.highlight = 'good'
 					model.expiration = startTime + duration
