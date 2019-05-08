@@ -85,6 +85,36 @@ function private.GetThemeOptions(addon, addonName)
 						step = 1,
 						order = 20,
 					},
+					_empty = {
+						name = '',
+						order = 30,
+						type = 'description',
+					},
+					textPosition = {
+						name = L['Position'],
+						type = 'select',
+						values = {
+							BOTTOM = 'BOTTOM',
+							TOP = 'TOP',
+						},
+						order = 40,
+					},
+					textXOffset = {
+						name = L['x Offset'],
+						type = 'range',
+						min = -20,
+						max = 20,
+						step = 1,
+						order = 50,
+					},
+					textYOffset = {
+						name = L['y Offset'],
+						type = 'range',
+						min = -20,
+						max = 20,
+						step = 1,
+						order = 60,
+					},
 				},
 			},
 			colors = {

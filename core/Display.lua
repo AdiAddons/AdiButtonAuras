@@ -101,6 +101,7 @@ local function Text_OnShowHide(text)
 end
 
 function overlayPrototype:InitializeDisplay()
+	local options = addon.db.profile
 	self:SetFrameLevel(self.button.cooldown:GetFrameLevel()+1)
 	self.parentCount = _G[self.button:GetName().."Count"]
 
@@ -117,8 +118,8 @@ function overlayPrototype:InitializeDisplay()
 
 	local timer = self:CreateFontString(self:GetName().."Timer", "OVERLAY")
 	timer:SetFont(fontFile, fontSize, fontFlag)
-	timer:SetPoint("BOTTOMLEFT", 2, 2)
-	timer:SetPoint("BOTTOMRIGHT", -2, 2)
+	timer:SetPoint(options.textPosition .. "LEFT", options.textXOffset, options.textYOffset)
+	timer:SetPoint(options.textPosition .. "RIGHT", -options.textXOffset, options.textYOffset)
 	timer:SetJustifyV("BOTTOM")
 	timer.Update = Timer_Update
 	timer:Hide()
@@ -128,8 +129,8 @@ function overlayPrototype:InitializeDisplay()
 
 	local count = self:CreateFontString(self:GetName().."Count", "OVERLAY")
 	count:SetFont(fontFile, fontSize, fontFlag)
-	count:SetPoint("BOTTOMLEFT", 2, 2)
-	count:SetPoint("BOTTOMRIGHT", -2, 2)
+	count:SetPoint(options.textPosition .. "LEFT", options.textXOffset, options.textYOffset)
+	count:SetPoint(options.textPosition .. "RIGHT", -options.textXOffset, options.textYOffset)
 	count:SetJustifyV("BOTTOM")
 	count:Hide()
 	hooksecurefunc(count, "Show", Text_OnShowHide)
@@ -157,11 +158,16 @@ end
 ------------------------------------------------------------------------------
 
 function overlayPrototype:ApplyFont(fontString)
+	local options = addon.db.profile
 	local currentFile, currentSize = fontString:GetFont()
-	local file, size = LSM:Fetch(LSM.MediaType.FONT, addon.db.profile.fontName), addon.db.profile.fontSize
+	local file, size = LSM:Fetch(LSM.MediaType.FONT, options.fontName), options.fontSize
 	if currentFile ~= file or currentSize ~= size then
 		fontString:SetFont(file, size, fontFlag)
 	end
+
+	fontString:ClearAllPoints()
+	fontString:SetPoint(options.textPosition .. "LEFT", options.textXOffset, options.textYOffset)
+	fontString:SetPoint(options.textPosition .. "RIGHT", -options.textXOffset, options.textYOffset)
 end
 
 function overlayPrototype:ApplyHighlightSkin()
