@@ -93,7 +93,11 @@ local function Timer_Update(self)
 	self:SetTextColor(r, g, b, 1)
 
 	C_Timer.After(max(0.1, delay), function() return Timer_Update(self) end)
-	self:Show()
+
+	-- avoid triggering the OnShow handler for nothing
+	if not self:IsShown() then
+		self:Show()
+	end
 end
 
 local function Text_OnShowHide(text)
