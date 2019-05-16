@@ -52,7 +52,10 @@ local ColorGradient = addon.ColorGradient
 local function Timer_Update(self)
 	local timeLeft = (self.expiration or 0) - GetTime()
 	if timeLeft <= 0 then
-		self:Hide()
+		if self:IsShown() then
+			self:Hide()
+		end
+
 		return
 	end
 
@@ -101,7 +104,9 @@ local function Timer_Update(self)
 end
 
 local function Text_OnShowHide(text)
-	text:GetParent():LayoutTexts()
+	local overlay = text:GetParent()
+	overlay:LayoutTexts()
+	overlay:ToggleOmniCC()
 end
 
 function overlayPrototype:InitializeDisplay()
@@ -155,6 +160,37 @@ function overlayPrototype:LayoutTexts()
 	timer.compactTimeLeft = countIsShown
 	timer:SetJustifyH(countIsShown and "LEFT" or "CENTER")
 	count:SetJustifyH(timer:IsShown() and "RIGHT" or "CENTER")
+end
+
+function overlayPrototype:ToggleOmniCC()
+	if not _G.OmniCC then return end
+	-- TODO: Implement opt-in
+
+	local display = _G.OmniCC.Display:Get(self:GetParent())
+	local cooldown = self.button.cooldown
+
+	if self.Timer:IsShown() then
+		if display then
+			display:Hide()
+		end
+		-- prevent OmniCC from starting a new timer
+		if not cooldown.noCooldownCount then
+			cooldown.noCooldownCount = addonName
+		end
+	else
+		-- only re-enable OmniCC if we own the lock
+		if cooldown.noCooldownCount == addonName then
+			cooldown.noCooldownCount = nil
+		end
+
+		if display then
+			display:Show()
+		else
+			-- make OmniCC display the timer
+			-- cooldown:SetCooldownDuration(self.cooldownDuration or 0)
+			_G.OmniCC.Cooldown.OnSetCooldownDuration(cooldown)
+		end
+	end
 end
 
 ------------------------------------------------------------------------------
