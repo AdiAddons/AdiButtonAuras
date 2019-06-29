@@ -70,11 +70,18 @@ function private.GetGlobalOptions(addon)
 					hide  = L['Disabled'],
 				},
 			},
+			supportOmniCC = {
+				name = L['OmniCC Support'],
+				desc = L['Hide OmniCC cooldowns while AdiButtonAuras\' timers are visible.'],
+				type = 'toggle',
+				order = 25,
+				disabled = function() return not _G.OmniCC end,
+			},
 			debuggingTooltip = {
 				name = L['Debugging Tooltip'],
 				desc = L['Display spell and item identifiers in tooltips to help debugging AdiButtonAuras.'],
 				type = 'toggle',
-				order = 25,
+				order = 30,
 			},
 			countdownThresholds = {
 				name = L["Countdown Thresholds"],

@@ -164,16 +164,20 @@ end
 
 function overlayPrototype:ToggleOmniCC()
 	if not _G.OmniCC then return end
-	-- TODO: Implement opt-in
+
+	-- the setting needs to be checked here or else users
+	-- might lock themselves out when toggling with running timers
+	-- TODO: this is expense for nothing when the setting is off
+	local enabled = addon.db.profile.supportOmniCC and self.Timer:IsShown()
 
 	local cooldown = self.button.cooldown
-	_G.OmniCC.Cooldown.SetNoCooldownCount(cooldown, self.Timer:IsShown(), addonName)
+	_G.OmniCC.Cooldown.SetNoCooldownCount(cooldown, enabled, addonName)
 
 	-- if the charge CD starts later, it won't be hidden
 	-- I don't feel like hooking SetCooldown for this
 	local chargeCooldown = self.button.chargeCooldown
 	if chargeCooldown then
-		_G.OmniCC.Cooldown.SetNoCooldownCount(chargeCooldown, self.Timer:IsShown(), addonName)
+		_G.OmniCC.Cooldown.SetNoCooldownCount(chargeCooldown, enabled, addonName)
 	end
 end
 

@@ -100,6 +100,7 @@ addon.DEFAULT_SETTINGS = {
 		noFlashOutOfCombat = false,
 		hints = "show",
 		fontSize = 13,
+		supportOmniCC = false,
 		textPosition = "BOTTOM",
 		textXOffset = 2,
 		textYOffset = 2,
