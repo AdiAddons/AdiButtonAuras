@@ -166,30 +166,14 @@ function overlayPrototype:ToggleOmniCC()
 	if not _G.OmniCC then return end
 	-- TODO: Implement opt-in
 
-	local display = _G.OmniCC.Display:Get(self:GetParent())
 	local cooldown = self.button.cooldown
+	_G.OmniCC.Cooldown.SetNoCooldownCount(cooldown, self.Timer:IsShown(), addonName)
 
-	if self.Timer:IsShown() then
-		if display then
-			display:Hide()
-		end
-		-- prevent OmniCC from starting a new timer
-		if not cooldown.noCooldownCount then
-			cooldown.noCooldownCount = addonName
-		end
-	else
-		-- only re-enable OmniCC if we own the lock
-		if cooldown.noCooldownCount == addonName then
-			cooldown.noCooldownCount = nil
-		end
-
-		if display then
-			display:Show()
-		else
-			-- make OmniCC display the timer
-			-- cooldown:SetCooldownDuration(self.cooldownDuration or 0)
-			_G.OmniCC.Cooldown.OnSetCooldownDuration(cooldown)
-		end
+	-- if the charge CD starts later, it won't be hidden
+	-- I don't feel like hooking SetCooldown for this
+	local chargeCooldown = self.button.chargeCooldown
+	if chargeCooldown then
+		_G.OmniCC.Cooldown.SetNoCooldownCount(chargeCooldown, self.Timer:IsShown(), addonName)
 	end
 end
 
