@@ -24,7 +24,7 @@ local addonName, addon = ...
 local _G = _G
 local GameTooltip = _G.GameTooltip
 local GetActionInfo = _G.GetActionInfo
-local GetAzeritePowerInfo = _G.C_AzeriteEmpoweredItem.GetPowerInfo
+--local GetAzeritePowerInfo = _G.C_AzeriteEmpoweredItem.GetPowerInfo
 local GetItemInfo = _G.GetItemInfo
 local GetItemSpell = _G.GetItemSpell
 local GetMacroInfo = _G.GetMacroInfo
@@ -32,8 +32,8 @@ local GetMacroItem = _G.GetMacroItem
 local GetMacroSpell = _G.GetMacroSpell
 local getmetatable = _G.getmetatable
 local GetPetActionInfo = _G.GetPetActionInfo
-local GetPowerInfo = _G.C_ArtifactUI.GetPowerInfo
-local GetPvpTalentInfoByID = _G.GetPvpTalentInfoByID
+--local GetPowerInfo = _G.C_ArtifactUI.GetPowerInfo
+--local GetPvpTalentInfoByID = _G.GetPvpTalentInfoByID
 local GetSpellBookItemName = _G.GetSpellBookItemName
 local GetSpellInfo = _G.GetSpellInfo
 local GetTalentInfoByID = _G.GetTalentInfoByID
@@ -65,15 +65,15 @@ local function AddSpellInfo(tooltip, source, id, addEmptyLine)
 	tooltip:Show()
 end
 
-local function AddArtifactInfo(tooltip, traitId)
-	if not traitId or IsDisabled() then return end
-	tooltip:AddLine(" ")
-	tooltip:AddDoubleLine("Trait id:", traitId)
-	local spellId = GetPowerInfo(traitId).spellID
-	if not spellId then return end
-	tooltip:AddDoubleLine("Spell id:", spellId)
-	tooltip:Show()
-end
+--local function AddArtifactInfo(tooltip, traitId)
+--	if not traitId or IsDisabled() then return end
+--	tooltip:AddLine(" ")
+--	tooltip:AddDoubleLine("Trait id:", traitId)
+--	local spellId = GetPowerInfo(traitId).spellID
+--	if not spellId then return end
+--	tooltip:AddDoubleLine("Spell id:", spellId)
+--	tooltip:Show()
+--end
 
 local function AddItemInfo(tooltip, id, addEmptyLine)
 	if not id or IsDisabled() then return end
@@ -158,8 +158,8 @@ hooksecurefunc(proto, "SetSpellByID", function(tooltip, ...) return AddSpellInfo
 hooksecurefunc(proto, "SetSpellBookItem", AddSpellbookInfo)
 hooksecurefunc(proto, "SetAction", AddActionInfo)
 hooksecurefunc(proto, "SetPetAction", AddPetActionInfo)
-hooksecurefunc(proto, "SetArtifactPowerByID", AddArtifactInfo)
+--hooksecurefunc(proto, "SetArtifactPowerByID", AddArtifactInfo)
 hooksecurefunc(proto, "SetTalent", AddTalentInfo)
-hooksecurefunc(proto, 'SetPvpTalent', AddPvpTalentInfo)
-hooksecurefunc(proto, "SetAzeritePower", AddAzeriteInfo)
+--hooksecurefunc(proto, 'SetPvpTalent', AddPvpTalentInfo)
+--hooksecurefunc(proto, "SetAzeritePower", AddAzeriteInfo)
 hooksecurefunc("SetItemRef", AddItemRefInfo)

@@ -28,12 +28,5 @@ AdiButtonAuras:RegisterRules(function()
 
 	return {
 		ImportPlayerSpells { 'HUNTER' },
-
-		ShowDispellable {
-			5384, -- Feign Death
-			'player',
-			'Magic',
-			202746, -- Survival Tactics (honor talent)
-		},
 	}
 end)

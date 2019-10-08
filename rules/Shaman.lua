@@ -23,35 +23,11 @@ local _, addon = ...
 
 if not addon.isClass('SHAMAN') then return end
 
--- primal elementals' GUIDs
-local primalEarthElemental = 61056
-local primalFireElemental  = 61029
-local primalStormElemental = 77942
-
--- guardians' totem textures
-local earthElemental     = 136024
-local fireElemental      = 135790
-local stormElemental     = 1020304
-local feralSpirit        = 237577
-
-local function BuildTempPetHandler(id)
-	return function(_, model)
-		local guid = UnitGUID('pet')
-		if guid and guid:match('%-' .. id .. '%-') then
-			local remaining = GetPetTimeRemaining()
-			if remaining then
-				model.expiration = GetTime() + remaining / 1000
-				model.highlight = 'good'
-			end
-		end
-	end
-end
-
 local function BuildTotemHandler(totem)
 	return function(_, model)
-		for slot = 1, 5 do
+		for slot = 1, MAX_TOTEMS do
 			local found, name, start, duration = GetTotemInfo(slot)
-			if found and name == totem then
+			if found and strmatch(name, totem) then
 				model.expiration = start + duration
 				model.highlight = 'good'
 				break
@@ -60,268 +36,171 @@ local function BuildTotemHandler(totem)
 	end
 end
 
--- matches the totems by texture instead of name
--- because of spell name - totem name disparity for elementals
--- i.e. Fire Elemental spawns Greater Fire Elemental
--- Feral Spirit spawns Spirit Wolf
-local function BuildGuardianHandler(guardian)
-	return function(_, model)
-		for slot = 1, 5 do
-			local found, _, start, duration, texture = GetTotemInfo(slot)
-			if found and texture == guardian then
-				model.expiration = start + duration
-				model.highlight = 'good'
-			end
-		end
-	end
-end
-
 AdiButtonAuras:RegisterRules(function()
 	Debug('Adding shaman rules')
 
-	local ancestralProtTotem = GetSpellInfo(207399)
-	local capacitorTotem     = GetSpellInfo(192058)
-	local cloudBurstTotem    = GetSpellInfo(157153)
-	local counterstrikeTotem = GetSpellInfo(204331)
-	local earthbindTotem     = GetSpellInfo(2484)
-	local earthgrabTotem     = GetSpellInfo(51485)
-	local earthenWallTotem   = GetSpellInfo(198838)
-	local groundingTotem     = GetSpellInfo(204336)
-	local healingTideTotem   = GetSpellInfo(108280)
-	local healingStreamTotem = GetSpellInfo(5394)
-	local liquidMagmaTotem   = GetSpellInfo(192222)
-	local skyfuryTotem       = GetSpellInfo(204330)
-	local spiritLinkTotem    = GetSpellInfo(98008)
-	local totemMastery       = GetSpellInfo(262395)
-	local tremorTotem        = GetSpellInfo(8143)
-	local windRushTotem      = GetSpellInfo(192077)
+	-- All totem ranks
+	local earthbindTotem        = {2484}
+	local diseaseCleansingTotem = {8170}
+	local fireNovaTotem         = {1535, 8498, 8499, 11314, 11315}
+	local fireResistanceTotem   = {8184, 10478, 10479}
+	local flametongueTotem      = {8227, 8249, 10526, 16387}
+	local frostResistanceTotem  = {8181, 10478, 10479}
+	local graceOfAirTotem       = {8835, 10627, 25359}
+	local groundingTotem        = {8177}
+	local healingStreamTotem    = {5394, 6375, 6377, 10462, 10463}
+	local magmaTotem            = {8190, 10585, 10586, 10587}
+	local manaSpringTotem       = {5675, 10495, 10496, 10497}
+	local natureResistanceTotem = {10595, 10600, 10601}
+	local poisonCleansingTotem  = {8166}
+	local searingTotem          = {3599, 6363, 6364, 6365, 10437, 10438}
+	local setryTotem            = {6495}
+	local stoneclawTotem        = {5730, 6390, 6391, 6392, 10427, 10428}
+	local stoneskinTotem        = {8071, 8154, 8155, 10406, 10407, 10408}
+	local strengthOfEarthTotem  = {8075, 8160, 8161, 10442, 25361}
+	local tranquilAirTotem      = {25908}
+	local tremorTotem           = {8143}
+	local windfuryTotem         = {8512, 10613, 10614}
+	local windwallTotem         = {15107, 15111, 15112}
 
 	return {
 		ImportPlayerSpells {
-			-- import all spells for
 			'SHAMAN',
-			-- except for
-			197211, -- Fury of Air (Enhancement talent)
-			207400, -- Ancestral Vigor (Restoration talent)
-			224125, -- Molten Weapon (Enhancement talent)
-			224127, -- Crackling Surge (Enhancement talent)
-			262652, -- Forceful Winds (Enhancement talent)
-			263806, -- Wind Gust (Elemental talent)
-			280815, -- Flash Flood (Restoration talent)
-		},
-
-		Configure {
-			'AncestralProtectionTotem',
-			L['Show the duration of @NAME.'],
-			207399, -- Ancestral Protection Totem (Restoration talent)
-			'player',
-			'PLAYER_TOTEM_UPDATE',
-			BuildTotemHandler(ancestralProtTotem),
-		},
-
-		Configure {
-			'CapacitorTotem',
-			L['Show the duration of @NAME.'],
-			192058,
-			'player',
-			'PLAYER_TOTEM_UPDATE',
-			BuildTotemHandler(capacitorTotem),
-		},
-
-		Configure {
-			'CloudburstTotem',
-			L['Show the duration of @NAME.'],
-			201764, -- Recall Cloudburst Totem
-			'player',
-			'PLAYER_TOTEM_UPDATE',
-			BuildTotemHandler(cloudBurstTotem),
-			157153, -- Cloudburst Totem (Restoration talent)
-		},
-
-		Configure {
-			'CounterstrikeTotem',
-			L['Show the duration of @NAME.'],
-			204331, -- Counterstrike Totem (talent)
-			'player',
-			'PLAYER_TOTEM_UPDATE',
-			BuildTotemHandler(counterstrikeTotem),
 		},
 
 		Configure {
 			'EarthbindTotem',
 			L['Show the duration of @NAME.'],
-			2484, -- Earthbind Totem
+			earthbindTotem,
 			'player',
 			'PLAYER_TOTEM_UPDATE',
-			BuildTotemHandler(earthbindTotem),
+			BuildTotemHandler(GetSpellInfo(earthbindTotem[1])),
 		},
 
 		Configure {
-			'EarthgrabTotem',
+			'DiseaseCleansingTotem',
 			L['Show the duration of @NAME.'],
-			51485, -- Earthgrab Totem (Restoration talent)
+			diseaseCleansingTotem,
 			'player',
 			'PLAYER_TOTEM_UPDATE',
-			BuildTotemHandler(earthgrabTotem),
+			BuildTotemHandler(GetSpellInfo(diseaseCleansingTotem[1])),
 		},
 
 		Configure {
-			'EarthenWallTotem',
+			'FireNovaTotem',
 			L['Show the duration of @NAME.'],
-			198838, -- Earthen Wall Totem (Restoration talent)
+			fireNovaTotem,
 			'player',
 			'PLAYER_TOTEM_UPDATE',
-			BuildTotemHandler(earthenWallTotem),
+			BuildTotemHandler(GetSpellInfo(fireNovaTotem[1])),
+		},
+
+		Configure {
+			'FireResistanceTotem',
+			L['Show the duration of @NAME.'],
+			fireResistanceTotem,
+			'player',
+			'PLAYER_TOTEM_UPDATE',
+			BuildTotemHandler(GetSpellInfo(fireResistanceTotem[1])),
+		},
+
+		Configure {
+			'FlametongueTotem',
+			L['Show the duration of @NAME.'],
+			flametongueTotem,
+			'player',
+			'PLAYER_TOTEM_UPDATE',
+			BuildTotemHandler(GetSpellInfo(flametongueTotem[1])),
+		},
+
+		Configure {
+			'FrostResistanceTotem',
+			L['Show the duration of @NAME.'],
+			frostResistanceTotem,
+			'player',
+			'PLAYER_TOTEM_UPDATE',
+			BuildTotemHandler(GetSpellInfo(frostResistanceTotem[1])),
+		},
+
+		Configure {
+			'GraceOfAirTotem',
+			L['Show the duration of @NAME.'],
+			graceOfAirTotem,
+			'player',
+			'PLAYER_TOTEM_UPDATE',
+			BuildTotemHandler(GetSpellInfo(graceOfAirTotem[1])),
 		},
 
 		Configure {
 			'GroundingTotem',
 			L['Show the duration of @NAME.'],
-			204336, -- Grounding Totem (honor talent)
+			groundingTotem,
 			'player',
 			'PLAYER_TOTEM_UPDATE',
-			BuildTotemHandler(groundingTotem),
-		},
-
-		Configure {
-			'HealingTideTotem',
-			L['Show the duration of @NAME.'],
-			108280, -- Healing Tide Totem (Restoration)
-			'player',
-			'PLAYER_TOTEM_UPDATE',
-			BuildTotemHandler(healingTideTotem),
+			BuildTotemHandler(GetSpellInfo(groundingTotem[1])),
 		},
 
 		Configure {
 			'HealingStreamTotem',
 			L['Show the duration of @NAME.'],
-			5394, -- Healing Stream Totem (Restoration)
+			healingStreamTotem,
 			'player',
 			'PLAYER_TOTEM_UPDATE',
-			BuildTotemHandler(healingStreamTotem),
+			BuildTotemHandler(GetSpellInfo(healingStreamTotem[1])),
 		},
 
 		Configure {
-			'LiquidMagmaTotem',
+			'MagmaTotem',
 			L['Show the duration of @NAME.'],
-			192222, -- Liquid Magma Totem (Elemental talent)
+			magmaTotem,
 			'player',
 			'PLAYER_TOTEM_UPDATE',
-			BuildTotemHandler(liquidMagmaTotem),
+			BuildTotemHandler(GetSpellInfo(magmaTotem[1])),
 		},
 
 		Configure {
-			'SkyfuryTotem',
+			'ManaSpringTotem',
 			L['Show the duration of @NAME.'],
-			204330, -- Skyfury Totem (honor talent)
+			manaSpringTotem,
 			'player',
 			'PLAYER_TOTEM_UPDATE',
-			BuildTotemHandler(skyfuryTotem),
+			BuildTotemHandler(GetSpellInfo(manaSpringTotem[1])),
 		},
 
 		Configure {
-			'SpiritLinkTotem',
+			'NatureResistanceTotem',
 			L['Show the duration of @NAME.'],
-			98008, -- Spirit Link Totem (Restoration)
+			natureResistanceTotem,
 			'player',
 			'PLAYER_TOTEM_UPDATE',
-			BuildTotemHandler(spiritLinkTotem),
-		},
-
-		Configure {
-			'TotemMastery',
-			L['Show the duration of @NAME.'],
-			{
-				210643, -- Totem Mastery (Elemental talent)
-				262395, -- Totem Mastery (Enhancement talent)
-			},
-			'player',
-			'PLAYER_TOTEM_UPDATE',
-			BuildTotemHandler(totemMastery),
+			BuildTotemHandler(GetSpellInfo(natureResistanceTotem[1])),
 		},
 
 		Configure {
 			'TremorTotem',
 			L['Show the duration of @NAME.'],
-			8143,
+			tremorTotem,
 			'player',
 			'PLAYER_TOTEM_UPDATE',
-			BuildTotemHandler(tremorTotem),
+			BuildTotemHandler(GetSpellInfo(tremorTotem[1])),
 		},
 
 		Configure {
-			'WindRushTotem',
+			'SearingTotem',
 			L['Show the duration of @NAME.'],
-			192077, -- Wind Rush Totem (talent)
+			{3599, 6363}, -- Searing Totem
 			'player',
 			'PLAYER_TOTEM_UPDATE',
-			BuildTotemHandler(windRushTotem),
+			BuildTotemHandler('Searing Totem'),
 		},
 
 		Configure {
-			'EarthElemental',
+			'DiseaseCleansingTotem',
 			L['Show the duration of @NAME.'],
-			198103,
+			8170, -- Searing Totem
 			'player',
 			'PLAYER_TOTEM_UPDATE',
-			BuildGuardianHandler(earthElemental),
-		},
-
-		Configure {
-			'FireElemental',
-			L['Show the duration of @NAME.'],
-			198067, -- Fire Elemental (Elemental)
-			'player',
-			'PLAYER_TOTEM_UPDATE',
-			BuildGuardianHandler(fireElemental),
-		},
-
-		Configure {
-			'StormElemental',
-			L['Show the duration of @NAME.'],
-			192249, -- Storm Elemental (Elemental talent)
-			'player',
-			'PLAYER_TOTEM_UPDATE',
-			BuildGuardianHandler(stormElemental),
-		},
-
-		Configure {
-			'FeralSpirit',
-			L['Show the duration of @NAME.'],
-			51533, -- Feral Spirit (Enhancement)
-			'player',
-			'PLAYER_TOTEM_UPDATE',
-			BuildGuardianHandler(feralSpirit),
-		},
-
-		Configure {
-			'PrimalEarthElemental',
-			L['Show the duration of @NAME.'],
-			198103, -- Earth Elemental
-			'player',
-			'UNIT_PET',
-			BuildTempPetHandler(primalEarthElemental),
-			117013, -- Primal Elementalist (Elemental talent)
-		},
-
-		Configure {
-			'PrimalFireElemental',
-			L['Show the duration of @NAME.'],
-			198067, -- Fire Elemental
-			'player',
-			'UNIT_PET',
-			BuildTempPetHandler(primalFireElemental),
-			117013, -- Primal Elementalist (Elemental talent)
-		},
-
-		Configure {
-			'PrimalStormElemental',
-			L['Show the duration of @NAME.'],
-			192249, -- Storm Elemental (Elemental talent)
-			'player',
-			'UNIT_PET',
-			BuildTempPetHandler(primalStormElemental),
-			117013, -- Primal Elementalist (Elemental talent)
+			BuildTotemHandler('Searing Totem'),
 		},
 	}
 end)
