@@ -43,6 +43,13 @@ local UnitAura = _G.UnitAura
 local UnitBuff = _G.UnitBuff
 local UnitDebuff = _G.UnitDebuff
 
+local LibClassicDurations, LCDVer = addon.GetLib('LibClassicDurations')
+
+if LibClassicDurations then
+	LibClassicDurations:Register(addonName)
+	UnitAura = LibClassicDurations.UnitAuraWrapper
+end
+
 local function IsDisabled()
 	return not (addon.db and addon.db.profile.debuggingTooltip)
 end

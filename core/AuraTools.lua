@@ -38,6 +38,14 @@ local UnitGUID = _G.UnitGUID
 
 local Debug = function(...) addon.Debug('AuraTools', ...) end
 
+local LibClassicDurations, LCDVer = addon.GetLib('LibClassicDurations')
+
+Debug(LibClassicDurations, LCDVer)
+if LibClassicDurations then
+	LibClassicDurations:Register(addonName)
+	UnitAura = LibClassicDurations.UnitAuraWrapper
+end
+
 ------------------------------------------------------------------------------
 -- Table recycling
 ------------------------------------------------------------------------------

@@ -177,6 +177,15 @@ AdiButtonAuras:RegisterRules(function()
 		},
 
 		Configure {
+			'PoisonCleansingTotem',
+			L['Show the duration of @NAME.'],
+			poisonCleansingTotem,
+			'player',
+			'PLAYER_TOTEM_UPDATE',
+			BuildTotemHandler(GetSpellInfo(poisonCleansingTotem[1])),
+		},
+
+		Configure {
 			'TremorTotem',
 			L['Show the duration of @NAME.'],
 			tremorTotem,

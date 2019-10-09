@@ -10,6 +10,7 @@ libs\LibButtonGlow-1.0\LibButtonGlow-1.0.lua
 #@end-no-lib-strip@
 libs\LibSpellbook-1.0\LibSpellbook-1.0.xml
 libs\LibItemBuffs-1.0\LibItemBuffs-1.0.xml
+libs\LibClassicDurations\LibClassicDurations.xml
 
 # Not in libs subfolder to shorten the path
 SMBH\lib.xml
