@@ -3,7 +3,6 @@ libs\LibStub\LibStub.lua
 libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
 libs\BugGrabber\load.xml
 libs\AceDB-3.0\AceDB-3.0.xml
-libs\LibDualSpec-1.0\LibDualSpec-1.0.lua
 libs\LibPlayerSpells-1.0\lib.xml
 libs\LibSharedMedia-3.0\lib.xml
 libs\LibButtonGlow-1.0\LibButtonGlow-1.0.lua
