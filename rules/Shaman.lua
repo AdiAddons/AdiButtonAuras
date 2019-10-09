@@ -21,11 +21,14 @@ along with AdiButtonAuras. If not, see <http://www.gnu.org/licenses/>.
 
 local _, addon = ...
 
+local _G = _G
+local strmatch = _G.strmatch
+
 if not addon.isClass('SHAMAN') then return end
 
 local function BuildTotemHandler(totem)
 	return function(_, model)
-		for slot = 1, MAX_TOTEMS do
+		for slot = 1, 4 do
 			local found, name, start, duration = GetTotemInfo(slot)
 			if found and strmatch(name, totem) then
 				model.expiration = start + duration
