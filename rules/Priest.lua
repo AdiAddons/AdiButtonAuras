@@ -42,11 +42,15 @@ AdiButtonAuras:RegisterRules(function()
 	local mindbender = GetSpellInfo(123040)
 	local shadowfiend = GetSpellInfo(34433)
 
+	local hasWeakenedSoul = BuildAuraHandler_Single('HARMFUL', 'bad', 'ally', 6788) -- Weakened Soul
+	local isShielded = BuildAuraHandler_Single('HELPFUL', 'good', 'ally', 17) -- Power Word: Shield
+
 	return {
 		ImportPlayerSpells {
 			-- import all spells for
 			'PRIEST',
 			-- except for
+			    17, -- Power Word: Shield
 			   605, -- Mind Control
 			 21562, -- Power Word: Fortitude
 			194384, -- Atonement (Discipline)
@@ -175,5 +179,23 @@ AdiButtonAuras:RegisterRules(function()
 				end
 			end,
 		},
+
+		Configure {
+			'PowerWordShieldRapture',
+			format(
+				'%s %s',
+				BuildDesc('HARMFUL', 'bad', 'ally', 6788), -- Weakened Soul
+				BuildDesc('HELPFUL', 'good', 'ally', 17) -- Power Word: Shield
+			),
+			17, -- Power Word: Shield
+			'ally',
+			'UNIT_AURA',
+			(function()
+				return function(units, model)
+					local hasRapture = GetPlayerBuff('player', 47536)
+					return not hasRapture and hasWeakenedSoul(units, model) or isShielded(units, model)
+				end
+			end)(),
+		}
 	}
 end)
