@@ -95,7 +95,8 @@ local function SpellOrItemId(value, callLevel)
 	if spellId then
 		local name = GetSpellInfo(spellId)
 		if not name then
-			error(format("Invalid spell identifier: %s", tostring(value)), callLevel+1)
+			Debug(format("Invalid spell identifier: %s", value))
+			return
 		end
 		return format("spell:%d", spellId), "spell "..(GetSpellLink(spellId) or spellId), name, "spell", spellId
 	end
@@ -104,7 +105,7 @@ local function SpellOrItemId(value, callLevel)
 		local name, link = GetItemInfo(itemId)
 		return format("item:%d", itemId), link and ("item "..tostring(link)) or value, name or value, "item"
 	end
-	error(format("Invalid spell or item identifier: %s", tostring(value)), callLevel+1)
+	Debug(format("Invalid spell or item identifier: %s", value))
 end
 
 local function CheckAvailability(info, spellId, providers)
