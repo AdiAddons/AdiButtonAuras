@@ -13,6 +13,7 @@ globals = {
 	"ShowHealth", "ShowPower", "ShowStacks", "SimpleBuffs", "SimpleDebuffs",
 
 	-- WoW API
+	"ActionBarActionButtonMixin",
 	"GetNumGroupMembers", "GetPetTimeRemaining", "GetRuneCooldown", "GetShapeshiftFormID", "GetSpellBonusHealing",
 	"GetSpellCharges", "GetSpellCount", "GetSpellInfo", "GetTime", "GetTotemInfo", "HasPetSpells", "IsPlayerSpell",
 	"UnitCanAttack", "UnitCastingInfo", "UnitChannelInfo", "UnitClass", "UnitGUID", "UnitHealth", "UnitHealthMax",
