@@ -150,6 +150,12 @@ local function AddItemRefInfo(link)
 	return AddSpellInfo(_G.ItemRefTooltip, "spell", id, true)
 end
 
+local function AddConduitInfo(tooltip, conduitID, conduitRank)
+	local spellID = _G.C_Soulbinds.GetConduitSpellID(conduitID, conduitRank)
+	tooltip:AddLine(' ')
+	tooltip:AddDoubleLine('Conduit spell id:', spellID)
+end
+
 local proto = getmetatable(GameTooltip).__index
 hooksecurefunc(proto, "SetUnitAura", function(...) return AddAuraInfo(UnitAura, ...) end)
 hooksecurefunc(proto, "SetUnitBuff", function(...) return AddAuraInfo(UnitBuff, ...) end)
@@ -162,4 +168,5 @@ hooksecurefunc(proto, "SetArtifactPowerByID", AddArtifactInfo)
 hooksecurefunc(proto, "SetTalent", AddTalentInfo)
 hooksecurefunc(proto, 'SetPvpTalent', AddPvpTalentInfo)
 hooksecurefunc(proto, "SetAzeritePower", AddAzeriteInfo)
+hooksecurefunc(proto, 'SetConduit', AddConduitInfo)
 hooksecurefunc("SetItemRef", AddItemRefInfo)
