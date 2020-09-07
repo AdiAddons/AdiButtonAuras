@@ -117,7 +117,7 @@ function private.GetSpellOptions(addon, addonName)
 	-- Overlay prototype
 	------------------------------------------------------------------------------
 
-	local overlayPrototype = setmetatable({}, { __index = CreateFrame("Button") })
+	local overlayPrototype = setmetatable({}, { __index = CreateFrame("Button", nil, nil, 'BackdropTemplate') })
 	local overlayMeta = { __index = overlayPrototype }
 
 	local backdrop = {
