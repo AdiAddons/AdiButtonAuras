@@ -539,10 +539,28 @@ do
 	local IMPORTANT = LibPlayerSpells.constants.IMPORTANT
 	local SOURCE = LibPlayerSpells.masks.SOURCE
 
+	local function WarnOnStaleData(category)
+		local _, patch = LibPlayerSpells:GetVersionInfo(category)
+		local _, _, _, build = _G.GetBuildInfo()
+
+		if math.floor(patch / 1e4) < math.floor(build / 1e4) then
+			print(
+				format(
+					'%s |cffe7c82aThe spell data for %s is for the previous expansion and is inaccurate.|r',
+					format('|cff00ccff%s:|r', addonName),
+					category
+				)
+			)
+		end
+	end
+
 	function ImportPlayerSpells(category, ...)
 		if not LibPlayerSpells.__categories[category] then
 			error(format("Invalid category for ImportPlayerSpells: %s", category))
 		end
+
+		WarnOnStaleData(category)
+
 		local categoryMask = LibPlayerSpells.constants[category]
 		local exceptions = AsSet({...}, "number", 3)
 		local builders = {}
