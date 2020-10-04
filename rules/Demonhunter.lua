@@ -28,16 +28,7 @@ AdiButtonAuras:RegisterRules(function()
 	return {
 		ImportPlayerSpells {
 			-- import all spells for
-			'DEMONHUNTER',
-			-- except for
-			203981, -- Soul Fragments
-		},
-
-		ShowStacks {
-			263648, -- Soul Barrier
-			203981, -- Soul Fragments
-			5,
-			'player',
+			'DEMONHUNTER'
 		},
 
 		ShowDispellable {
