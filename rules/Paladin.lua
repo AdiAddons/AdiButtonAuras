@@ -39,8 +39,6 @@ AdiButtonAuras:RegisterRules(function()
 			 25771, -- Forbearance
 			 31935, -- Avenger's Shield (Protection)
 			188370, -- Consecration (Protection)
-			203538, -- Greater Blessing of Kings (Retribution)
-			203539, -- Greater Blessing of Wisdom (Retribution)
 			204018, -- Blessing of Spellwarding (Protection talent)
 			209785, -- Fires of Justice (Retribution talent)
 			269571, -- Zeal (Retribution talent)
@@ -52,9 +50,7 @@ AdiButtonAuras:RegisterRules(function()
 				 85256, -- Templar's Verdict (Retribution)
 				 53385, -- Divine Storm (Retribution)
 				 84963, -- Inquisition (Retribution talent)
-				210191, -- Word of Glory (Retribution talent)
 				215661, -- Justicar's Vengeance (Retribution talent)
-				267798, -- Execution Sentence (Retribution talent)
 			},
 			'HolyPower'
 		},
@@ -197,64 +193,6 @@ AdiButtonAuras:RegisterRules(function()
 				if found then
 					model.expiration = start + duration
 					model.highlight = GetPlayerBuff('player', 188370) and 'good' or nil
-				end
-			end,
-		},
-
-		Configure {
-			'GreaterBlessingOfKings',
-			format('%s %s',
-				format(
-					L['%s when %s @NAME is not found on a group member.'],
-					DescribeHighlight('hint'),
-					DescribeFilter('HELPFUL PLAYER')
-				),
-				BuildDesc('HELPFUL PLAYER', 'good', 'group', 203538)
-			),
-			203538, -- Greater Blessing of Kings (Retribution)
-			'group',
-			{'GROUP_ROSTER_UPDATE', 'UNIT_AURA'},
-			function(units, model)
-				local found, _, expiration
-				for unit in next, units.group do
-					found, _, expiration = GetPlayerBuff(unit, 203538)
-					if found then
-						model.highlight = 'good'
-						model.expiration = expiration
-						break
-					end
-				end
-				if not found then
-					model.hint = true
-				end
-			end,
-		},
-
-		Configure {
-			'GreaterBlessingOfWisdom',
-			format('%s %s',
-				format(
-					L['%s when %s @NAME is not found on a group member.'],
-					DescribeHighlight('hint'),
-					DescribeFilter('HELPFUL PLAYER')
-				),
-				BuildDesc('HELPFUL PLAYER', 'good', 'group', 203539)
-			),
-			203539, -- Greater Blessing of Kings (Retribution)
-			'group',
-			{'GROUP_ROSTER_UPDATE', 'UNIT_AURA'},
-			function(units, model)
-				local found, _, expiration
-				for unit in next, units.group do
-					found, _, expiration = GetPlayerBuff(unit, 203539)
-					if found then
-						model.highlight = 'good'
-						model.expiration = expiration
-						break
-					end
-				end
-				if not found then
-					model.hint = true
 				end
 			end,
 		},
