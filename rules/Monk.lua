@@ -28,14 +28,16 @@ AdiButtonAuras:RegisterRules(function()
 
 	local blackOxStatue = 627607
 	local jadeSerpentStatue = 620831
+	local jadeSerpent = 574571
+	local redCrane = 877514
 
-	local function BuildTotemHandler(statue)
+	local function BuildTotemHandler(totem)
 		return function(_, model)
-			-- monk have two totems at most
-			-- BUG: statues override pets on Beta
-			for slot = 1, 2 do
+			-- statues fill the first free slot when re-cast
+			-- due to statues' cooldowns the highest totem slot is 3
+			for slot = 1, 3 do
 				local found, _, start, duration, texture = GetTotemInfo(slot)
-				if found and texture == statue then
+				if found and texture == totem then
 					model.highlight = 'good'
 					model.expiration = start + duration
 					return
@@ -92,7 +94,6 @@ AdiButtonAuras:RegisterRules(function()
 			{
 				123904, -- Invoke Xuen, the White Tiger (Windwalker talent)
 				132578, -- Invoke Niuzao, the Black Ox (Brewmaster talent)
-				198664, -- Invoke Chi-Ji, the Red Crane (Mistweaver talent)
 			},
 			'player',
 			'UNIT_PET',
@@ -103,6 +104,24 @@ AdiButtonAuras:RegisterRules(function()
 					model.highlight = 'good'
 				end
 			end,
+		},
+
+		Configure {
+			'JadeSerpentPet',
+			L['Show the duration of @NAME.'],
+			322118, -- Invoke Yu'lon, the Jade Serpent (Mistweaver)
+			'player',
+			'PLAYER_TOTEM_UPDATE',
+			BuildTotemHandler(jadeSerpent)
+		},
+
+		Configure {
+			'RedCranePet',
+			L['Show the duration of @NAME.'],
+			325197, -- Invoke Chi-Ji, the Red Crane (Mistweaver talent)
+			'player',
+			'PLAYER_TOTEM_UPDATE',
+			BuildTotemHandler(redCrane)
 		},
 
 		Configure {
