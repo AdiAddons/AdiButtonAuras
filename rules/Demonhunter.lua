@@ -32,7 +32,7 @@ AdiButtonAuras:RegisterRules(function()
 		},
 
 		ShowDispellable {
-			178740, -- Immolation Aura (Vengeance)
+			258920, -- Immolation Aura (Vengeance)
 			'player',
 			'Magic',
 			205625, -- Cleansed by Flame (Vengeance honor talent)
