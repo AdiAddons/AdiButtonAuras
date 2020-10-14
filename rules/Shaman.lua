@@ -78,9 +78,15 @@ end
 
 local function BuildWeaponEnchantHandler(enchantId)
 	return function(_, model)
-		local hasMainhandEnchant, _, _, mainBuffId, hasOffhandEnchant, _, _, offBuffId = GetWeaponEnchantInfo ()
-		if (hasMainhandEnchant and mainBuffId == enchantId) or (hasOffhandEnchant and offBuffId == enchantId) then
+		local hasMainHandEnchant, mainHandExpiration, _, mainBuffId,
+			  hasOffHandEnchant, offHandExpiration, _, offBuffId = GetWeaponEnchantInfo()
+
+		if hasMainHandEnchant and mainBuffId == enchantId then
 			model.highlight = 'good'
+			model.expiration = GetTime() + mainHandExpiration / 1000
+		elseif hasOffHandEnchant and offBuffId == enchantId then
+			model.highlight = 'good'
+			model.expiration = GetTime() + offHandExpiration / 1000
 		end
 	end
 end
@@ -104,8 +110,6 @@ AdiButtonAuras:RegisterRules(function()
 	local totemMastery       = GetSpellInfo(262395)
 	local tremorTotem        = GetSpellInfo(8143)
 	local windRushTotem      = GetSpellInfo(192077)
-	local flametongueWeapon  = 5400
-	local windfuryWeapon     = 5401
 
 	return {
 		ImportPlayerSpells {
@@ -341,7 +345,7 @@ AdiButtonAuras:RegisterRules(function()
 			318038, -- Flametongue Weapon
 			'player',
 			'UNIT_INVENTORY_CHANGED',
-			BuildWeaponEnchantHandler(flametongueWeapon),
+			BuildWeaponEnchantHandler(5400),
 		},
 
 		Configure {
@@ -350,8 +354,7 @@ AdiButtonAuras:RegisterRules(function()
 			33757, -- Windfury Weapon
 			'player',
 			'UNIT_INVENTORY_CHANGED',
-			BuildWeaponEnchantHandler(windfuryWeapon),
+			BuildWeaponEnchantHandler(5401),
 		},
-
 	}
 end)
