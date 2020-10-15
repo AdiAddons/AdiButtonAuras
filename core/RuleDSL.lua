@@ -460,7 +460,7 @@ local function ShowHealth(spells, unit, handler, highlight, providers, desc)
 		BuildKey("ShowHealth", unit, highlight),
 		spells,
 		unit,
-		{ "UNIT_HEALTH_FREQUENT", "UNIT_MAXHEALTH" },
+		{ "UNIT_HEALTH", "UNIT_MAXHEALTH" },
 		handler or 1,
 		highlight or "hint",
 		desc,
