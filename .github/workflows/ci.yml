@@ -22,14 +22,15 @@ jobs:
         run: |
           sudo apt-get -q update
           sudo apt-get -qy install lua5.1 luarocks liblua5.1-bitop0
-          eval `luarocks path`
       - name: Install lua rocks
         run: |
           sudo luarocks install luacheck
           sudo luarocks install mockagne 1.0
           sudo luarocks install luaunit 2.1
+      - name: Register problem matchers
+        run: echo '::add-matcher::.github/luacheck_matcher.json'
       - name: Lint
-        run: luacheck .
+        run: luacheck . --formatter visual_studio
       - name: Test
         run: lua tests/Items.lua
       - name: Write libraries to .toc
