@@ -22,7 +22,7 @@ jobs:
         run: |
           sudo apt-get -q update
           sudo apt-get -qy install lua5.1 luarocks liblua5.1-bitop0
-      - name: Install lua rocks
+      - name: Install testing libraries
         run: |
           sudo luarocks install luacheck
           sudo luarocks install mockagne 1.0
