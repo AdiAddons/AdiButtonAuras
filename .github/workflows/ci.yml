@@ -18,6 +18,11 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: true
+      - name: Setup APT cache
+        uses: actions/cache@v2.1.2
+        with:
+          path: /var/cache/apt/**
+          key: ${{ runner.os }}-apt
       - name: Install Lua and LuaRocks
         run: |
           sudo apt-get -q update
