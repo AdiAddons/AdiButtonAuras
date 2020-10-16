@@ -101,14 +101,11 @@ Acknowledgment
 
 Thanks to the following people for testing and contributing to AdiButtonAuras and related libraries.
 
-Contributors (in alphabetical order):
+Contributors:
 
-* [arcadepro](https://github.com/arcadepro),
-* [ckaotik](https://github.com/ckaotik),
-* [dafzor](https://github.com/dafzor),
-* [nomoon](https://github.com/nomoon),
-* [mjmurray88](https://github.com/mjmurray88),
-* [Rainrider](https://github.com/Rainrider).
+[![Contributor avatars](https://contributors-img.web.app/image?repo=AdiAddons/AdiButtonAuras)](https://github.com/AdiAddons/AdiButtonAuras/graphs/contributors)
+
+Made with [contributors-img](https://contributors-img.web.app).
 
 License
 -------
