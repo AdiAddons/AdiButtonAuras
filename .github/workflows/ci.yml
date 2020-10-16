@@ -42,4 +42,4 @@ jobs:
       - name: Package and deploy
         uses: BigWigsMods/packager@cd13fb1
         env:
-          GITHUB_OAUTH: ${{ secrets.GITHUB_OAUTH }}
+          GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
