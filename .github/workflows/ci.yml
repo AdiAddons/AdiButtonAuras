@@ -35,11 +35,14 @@ jobs:
         run: lua tests/Items.lua
       - name: Write libraries to .toc
         run: lua .release/libreplace.lua
-      # only deploy tags to curse
-      - name: Expose the curse forge api key
-        if: startsWith(github.ref, 'refs/tags/')
-        run: echo '::set-env name=CF_API_KEY::${{ secrets.CF_API_KEY }}'
-      - name: Package and deploy
+      # BigWigsMods/packager only deploy tags
+      - name: Package (and deploy)
         uses: BigWigsMods/packager@cd13fb1
         env:
+          CF_API_KEY: ${{ secrets.CF_API_KEY }}
           GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload packages to github
+        uses: actions/upload-artifact@v2
+        with:
+          name: packages
+          path: .release/AdiButtonAuras*.zip
