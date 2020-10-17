@@ -57,6 +57,8 @@ jobs:
           echo '::endGroup::'
       - name: Lint
         uses: nebularg/actions-luacheck@v1
+        with:
+          annotate: error
       - name: Test
         run: lua tests/Items.lua
       - name: Write libraries to .toc
