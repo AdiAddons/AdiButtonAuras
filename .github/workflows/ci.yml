@@ -25,13 +25,35 @@ jobs:
           key: ${{ runner.os }}-apt
       - name: Install Lua and LuaRocks
         run: |
+          echo '::group::apt-get update'
           sudo apt-get -q update
+          echo '::endGroup::'
+          echo '::group::apt-get install'
           sudo apt-get -qy install lua5.1 luarocks liblua5.1-bitop0
+          echo '::endGroup::'
+          luarocks path --lr-bin >> $GITHUB_PATH
+          cat <<EOF >>$GITHUB_ENV
+          LUA_PATH=$(luarocks path --lr-path)
+          LUA_CPATH=$(luarocks path --lr-cpath)
+          EOF
+      - name: Setup LuaRocks cache
+        id: cache-luarocks
+        uses: actions/cache@v2.1.2
+        with:
+          path: ~/.luarocks
+          key: ${{ runner.os }}-luarocks
       - name: Install testing libraries
+        if: steps.cache-luarocks.outputs.cache-hit != 'true'
         run: |
-          sudo luarocks install luacheck
-          sudo luarocks install mockagne 1.0
-          sudo luarocks install luaunit 2.1
+          echo '::group::luacheck'
+          luarocks install --local luacheck
+          echo '::endGroup::'
+          echo '::group::mockagne'
+          luarocks install --local mockagne 1.0
+          echo '::endGroup::'
+          echo '::group::luaunit'
+          luarocks install --local luaunit 2.1
+          echo '::endGroup::'
       - name: Lint
         uses: nebularg/actions-luacheck@v1
       - name: Test
