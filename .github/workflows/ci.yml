@@ -25,12 +25,15 @@ jobs:
           key: ${{ runner.os }}-apt
       - name: Install Lua and LuaRocks
         run: |
+          # apt-get commands
           echo '::group::apt-get update'
           sudo apt-get -q update
           echo '::endGroup::'
           echo '::group::apt-get install'
           sudo apt-get -qy install lua5.1 luarocks liblua5.1-bitop0
           echo '::endGroup::'
+      - name: Prepare Lua paths
+        run: |
           luarocks path --lr-bin >> $GITHUB_PATH
           luarocks path | sed -e 's/^export //' -e "s/'//g" >> $GITHUB_ENV
       - name: Setup LuaRocks cache
@@ -58,10 +61,11 @@ jobs:
         run: lua tests/Items.lua
       - name: Write libraries to .toc
         run: lua .release/libreplace.lua
-      - id: packager-args
+      - name: Setup packager arguments
+        id: packager-args
         if: github.base_ref || !startsWith(github.ref, 'refs/tags/')
         run: echo '::set-output name=args::-d'
-      - name: Package (and deploy)
+      - name: Package and deploy
         uses: BigWigsMods/packager@cd13fb1
         with:
           args: ${{ steps.packager-args.outputs.args }}
