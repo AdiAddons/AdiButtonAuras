@@ -32,10 +32,8 @@ jobs:
           sudo apt-get -qy install lua5.1 luarocks liblua5.1-bitop0
           echo '::endGroup::'
           luarocks path --lr-bin >> $GITHUB_PATH
-          cat <<EOF >>$GITHUB_ENV
-          LUA_PATH=$(luarocks path --lr-path)
-          LUA_CPATH=$(luarocks path --lr-cpath)
-          EOF
+          echo "LUA_PATH=$(luarocks path --lr-path)" >> $GITHUB_ENV
+          echo "LUA_CPATH=$(luarocks path --lr-cpath)" >> $GITHUB_ENV
       - name: Setup LuaRocks cache
         id: cache-luarocks
         uses: actions/cache@v2.1.2
@@ -45,6 +43,7 @@ jobs:
       - name: Install testing libraries
         if: steps.cache-luarocks.outputs.cache-hit != 'true'
         run: |
+          # luarocks install
           echo '::group::luacheck'
           luarocks install --local luacheck
           echo '::endGroup::'
