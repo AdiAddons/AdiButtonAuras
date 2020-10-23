@@ -86,9 +86,9 @@ AdiButtonAuras:RegisterRules(function()
 		},
 
 		Configure {
-			'RaiseDead',
+			'RaiseDeadUnholy',
 			format(L["%s when you don't have a summoned ghoul."], DescribeHighlight('hint')),
-			46584,
+			46584, -- Rank 2 Unholy
 			'player',
 			'UNIT_PET',
 			function(_, model)
@@ -101,8 +101,23 @@ AdiButtonAuras:RegisterRules(function()
 		},
 
 		Configure {
+			'RaiseDead',
+			L['Show the remaining duration of @NAME.'],
+			46585, -- Rank 1 Blood/Frost
+			'player',
+			'PLAYER_TOTEM_UPDATE',
+			function(_, model)
+				local found, _, startTime, duration = GetTotemInfo(1) -- Risen Ghoul is always the first totem
+				if found then
+					model.highlight = 'good'
+					model.expiration = startTime + duration
+				end
+			end,
+		},
+
+		Configure {
 			'SummonGargoyle',
-			L['Show the duration of @NAME.'],
+			L['Show the remaining duration of @NAME.'],
 			49206, -- Summon Gargoyle (Unholy talent)
 			'player',
 			'PLAYER_TOTEM_UPDATE',
@@ -117,7 +132,7 @@ AdiButtonAuras:RegisterRules(function()
 
 		Configure {
 			'RaiseAbomination',
-			L['Show the duration of @NAME.'],
+			L['Show the remaining duration of @NAME.'],
 			288853, -- Summon Gargoyle (Unholy talent)
 			'player',
 			'PLAYER_TOTEM_UPDATE',
