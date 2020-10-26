@@ -50,11 +50,6 @@ AdiButtonAuras:RegisterRules(function()
 			-- except
 			111400, -- Burning Rush (talent)
 			212580, -- Eye of the Observer (Demonology honor talent)
-			233490, -- Unstable Affliction (Affliction)
-			233496, -- Unstable Affliction (Affliction)
-			233497, -- Unstable Affliction (Affliction)
-			233498, -- Unstable Affliction (Affliction)
-			233499, -- Unstable Affliction (Affliction)
 		},
 
 		-- show Soul Shards on consumers
@@ -71,45 +66,6 @@ AdiButtonAuras:RegisterRules(function()
 				267217, -- Nether Portal (Demonology talent)
 			},
 			'SoulShards',
-		},
-
-		-- number of applications and shortest duration of Unstable Affliction
-		Configure {
-			'UnstableAffliction',
-			BuildDesc('HARMFUL PLAYER', 'bad', 'enemy', 233490),
-			30108, -- Unstable Affliction (Affliction)
-			'enemy',
-			'UNIT_AURA',
-			(function()
-				local isAffliction = {
-					[233490] = true, -- Unstable Affliction (Affliction)
-					[233496] = true, -- Unstable Affliction (Affliction)
-					[233497] = true, -- Unstable Affliction (Affliction)
-					[233498] = true, -- Unstable Affliction (Affliction)
-					[233499] = true, -- Unstable Affliction (Affliction)
-				}
-				local IterateAuras = addon.GetAuraIterator('HARMFUL PLAYER')
-
-				return function(units, model)
-					local unit = units.enemy
-					if not unit or unit == '' then return end
-
-					local shortest = 0
-					local count = 0
-					for _, id, _, expiration in IterateAuras(unit) do
-						if isAffliction[id] then
-							count = count + 1
-							if shortest == 0 or expiration < shortest then
-								shortest = expiration
-							end
-						end
-					end
-
-					model.highlight = count > 0 and 'bad' or nil
-					model.expiration = shortest
-					model.count = count
-				end
-			end)(),
 		},
 
 		Configure {
