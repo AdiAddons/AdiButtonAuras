@@ -31,7 +31,7 @@ AdiButtonAuras:RegisterRules(function()
 			-- import all spells for
 			'ROGUE',
 			-- except for
-			193538, -- Alacrity (Outlaw/Subtlety talent)
+			193538, -- Alacrity
 			193641, -- Elaborate Planning (Assassination talent)
 			196980, -- Master of Shadows (Subtlety)
 		},
@@ -41,15 +41,15 @@ AdiButtonAuras:RegisterRules(function()
 				   408, -- Kidney Shot (Assassination/Subtlety)
 				  1943, -- Rupture (Assasination)
 				  2098, -- Dispatch (Outlaw)
-				  5171, -- Slice and Dice (Outlaw)
 				 32645, -- Envenom (Assassination)
 				121411, -- Crimson Tempest (Assassination talent)
-				193316, -- Roll the Bones (Outlaw)
 				196819, -- Eviscerate (Subtlety)
 				195452, -- Nightblade (Subtlety)
 				199804, -- Between the Eyes (Outlaw)
 				269513, -- Death from Above (honor talent)
 				280719, -- Secret Technique (Subtlety talent)
+				315496, -- Slice and Dice (Outlaw)
+				315508, -- Roll the Bones (Outlaw)
 			},
 			'ComboPoints',
 		},
@@ -69,7 +69,6 @@ AdiButtonAuras:RegisterRules(function()
 				196819, -- Eviscerate (Subtlety)
 			},
 			193538, -- Alacrity
-			193539, -- Alacrity (Outlaw/Subtlety talent)
 		},
 	}
 end)
