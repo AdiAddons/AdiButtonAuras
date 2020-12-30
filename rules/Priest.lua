@@ -92,7 +92,10 @@ AdiButtonAuras:RegisterRules(function()
 		Configure {
 			'Mindbender',
 			L['Show the duration of @NAME.'],
-			123040, -- Mindbender (Discipline/Shadow talent)
+			{
+				123040, -- Mindbender (Discipline/Shadow talent)
+				200174, -- Mindbender (Shadow talent)
+			},
 			'player',
 			'PLAYER_TOTEM_UPDATE',
 			BuildGuardianHandler(mindbender)
