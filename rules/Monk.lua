@@ -88,22 +88,12 @@ AdiButtonAuras:RegisterRules(function()
 			196736, -- Blackout Combo (Brewmaster talent)
 		},
 
-		Configure {
-			'InvokePet',
-			L['Show the duration of @NAME.'],
-			{
-				123904, -- Invoke Xuen, the White Tiger (Windwalker talent)
-				132578, -- Invoke Niuzao, the Black Ox (Brewmaster talent)
-			},
-			'player',
-			'UNIT_PET',
-			function(_, model)
-				local remaining = GetPetTimeRemaining()
-				if remaining then
-					model.expiration = GetTime() + remaining / 1000
-					model.highlight = 'good'
-				end
-			end,
+		SelfBuffAliases {
+			123904, -- Invoke Xuen, the White Tiger
+		},
+
+		SelfBuffAliases {
+			132578, -- Invoke Niuzao, the Black Ox
 		},
 
 		Configure {
