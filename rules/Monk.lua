@@ -26,11 +26,6 @@ if not addon.isClass('MONK') then return end
 AdiButtonAuras:RegisterRules(function()
 	Debug('Adding monk rules')
 
-	local blackOxStatue = 627607
-	local jadeSerpentStatue = 620831
-	local jadeSerpent = 574571
-	local redCrane = 877514
-
 	local function BuildTotemHandler(totem)
 		return function(_, model)
 			-- statues fill the first free slot when re-cast
@@ -52,10 +47,25 @@ AdiButtonAuras:RegisterRules(function()
 			'MONK',
 			-- except
 			116680, -- Thunder Focus Tea (Mistweaver)
-			129914, -- Power Strikes (Windwalker talent)
-			198533, -- Soothing Mist (Mistweaver talent) <- Summon Jade Serpent Statue
+			195630, -- Elusive Brawler (Brewmaster)
+			201447, -- Ride the Wind (Windwalker pvp talent)
+			202090, -- Teachings of the Monastery (Mistweaver)
+			215479, -- Shuffle (Brewmaster)
 			228563, -- Blackout Combo (Brewmaster talent)
 			261769, -- Inner Strength (Windwalker talent)
+		},
+
+		SelfBuffAliases {
+			116680, -- Thunder Focus Tea (Mistweaver)
+		},
+
+		SelfBuffAliases {
+			{
+				205523, -- Blackout Kick
+				322729, -- Spinning Crane Kick
+			},
+			215479, -- Shuffle (Brewmaster)
+			322120, -- Shuffle (Brewmaster passive)
 		},
 
 		ShowPower {
@@ -68,8 +78,14 @@ AdiButtonAuras:RegisterRules(function()
 			'Chi',
 		},
 
-		SelfBuffAliases {
-			116680, -- Thunder Focus Tea (Mistweaver)
+		ShowStacks {
+			100784, -- Blackout Kick
+			202090, -- Teachings of the Monastery (Mistweaver)
+			3,
+			'player',
+			3,
+			'hint',
+			116645, -- Teachings of the Monastery (Mistweaver)
 		},
 
 		Configure {
@@ -89,21 +105,12 @@ AdiButtonAuras:RegisterRules(function()
 		},
 
 		Configure {
-			'InvokePet',
+			'WhiteTigerPet',
 			L['Show the duration of @NAME.'],
-			{
-				123904, -- Invoke Xuen, the White Tiger (Windwalker talent)
-				132578, -- Invoke Niuzao, the Black Ox (Brewmaster talent)
-			},
+			123904, -- Invoke Xuen, the White Tiger (Windwalker talent)
 			'player',
-			'UNIT_PET',
-			function(_, model)
-				local remaining = GetPetTimeRemaining()
-				if remaining then
-					model.expiration = GetTime() + remaining / 1000
-					model.highlight = 'good'
-				end
-			end,
+			'PLAYER_TOTEM_UPDATE',
+			BuildTotemHandler(620832)
 		},
 
 		Configure {
@@ -112,7 +119,7 @@ AdiButtonAuras:RegisterRules(function()
 			322118, -- Invoke Yu'lon, the Jade Serpent (Mistweaver)
 			'player',
 			'PLAYER_TOTEM_UPDATE',
-			BuildTotemHandler(jadeSerpent)
+			BuildTotemHandler(574571)
 		},
 
 		Configure {
@@ -121,7 +128,7 @@ AdiButtonAuras:RegisterRules(function()
 			325197, -- Invoke Chi-Ji, the Red Crane (Mistweaver talent)
 			'player',
 			'PLAYER_TOTEM_UPDATE',
-			BuildTotemHandler(redCrane)
+			BuildTotemHandler(877514)
 		},
 
 		Configure {
@@ -130,7 +137,7 @@ AdiButtonAuras:RegisterRules(function()
 			115315,
 			'player',
 			'PLAYER_TOTEM_UPDATE',
-			BuildTotemHandler(blackOxStatue),
+			BuildTotemHandler(627607),
 		},
 
 		Configure {
@@ -139,7 +146,7 @@ AdiButtonAuras:RegisterRules(function()
 			115313,
 			'player',
 			'PLAYER_TOTEM_UPDATE',
-			BuildTotemHandler(jadeSerpentStatue),
+			BuildTotemHandler(620831),
 		},
 	}
 end)
