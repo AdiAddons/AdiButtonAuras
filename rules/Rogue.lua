@@ -34,22 +34,22 @@ AdiButtonAuras:RegisterRules(function()
 			193538, -- Alacrity
 			193641, -- Elaborate Planning (Assassination talent)
 			196980, -- Master of Shadows (Subtlety)
+			354827, -- Thief's Bargain (Subtlety pvp talent)
 		},
 
 		ShowPower {
 			{
-				   408, -- Kidney Shot (Assassination/Subtlety)
-				  1943, -- Rupture (Assasination)
+				   408, -- Kidney Shot
+				  1943, -- Rupture (Assasination/Subtlety)
 				  2098, -- Dispatch (Outlaw)
 				 32645, -- Envenom (Assassination)
 				121411, -- Crimson Tempest (Assassination talent)
 				196819, -- Eviscerate (Subtlety)
-				195452, -- Nightblade (Subtlety)
-				199804, -- Between the Eyes (Outlaw)
 				269513, -- Death from Above (honor talent)
 				280719, -- Secret Technique (Subtlety talent)
-				315496, -- Slice and Dice (Outlaw)
-				315508, -- Roll the Bones (Outlaw)
+				315341, -- Between the Eyes (Outlaw)
+				315496, -- Slice and Dice
+				319175, -- Black Powder (Subtlety)
 			},
 			'ComboPoints',
 		},
