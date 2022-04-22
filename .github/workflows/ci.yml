@@ -57,8 +57,6 @@ jobs:
           annotate: error
       - name: Test
         run: lua tests/Items.lua
-      - name: Write libraries to .toc
-        run: lua .release/libreplace.lua
       - name: Setup packager arguments
         id: packager-args
         if: github.base_ref || (github.ref != 'refs/heads/master' && !startsWith(github.ref, 'refs/tags/'))
