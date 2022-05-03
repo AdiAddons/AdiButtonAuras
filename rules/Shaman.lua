@@ -40,6 +40,9 @@ local function BuildTempPetHandler(id)
 		if guid and guid:match('%-' .. id .. '%-') then
 			local remaining = GetPetTimeRemaining()
 			if remaining then
+				if remaining > 600000 then
+					remaining = 600000
+				end
 				model.expiration = GetTime() + remaining / 1000
 				model.highlight = 'good'
 			end
