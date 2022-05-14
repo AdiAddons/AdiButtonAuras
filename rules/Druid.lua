@@ -34,8 +34,9 @@ AdiButtonAuras:RegisterRules(function()
 			114108, -- Soul of the Forest (Restoration talent)
 			135700, -- Clearcasting (Feral)
 			145152, -- Bloodtalons (Feral talent)
+			155777, -- Germination (Restoration talent)
 			203059, -- King of the Jungle (Feral honor talent)
-			203407, -- Revitalize (Restoration honor talent)
+			203407, -- Reactive Resin (Restoration honor talent)
 			203554, -- Focused Growth (Restoration honor talent)
 			207386, -- Spring Blossoms (Restoration talent)
 			207640, -- Abundance (Restoration talent)
@@ -75,6 +76,28 @@ AdiButtonAuras:RegisterRules(function()
 			114108, -- Soul of the Forest
 		},
 
+		-- show the stacks of Focused Growth on Lifebloom
+		ShowStacks {
+			33763, -- Lifebloom
+			203554, -- Focused Growth
+			nil,
+			'player',
+			nil,
+			nil,
+			203553, -- Focused Growth (Restoration honor talent)
+		},
+
+		-- show the stacks of Nature's Grasp on Ironbark
+		ShowStacks {
+			102342, -- Ironbark
+			247563, -- Nature's Grasp
+			nil,
+			'player',
+			nil,
+			nil,
+			247543, -- Entangling Bark (Restoration honor talent)
+		},
+
 		-- show the stacks of Abundance on Regrowth
 		ShowStacks {
 			8936, -- Regrowth
@@ -86,15 +109,45 @@ AdiButtonAuras:RegisterRules(function()
 			207383, -- Abundance (Restoration talent)
 		},
 
-		-- show the stacks of Revitalize on Rejuvenation
+		-- show the stacks of Reactive Resin on Rejuvenation
 		ShowStacks {
 			774, -- Rejuvenation
-			203407, -- Revitalize
-			2,
+			203407, -- Reactive Resin
+			nil,
 			'ally',
 			nil,
 			nil,
-			203399, -- Revitalize (Restoration honor talent)
+			203399, -- Abundance (Restoration talent)
+		},
+
+		-- show the stacks of Bloodtalons on Rip, Primal Wrath and Ferocious Bite
+		ShowStacks {
+			{
+				1079, -- Rip
+			 22568, -- Ferocious Bite
+			285381, -- Primal Wrath
+			},
+			145152, -- Bloodtalons
+			nil,
+			'player',
+			nil,
+			nil,
+			319439, -- Bloodtalons (Feral talent)
+		},
+
+		Configure {
+			'Rejuvenation',
+			L['Show stacks of @NAME, Germination, Renewing Bloom and Reactive Resin.'],
+			774,
+			'player',
+			'UNIT_AURA',
+			function(units, model)
+				local hasRejuvenation = BuildAuraHandler_Single("HELPFUL", "good", "ally", 774) -- Rejuvenation
+				local hasGermination = BuildAuraHandler_Single("HELPFUL", "good", "ally", 155777) -- Germination
+				local count = (hasRejuvenation(units, model) and 1 or 0) + (hasGermination(units, model) and 1 or 0)
+				model.count = model.count + count
+			end,
+			155675, -- Germination (Restoration talent)
 		},
 
 		Configure {

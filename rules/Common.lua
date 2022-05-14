@@ -115,6 +115,45 @@ AdiButtonAuras:RegisterRules(function()
 				end
 			end)(),
 		},
+
+	--------------------------------------------------------------------------
+	-- Fleshcraft (Necrolord Ability)
+	--------------------------------------------------------------------------
+
+		Configure {
+			"Fleshcraft",
+			L["Show when Ultimate Form, @NAME or Volatile Solvent is found on yourself."],
+			324631, -- Fleshcraft
+			"player",
+			"UNIT_AURA",
+			(function()
+				local hasUltimate = BuildAuraHandler_Single("HELPFUL", "good", "player", 323524)   -- Ultimate Form
+				local hasFleshcraft = BuildAuraHandler_Single("HELPFUL", "good", "player", 324867) -- Fleshcraft
+				local hasSolvent = BuildAuraHandler_Single("HELPFUL", "good", "player", 323491)    -- Volatile Solvent
+				return function(units, model)
+					return hasUltimate(units, model) or hasFleshcraft(units, model) or hasSolvent(units, model)
+				end
+			end)(),
+		},
+
+	--------------------------------------------------------------------------
+	-- Soulshape (Night Fae Ability)
+	--------------------------------------------------------------------------
+
+		Configure {
+			"Soulshape",
+			L["Show when @NAME is found on yourself."],
+			324701, -- Soulshape
+			"player",
+			"UNIT_AURA",
+			(function()
+				local hasSoulshape = BuildAuraHandler_Single("HELPFUL", "good", "player", 310143) -- Soulshape
+				return function(units, model)
+					return hasSoulshape(units, model)
+				end
+			end)(),
+			324701,
+		},
 	}
 
 	--------------------------------------------------------------------------
