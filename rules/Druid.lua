@@ -123,9 +123,9 @@ AdiButtonAuras:RegisterRules(function()
 		-- show the stacks of Bloodtalons on Rip, Primal Wrath and Ferocious Bite
 		ShowStacks {
 			{
-				1079, -- Rip
-			 22568, -- Ferocious Bite
-			285381, -- Primal Wrath
+				  1079, -- Rip
+				 22568, -- Ferocious Bite
+				285381, -- Primal Wrath
 			},
 			145152, -- Bloodtalons
 			nil,
