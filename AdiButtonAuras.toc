@@ -44,10 +44,10 @@
 # #@end-no-lib-strip@
 # libs\LibSpellbook-1.0\LibSpellbook-1.0.xml
 # libs\LibItemBuffs-1.0\LibItemBuffs-1.0.xml
-#@end-non-debug@
 
-# Not in libs subfolder to shorten the path
-SMBH\lib.xml
+# # Not in libs subfolder to shorten the path
+# SMBH\lib.xml
+#@end-non-debug@
 
 Localization.lua
 
