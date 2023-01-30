@@ -22,23 +22,18 @@ along with AdiButtonAuras. If not, see <http://www.gnu.org/licenses/>.
 local addonName, addon = ...
 
 local _G = _G
-local GameTooltip = _G.GameTooltip
+local C_UnitAuras = _G.C_UnitAuras
+local Enum = _G.Enum
 local GetActionInfo = _G.GetActionInfo
-local GetAzeritePowerInfo = _G.C_AzeriteEmpoweredItem.GetPowerInfo
 local GetItemInfo = _G.GetItemInfo
 local GetItemSpell = _G.GetItemSpell
 local GetMacroInfo = _G.GetMacroInfo
 local GetMacroItem = _G.GetMacroItem
 local GetMacroSpell = _G.GetMacroSpell
-local getmetatable = _G.getmetatable
 local GetPetActionInfo = _G.GetPetActionInfo
-local GetPowerInfo = _G.C_ArtifactUI.GetPowerInfo
-local GetPvpTalentInfoByID = _G.GetPvpTalentInfoByID
-local GetSpellBookItemName = _G.GetSpellBookItemName
 local GetSpellInfo = _G.GetSpellInfo
-local GetTalentInfoByID = _G.GetTalentInfoByID
-local hooksecurefunc = _G.hooksecurefunc
 local select = _G.select
+local TooltipDataProcessor = _G.TooltipDataProcessor
 local UnitAura = _G.UnitAura
 local UnitBuff = _G.UnitBuff
 local UnitDebuff = _G.UnitDebuff
@@ -48,7 +43,8 @@ local function IsDisabled()
 end
 
 local function AddSpellInfo(tooltip, source, id, addEmptyLine)
-	if not id or IsDisabled() then return end
+	if not id or IsDisabled() or tooltip:IsForbidden() then return end
+
 	local name, _, _, _, _, _, spellId = GetSpellInfo(id)
 	if not name then return end
 
@@ -62,16 +58,6 @@ local function AddSpellInfo(tooltip, source, id, addEmptyLine)
 		tooltip:AddDoubleLine("Actual spell name:", resolvedName)
 		tooltip:AddDoubleLine("Actual spell id:", resolvedId)
 	end
-	tooltip:Show()
-end
-
-local function AddArtifactInfo(tooltip, traitId)
-	if not traitId or IsDisabled() then return end
-	tooltip:AddLine(" ")
-	tooltip:AddDoubleLine("Trait id:", traitId)
-	local spellId = GetPowerInfo(traitId).spellID
-	if not spellId then return end
-	tooltip:AddDoubleLine("Spell id:", spellId)
 	tooltip:Show()
 end
 
@@ -101,7 +87,7 @@ local function AddActionInfo(tooltip, slot)
 	if actionType == "spell" then
 		return AddSpellInfo(tooltip, "action", id, true)
 	elseif actionType == "macro" then
-		return AddMacroInfo(tooltip, "action", id)
+		return AddMacroInfo(tooltip, "macro", id)
 	elseif actionType == "item" then
 		return AddItemInfo(tooltip, id, true)
 	end
@@ -114,59 +100,56 @@ local function AddPetActionInfo(tooltip, slot)
 	return AddSpellInfo(tooltip, "spell", id, true)
 end
 
-local function AddAuraInfo(func, tooltip, ...)
-	return AddSpellInfo(tooltip, "aura", select(10, func(...)), true)
-end
+local spellIdGetters = {
+	GetUnitAura = function(...)
+		return select(10, UnitAura(unpack(...)))
+	end,
+	GetUnitBuff = function(...)
+		return select(10, UnitBuff(unpack(...)))
+	end,
+	GetUnitDebuff = function(...)
+		return select(10, UnitDebuff(unpack(...)))
+	end,
+	GetUnitBuffByAuraInstanceID = function(...)
+		local data = C_UnitAuras.GetAuraDataByAuraInstanceID(unpack(...))
+		return data and data.spellId
+	end,
+	GetUnitDebuffByAuraInstanceID = function(...)
+		local data = C_UnitAuras.GetAuraDataByAuraInstanceID(unpack(...))
+		return data and data.spellId
+	end,
+}
 
-local function AddSpellbookInfo(tooltip, slot, bookType)
-	local _, _, id = GetSpellBookItemName(slot, bookType)
-	return AddSpellInfo(tooltip, "spellbook", id, true)
-end
+local sources = {
+	GetAction = 'action',
+	GetArtifactPowerByID = 'artifact',
+	GetAzeritePower = 'azerite',
+	GetConduit = 'conduit',
+	GetPvpTalent = 'pvp talent',
+	GetSpellBookItem = 'spellbook',
+	GetTraitEntry = 'talent',
+}
 
-local function AddTalentInfo(tooltip, talentId)
-	local _, _, _, _, _, spellId = GetTalentInfoByID(talentId)
-	return AddSpellInfo(tooltip, "talent", spellId, true)
-end
+TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, function(tooltip, data)
+	AddItemInfo(tooltip, data.id, true)
+end)
 
-local function AddPvpTalentInfo(tooltip, talentId)
-	if not talentId or IsDisabled() then return end
-	local _, _, _, _, _, spellId = GetPvpTalentInfoByID(talentId)
+TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Macro, function(tooltip, data)
+	AddActionInfo(tooltip, unpack(tooltip.info.getterArgs))
+end)
 
-	tooltip:AddLine(' ')
-	tooltip:AddDoubleLine('Honor talent id:', talentId)
-	return AddSpellInfo(tooltip, 'honor talent', spellId)
-end
+TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.PetAction, function(tooltip, data)
+	AddPetActionInfo(tooltip, unpack(tooltip.info.getterArgs))
+end)
 
-local function AddAzeriteInfo(tooltip, _, _, powerId)
-	if not powerId or IsDisabled() then return end
-	tooltip:AddLine(' ')
-	tooltip:AddDoubleLine("Azerite power id:", powerId)
-	local info = GetAzeritePowerInfo(powerId)
-	return AddSpellInfo(tooltip, "azerite", info.spellID)
-end
+TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Spell, function(tooltip, data)
+	local source = sources[tooltip.info.getterName] or 'spell'
 
-local function AddItemRefInfo(link)
-	local id = link:match('spell:(%d+):')
-	return AddSpellInfo(_G.ItemRefTooltip, "spell", id, true)
-end
+	AddSpellInfo(tooltip, source, data.id, true)
+end)
 
-local function AddConduitInfo(tooltip, conduitID, conduitRank)
-	local spellID = _G.C_Soulbinds.GetConduitSpellID(conduitID, conduitRank)
-	tooltip:AddLine(' ')
-	tooltip:AddDoubleLine('Conduit spell id:', spellID)
-end
+TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.UnitAura, function(tooltip, data)
+	local id = spellIdGetters[tooltip.info.getterName](tooltip.info.getterArgs)
 
-local proto = getmetatable(GameTooltip).__index
-hooksecurefunc(proto, "SetUnitAura", function(...) return AddAuraInfo(UnitAura, ...) end)
-hooksecurefunc(proto, "SetUnitBuff", function(...) return AddAuraInfo(UnitBuff, ...) end)
-hooksecurefunc(proto, "SetUnitDebuff", function(...) return AddAuraInfo(UnitDebuff, ...) end)
-hooksecurefunc(proto, "SetSpellByID", function(tooltip, ...) return AddSpellInfo(tooltip, "SpellByID", ...) end)
-hooksecurefunc(proto, "SetSpellBookItem", AddSpellbookInfo)
-hooksecurefunc(proto, "SetAction", AddActionInfo)
-hooksecurefunc(proto, "SetPetAction", AddPetActionInfo)
-hooksecurefunc(proto, "SetArtifactPowerByID", AddArtifactInfo)
-hooksecurefunc(proto, "SetTalent", AddTalentInfo)
-hooksecurefunc(proto, 'SetPvpTalent', AddPvpTalentInfo)
-hooksecurefunc(proto, "SetAzeritePower", AddAzeriteInfo)
-hooksecurefunc(proto, 'SetConduit', AddConduitInfo)
-hooksecurefunc("SetItemRef", AddItemRefInfo)
+	AddSpellInfo(tooltip, 'aura', id, true)
+end)
