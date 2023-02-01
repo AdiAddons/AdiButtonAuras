@@ -85,7 +85,7 @@ AdiButtonAuras:CreateConfig(function(addonName, addon)
 		what = (what or ""):trim():lower()
 
 		if panels[what] then
-			return _G.InterfaceOptionsFrame_OpenToCategory(panels[what])
+			return _G.Settings.OpenToCategory(panels[what])
 		end
 
 		local _type, id = strmatch(what, '([si][pt]e[lm]l?):(%d+)')
@@ -97,7 +97,7 @@ AdiButtonAuras:CreateConfig(function(addonName, addon)
 		end
 		local key = (_type == 'spell' or _type == 'item') and id and _type..':'..id
 		if key and addon.spells[key] then
-			_G.InterfaceOptionsFrame_OpenToCategory(panels.spells)
+			_G.Settings.OpenToCategory(panels.spells)
 			private.SelectSpell(key)
 		end
 	end
