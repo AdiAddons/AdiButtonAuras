@@ -324,14 +324,15 @@ function addon:Initialize()
 		hooksecurefunc(actionBarButton, 'Update', UpdateHandlerForButton)
 	end
 
-	hooksecurefunc('PetActionBar_Update', function()
-		for i = 1, NUM_PET_ACTION_SLOTS do
-			UpdateHandler('PetActionBar_Update', _G['PetActionButton'..i])
+	hooksecurefunc(_G.PetActionBar, "Update", function()
+		for _, button in next, _G.PetActionBar.actionButtons do
+			UpdateHandler("PetActionBar_Update", button)
 		end
 	end)
-	hooksecurefunc('StanceBar_UpdateState', function()
-		for i = 1, NUM_STANCE_SLOTS do
-			UpdateHandler('StanceBar_UpdateState', _G['StanceButton'..i])
+
+	hooksecurefunc(_G.StanceBar, "UpdateState", function()
+		for _, button in next, _G.StanceBar.actionButtons do
+			UpdateHandler("StanceBar_UpdateState", button)
 		end
 	end)
 
