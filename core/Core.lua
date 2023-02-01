@@ -32,9 +32,6 @@ local geterrorhandler = _G.geterrorhandler
 local GetModifiedClick = _G.GetModifiedClick
 local gsub = _G.gsub
 local hooksecurefunc = _G.hooksecurefunc
-local InterfaceOptionsFrame_OpenToCategory = _G.InterfaceOptionsFrame_OpenToCategory
-local InterfaceOptions_AddCategory = _G.InterfaceOptions_AddCategory
-local INTERFACEOPTIONS_ADDONCATEGORIES = _G.INTERFACEOPTIONS_ADDONCATEGORIES
 local ipairs = _G.ipairs
 local IsAddOnLoaded = _G.IsAddOnLoaded
 local IsInGroup = _G.IsInGroup
@@ -439,15 +436,8 @@ function addon.isClass(class)
 end
 
 ------------------------------------------------------------------------------
--- Handle load-on-demand configuration
+-- Handle configuration
 ------------------------------------------------------------------------------
-
--- Create a fake configuration panel
-local configLoaderPanel = CreateFrame("Frame")
-configLoaderPanel.name = addonName
-configLoaderPanel:Hide()
-configLoaderPanel:SetScript('OnShow', function() return addon:OpenConfiguration() end)
-InterfaceOptions_AddCategory(configLoaderPanel)
 
 -- The loading handler
 function addon:OpenConfiguration(args)
@@ -460,22 +450,12 @@ function addon:OpenConfiguration(args)
 		end
 	end
 
-	-- Remove the fake configuration panel
-	configLoaderPanel:SetScript('OnShow', nil)
-	configLoaderPanel:Hide()
-	for i, panel in ipairs(INTERFACEOPTIONS_ADDONCATEGORIES) do
-		if panel == configLoaderPanel then
-			tremove(INTERFACEOPTIONS_ADDONCATEGORIES, i)
-			break
-		end
-	end
-
 	-- Load the configuration addon
 	loaded, why = LoadAddOn(addonName..'_Config')
 	if loaded then
 		CloseAllWindows()
 		CloseAllWindows()
-		InterfaceOptionsFrame_OpenToCategory(addonName)
+		_G.Settings.OpenToCategory(addonName)
 	end
 
 	-- Forward the arguments
