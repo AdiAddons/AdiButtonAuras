@@ -431,8 +431,9 @@ local function ShowPower(spells, powerType, handler, highlight, providers, desc)
 		powerIndex = PowerType[powerType]
 		if not powerIndex then
 			error("Unknown power "..powerType, 3)
-		end
-		powerLoc = _G[powerType:gsub('(%S)(%u)', '%1_%2'):upper()]
+        end
+		local powerKey = powerType:gsub('(%S)(%u)', '%1_%2'):upper()
+		powerLoc = _G[powerKey] or _G['POWER_TYPE_'..powerKey]
 		events = { "UNIT_POWER_FREQUENT", "UNIT_MAXPOWER" }
 	else
 		error("Invalid power type value, expected string, got "..type(powerType), 3)
