@@ -245,6 +245,7 @@ function private.GetUserRulesOptions(addon, addonName)
 							DEATHKNIGHT = L['DEATHKNIGHT'],
 							DEMONHUNTER = L['DEMONHUNTER'],
 							DRUID = L['DRUID'],
+							EVOKER = L['EVOKER'],
 							HUNTER = L['HUNTER'],
 							MAGE = L['MAGE'],
 							MONK = L['MONK'],
