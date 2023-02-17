@@ -24,6 +24,7 @@ local addonName, addon = ...
 local _G = _G
 local C_UnitAuras = _G.C_UnitAuras
 local Enum = _G.Enum
+local BreakUpLargeNumbers = _G.BreakUpLargeNumbers
 local GetActionInfo = _G.GetActionInfo
 local GetItemInfo = _G.GetItemInfo
 local GetItemSpell = _G.GetItemSpell
@@ -52,11 +53,11 @@ local function AddSpellInfo(tooltip, source, id, addEmptyLine)
 		tooltip:AddLine(" ")
 	end
 
-	tooltip:AddDoubleLine("Spell id ("..source.."):", spellId)
+	tooltip:AddDoubleLine("Spell id ("..source.."):", BreakUpLargeNumbers(spellId))
 	local resolvedName, _, _, _, _, _, resolvedId = GetSpellInfo(name)
 	if resolvedName and resolvedId ~= spellId then
 		tooltip:AddDoubleLine("Actual spell name:", resolvedName)
-		tooltip:AddDoubleLine("Actual spell id:", resolvedId)
+		tooltip:AddDoubleLine("Actual spell id:", BreakUpLargeNumbers(resolvedId))
 	end
 	tooltip:Show()
 end
@@ -68,7 +69,7 @@ local function AddItemInfo(tooltip, id, addEmptyLine)
 	if addEmptyLine then
 		tooltip:AddLine(" ")
 	end
-	tooltip:AddDoubleLine("Item id:", link:match('item:(%d+)'))
+	tooltip:AddDoubleLine("Item id:", BreakUpLargeNumbers(link:match('item:(%d+)')))
 	tooltip:Show()
 	return AddSpellInfo(tooltip, "item", GetItemSpell(link))
 end
