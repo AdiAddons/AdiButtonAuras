@@ -60,7 +60,7 @@ jobs:
       - name: Setup packager arguments
         id: packager-args
         if: github.base_ref || (github.ref != 'refs/heads/master' && !startsWith(github.ref, 'refs/tags/'))
-        run: echo '::set-output name=args::-d'
+        run: echo "{args}={-d}" >> $GITHUB_OUTPUT
       - name: Package and deploy
         uses: BigWigsMods/packager@v2
         with:
