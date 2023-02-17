@@ -24,60 +24,6 @@ AdiButtonAuras:RegisterRules(function()
 
 	local rules = {
 	--------------------------------------------------------------------------
-	-- Legendary Rings
-	--------------------------------------------------------------------------
-
-		Configure {
-			"LegendaryRingsDPS",
-			format(L["%s when someone used their legendary ring."], DescribeHighlight("good")),
-			{
-				"item:124634", -- Thorasus, the Stone Heart of Draenor
-				"item:124635", -- Nithramus, the All-Seer
-				"item:124636", -- Maalus, the Blood Drinker
-			},
-			"player",
-			"UNIT_AURA",
-			(function()
-				local hasSavageHollows = BuildAuraHandler_FirstOf("HELPFUL", "good", "player", {
-					187616, -- Nithramus
-					187619, -- Thorasus
-					187620, -- Maalus
-				})
-				return function(units, model)
-					return hasSavageHollows(units, model)
-				end
-			end)(),
-		},
-
-		Configure {
-			"LegendaryRingsTanks",
-			format(L["%s when someone used their legendary ring."], DescribeHighlight("good")),
-			"item:124637", -- Sanctus, Sigil of the Unbroken
-			"player",
-			"UNIT_AURA",
-			(function()
-				local hasSanctus = BuildAuraHandler_Single("HELPFUL", "good", "player", 187617) -- Sanctus
-				return function(units, model)
-					return hasSanctus(units, model)
-				end
-			end)(),
-		},
-
-		Configure {
-			"LegendaryRingsHeal",
-			format(L["%s when someone used their legendary ring."], DescribeHighlight("good")),
-			"item:124638", -- Etheralus, the Eternal Reward
-			"player",
-			"UNIT_AURA",
-			(function()
-				local hasEtheralus = BuildAuraHandler_Single("HELPFUL", "good", "player", 187618) -- Etheralus
-				return function(units, model)
-					return hasEtheralus(units, model)
-				end
-			end)(),
-		},
-
-	--------------------------------------------------------------------------
 	-- Bloodlust
 	--------------------------------------------------------------------------
 
@@ -90,6 +36,7 @@ AdiButtonAuras:RegisterRules(function()
 				 80353, -- Time Warp (mage)
 				264667, -- Primal Rage (hunter ferocity pets)
 				272678, -- Primal Rage (hunter command pet ability)
+				390386, -- Fury of the Aspects (drachtyr)
 				"item:102351", -- Drums of Rage
 				"item:120257", -- Drums of Fury
 			},
@@ -103,12 +50,14 @@ AdiButtonAuras:RegisterRules(function()
 					146555, -- Drums of Rage
 					178207, -- Drums of Fury
 					264667, -- Primal Rage (hunter ferocity pets)
+					390386, -- Fury of the Aspects (drachtyr)
 				})
 				local isSated = BuildAuraHandler_Longest("HARMFUL", "bad", "ally", {
 					 57723, -- Exhaustion (Drums of Rage/Fury debuff)
 					 57724, -- Sated (Bloodlst/Heroism debuff),
 					 80354, -- Temporal Displacement (Time Warp debuff)
 					264689, -- Fatigued (Primal Rage debuff)
+					390435, -- Exhaustion (Fury of the Aspects debuff)
 				})
 				return function(units, model)
 					return hasBloodlust(units, model) or isSated(units, model)
