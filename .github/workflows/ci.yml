@@ -10,12 +10,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
           submodules: true
       - name: Setup APT cache
-        uses: actions/cache@v2.1.2
+        uses: actions/cache@v3
         with:
           path: /var/cache/apt/**
           key: ${{ runner.os }}-apt
@@ -34,7 +34,7 @@ jobs:
           luarocks path | sed -e 's/^export //' -e "s/'//g" >> $GITHUB_ENV
       - name: Setup LuaRocks cache
         id: cache-luarocks
-        uses: actions/cache@v2.1.2
+        uses: actions/cache@v3
         with:
           path: ~/.luarocks
           key: ${{ runner.os }}-luarocks
@@ -69,7 +69,7 @@ jobs:
           CF_API_KEY: ${{ secrets.CF_API_KEY }}
           GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload packages to github
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: packages
           path: .release/AdiButtonAuras*.zip
