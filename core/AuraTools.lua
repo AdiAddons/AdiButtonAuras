@@ -124,9 +124,9 @@ local aurasMetatable = {
 
 			for _, auraInstanceID in next, info.updatedAuraInstanceIDs or empty do
 				if not IsAuraFilteredOutByInstanceID(unit, auraInstanceID, filter) then
-					ProcessAura(
+					self[auraInstanceID] = ProcessAura(
 						GetAuraDataByAuraInstanceID(unit, auraInstanceID),
-						rawget(self, auraInstanceID)
+						rawget(self, auraInstanceID) or new()
 					)
 				end
 			end
