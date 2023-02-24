@@ -69,6 +69,10 @@ AdiButtonAuras:RegisterRules(function()
 			135700, -- Clearcasting (Feral)
 		},
 
+		DebuffAliases {	8921, 164812 }, -- Mondfeuer 10.0
+		BuffAliases { 190984, 48517 }, --Finsterniss (Sonne) 10.0
+		BuffAliases { 194153, 48518 }, --Finsterniss (Mond) 10.0
+
 		-- show Soul of the Forest on Swiftmend
 		PassiveModifier {
 			158478, -- Soul of the Forest (Restoration talent)
@@ -135,6 +139,21 @@ AdiButtonAuras:RegisterRules(function()
 			319439, -- Bloodtalons (Feral talent)
 		},
 
+		ShowPower {
+		    78674, -- Sternensog 10.0
+		    "LunarPower",
+		    40,
+--		    "lighten",
+		},
+
+		-- show enerty on Schreddern
+		ShowPower {
+		    5221, -- Schreddern 10.0
+		    "Energy",
+		    100,
+		    "lighten",
+		},
+
 		Configure {
 			'Rejuvenation',
 			L['Show stacks of @NAME, Germination, Renewing Bloom and Reactive Resin.'],
@@ -165,6 +184,21 @@ AdiButtonAuras:RegisterRules(function()
 			end,
 		},
 
+		Configure {
+			'Naturgewalt', -- 10.0
+			L['Show the duration of @NAME.'],
+			205636,
+			'player',
+			'PLAYER_TOTEM_UPDATE',
+			function(_, model)
+				local present, _, startTime, duration = GetTotemInfo(1)
+				if present then
+					model.highlight = 'good'
+					model.expiration = startTime + duration
+				end
+			end,
+		},
+
 		-- show Scent of Blood on Swipe
 		Configure {
 			'ScentOfBlood',
@@ -181,5 +215,39 @@ AdiButtonAuras:RegisterRules(function()
 			end,
 			285564, -- Scent of Blood (Feral talent)
 		},
+
+		Configure {
+			'Mark of the Wild', -- 10.0
+			L['Show the number of group members missing @NAME.'],
+			1126, -- Mark of the Wild
+			'group',
+			{'GROUP_ROSTER_UPDATE', 'UNIT_AURA'},
+			function(units, model)
+				local missing = 0
+				local shortest
+				for unit in next, units.group do
+					if UnitIsPlayer(unit) and not UnitIsDeadOrGhost(unit) then
+						local found, _, expiration = GetBuff(unit, 1126)
+						if found then
+							if not shortest or expiration < shortest then
+								shortest = expiration
+							end
+						else
+							missing = missing + 1
+						end
+					end
+				end
+
+				if shortest then
+					model.expiration = shortest
+					model.highlight = 'good'
+				end
+				if missing > 0 then
+					model.count = missing
+					model.hint = true
+				end
+			end,
+		},
+
 	}
 end)
