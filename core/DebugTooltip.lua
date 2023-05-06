@@ -136,21 +136,23 @@ TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, function(tool
 end)
 
 TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Macro, function(tooltip, data)
-	AddActionInfo(tooltip, unpack(tooltip.info.getterArgs))
+	AddActionInfo(tooltip, unpack(tooltip.processingInfo.getterArgs))
 end)
 
 TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.PetAction, function(tooltip, data)
-	AddPetActionInfo(tooltip, unpack(tooltip.info.getterArgs))
+	AddPetActionInfo(tooltip, unpack(tooltip.processingInfo.getterArgs))
 end)
 
 TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Spell, function(tooltip, data)
-	local source = sources[tooltip.info.getterName] or 'spell'
+	local getterName = tooltip.processingInfo and tooltip.processingInfo.getterName
+	local source = getterName and sources[getterName] or 'spell'
 
 	AddSpellInfo(tooltip, source, data.id, true)
 end)
 
 TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.UnitAura, function(tooltip, data)
-	local id = spellIdGetters[tooltip.info.getterName](tooltip.info.getterArgs)
+	local info = tooltip.processingInfo
+	local id = spellIdGetters[info.getterName](info.getterArgs)
 
 	AddSpellInfo(tooltip, 'aura', id, true)
 end)
