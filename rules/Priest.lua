@@ -54,7 +54,6 @@ AdiButtonAuras:RegisterRules(function()
 			   605, -- Mind Control
 			 21562, -- Power Word: Fortitude
 			194384, -- Atonement (Discipline)
-			193223, -- Surrender to Madness (Shadow)
 			196773, -- Inner Focus (Holy honor talent)
 			263406, -- Surrendered to Madness (Shadow)
 		},
@@ -99,55 +98,6 @@ AdiButtonAuras:RegisterRules(function()
 			'player',
 			'PLAYER_TOTEM_UPDATE',
 			BuildGuardianHandler(mindbender)
-		},
-
-		-- track Atonement on Shadow Mend
-		-- NOTE: Shadow Mend is used as the display spell because:
-		-- - Power Word: Shield tracks itself
-		-- - Power Word: Radiance has charges
-		-- - the debuff from Shadow Mend is not that important
-		Configure {
-			'AtonementTracker',
-			format(L['Show the shortest duration and the number of group members with %s.'], GetSpellInfo(194384)), -- Atonement
-			186263, -- Shadow Mend (Discipline)
-			'group',
-			{'GROUP_ROSTER_UPDATE', 'UNIT_AURA'},
-			function(units, model)
-				local count, minExpiration = 0
-				for unit in next, units.group do
-					local found, _, expiration = GetPlayerBuff(unit, 194384)
-					if found then
-						count = count + 1
-						if (not minExpiration or expiration < minExpiration) then
-							minExpiration = expiration
-						end
-					end
-				end
-				if count > 0 then
-					model.count = count
-					model.expiration = minExpiration
-				end
-			end,
-			81749, -- Atonement (Discipline)
-		},
-
-		Configure {
-			'SurrenderToDarkness',
-			format(
-				'%s %s',
-				BuildDesc('HELPFUL PLAYER', 'good', 'player', 193223), -- Surrender to Madness
-				BuildDesc('HARMFUL PLAYER', 'bad', 'player', 263406) -- Surrendered to Madness
-			),
-			193223, -- Surrender to Madness (Shadow)
-			'player',
-			'UNIT_AURA',
-			(function()
-				local isSurrendering = BuildAuraHandler_Single('HELPFUL PLAYER', 'good', 'player', 193223)
-				local hasSurrendered = BuildAuraHandler_Single('HARMFUL PLAYER', 'bad', 'player', 263406)
-				return function(units, model)
-					return isSurrendering(units, model) or hasSurrendered(units, model)
-				end
-			end)(),
 		},
 
 		Configure {
