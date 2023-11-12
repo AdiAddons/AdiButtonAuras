@@ -29,6 +29,7 @@ local error = _G.error
 local format = _G.format
 local GetActionCooldown = _G.GetActionCooldown
 local GetActionInfo = _G.GetActionInfo
+local GetActionText = _G.GetActionText
 local GetMacroBody = _G.GetMacroBody
 local GetMacroItem = _G.GetMacroItem
 local GetMacroSpell = _G.GetMacroSpell
@@ -163,12 +164,14 @@ end
 -- Action handling
 ------------------------------------------------------------------------------
 
-local function GetActionSpell(actionType, actionId)
+local function GetActionSpell(actionType, actionId, actionSubType, action)
 	if not actionType or not actionId then return "empty" end
 
 	-- Resolve macros
 	local macroConditionals
-	if actionType == "macro" then
+	if actionType == "macro" and actionSubType ~= "spell" then
+		-- this might return wrong results if macro names are not unique
+		actionId = GetActionText(action)
 		macroConditionals = GetMacroConditionals(actionId)
 		actionType, actionId = GetMacroAction(actionId)
 	end
@@ -176,7 +179,7 @@ local function GetActionSpell(actionType, actionId)
 	-- Resolve items and companions
 	if actionType == "item" then
 		return "item", actionId, macroConditionals
-	elseif actionType == "spell" or actionType == "companion" then
+	elseif actionType == "spell" or actionSubType == "spell" or actionType == "companion" then
 		return "spell", actionId, macroConditionals
 	end
 
@@ -260,9 +263,9 @@ end
 overlayPrototype.PLAYER_ENTERING_WORLD = overlayPrototype.ForceUpdate
 
 function overlayPrototype:UpdateAction(event)
-	local actionId, actionType = self:GetAction()
-	local actualType, actualId, macroConditionals = GetActionSpell(actionId, actionType)
-	self:Debug('UpdateAction', event, '|', actionId, actionType, '=>', actualId, macroConditionals)
+	local actionType, actionId, actionSubType = self:GetAction()
+	local actualType, actualId, macroConditionals = GetActionSpell(actionType, actionId, actionSubType, self:GetActionId())
+	self:Debug('UpdateAction', event, '|', actionType, actionSubType, actionId, '=>', actualId, macroConditionals)
 	return self:SetAction(event, actualType, actualId, macroConditionals)
 end
 
@@ -612,6 +615,12 @@ function labSupportPrototype:GetAction()
 	else
 		return actionType, actionId
 	end
+end
+
+function labSupportPrototype:GetActionId()
+	local _, actionId = self.button:GetAction()
+
+	return actionId
 end
 
 function labSupportPrototype:GetActionCooldown()

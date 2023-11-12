@@ -26,6 +26,7 @@ local C_UnitAuras = _G.C_UnitAuras
 local Enum = _G.Enum
 local BreakUpLargeNumbers = _G.BreakUpLargeNumbers
 local GetActionInfo = _G.GetActionInfo
+local GetActionText = _G.GetActionText
 local GetItemInfo = _G.GetItemInfo
 local GetItemSpell = _G.GetItemSpell
 local GetMacroInfo = _G.GetMacroInfo
@@ -88,7 +89,8 @@ local function AddActionInfo(tooltip, slot)
 	if actionType == "spell" then
 		return AddSpellInfo(tooltip, "action", id, true)
 	elseif actionType == "macro" then
-		return AddMacroInfo(tooltip, "macro", id)
+		-- this might return wrong info if macro names are not unique
+		return AddMacroInfo(tooltip, "macro", GetActionText(slot))
 	elseif actionType == "item" then
 		return AddItemInfo(tooltip, id, true)
 	end
