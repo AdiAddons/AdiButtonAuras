@@ -165,5 +165,20 @@ AdiButtonAuras:RegisterRules(function()
 				end
 			end,
 		},
+
+		Configure {
+		    "Arcane Surge",
+		    "Flash when your mana is below 35% and @NAME is off cooldwon.",
+		    { 365350,}, -- Arcane Surge
+		    "player",
+		    { "UNIT_POWER_UPDATE", "SPELL_UPDATE_COOLDOWN" },
+		    function(units, model)
+		        if UnitPower(units.player) / UnitPowerMax(units.player) < 0.35 then
+		            model.flash = true
+		        end
+		    end
+				
+		},
+
 	}
 end)
