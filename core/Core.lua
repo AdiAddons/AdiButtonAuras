@@ -228,7 +228,7 @@ end
 
 local hookedFrames = {}
 local function RegisterDominos()
-	for _, button in next, _G.Dominos.ActionButtons do
+	for button in _G.Dominos.ActionButtons:GetAll() do
 		if not hookedFrames[button] then
 			hookedFrames[button] = true
 			hooksecurefunc(button, 'Update', UpdateHandlerForButton)
