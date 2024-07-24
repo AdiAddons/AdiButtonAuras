@@ -24,18 +24,9 @@ local _, addon = ...
 if not addon.isClass('DEMONHUNTER') then return end
 
 AdiButtonAuras:RegisterRules(function()
-	Debug('Adding demonhunter rules')
-	return {
-		ImportPlayerSpells {
-			-- import all spells for
-			'DEMONHUNTER'
-		},
+	Debug('Rules', 'Adding demonhunter rules')
 
-		ShowDispellable {
-			258920, -- Immolation Aura (Vengeance)
-			'player',
-			'Magic',
-			205625, -- Cleansed by Flame (Vengeance honor talent)
-		},
+	return {
+		ImportPlayerSpells { 'DEMONHUNTER' },
 	}
 end)

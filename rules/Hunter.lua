@@ -24,16 +24,9 @@ local _, addon = ...
 if not addon.isClass('HUNTER') then return end
 
 AdiButtonAuras:RegisterRules(function()
-	Debug('Adding hunter rules')
+	Debug('Rules', 'Adding hunter rules')
 
 	return {
 		ImportPlayerSpells { 'HUNTER' },
-
-		ShowDispellable {
-			5384, -- Feign Death
-			'player',
-			'Magic',
-			202746, -- Survival Tactics (honor talent)
-		},
 	}
 end)

@@ -21,27 +21,12 @@ along with AdiButtonAuras. If not, see <http://www.gnu.org/licenses/>.
 
 local _, addon = ...
 
-if not addon.isClass('EVOKER') then
-	return
-end
+if not addon.isClass('EVOKER') then return end
 
 AdiButtonAuras:RegisterRules(function()
 	Debug('Rules', 'Adding evoker rules')
 
 	return {
-		ImportPlayerSpells {
-			-- import all spells for
-			'EVOKER',
-			-- except for
-		},
-
-		-- show essence on spenders
-		ShowPower {
-			{
-				356995, -- Disintegrate
-				357211, -- Pyre
-			},
-			'Essence',
-		},
+		ImportPlayerSpells { 'EVOKER' },
 	}
 end)
