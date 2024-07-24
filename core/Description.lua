@@ -23,7 +23,7 @@ local addonName, addon = ...
 
 local _G = _G
 local format = _G.format
-local GetSpellInfo = _G.GetSpellInfo
+local GetSpellName = C_Spell.GetSpellName
 local gsub = _G.gsub
 local tostring = _G.tostring
 local type = _G.type
@@ -75,7 +75,7 @@ end
 
 local function DescribeAllSpells(id, ...)
 	if id ~= nil then
-		local name = type(id) == "number" and GetSpellInfo(id) or tostring(id)
+		local name = type(id) == "number" and GetSpellName(id) or tostring(id)
 		return name, DescribeAllSpells(...)
 	end
 end

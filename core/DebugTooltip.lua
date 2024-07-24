@@ -33,7 +33,6 @@ local GetMacroInfo = _G.GetMacroInfo
 local GetMacroItem = _G.GetMacroItem
 local GetMacroSpell = _G.GetMacroSpell
 local GetPetActionInfo = _G.GetPetActionInfo
-local GetSpellInfo = _G.GetSpellInfo
 local select = _G.select
 local TooltipDataProcessor = _G.TooltipDataProcessor
 local UnitAura = _G.UnitAura
@@ -47,19 +46,20 @@ end
 local function AddSpellInfo(tooltip, source, id, addEmptyLine)
 	if not id or IsDisabled() or tooltip:IsForbidden() then return end
 
-	local name, _, _, _, _, _, spellId = GetSpellInfo(id)
-	if not name then return end
+	local info = C_Spell.GetSpellInfo(id)
+	if not info then return end
 
 	if addEmptyLine then
 		tooltip:AddLine(" ")
 	end
 
-	tooltip:AddDoubleLine("Spell id ("..source.."):", BreakUpLargeNumbers(spellId))
-	local resolvedName, _, _, _, _, _, resolvedId = GetSpellInfo(name)
-	if resolvedName and resolvedId ~= spellId then
-		tooltip:AddDoubleLine("Actual spell name:", resolvedName)
-		tooltip:AddDoubleLine("Actual spell id:", BreakUpLargeNumbers(resolvedId))
+	tooltip:AddDoubleLine("Spell id ("..source.."):", BreakUpLargeNumbers(id))
+
+	if (id ~= info.spellID) then
+		tooltip:AddDoubleLine("Actual spell name:", info.name)
+		tooltip:AddDoubleLine("Actual spell id:", BreakUpLargeNumbers(info.spellID))
 	end
+
 	tooltip:Show()
 end
 

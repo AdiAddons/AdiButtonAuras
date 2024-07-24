@@ -21,14 +21,7 @@ along with AdiButtonAuras. If not, see <http://www.gnu.org/licenses/>.
 
 local _, private = ...
 
-local _G = _G
-
 AdiButtonAuras:CreateConfig(function(addonName, addon)
-
-	local GetItemInfo = _G.GetItemInfo
-	local GetSpellInfo = _G.GetSpellInfo
-	local strmatch = _G.strmatch
-
 	local AceConfig = addon.GetLib('AceConfig-3.0')
 	local AceConfigDialog = addon.GetLib('AceConfigDialog-3.0')
 	local LibSpellbook = addon.GetLib('LibSpellbook-1.0')

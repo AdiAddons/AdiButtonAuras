@@ -30,7 +30,7 @@ function private.GetSpellOptions(addon, addonName)
 	local GameTooltip = _G.GameTooltip
 	local GameTooltip_SetDefaultAnchor = _G.GameTooltip_SetDefaultAnchor
 	local GetItemInfo = _G.GetItemInfo
-	local GetSpellInfo = _G.GetSpellInfo
+	local GetSpellName = C_Spell.GetSpellName
 	local hooksecurefunc = _G.hooksecurefunc
 	local ipairs = _G.ipairs
 	local IsShiftKeyDown = _G.IsShiftKeyDown
@@ -160,7 +160,7 @@ function private.GetSpellOptions(addon, addonName)
 		local type_, id = self.overlay.actionType, self.overlay.actionId
 		self.conf, self.enabled, self.key = addon:GetActionConfiguration(type_, id)
 		if type_ == "spell" then
-			self.name = GetSpellInfo(id)
+			self.name = GetSpellName(id)
 		elseif type_ == "item" then
 			type_ = GetItemInfo(id)
 		end

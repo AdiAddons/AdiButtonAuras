@@ -27,8 +27,8 @@ local error = _G.error
 local floor = _G.floor
 local format = _G.format
 local GetItemInfo = _G.GetItemInfo
-local GetSpellInfo = _G.GetSpellInfo
-local GetSpellLink = _G.GetSpellLink
+local GetSpellLink = C_Spell.GetSpellLink
+local GetSpellName = C_Spell.GetSpellName
 local gsub = _G.gsub
 local ipairs = _G.ipairs
 local math = _G.math
@@ -93,7 +93,7 @@ local descriptions = addon.descriptions
 local function SpellOrItemId(value, callLevel)
 	local spellId = tonumber(type(value) == "string" and strmatch(value, "spell:(%d+)") or value)
 	if spellId then
-		local name = GetSpellInfo(spellId)
+		local name = GetSpellName(spellId)
 		if not name then
 			error(format("Invalid spell identifier: %s", tostring(value)), callLevel+1)
 		end

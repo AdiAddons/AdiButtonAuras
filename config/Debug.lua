@@ -31,7 +31,7 @@ function private.GetDebugOptions(addon, addonName)
 	local GetCVarBool = _G.GetCVarBool
 	local GetItemIcon = _G.GetItemIcon
 	local GetItemInfo = _G.GetItemInfo
-	local GetSpellInfo = _G.GetSpellInfo
+	local GetSpellInfo = C_Spell.GetSpellInfo
 	local IsAddOnLoaded = _G.IsAddOnLoaded
 	local pairs = _G.pairs
 	local strjoin = _G.strjoin
@@ -51,9 +51,10 @@ function private.GetDebugOptions(addon, addonName)
 		local idType, id = strmatch(idstr, "^(%w+):(%d+)$")
 		id = tonumber(id)
 		if id then
-			local _, name, icon
+			local name, icon
 			if idType == "spell" then
-				name, _, icon = GetSpellInfo(id)
+				local info = GetSpellInfo(id)
+				name, icon = info.name, info.iconID
 			elseif idType == "item" then
 				name = GetItemInfo(id)
 				icon = GetItemIcon(id)
