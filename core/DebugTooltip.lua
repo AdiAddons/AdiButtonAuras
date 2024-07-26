@@ -46,20 +46,14 @@ end
 local function AddSpellInfo(tooltip, source, id, addEmptyLine)
 	if not id or IsDisabled() or tooltip:IsForbidden() then return end
 
-	local info = C_Spell.GetSpellInfo(id)
-	if not info then return end
+	local spell = C_Spell.GetSpellInfo(id)
+	if not spell then return end
 
 	if addEmptyLine then
 		tooltip:AddLine(" ")
 	end
 
-	tooltip:AddDoubleLine("Spell id ("..source.."):", BreakUpLargeNumbers(id))
-
-	if (id ~= info.spellID) then
-		tooltip:AddDoubleLine("Actual spell name:", info.name)
-		tooltip:AddDoubleLine("Actual spell id:", BreakUpLargeNumbers(info.spellID))
-	end
-
+	tooltip:AddDoubleLine("Spell id ("..source.."):", BreakUpLargeNumbers(spell.spellID))
 	tooltip:Show()
 end
 
@@ -72,7 +66,7 @@ local function AddItemInfo(tooltip, id, addEmptyLine)
 	end
 	tooltip:AddDoubleLine("Item id:", BreakUpLargeNumbers(link:match('item:(%d+)')))
 	tooltip:Show()
-	return AddSpellInfo(tooltip, "item", GetItemSpell(link))
+	return AddSpellInfo(tooltip, "item", GetItemSpell(link), false)
 end
 
 local function AddMacroInfo(tooltip, source, index)
