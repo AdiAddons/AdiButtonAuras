@@ -28,5 +28,13 @@ AdiButtonAuras:RegisterRules(function()
 
 	return {
 		ImportPlayerSpells { 'MONK' },
+
+		ShowPower {
+			{
+				113656, -- Fists of Fury (Windwalker)
+				392983, -- Strike of the Windlord (Windwalker)
+			},
+			'Chi',
+		},
 	}
 end)

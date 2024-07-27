@@ -28,5 +28,24 @@ AdiButtonAuras:RegisterRules(function()
 
 	return {
 		ImportPlayerSpells { 'WARLOCK' },
+
+		ShowPower {
+			{
+				  5740, -- Rain of Fire (Destruction)
+				 17877, -- Shadowburn (Destruction)
+				 27243, -- Seed of Corruption (Affliction)
+				104316, -- Call Dreadstalkers (Demonology)
+				105174, -- Hand of Gul'dan (Demonology)
+				111898, -- Grimoire: Felguard (Demonology)
+				116858, -- Chaos Bolt (Destruction)
+				264119, -- Summon Vilefiend (Destruction)
+				278350, -- Vile Taint (Affliction)
+				324536, -- Malefic Rapture (Affliction)
+				342601, -- Ritual of Doom
+				385899, -- Soulburn (Destruction)
+				417537, -- Oblivion (Affliction)
+			},
+			'SoulShards',
+		},
 	}
 end)

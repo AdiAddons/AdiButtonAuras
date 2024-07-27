@@ -28,5 +28,20 @@ AdiButtonAuras:RegisterRules(function()
 
 	return {
 		ImportPlayerSpells { 'PALADIN' },
+
+		ShowPower {
+			{
+				 53385, -- Divine Storm (Retribution)
+				 53600, -- Shield of the Righteous
+				 85222, -- Light of Dawn (Holy)
+				 85256, -- Templar's Verdict (Retribution)
+				 85673, -- Word of Glory
+				156322, -- External Flame (Holy)
+				215661, -- Judicar's Vengeance (Retribution)
+				383328, -- Final Verdict (Retribution)
+				415091, -- Shield of the Righteous (Holy)
+			},
+			'HolyPower',
+		},
 	}
 end)

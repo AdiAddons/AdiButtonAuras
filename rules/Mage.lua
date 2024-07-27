@@ -28,5 +28,10 @@ AdiButtonAuras:RegisterRules(function()
 
 	return {
 		ImportPlayerSpells { 'MAGE' },
+
+		ShowPower {
+			44425, -- Arcane Barrage (Arcane)
+			'ArcaneCharges',
+		},
 	}
 end)

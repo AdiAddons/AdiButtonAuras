@@ -28,5 +28,15 @@ AdiButtonAuras:RegisterRules(function()
 
 	return {
 		ImportPlayerSpells { 'EVOKER' },
+
+		ShowPower {
+			{
+				356995, -- Disintegrate
+				357211, -- Pyre (Devastation)
+				364343, -- Echo (Preservation)
+				395160, -- Eruption (Augmentation)
+			},
+			'Essence'
+		},
 	}
 end)

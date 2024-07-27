@@ -28,5 +28,15 @@ AdiButtonAuras:RegisterRules(function()
 
 	return {
 		ImportPlayerSpells { 'DRUID' },
+
+		ShowPower {
+			{
+				  1079, -- Rip
+				 22568, -- Ferocious Bite
+				 22570, -- Maim
+				285381, -- Primal Wrath (Feral)
+			},
+			'ComboPoints'
+		},
 	}
 end)

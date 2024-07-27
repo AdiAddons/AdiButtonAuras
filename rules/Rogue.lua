@@ -28,5 +28,22 @@ AdiButtonAuras:RegisterRules(function()
 
 	return {
 		ImportPlayerSpells { 'ROGUE' },
+
+		ShowPower {
+			{
+				   408, -- Kidney Shot
+				  1943, -- Rupture (Assassination, Subtlety)
+				  2098, -- Dispatch (Outlaw)
+				 32645, -- Envenom (Assassination)
+				 51690, -- Killing Spree (Outlaw)
+				121411, -- Crimson Tempest (Assassination)
+				196819, -- Eviscerate (Subtlety) -- TODO: ranked 231716
+				280719, -- Secret Technique (Subtlety)
+				315341, -- Between the Eyes (Outlaw)
+				315496, -- Slice and Dice
+				319175, -- Black Powder (Subtlety)
+			},
+			'ComboPoints'
+		},
 	}
 end)
