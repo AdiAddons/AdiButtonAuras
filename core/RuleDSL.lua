@@ -319,6 +319,70 @@ local function BuildDispelHandler(filter, highlight, token, dispellable, callLev
 	end
 end
 
+local function BuildTemporaryPetHandler(guid, highlight)
+	return function (_, model)
+		local pet = UnitGUID('pet')
+
+		if pet and pet:match('%-' .. guid .. '%-') then
+			local remaining = GetPetTimeRemaining()
+
+			if remaining then
+				model.expiration = GetTime() + remaining / 1000
+				model.highlight = highlight
+
+				return true
+			end
+		end
+	end
+end
+
+local function BuildTemporaryWeaponEnchantHandler(enchantId, highlight)
+	return function (_, model)
+		local hasMainHandEnchant, mainHandExpiration, mainHandCharges, mainHandEnchantId,
+			hasOffHandEnchant, offHandExpiration, offHandCharges, offHandEnchantId,
+			hasRangedEnchant, rangedExpiration, rangedCharges, rangedEnchantId = GetWeaponEnchantInfo()
+
+		if (enchantId == mainHandEnchantId) then
+			model.expiration = GetTime() + mainHandExpiration / 1000
+			model.count = mainHandCharges or 0
+			model.highlight = highlight
+
+			return true
+		end
+
+		if (enchantId == offHandEnchantId) then
+			model.expiration = GetTime() + offHandExpiration / 1000
+			model.count = offHandCharges or 0
+			model.highlight = highlight
+
+			return true
+		end
+
+		if (enchantId == rangedEnchantId) then
+			model.expiration = GetTime() + rangedExpiration / 1000
+			model.count = rangedCharges or 0
+			model.highlight = highlight
+
+			return true
+		end
+	end
+end
+
+local function BuildTotemHandler(totemTexture, highlight)
+	return function (_, model)
+		for slot = 1, 6 do
+			local found, name, start, duration, texture = GetTotemInfo(slot)
+
+			if found and texture == totemTexture then
+				model.expiration = start + duration
+				model.highlight = highlight
+
+				return true
+			end
+		end
+	end
+end
+
 ------------------------------------------------------------------------------
 -- High-callLevel helpers
 ------------------------------------------------------------------------------
@@ -425,6 +489,16 @@ local function ShowCountAndHighlight(key, spells, unit, events, handler, highlig
 	}
 end
 
+local function ShowDispellable(spells, unit, canDispel, providers, highlight, desc)
+	local filter = unit == 'enemy' and 'HELPFUL' or 'HARMFUL'
+	local key = BuildKey('Dispel', unit, highlight)
+	local handler = BuildDispelHandler(filter, highlight, unit, AsSet(canDispel, 'string', 4))
+	highlight = highlight or 'hint'
+	desc = desc or BuildDesc(filter == 'HELPFUL' and L['a buff you can dispel'] or L['a debuff you can dispel'], highlight, unit)
+
+	return Configure(key, desc, spells, unit, 'UNIT_AURA', handler, providers, 4)
+end
+
 local function ShowPower(spells, powerType, handler, highlight, providers, desc)
 	local events, powerLoc, powerIndex
 	if type(powerType) == "string" then
@@ -506,14 +580,31 @@ local function ShowStacks(spells, aura, maxi, unit, handler, highlight, provider
 	)
 end
 
-local function ShowDispellable(spells, unit, canDispel, providers, highlight, desc)
-	local filter = unit == 'enemy' and 'HELPFUL' or 'HARMFUL'
-	local key = BuildKey('Dispel', unit, highlight)
-	local handler = BuildDispelHandler(filter, highlight, unit, AsSet(canDispel, 'string', 4))
-	highlight = highlight or 'hint'
-	desc = desc or BuildDesc(filter == 'HELPFUL' and L['a buff you can dispel'] or L['a debuff you can dispel'], highlight, unit)
+local function ShowTempPet(spells, guid, highlight, providers, description)
+	highlight = highlight or 'good'
+	description = description or L['Show the duration of @NAME']
+	local key = BuildKey('TempPet', guid, highlight)
+	local handler = BuildTemporaryPetHandler(guid, highlight)
 
-	return Configure(key, desc, spells, unit, 'UNIT_AURA', handler, providers, 4)
+	return Configure(key, description, spells, 'player', 'UNIT_PET', handler, providers, 4)
+end
+
+local function ShowTempWeaponEnchant(spells, enchant, highlight, providers, description)
+	highlight = highlight or 'good'
+	description = description or L['Show the duration of @NAME']
+	local key = BuildKey('WeaponEnchant', enchant, highlight)
+	local handler = BuildTemporaryWeaponEnchantHandler(enchant, highlight)
+
+	return Configure(key, description, spells, 'player', 'WEAPON_ENCHANT_CHANGED', handler, providers, 4)
+end
+
+local function ShowTotem(spells, totemTexture, highlight, providers, description)
+	highlight = highlight or 'good'
+	description = description or L['Show the duration of @NAME']
+	local key = BuildKey('Totem', totemTexture, highlight)
+	local handler = BuildTotemHandler(totemTexture, highlight)
+
+	return Configure(key, description, spells, 'player', 'PLAYER_TOTEM_UPDATE', handler, providers, 4)
 end
 
 local function FilterOut(spells, exclude)
@@ -621,6 +712,8 @@ local baseEnv = {
 	BuildAuraHandler_Longest = BuildAuraHandler_Longest,
 	BuildAuraHandler_FirstOf = BuildAuraHandler_FirstOf,
 	BuildDispelHandler       = BuildDispelHandler,
+	BuildTemporaryPetHandler = BuildTemporaryPetHandler,
+	BuildTotemHandler        = BuildTotemHandler,
 
 	-- Description helpers
 	BuildDesc         = addon.BuildDesc,
@@ -639,6 +732,9 @@ local baseEnv = {
 	ShowHealth = WrapTableArgFunc(ShowHealth),
 	ShowPower = WrapTableArgFunc(ShowPower),
 	ShowStacks = WrapTableArgFunc(ShowStacks),
+	ShowTempPet = WrapTableArgFunc(ShowTempPet),
+	ShowTempWeaponEnchant = WrapTableArgFunc(ShowTempWeaponEnchant),
+	ShowTotem = WrapTableArgFunc(ShowTotem),
 
 	-- High-level functions
 	SimpleDebuffs = function(spells)

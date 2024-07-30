@@ -18,6 +18,9 @@
     1. [ShowHealth](#ShowHealth)
     1. [ShowStacks](#ShowStacks)
     1. [ShowDispellable](#ShowDispellable)
+    1. [ShowTempPet](#ShowTempPet)
+    1. [ShowTempWeaponEnchant](#ShowTempWeaponEnchant)
+    1. [ShowTotem](#ShowTotem)
     1. [Configure](#Configure)
 
 ### Concepts
@@ -258,8 +261,38 @@ ShowPower {
 * `spells` - spell id (_number_ or _table_)
 * `unit` - the [unit](#unit-id) to scan for an dispellable aura (_string_). If the unit is `"enemy"`, the aura is considered a debuff, else - a buff
 * `canDispel` - the debuff type that can be dispelled by `spells` (_string_ or _table_). Must be one or more of `"Curse"`, `"Disease"`, `"Magic"` or `"Poison"` (case matters!)
-* (`providers`) - spell id(s) of the spell(s) require to enable this rule (_number_ or _table_)). Defaults to `spells` if omitted
-* (`hint`) - [highlight type](#highlight-type) (_string_). Defaults to `"hint"` if omitted
+* (`providers`) - spell id(s) of the spell(s) required to enable this rule (_number_ or _table_)). Defaults to `spells` if omitted
+* (`highlight`) - [highlight type](#highlight-type) (_string_). Defaults to `"hint"` if omitted
+* (`description`) - description for the options panel (_string_). Auto-generated if omitted
+
+***
+
+<a name="ShowTempPet"></a>
+**`ShowTempPet { spells, guid, highlight, providers, description }`**
+* `spells` - spell id (_number_ or _table_)
+* `guid` - the id part of the [globally unique identifier](https://warcraft.wiki.gg/wiki/GUID#Creature) of the temporary pet (_number_)
+* (`providers`) - spell id(s) of the spell(s) required to enable this rule (_number_ or _table_)). Defaults to `spells` if omitted
+* (`highlight`) - [highlight type](#highlight-type) (_string_). Defaults to `"good"` if omitted
+* (`description`) - description for the options panel (_string_). Auto-generated if omitted
+
+***
+
+<a name="ShowTempWeaponEnchant"></a>
+**`ShowTempPet { spells, enchantId, highlight, providers, description }`**
+* `spells` - id(s) of the spell(s) to show the weapon enchant on (_number_ or _table_)
+* `enchantId` - as the 4th, 8th, or 12th return of [GetWeaponEnchantInfo](https://warcraft.wiki.gg/wiki/API_GetWeaponEnchantInfo) (_number_)
+* (`providers`) - spell id(s) of the spell(s) required to enable this rule (_number_ or _table_)). Defaults to `spells` if omitted
+* (`highlight`) - [highlight type](#highlight-type) (_string_). Defaults to `"good"` if omitted
+* (`description`) - description for the options panel (_string_). Auto-generated if omitted
+
+***
+
+<a name="ShowTotem"></a>
+**`ShowTempPet { spells, totemTexture, highlight, providers, description }`**
+* `spells` - id(s) of the spell(s) to show the totem duration on (_number_ or _table_)
+* `totemTexture` - as the 5th return of [GetTotemInfo](https://warcraft.wiki.gg/wiki/API_GetTotemInfo) (_number_)
+* (`providers`) - spell id(s) of the spell(s) required to enable this rule (_number_ or _table_)). Defaults to `spells` if omitted
+* (`highlight`) - [highlight type](#highlight-type) (_string_). Defaults to `"good"` if omitted
 * (`description`) - description for the options panel (_string_). Auto-generated if omitted
 
 ***

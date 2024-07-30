@@ -65,6 +65,9 @@ read_globals = {
 	'ShowHealth',
 	'ShowPower',
 	'ShowStacks',
+	'ShowTempPet',
+	'ShowTempWeaponEnchant',
+	'ShowTotem',
 	'SimpleBuffs',
 	'SimpleDebuffs',
 
