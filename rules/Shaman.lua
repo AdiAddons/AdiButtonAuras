@@ -28,5 +28,33 @@ AdiButtonAuras:RegisterRules(function()
 
 	return {
 		ImportPlayerSpells { 'SHAMAN' },
+
+		ShowTempPet { 192249, 77942 }, -- Storm Elemental (with Primal Elementalist)
+		ShowTempPet { 198067, 61029 }, -- Fire Elemental (with Primal Elementalist)
+		ShowTempPet { 198103, 61056 }, -- Earth Elemental (with Primal Elementalist)
+
+		ShowTempWeaponEnchant {  33757, 5401 }, -- Windfury Weapon (Enhancement)
+		ShowTempWeaponEnchant { 318038, 5400 }, -- Flametoungue Weapon
+		ShowTempWeaponEnchant { 382021, 6498 }, -- Earthliving Weapon (Restoration)
+		ShowTempWeaponEnchant { 462757, 7587 }, -- Thunderstrike Ward (Elemental)
+
+		ShowTotem { 192249, 1020304 }, -- Storm Elemental
+		ShowTotem { 198067,  135790 }, -- Fire Elemental
+		ShowTotem { 198103,  136024 }, -- Earth Elemental
+
+		ShowTotem {   2484,  136102 }, -- Earthbind Totem
+		ShowTotem {   5394,  135127 }, -- Healing Stream Totem
+		ShowTotem {   8143,  136108 }, -- Tremor Totem
+		ShowTotem {  16191, 4667424 }, -- Mana Tide Totem (Restoration)
+		ShowTotem {  51485,  136100 }, -- Earthgrab Totem
+		ShowTotem {  98008,  237586 }, -- Spirit Link Totem (Restoration)
+		ShowTotem { 108280,  538569 }, -- Healing Tide Totem (Restoration)
+		ShowTotem { 192077,  538576 }, -- Wind Rush Totem
+		ShowTotem { 198838,  136098 }, -- Earthen Wall Totem (Restoration)
+		ShowTotem { 201764,  971076 }, -- Recall Cloudburst Totem (Restoration)
+		ShowTotem { 207399,  136080 }, -- Ancestral Protection Totem (Restoration)
+		ShowTotem { 383013,  136070 }, -- Poison Cleansing Totem
+		ShowTotem { 108270,  538572 }, -- Stone Bulwark Totem
+		ShowTotem { 192222,  971079 }, -- Liquid Magma Totem (Elemental)
 	}
 end)

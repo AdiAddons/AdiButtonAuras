@@ -28,5 +28,8 @@ AdiButtonAuras:RegisterRules(function()
 
 	return {
 		ImportPlayerSpells { 'PRIEST' },
+
+		ShowTotem {  34433, 136199 }, -- Shadowfiend
+		ShowTotem { 200174, 136214 }, -- Mindbender
 	}
 end)

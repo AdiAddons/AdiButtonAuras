@@ -36,5 +36,12 @@ AdiButtonAuras:RegisterRules(function()
 			},
 			'Chi',
 		},
+
+		ShowTempPet { 123904, 63508 }, -- Invoke Xuen, the White Tiger (Windwalker)
+
+		ShowTotem { 115313, 620831 }, -- Summon Jade Serpent Statue (Mistweaver)
+		ShowTotem { 132578, 608951 }, -- Invoke Niuzao, the Black Ox (Brewmaster)
+		ShowTotem { 322118, 574571 }, -- Invoke Yu'lon, the Jade Serpent (Mistweaver)
+		ShowTotem { 325197, 877514 }, -- Invoke Chi-Ji, the Red Crane (Mistweaver)
 	}
 end)

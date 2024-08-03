@@ -47,5 +47,13 @@ AdiButtonAuras:RegisterRules(function()
 			},
 			'SoulShards',
 		},
+
+		ShowTotem {   1122,  136219 }, -- Summon Infernal (Destruction)
+		ShowTotem { 104316, 1378282 }, -- Call Dreadstalkers (Demonology)
+		ShowTotem { 111898,  237562 }, -- Grimoire: Felguard (Demonology)
+		ShowTotem { 205180, 1416161 }, -- Summon Darkglare (Affliction)
+		ShowTotem { 264119, 1616211 }, -- Summon Vilefiend (Demonology)
+		ShowTotem { 455465, 1709932 }, -- Summon Gloomhound (Demonology)
+		ShowTotem { 455476, 1709931 }, -- Summon Charhound (Demonology)
 	}
 end)
