@@ -69,7 +69,7 @@ function private.GetUserRulesOptions(addon, addonName)
 	local pairs = _G.pairs
 	local time = _G.time
 	local wipe = _G.wipe
-	local GetAddOnMetadata = _G.GetAddOnMetadata
+	local GetAddOnMetadata = C_AddOns.GetAddOnMetadata
 	local tostring = _G.tostring
 	local type = _G.type
 	local unpack = _G.unpack

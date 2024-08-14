@@ -36,7 +36,7 @@ AdiButtonAuras:RegisterRules(function()
 				 80353, -- Time Warp (mage)
 				264667, -- Primal Rage (hunter ferocity pets)
 				272678, -- Primal Rage (hunter command pet ability)
-				390386, -- Fury of the Aspects (drachtyr)
+				390386, -- Fury of the Aspects (evoker)
 				"item:102351", -- Drums of Rage
 				"item:120257", -- Drums of Fury
 			},
@@ -50,7 +50,7 @@ AdiButtonAuras:RegisterRules(function()
 					146555, -- Drums of Rage
 					178207, -- Drums of Fury
 					264667, -- Primal Rage (hunter ferocity pets)
-					390386, -- Fury of the Aspects (drachtyr)
+					390386, -- Fury of the Aspects (evoker)
 				})
 				local isSated = BuildAuraHandler_Longest("HARMFUL", "bad", "ally", {
 					 57723, -- Exhaustion (Drums of Rage/Fury debuff)

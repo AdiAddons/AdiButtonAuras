@@ -35,9 +35,6 @@ local GetMacroSpell = _G.GetMacroSpell
 local GetPetActionInfo = _G.GetPetActionInfo
 local select = _G.select
 local TooltipDataProcessor = _G.TooltipDataProcessor
-local UnitAura = _G.UnitAura
-local UnitBuff = _G.UnitBuff
-local UnitDebuff = _G.UnitDebuff
 
 local function IsDisabled()
 	return not (addon.db and addon.db.profile.debuggingTooltip)
@@ -98,14 +95,17 @@ local function AddPetActionInfo(tooltip, slot)
 end
 
 local spellIdGetters = {
-	GetUnitAura = function(...)
-		return select(10, UnitAura(unpack(...)))
+	GetUnitAura = function(...) -- unit, index, filter 
+		local data = C_UnitAuras.GetAuraDataByIndex(unpack(...))
+		return data and data.spellId
 	end,
 	GetUnitBuff = function(...)
-		return select(10, UnitBuff(unpack(...)))
+		local data = C_UnitAuras.GetBuffDataByIndex(unpack(...))
+		return data and data.spellId
 	end,
 	GetUnitDebuff = function(...)
-		return select(10, UnitDebuff(unpack(...)))
+		local data = C_UnitAuras.GetDebuffDataByIndex(unpack(...))
+		return data and data.spellId
 	end,
 	GetUnitBuffByAuraInstanceID = function(...)
 		local data = C_UnitAuras.GetAuraDataByAuraInstanceID(unpack(...))

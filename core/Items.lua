@@ -30,7 +30,6 @@ local IsHelpfulItem = _G.IsHelpfulItem
 local select = _G.select
 local setmetatable = _G.setmetatable
 local tonumber = _G.tonumber
-local UnitAura = _G.UnitAura
 local tinsert = _G.tinsert
 local pairs = _G.pairs
 local type = _G.type

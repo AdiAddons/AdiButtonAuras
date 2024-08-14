@@ -72,6 +72,13 @@ read_globals = {
 	'SimpleDebuffs',
 
 	-- WoW API
+	C_AddOns = {
+		fields = {
+			'GetAddOnMetadata',
+			'IsAddOnLoaded',
+			'LoadAddOn',
+		},
+	},
 	C_Spell = {
 		fields = {
 			'GetSpellCharges',

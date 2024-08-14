@@ -30,7 +30,7 @@ local rawget = _G.rawget
 local setmetatable = _G.setmetatable
 local wipe = _G.wipe
 local type = _G.type
-local UnitAuraSlots = _G.UnitAuraSlots
+local GetAuraSlots = _G.C_UnitAuras.GetAuraSlots
 local UnitExists = _G.UnitExists
 local UnitGUID = _G.UnitGUID
 
@@ -108,7 +108,7 @@ local aurasMetatable = {
 				end
 			end
 
-			local slots = { UnitAuraSlots(unit, filter) }
+			local slots = { GetAuraSlots(unit, filter) }
 			for i = 2, #slots do
 				local data = GetAuraDataBySlot(unit, slots[i])
 

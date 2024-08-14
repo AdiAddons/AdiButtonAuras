@@ -27,12 +27,12 @@ function private.GetDebugOptions(addon, addonName)
 
 	local floor = _G.floor
 	local format = _G.format
-	local GetAddOnMetadata = _G.GetAddOnMetadata
+	local GetAddOnMetadata = C_AddOns.GetAddOnMetadata
 	local GetCVarBool = _G.GetCVarBool
 	local GetItemIcon = _G.GetItemIcon
 	local GetItemInfo = _G.GetItemInfo
 	local GetSpellInfo = C_Spell.GetSpellInfo
-	local IsAddOnLoaded = _G.IsAddOnLoaded
+	local IsAddOnLoaded = C_AddOns.IsAddOnLoaded
 	local pairs = _G.pairs
 	local strjoin = _G.strjoin
 	local strmatch = _G.strmatch
