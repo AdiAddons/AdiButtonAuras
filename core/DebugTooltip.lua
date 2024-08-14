@@ -95,7 +95,7 @@ local function AddPetActionInfo(tooltip, slot)
 end
 
 local spellIdGetters = {
-	GetUnitAura = function(...) -- unit, index, filter 
+	GetUnitAura = function(...)
 		local data = C_UnitAuras.GetAuraDataByIndex(unpack(...))
 		return data and data.spellId
 	end,
