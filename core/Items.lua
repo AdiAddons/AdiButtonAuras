@@ -39,7 +39,7 @@ local LibItemBuffs, LIBVer = addon.GetLib('LibItemBuffs-1.0')
 local BuildKey = addon.BuildKey
 local BuildDesc = addon.BuildDesc
 
-local CONSUMABLE = _G.LE_ITEM_CLASS_CONSUMABLE
+local CONSUMABLE = _G.Enum.ItemClass.Consumable or 0
 
 local descriptions = {}
 
