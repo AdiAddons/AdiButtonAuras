@@ -1,75 +1,63 @@
 name: CI
 
 on:
-  - push
-  - pull_request
+  push:
+    paths:
+      - '**.lua'
+      - '.github/workflows/**.yml'
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+  pull_request:
 
 jobs:
-  build:
+  lint:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          submodules: true
-      - name: Setup APT cache
-        uses: actions/cache@v3
-        with:
-          path: /var/cache/apt/**
-          key: ${{ runner.os }}-apt
-      - name: Install Lua and LuaRocks
-        run: |
-          # apt-get commands
-          echo '::group::apt-get update'
-          sudo apt-get -q update
-          echo '::endGroup::'
-          echo '::group::apt-get install'
-          sudo apt-get -qy install lua5.1 luarocks liblua5.1-bitop0
-          echo '::endGroup::'
-      - name: Prepare Lua paths
-        run: |
-          luarocks path --lr-bin >> $GITHUB_PATH
-          luarocks path | sed -e 's/^export //' -e "s/'//g" >> $GITHUB_ENV
-      - name: Setup LuaRocks cache
-        id: cache-luarocks
-        uses: actions/cache@v3
-        with:
-          path: ~/.luarocks
-          key: ${{ runner.os }}-luarocks
-      - name: Install testing libraries
-        if: steps.cache-luarocks.outputs.cache-hit != 'true'
-        run: |
-          # luarocks install
-          echo '::group::luacheck'
-          luarocks install --local luacheck
-          echo '::endGroup::'
-          echo '::group::mockagne'
-          luarocks install --local mockagne 1.0
-          echo '::endGroup::'
-          echo '::group::luaunit'
-          luarocks install --local luaunit 2.1
-          echo '::endGroup::'
+        uses: actions/checkout@v4
       - name: Lint
         uses: nebularg/actions-luacheck@v1
         with:
-          annotate: error
+          annotate: warning
+          args: --no-color
+  test:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Install Lua
+        uses: leafo/gh-actions-lua@v10
+        with:
+          luaVersion: '5.1.5'
+      - name: Install LuaRocks
+        uses: leafo/gh-actions-luarocks@v4
+      - name: Install Dependencies
+        run: |
+          luarocks install luabitop
+          luarocks install busted
       - name: Test
-        run: lua tests/Items.lua
-      - name: Setup packager arguments
+        run: |
+          cd ./tests
+          busted -o TAP .
+  release:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Prepare Packager Arguments
         id: packager-args
-        if: github.base_ref || (github.ref != 'refs/heads/master' && !startsWith(github.ref, 'refs/tags/'))
-        run: echo "{args}={-d}" >> $GITHUB_OUTPUT
-      - name: Package and deploy
+        if: github.base_ref || github.ref_type != 'tag'
+        run: echo "args=-d" >> $GITHUB_OUTPUT
+      - name: Package and Release
         uses: BigWigsMods/packager@v2
         with:
           args: ${{ steps.packager-args.outputs.args }}
         env:
           CF_API_KEY: ${{ secrets.CF_API_KEY }}
           GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
-      - name: Upload packages to github
-        uses: actions/upload-artifact@v3
-        with:
-          name: packages
-          path: .release/AdiButtonAuras*.zip
