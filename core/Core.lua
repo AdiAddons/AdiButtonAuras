@@ -227,7 +227,8 @@ end
 
 local hookedFrames = {}
 local function RegisterDominos()
-	for button in _G.Dominos.ActionButtons:GetAll() do
+	local Dominos = GetLib('AceAddon-3.0'):GetAddon('Dominos')
+	for button in Dominos.ActionButtons:GetAll() do
 		if not hookedFrames[button] then
 			hookedFrames[button] = true
 			hooksecurefunc(button, 'Update', UpdateHandlerForButton)
@@ -266,7 +267,7 @@ function addon:ADDON_LOADED(event, name)
 	self:Initialize()
 
 	if IsAddOnLoaded('Dominos') then
-		_G.Dominos.RegisterCallback(addon, 'LAYOUT_LOADED', RegisterDominos)
+		GetLib('AceAddon-3.0'):GetAddon('Dominos').RegisterCallback(addon, 'LAYOUT_LOADED', RegisterDominos)
 	end
 
 	if IsAddOnLoaded('Bartender4') then
