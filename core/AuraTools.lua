@@ -112,7 +112,9 @@ local aurasMetatable = {
 			for i = 2, #slots do
 				local data = GetAuraDataBySlot(unit, slots[i])
 
-				self[data.auraInstanceID] = ProcessAura(data, new())
+				if data and not IsAuraFilteredOutByInstanceID(unit, data.auraInstanceID, filter) then
+					self[data.auraInstanceID] = ProcessAura(data, new())
+				end
 			end
 		end,
 		IncrementalUpdate = function (self, unit, filter, info)
@@ -150,6 +152,7 @@ local aurasMetatable = {
 }
 
 local function UpdateUnit(self, info)
+	-- print('Called UpdateUnit for', self.__unit, nil ~= info, info.isFullUpdate)
 	for _, auras in next, self do
 		if type(auras) == 'table' then
 			auras:Update(info)
